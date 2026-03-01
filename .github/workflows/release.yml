@@ -55,7 +55,7 @@ jobs:
         generate_release_notes: true
         files: |
           collections/al-development.collection.yml
-          validate-al-collection.js
+          scripts/validate-al-collection.js
           package.json
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -278,7 +278,7 @@ This will overwrite files in \`.github/copilot/\`.
 
 ---
 
-*Version: ${require('./package.json').version}*
+*Version: ${require('../package.json').version}*
 *Framework: AI Native-Instructions Architecture (3 layers)*
 *Total Primitives: 38 (9 instructions + 18 workflows + 7 agents + 4 orchestra)*
 `;
@@ -536,8 +536,8 @@ async function install() {
     log(`\n✓ Created directory: ${targetDir}`, 'green');
   }
 
-  // Get source directory (package installation location)
-  const packageDir = __dirname;
+  // Get source directory (package root, one level up from scripts/)
+  const packageDir = path.join(__dirname, '..');
   let totalCopied = 0;
   let totalSkipped = 0;
 

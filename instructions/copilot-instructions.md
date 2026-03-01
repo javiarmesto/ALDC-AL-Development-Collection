@@ -14,7 +14,7 @@ This collection implements the **AI Native-Instructions Architecture** with thre
 
 **Layer 3: Context Engineering** - Strategic management of LLM context windows through modular loading, `applyTo` patterns, and optimized information retrieval.
 
-> 💡 For detailed framework documentation, see [AI Native-Instructions Architecture](../references/AI%20Native-INSTRUCTIONS-ARCHITECTURE.md) and [Core Concepts](../references/ai%20native-concepts.md).
+> 💡 For detailed framework documentation, see [AI Native-Instructions Architecture](../docs/framework/ai-native-instructions-architecture.md) and [Core Concepts](../docs/framework/ai-native-concepts.md).
 
 ## 🎯 Complete Toolset Available
 
@@ -579,9 +579,9 @@ Always review Copilot suggestions:
 
 ### This Project's Documentation
 - [AL Development Overview](../al-development.md) - Framework architecture and overview
-- [AI Native-Instructions Architecture](../references/AI%20Native-INSTRUCTIONS-ARCHITECTURE.md) - Implementation details
-- [AI Native Structure](../references/ai%20native%20structure.md) - Getting started guide
-- [AI Native Concepts](../references/ai%20native-concepts.md) - Core concepts and framework layers
+- [AI Native-Instructions Architecture](../docs/framework/ai-native-instructions-architecture.md) - Implementation details
+- [AI Native Structure](../docs/framework/ai-native-structure.md) - Getting started guide
+- [AI Native Concepts](../docs/framework/ai-native-concepts.md) - Core concepts and framework layers
 - [Instructions Index](index.md) - Complete guide to all instruction files
 - [AL Guidelines](al-guidelines.instructions.md) - Master guidelines
 
@@ -888,11 +888,10 @@ AL-Development-Collection/
 │   ├── al-planning-subagent.agent.md # AL-aware research
 │   ├── al-implement-subagent.agent.md # TDD implementation
 │   └── al-review-subagent.agent.md   # Code review validation
-├── references/                           # Framework documentation
-│   ├── AI Native-INSTRUCTIONS-ARCHITECTURE.md
-│   ├── ai native structure.md
-│   └── ai native-concepts.md
-│   └── ai native-concepts.md
+├── docs/framework/                       # Framework documentation
+│   ├── ai-native-instructions-architecture.md
+│   ├── ai-native-structure.md
+│   └── ai-native-concepts.md
 ├── src/                                  # Your AL code here
 │   ├── Tables/
 │   ├── Pages/

@@ -405,7 +405,7 @@ end;
 
 ### 🔄 Reproduce el Ejemplo Completo
 
-**Guía paso a paso detallada**: [REPRODUCIBLE-EXAMPLE.md](./REPRODUCIBLE-EXAMPLE.md)
+**Guía paso a paso detallada**: [REPRODUCIBLE-EXAMPLE.md](./reproducible-example.md)
 
 **Resumen rápido** (desde cero en tu proyecto):
 
@@ -431,7 +431,7 @@ end;
 
 **Tiempo total**: ~2 horas desde cero hasta producción ✨
 
-**Documentación completa con troubleshooting**: [Ver guía reproducible →](./REPRODUCIBLE-EXAMPLE.md)
+**Documentación completa con troubleshooting**: [Ver guía reproducible →](./reproducible-example.md)
 
 ---
 

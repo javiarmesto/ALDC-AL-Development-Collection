@@ -49,8 +49,8 @@ Use al-debugger
 ## Learn More
 
 - [Full Documentation](../docs/agents/index.md)
-- [Getting Started](../getting-started.md)
-- [AL Development Collection](../al-development-collection.md)
+- [Getting Started](../docs/getting-started.md)
+- [AL Development Collection](../docs/al-development-collection.md)
 
 ---
 

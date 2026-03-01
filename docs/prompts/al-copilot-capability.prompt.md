@@ -1,0 +1,1 @@
+../../prompts/al-copilot-capability.prompt.md

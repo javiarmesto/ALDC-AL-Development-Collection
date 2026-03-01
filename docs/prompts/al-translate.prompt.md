@@ -1,0 +1,1 @@
+../../prompts/al-translate.prompt.md

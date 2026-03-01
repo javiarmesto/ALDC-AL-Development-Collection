@@ -70,7 +70,7 @@ Activate workflows explicitly when needed:
 
 - [Full Documentation](../docs/prompts/index.md)
 - [Detailed Workflow Guide](README.md)
-- [Getting Started](../getting-started.md)
+- [Getting Started](../docs/getting-started.md)
 
 ---
 
