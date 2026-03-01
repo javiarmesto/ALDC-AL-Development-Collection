@@ -46,5 +46,5 @@ The AL Development Collection provides a complete AI-native development toolkit 
 ## Links
 
 - **GitHub**: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-- **Quick Start**: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/blob/main/QUICK-START.md
+- **Quick Start**: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/blob/main/docs/quick-start-en.md
 - **Complete Development Flow**: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/blob/main/docs/workflows/complete-development-flow.md

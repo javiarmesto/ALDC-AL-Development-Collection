@@ -1,0 +1,1 @@
+../../prompts/al-copilot-promptdialog.prompt.md

@@ -17,7 +17,7 @@
 
 ## 🚀 Quick Start
 
-> **⚡ 5-Minute Setup** → [Complete Quick Start Guide](./QUICK-START.md)
+> **⚡ 5-Minute Setup** → [Quick Start (EN)](./docs/quick-start-en.md) | [Inicio Rápido (ES)](./docs/quick-start-es.md)
 
 ### Installation
 
@@ -77,7 +77,7 @@ node install.js install [your-al-project]
 
 ### First Use
 
-**📖 Follow the complete example**: [Customer Loyalty Points System](./QUICK-START.md#-complete-example-customer-loyalty-points-system)
+**📖 Follow the complete example**: [Customer Loyalty Points System](./docs/quick-start-en.md#-complete-example-customer-loyalty-points-system)
 
 Or start directly:
 
@@ -404,7 +404,7 @@ al-architect will analyze requirements, design the solution architecture, and re
 ## 📚 Documentation
 
 ### Framework Documentation
-- **[AI Native-Instructions Architecture Implementation](./references/AI%20Native-INSTRUCTIONS-ARCHITECTURE.md)** - Framework compliance details
+- **[AI Native-Instructions Architecture Implementation](./docs/framework/ai-native-instructions-architecture.md)** - Framework compliance details
 - **[AI Native-Instructions Framework Guide](https://danielmeppiel.github.io/awesome-ai-native/)** - Complete framework reference
 - **[AGENTS.md Standard](https://agents.md)** - Universal context format
 
@@ -616,10 +616,14 @@ AL-Development-Collection-for-GitHub-Copilot/
 │       └── complete-development-flow.md         # Visual workflow guide
 ├── collections/                                  # Collection manifests
 │   └── al-development.collection.yml            # Main collection (38 primitives)
-├── references/                                   # Framework documentation
-│   ├── AI Native-INSTRUCTIONS-ARCHITECTURE.md   # Framework compliance
-│   ├── ai native-concepts.md                    # Core concepts
-│   └── ai native structure.md                   # Structure guide
+├── docs/
+│   ├── framework/                               # Framework documentation
+│   │   ├── ai-native-instructions-architecture.md
+│   │   ├── ai-native-concepts.md
+│   │   └── ai-native-structure.md
+│   ├── quick-start-en.md                        # Quick start (English)
+│   ├── quick-start-es.md                        # Quick start (Spanish)
+│   └── reproducible-example.md                  # Step-by-step example
 ├── archive/                                      # Historical files
 │   ├── README.md                                # Archive documentation
 │   ├── MIGRATION-FROM-ORCHESTRATOR.md           # Migration guide (v2.8.0)
@@ -629,10 +633,10 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── CHANGELOG.md                                 # Version history
 ├── LICENSE                                      # MIT License
 ├── SECURITY.md                                  # Security policy
-├── validate-al-collection.js                    # Compliance validation
+├── scripts/
+│   ├── install.js                               # Toolkit installer
+│   └── validate-al-collection.js                # Compliance validation
 ├── package.json                                 # Dependencies
-├── QUICK-START.md                               # Quick start guide with complete example
-├── REPRODUCIBLE-EXAMPLE.md                      # Step-by-step reproducible example
 └── README.md                                    # This file
 
 # Total: 38 Agent Primitives (9 instructions + 18 workflows + 7 agents + 4 orchestra)
@@ -655,8 +659,8 @@ AL-Development-Collection-for-GitHub-Copilot/
   - Direct workflow: User → al-architect (design) → al-conductor (implement)
   - 40% reduction in decision fatigue
 - 📚 **Example-Based Learning** - Single validated reproducible example
-  - QUICK-START.md with complete Customer Loyalty Points walkthrough
-  - REPRODUCIBLE-EXAMPLE.md with step-by-step instructions
+  - Quick Start guides with complete Customer Loyalty Points walkthrough
+  - Reproducible example with step-by-step instructions
   - Replaced multiple incomplete examples with one comprehensive case
 - 📖 **Migration Guide** - MIGRATION-FROM-ORCHESTRATOR.md for existing users
   - Before/after workflow comparison tables

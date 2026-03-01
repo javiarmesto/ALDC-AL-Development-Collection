@@ -74,7 +74,7 @@ Expected output:
 Open any `.al` file and use:
 
 ```
-@workspace use al-workspace
+@workspace use al-initialize
 ```
 
 This will initialize your AL workspace with proper configuration.

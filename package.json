@@ -2,12 +2,12 @@
   "name": "al-development-collection",
   "version": "2.11.0",
   "description": "AI Native AL Development toolkit for Microsoft Dynamics 365 Business Central with GitHub Copilot integration",
-  "main": "install.js",
+  "main": "scripts/install.js",
   "bin": {
-    "al-development-collection": "./install.js"
+    "al-development-collection": "./scripts/install.js"
   },
   "scripts": {
-    "test": "node validate-al-collection.js"
+    "test": "node scripts/validate-al-collection.js"
   },
   "keywords": [
     "AL",
@@ -29,17 +29,15 @@
   },
   "homepage": "https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot#readme",
   "files": [
-    "install.js",
-    "validate-al-collection.js",
+    "scripts/",
     "agents/",
     "instructions/",
     "prompts/",
-    "references/",
+    "docs/getting-started.md",
     ".github/",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md",
-    "getting-started.md"
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=14.0.0"

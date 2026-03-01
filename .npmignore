@@ -2,9 +2,7 @@
 
 # Development and documentation (not needed in package)
 docs/
-references/
 archive/
-.github/
 .vscode/
 
 # Build and config

@@ -404,7 +404,7 @@ Debugger: "Root cause identified. Switch to al-architect to redesign this compon
 ## 🔗 Related Resources
 
 - **Collection Manifest**: `collections/al-development.collection.yml`
-- **Framework Reference**: `references/AI Native-INSTRUCTIONS-ARCHITECTURE.md`
+- **Framework Reference**: `docs/framework/ai-native-instructions-architecture.md`
 - **User Guide**: `al-development.md`
 - **Contributing**: `CONTRIBUTING.md`
 

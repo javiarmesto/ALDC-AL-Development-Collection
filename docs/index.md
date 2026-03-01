@@ -2,10 +2,10 @@
 
 > **AI Native Development** toolkit for Microsoft Dynamics 365 Business Central implementing the **[AI-Native Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)** framework with **38 specialized Agent Primitives** across **3 systematic layers**. Features **AL Orchestra** multi-agent TDD system that transforms feature requests into code following BC best practices.
 
-> **v2.7.0** - Agent Context & Memory System: Centralized documentation for consistent multi-agent collaboration.
+> **v2.11.0** - Agent Clarity & Collaboration Enhancement.
 
-[![Validation Status](https://img.shields.io/badge/validation-passing-brightgreen)](./validate-al-collection.js)
-[![Version](https://img.shields.io/badge/version-2.6.0-blue)](./CHANGELOG.md)
+[![Validation Status](https://img.shields.io/badge/validation-passing-brightgreen)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/actions)
+[![Version](https://img.shields.io/badge/version-2.11.0-blue)](./CHANGELOG.md)
 [![Tools](https://img.shields.io/badge/tools-38-orange)](./al-development.md)
 [![Framework](https://img.shields.io/badge/framework-A--Instructions-purple)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
@@ -389,7 +389,7 @@ The orchestrator will analyze, present complexity classification, wait for your 
 ## 📚 Documentation
 
 ### Framework Documentation
-- **[AI Native-Instructions Architecture Implementation](./references/AI%20Native-INSTRUCTIONS-ARCHITECTURE.md)** - Framework compliance details
+- **[AI Native-Instructions Architecture Implementation](./framework/ai-native-instructions-architecture.md)** - Framework compliance details
 - **[AI Native-Instructions Framework Guide](https://danielmeppiel.github.io/awesome-ai-native/)** - Complete framework reference
 - **[AGENTS.md Standard](https://agents.md)** - Universal context format
 
@@ -555,10 +555,10 @@ AL-Development-Collection-for-GitHub-Copilot/
 │       └── complete-development-flow.md         # Visual workflow guide
 ├── collections/                                  # Collection manifests
 │   └── al-development.collection.yml            # Main collection (38 primitives)
-├── references/                                   # Framework documentation
-│   ├── AI Native-INSTRUCTIONS-ARCHITECTURE.md   # Framework compliance
-│   ├── ai native-concepts.md                    # Core concepts
-│   └── ai native structure.md                   # Structure guide
+├── docs/framework/                               # Framework documentation (consolidated)
+│   ├── ai-native-instructions-architecture.md   # Framework compliance
+│   ├── ai-native-concepts.md                    # Core concepts
+│   └── ai-native-structure.md                   # Structure guide
 ├── archive/                                      # Historical files
 ├── al-development.md                            # Framework overview
 ├── CONTRIBUTING.md                              # Contribution guidelines

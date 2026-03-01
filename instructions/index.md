@@ -39,8 +39,8 @@ Instructions are **auto-applied coding guidelines** that:
 ## Learn More
 
 - [Full Documentation](../docs/instructions/index.md)
-- [Getting Started](../getting-started.md)
-- [AL Development Collection](../al-development-collection.md)
+- [Getting Started](../docs/getting-started.md)
+- [AL Development Collection](../docs/al-development-collection.md)
 
 ---
 
