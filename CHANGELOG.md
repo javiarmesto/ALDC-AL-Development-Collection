@@ -13,11 +13,12 @@
 - **Migration guide**: `docs/framework/ALDC-Migration-v1.0-to-v1.1.md`
 - **Validator checks**: skills existence, requirement set completeness, global memory
 - **Schema**: `skills`, `contracts`, `subagents` sections in `aldc.schema.json`
+- **al-implement-subagent**: restored as TDD-only subagent with full AL development capabilities + skill loading
 
 ### Changed
-- **Agent model simplified**: 11 agents → 4 public + 2 internal subagents
+- **Agent model reorganized**: 11 agents → 4 public + 3 internal subagents (skills-based modularization with preserved orchestration)
   - Public: al-architect, al-conductor, al-developer, al-presales
-  - Internal: al-planning-subagent, al-review-subagent (in `agents/orchestra/`)
+  - Internal: al-planning-subagent, al-implement-subagent, al-review-subagent
 - **Workflow model simplified**: 18 prompts → 6 workflows
   - Retained: spec.create, build, pr-prepare, memory.create, context.create, initialize
   - 12 prompts absorbed into skills
@@ -26,7 +27,7 @@
 - **Governance**: added skills governance (required = RFC, recommended = PR)
 
 ### Removed (absorbed into skills)
-- Agents: al-debugger, al-tester, al-api, al-copilot, al-implement-subagent
+- Agents: al-debugger, al-tester, al-api, al-copilot
 - Prompts: al-diagnose, al-events, al-performance, al-performance.triage, al-permissions, al-migrate, al-pages, al-translate, al-copilot-capability, al-copilot-promptdialog, al-copilot-generate, al-copilot-test
 
 ### Unchanged

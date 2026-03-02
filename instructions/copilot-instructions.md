@@ -29,12 +29,12 @@ Choose the right agent for your task:
 ### Quick routing guide
 
 ```
-New feature (complex)? → @al-architect → @al-conductor
-New feature (simple)?  → @al-developer
-Bug fix / debugging?   → @al-developer
-Architecture review?   → @al-architect
-Full TDD cycle?        → @al-conductor
-Project estimation?    → @al-presales
+New feature (MEDIUM/HIGH)? → @al-architect → al-spec.create → @al-conductor
+New feature (LOW)?         → al-spec.create → @al-developer
+Bug fix / debugging?       → @al-developer
+Architecture review?       → @al-architect
+Full TDD cycle?            → @al-conductor
+Project estimation?        → @al-presales
 ```
 
 ## Workflows
@@ -108,23 +108,30 @@ Requirement sets live in `.github/plans/`:
 
 ### Workflow with plans
 
-1. `@workspace use al-spec.create` — Creates `{req_name}.spec.md`
-2. `@al-architect` — Creates `{req_name}.architecture.md` from the spec
-3. `@al-conductor` — Reads all 3 plan files, orchestrates TDD implementation
+**MEDIUM / HIGH:**
+
+1. `@al-architect` — Designs solution, creates `{req_name}.architecture.md`
+2. `@workspace use al-spec.create` — Reads architecture, generates `{req_name}.spec.md` (detailed blueprint: object IDs, procedure signatures, AL code)
+3. `@al-conductor` — Reads spec + architecture, orchestrates TDD: planning → implementation → review
 4. `@workspace use al-pr-prepare` — Prepares PR referencing the plan
+
+**LOW:**
+
+1. `@workspace use al-spec.create` — Generates `{req_name}.spec.md` directly from codebase
+2. `@al-developer` — Implements directly using spec as blueprint
 
 ## Complexity-Based Tool Selection
 
 When a user provides requirements, assess complexity to route correctly:
 
 **LOW** — Limited scope, single phase, no integrations
-→ `@al-developer` direct implementation
+→ `al-spec.create` → `@al-developer` direct implementation
 
 **MEDIUM** — 2-3 functional areas, internal integrations, conditional logic
-→ `@al-conductor` TDD orchestration
+→ `@al-architect` → `al-spec.create` → `@al-conductor` TDD orchestration
 
 **HIGH** — Enterprise scope, 4+ phases, external integrations, complex workflows
-→ `@al-architect` design first → `@al-conductor` implement
+→ `@al-architect` design first → `al-spec.create` → `@al-conductor` implement
 
 Present the assessment and wait for user confirmation before proceeding.
 
@@ -232,7 +239,8 @@ ALDC-Core/
 │   ├── al-developer.agent.md              # Tactical implementation
 │   ├── al-conductor.agent.md              # TDD orchestrator
 │   ├── al-presales.agent.md               # Estimation & planning
-│   ├── al-planning-subagent.agent.md      # Research (internal)
+│   ├── al-planning-subagent.agent.md      # Research (internal, user-invokable: false)
+│   ├── al-implement-subagent.agent.md     # TDD implementation (internal)
 │   └── al-review-subagent.agent.md        # Code review (internal)
 ├── skills/                                # Composable knowledge modules (11)
 │   ├── skill-api.md
@@ -296,4 +304,4 @@ ALDC-Core/
 **Version**: 1.1.0
 **Last Updated**: 2026-03-01
 **Workspace**: AL Development for Business Central
-**Primitives**: 4 agents + 2 subagents + 11 skills + 6 workflows + 7 instructions
+**Primitives**: 4 agents + 3 subagents + 11 skills + 6 workflows + 7 instructions

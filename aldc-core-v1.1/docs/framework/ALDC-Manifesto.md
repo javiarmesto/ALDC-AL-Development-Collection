@@ -14,18 +14,49 @@ ALDC Core v1.1 impone:
 - **Memory global** — continuidad de contexto entre sesiones y requerimientos (`memory.md`, append-only)
 - **Contratos por requerimiento** — 3-file sets por cada req, no genéricos (`{req_name}.{type}.md`)
 - **Plantillas inmutables** — 7 templates que solo el maintainer modifica vía RFC
-- **Skills composables** — conocimiento especializado que agentes cargan bajo demanda, no agentes monolíticos
+- **Modularización** — conocimiento especializado en skills composables que agentes cargan bajo demanda, sin perder la rigurosidad de orquestación TDD
 - **Extensión-only** — sin romper upgrades, sin modificar objetos base
 - **Event-driven y API-first** — integración por eventos y APIs como patrón por defecto
 
-## Modelo simplificado
+## Modelo de roles
 
-4 agentes públicos. 1 pregunta para elegir:
+| Herramienta | Rol SE | Produce | Cuándo usar |
+| ----------- | ------ | ------- | ----------- |
+| `@al-architect` | Software Architect — define solución técnica, patrones de integración, ADRs | `{req_name}.architecture.md` | MEDIUM/HIGH: primer paso |
+| `al-spec.create` | Design Doc Generator — traduce arquitectura en spec implementable (IDs, firmas, tests) | `{req_name}.spec.md` | Siempre: LOW y MEDIUM/HIGH |
+| `@al-conductor` | TDD Orchestrator — ciclo planning → implementation → review con HITL gates | implementación completa | MEDIUM/HIGH: tras spec y architecture |
+| `@al-developer` | AL Developer — implementación directa, debugging, correcciones | código AL | LOW / ajustes puntuales |
+| `@al-presales` | Solution Engineer — estimación, análisis técnico-económico, propuestas | sizing, SWOT, propuesta | Antes del proyecto |
 
-- ¿Diseñando? → `al-architect`
-- ¿Implementando? → `al-developer`
-- ¿Feature TDD completa? → `al-conductor`
-- ¿Estimando proyecto? → `al-presales`
+### Flujo canónico
+
+**MEDIUM / HIGH:**
+
+```text
+@al-architect → al-spec.create → @al-conductor → entrega
+     ↓               ↓                ↓
+architecture.md   spec.md     plan → TDD → review
+  [GATE]          [GATE]        [GATE por fase]
+```
+
+**LOW:**
+
+```text
+al-spec.create → @al-developer → entrega
+     ↓                ↓
+   spec.md      implementación directa
+   [GATE]
+```
+
+## Modelo modular
+
+4 agentes públicos + 1 workflow de especificación. Una pregunta para elegir:
+
+- ¿Diseñando arquitectura? → `@al-architect`
+- ¿Generando spec técnica detallada? → `@workspace use al-spec.create`
+- ¿Implementando (LOW)? → `@al-developer`
+- ¿Feature TDD completa (MEDIUM/HIGH)? → `@al-conductor`
+- ¿Estimando proyecto? → `@al-presales`
 
 Los agentes cargan skills especializados (api, copilot, debug, performance, events, permissions, testing, migrate, pages, translate, estimation) según lo que necesiten. Menos agentes, más conocimiento disponible.
 

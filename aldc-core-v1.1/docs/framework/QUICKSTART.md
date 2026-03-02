@@ -26,8 +26,9 @@ agents/                                ← 4 agentes públicos
   al-conductor.agent.md
   al-developer.agent.md
   al-presales.agent.md
-  orchestra/                           ← 2 subagents internos
+  orchestra/                           ← 3 subagents internos
     al-planning-subagent.agent.md
+    al-implement-subagent.agent.md
     al-review-subagent.agent.md
 
 prompts/                               ← 6 workflows
@@ -83,17 +84,18 @@ Resultado esperado: `✅ ALDC Core v1.1 COMPLIANT`
 ### Requerimiento MEDIUM/HIGH (con arquitectura + TDD)
 
 1. Asignar nombre: `{req_name}` (ej: `api-integration`)
-2. `@workspace use al-spec.create` → genera `.github/plans/api-integration.spec.md`
-3. `@al-architect` → genera `.github/plans/api-integration.architecture.md`
+2. `@al-architect` → genera `.github/plans/api-integration.architecture.md`
    - ⚠️ **GATE**: aprobar arquitectura antes de continuar
-4. Crear `.github/plans/api-integration.test-plan.md` desde template
-5. Actualizar `memory.md` con contexto del nuevo requerimiento
-6. `@al-conductor` → orquesta ciclo TDD:
-   - Planning (subagent) → Implementation (al-developer) → Review (subagent)
+3. `@workspace use al-spec.create` → lee `architecture.md` → genera `.github/plans/api-integration.spec.md`
+   - Spec técnica: object IDs, procedure signatures, tests Given/When/Then
+   - ⚠️ **GATE**: aprobar spec antes de implementar
+4. Actualizar `memory.md` con contexto del nuevo requerimiento
+5. `@al-conductor` → orquesta ciclo TDD:
+   - planning-subagent (research + test-plan) → implement-subagent (TDD) → review-subagent (review)
    - ⚠️ **GATE**: validación humana por fase
-7. `@workspace use al-pr-prepare` → documentación PR
-8. Actualizar `memory.md` con resultado
-9. Archivar set completado en `.github/plans/archive/` (opcional)
+6. `@workspace use al-pr-prepare` → documentación PR
+7. Actualizar `memory.md` con resultado
+8. Archivar set completado en `.github/plans/archive/` (opcional)
 
 ### Ejemplo de `.github/plans/` tras un requerimiento
 
@@ -107,14 +109,17 @@ Resultado esperado: `✅ ALDC Core v1.1 COMPLIANT`
 
 ## Routing de agentes
 
-| ¿Qué necesitas? | Agente |
+| ¿Qué necesitas? | Herramienta |
 |---|---|
 | Diseñar arquitectura, analizar, decidir | `@al-architect` |
-| Implementar, codificar, debuggear | `@al-developer` |
+| Generar spec técnica detallada (blueprint implementable) | `@workspace use al-spec.create` |
+| Implementar, codificar, debuggear (LOW / tareas directas) | `@al-developer` |
 | Feature TDD completa (plan → impl → review → commit) | `@al-conductor` |
 | Estimar proyecto, sizing, propuesta | `@al-presales` |
 
 Los agentes cargan skills automáticamente según el contexto de la tarea. No necesitas invocar skills directamente.
+
+**Flujo resumido:** MEDIUM/HIGH: `@al-architect` → `al-spec.create` → `@al-conductor` | LOW: `al-spec.create` → `@al-developer`
 
 ## Checklist de onboarding
 
@@ -122,7 +127,7 @@ Los agentes cargan skills automáticamente según el contexto de la tarea. No ne
 - [ ] `.github/copilot-instructions.md` presente
 - [ ] `.github/plans/memory.md` creado desde plantilla
 - [ ] `docs/templates/` con 7 plantillas inmutables
-- [ ] 4 agentes + 2 subagents presentes
+- [ ] 4 agentes + 3 subagents presentes
 - [ ] 6 workflows presentes
 - [ ] 11 skills presentes en `skills/`
 - [ ] 9 instructions presentes

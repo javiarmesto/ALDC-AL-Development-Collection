@@ -5,7 +5,7 @@
 - Versión: 1.1.0
 - Fecha: 2026-03-01
 - Alcance: repositorios AL (Business Central) que adopten ALDC Core como backbone operativo.
-- Cambio respecto a v1.0: simplificación skills-based, contratos por requerimiento, memory global.
+- Cambio respecto a v1.0: modularización skills-based, contratos por requerimiento, memory global.
 
 ## Lenguaje normativo
 
@@ -18,9 +18,13 @@ ALDC Core define el mínimo común verificable para convertir el trabajo con age
 - auditable (decisiones y cambios rastreables),
 - gobernable (con validación automática y HITL).
 
+ALDC Core v1.1 reorganiza las capacidades en módulos composables (skills) manteniendo la rigurosidad de orquestación TDD. La reducción de agentes públicos (11→4) simplifica la decisión del usuario, pero la orquestación interna (conductor + 3 subagents) preserva el ciclo completo: Plan → TDD Implementation → Review → Commit con gates HITL por fase.
+
 ALDC Core está diseñado para el enfoque:
 
-**spec.create → al-architect → especificación técnica → al-conductor (planning-subagent, al-developer, review-subagent) → gates HITL → entrega**
+**MEDIUM/HIGH:** `@al-architect` (diseño) → `al-spec.create` (spec técnica) → `@al-conductor` (TDD orquestado: planning → implement → review) → gates HITL → entrega
+
+**LOW:** `al-spec.create` (spec técnica) → `@al-developer` (implementación directa) → entrega
 
 ## Definiciones
 
@@ -54,18 +58,19 @@ Nota: `toolkitRoot` **MAY** ser `.` en repos de framework y `.github` en repos c
 
 ## Agentes Core requeridos
 
-ALDC Core v1.1 adopta un modelo simplificado de **4 agentes públicos + 2 subagents internos**.
+ALDC Core v1.1 adopta un modelo simplificado de **4 agentes públicos + 3 subagents internos**.
 
 ### Agentes públicos (`user-invokable: true`)
 
 - **al-architect** — Diseño, arquitectura, decisiones estratégicas. Carga skills según dominio (API, Copilot, performance).
 - **al-conductor** — Orquestador TDD principal. Coordina subagents via `runSubagent`. Ciclo: Plan → Implement → Review → Commit.
-- **al-developer** — Implementación táctica + debugging. Carga skills según tarea (debug, events, permissions, etc.). También invocable como subagent por el conductor.
+- **al-developer** — Implementación táctica + debugging. Carga skills según tarea (debug, events, permissions, etc.). Invocable directamente por el usuario.
 - **al-presales** — Estimación y planificación de proyectos. Vive fuera del ciclo de desarrollo.
 
-### Subagents internos (`user-invokable: false`, en `agents/orchestra/`)
+### Subagents internos (`user-invokable: false`)
 
 - **al-planning-subagent** — Research AL-aware y context gathering. Devuelve findings estructurados al conductor.
+- **al-implement-subagent** — Implementación TDD-only. Crea tests PRIMERO, luego código. Carga skills por dominio. No interactúa con el usuario.
 - **al-review-subagent** — Code review contra spec + architecture + test-plan. Devuelve veredicto APPROVED/NEEDS_REVISION/FAILED.
 
 ### Flujo de orquestación del conductor
@@ -73,17 +78,17 @@ ALDC Core v1.1 adopta un modelo simplificado de **4 agentes públicos + 2 subage
 ```
 al-conductor (orquestador)
   ├── runSubagent → al-planning-subagent (research, devuelve findings)
-  ├── runSubagent → al-developer (implementa fase TDD, devuelve resultado)
+  ├── runSubagent → al-implement-subagent (TDD implementation, devuelve objetos + tests)
   └── runSubagent → al-review-subagent (review, devuelve veredicto)
 ```
 
 Frontmatter del conductor:
 ```yaml
 tools: ['runSubagent', ...]
-agents: ['al-planning-subagent', 'al-review-subagent', 'al-developer']
+agents: ['al-planning-subagent', 'al-review-subagent', 'al-implement-subagent']
 ```
 
-Nota: `al-developer` es dual — invocable directamente por el usuario y también como subagent del conductor.
+Nota: `al-implement-subagent` es TDD-only y no interactúa con el usuario. `al-developer` sigue siendo invocable directamente por el usuario para tareas tácticas.
 
 ### Agentes eliminados respecto a v1.0
 
@@ -95,7 +100,6 @@ Los siguientes agentes se absorben en el modelo simplificado:
 | `al-tester` | `al-conductor` (TDD inherente) + `skill-testing` |
 | `al-api` | `al-architect` + `skill-api` (diseño) / `al-developer` + `skill-api` (impl) |
 | `al-copilot` | `al-architect` + `skill-copilot` (diseño) / `al-developer` + `skill-copilot` (impl) |
-| `al-implement-subagent` | `al-developer` (invocado como subagent por conductor) |
 
 ## Workflows Core requeridos
 
@@ -255,17 +259,40 @@ Fichero único y acumulativo. **MUST NOT** borrarse ni sobrescribirse.
 
 Los agentes y humanos **SHOULD** actualizar `memory.md` en cada handoff significativo.
 
+### Roles de los agentes y artefactos
+
+| Agente / Workflow | Rol | Produce |
+|-------------------|-----|---------|
+| `@al-architect` | Solution Architect — diseña la solución, flujos de datos, decisiones estratégicas | `{req_name}.architecture.md` |
+| `al-spec.create` | Spec técnica detallada — lee `architecture.md`, genera blueprint implementable con IDs, firmas, código AL | `{req_name}.spec.md` |
+| `@al-conductor` | Orquestador TDD — lee spec + architecture, coordina planning → implement → review | implementación + `{req_name}.test-plan.md` |
+| `@al-developer` | Implementación táctica directa — lee spec, sin TDD orquestado | implementación |
+
 ### Flujo de creación de artefactos
 
+#### MEDIUM / HIGH (con arquitectura + TDD)
+
 1. Asignar `{req_name}` (kebab-case)
-2. `al-spec.create`: COPIAR `spec-template.md` → `{req_name}.spec.md`, rellenar
-3. `al-architect`: COPIAR `architecture-template.md` → `{req_name}.architecture.md`, rellenar
-4. Crear `{req_name}.test-plan.md` desde template
-5. Actualizar `memory.md` global con contexto del nuevo requerimiento
-6. `al-conductor` ejecuta referenciando los 3 artefactos + `memory.md`
-7. Gates HITL por fase
-8. Entrega → actualizar `memory.md` con resultado
-9. Archivar set completado en `archive/` (opcional)
+2. `@al-architect` → genera `{req_name}.architecture.md` con diseño aprobado
+   - ⚠️ **GATE**: aprobar arquitectura antes de continuar
+3. `@workspace use al-spec.create` → lee `architecture.md` y codebase → genera `{req_name}.spec.md`
+   - Spec técnica: object IDs, field types, procedure signatures, tests Given/When/Then
+   - ⚠️ **GATE**: aprobar spec antes de implementar
+4. Actualizar `memory.md` global con contexto del requerimiento
+5. `@al-conductor` → orquesta ciclo TDD referenciando spec + architecture:
+   - planning-subagent (research) → implement-subagent (TDD) → review-subagent (review)
+   - ⚠️ **GATE**: validación humana por fase
+6. Entrega → `@workspace use al-pr-prepare` → actualizar `memory.md`
+7. Archivar set completado en `archive/` (opcional)
+
+#### LOW (sin arquitectura formal)
+
+1. Asignar `{req_name}` (kebab-case)
+2. `@workspace use al-spec.create` → genera `{req_name}.spec.md` directamente desde codebase
+   - ⚠️ **GATE**: aprobar spec antes de implementar
+3. Actualizar `memory.md` global
+4. `@al-developer` → implementa directamente usando spec como blueprint
+5. Entrega → actualizar `memory.md`
 
 ## Templates inmutables
 
@@ -312,7 +339,7 @@ Un repositorio es **ALDC Core v1.1 compliant** si:
 2. Existe `.github/plans/memory.md` (global).
 3. Cada requerimiento activo tiene set completo: `{req_name}.spec.md`, `.architecture.md`, `.test-plan.md`.
 4. Las 7 plantillas inmutables existen en `docs/templates/` sin alteración.
-5. Los 4 agentes Core + 2 subagents internos existen bajo `toolkitRoot`.
+5. Los 4 agentes Core + 3 subagents internos existen bajo `toolkitRoot`.
 6. Los 6 workflows Core existen bajo `toolkitRoot`.
 7. Los 7 skills Core requeridos existen en `skills/`.
 8. Las 9 instructions existen.
@@ -338,10 +365,10 @@ Pero **MUST NOT**:
 | Tipo | Cantidad | Detalles |
 |------|----------|---------|
 | Agentes públicos | 4 | architect, conductor, developer, presales |
-| Subagents internos | 2 | planning-subagent, review-subagent |
+| Subagents internos | 3 | planning-subagent, implement-subagent, review-subagent |
 | Workflows | 6 | spec.create, build, pr-prepare, memory.create, context.create, initialize |
 | Skills requeridos | 7 | api, copilot, debug, performance, events, permissions, testing |
 | Skills recomendados | 4 | migrate, pages, translate, estimation |
 | Instructions | 9 | Sin cambios |
 | Templates | 7 | +1 skill-template.md |
-| **Total** | **39** | (vs 38 en v1.0, pero con mucha menor complejidad cognitiva) |
+| **Total** | **40** | (vs 38 en v1.0, +1 implement-subagent, menor complejidad cognitiva) |

@@ -41,7 +41,7 @@
       "required": ["agents", "subagents", "workflows", "skills", "instructions", "templates"],
       "properties": {
         "agents": { "type": "array", "items": { "type": "string" }, "minItems": 4 },
-        "subagents": { "type": "array", "items": { "type": "string" }, "minItems": 2 },
+        "subagents": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
         "workflows": { "type": "array", "items": { "type": "string" }, "minItems": 6 },
         "skills": {
           "type": "object",

@@ -11,11 +11,12 @@
 | [@al-developer](al-developer.agent.md) | Tactical implementation with full build tools | skill-debug, skill-api, skill-copilot, skill-events, skill-permissions, skill-pages, skill-migrate, skill-translate, skill-performance |
 | [@al-presales](al-presales.agent.md) | Project estimation & pre-sales analysis | skill-estimation |
 
-## Subagents (2)
+## Subagents (3)
 
 | Agent | Purpose | Invoked By |
 |-------|---------|------------|
 | [al-planning-subagent](al-planning-subagent.agent.md) | AL-aware research & context gathering | @al-conductor |
+| [al-implement-subagent](al-implement-subagent.agent.md) | TDD implementation (RED→GREEN→REFACTOR) | @al-conductor |
 | [al-review-subagent](al-review-subagent.agent.md) | Code review and quality gates | @al-conductor |
 
 ## Agent Selection Guide

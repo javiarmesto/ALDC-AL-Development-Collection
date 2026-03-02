@@ -8,7 +8,7 @@ v1.1 is a **compatible evolution** of v1.0, not a breaking change. Existing v1.0
 - **Skills system**: 11 composable knowledge modules in `skills/`
 - **Per-requirement contracts**: `{req_name}.{type}.md` naming convention
 - **Global memory**: single acumulativo `memory.md` (replaces per-requirement memory)
-- **Simplified agent model**: 4 public agents + 2 internal subagents (from 11 agents)
+- **Modular agent model**: 4 public agents + 3 internal subagents (from 11 agents)
 - **Skill template**: new immutable template `skill-template.md`
 
 ### What Changed
@@ -50,11 +50,12 @@ mv .github/plans/test-plan.md .github/plans/{req_name}.test-plan.md
 
 ### Phase 4: Consolidate agents (if desired)
 
-Remove specialized agents and rely on simplified model:
-- Delete `al-debugger`, `al-tester`, `al-api`, `al-copilot`, `al-implement-subagent`
+Remove specialized agents and rely on modular model:
+- Delete `al-debugger`, `al-tester`, `al-api`, `al-copilot`
+- Create `al-implement-subagent` as TDD-only subagent (invoked by conductor)
 - Update `al-developer` to reference `skill-debug`, `skill-api`, etc.
-- Move `al-planning-subagent` and `al-review-subagent` to `agents/orchestra/`
-- Update `al-conductor` frontmatter: `agents: [...]`
+- Move `al-planning-subagent`, `al-implement-subagent`, and `al-review-subagent` to `agents/` (or `agents/orchestra/`)
+- Update `al-conductor` frontmatter: `agents: ['al-planning-subagent', 'al-review-subagent', 'al-implement-subagent']`
 
 ### Phase 5: Validate
 
