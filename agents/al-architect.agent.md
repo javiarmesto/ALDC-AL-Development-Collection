@@ -829,10 +829,13 @@ List files matching: .github/plans/*/*.md
 ```markdown
 # Architecture: <Feature Name>
 
-**Date**: YYYY-MM-DD  
-**Complexity**: [LOW/MEDIUM/HIGH]  
-**Author**: al-architect  
+**Date**: YYYY-MM-DD
+**Complexity**: [LOW/MEDIUM/HIGH]
+**Author**: al-architect
 **Status**: [Proposed/Approved/Implemented]
+
+> **Skills applied**: skill-api, skill-events, skill-performance
+> *(Listed only skills actually loaded for this requirement. Remove this line if no domain skills were loaded.)*
 
 ## Executive Summary
 [2-3 sentence overview of the solution]

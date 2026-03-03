@@ -300,6 +300,14 @@ Return a **structured review** containing:
 - {Code quality enhancement - add XML docs, refactor duplicates}
 - {Test improvement - add edge cases, integration tests}
 
+**Skills Compliance Check:**
+*(Check only skills relevant to this phase; omit rows for unrelated skills)*
+- [ ] skill-api patterns applied correctly (ODataKeyFields, APIPublisher, EntityName — if API phase)
+- [ ] skill-performance patterns applied (SetLoadFields, early CalcFields grouping — if performance-sensitive)
+- [ ] skill-events patterns applied (EventSubscriber attributes correct, IsHandled pattern — if event phase)
+- [ ] skill-permissions applied (PermissionSet generated for new objects — if objects created)
+- [ ] skill-testing patterns applied (Given/When/Then, Library Assert, IsInitialized — if tests created)
+
 **AL Best Practices Compliance:**
 - Event-Driven Architecture: {✅ Pass / ❌ Fail}
 - Naming Conventions (26-char): {✅ Pass / ❌ Fail}

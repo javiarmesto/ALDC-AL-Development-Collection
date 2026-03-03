@@ -530,6 +530,13 @@ Once the design is established, I can implement it."
 [Load @file skills/skill-testing.md]
 ```
 
+**MANDATORY — Declare loaded skills at the start of your response:**
+```markdown
+> **Skills loaded**: skill-debug (root cause analysis workflow), skill-performance (SetLoadFields pattern)
+```
+List each skill loaded and the specific pattern or workflow applied from it.
+If no skills were loaded: omit the line entirely (do not write "no skills loaded").
+
 **When receiving handoff:**
 ```markdown
 "I see the [design/specification] from [mode-name].

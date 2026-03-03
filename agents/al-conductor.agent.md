@@ -480,6 +480,13 @@ File name: `.github/plans/<plan-name>/<plan-name>-phase-<phase-number>-complete.
 - {Error handling}
 - {Performance optimizations}
 
+**Skills Applied in This Phase:**
+| Skill | Pattern Used | Evidence |
+|-------|-------------|----------|
+| skill-api | ODataKeyFields = SystemId | Page 50103 line 8 |
+| skill-permissions | PermissionSet generation | CIECustAPIRead.PermissionSet.al |
+*(Consolidated from implement-subagent summary. Remove table if no domain skills were loaded.)*
+
 **Review Status:** {APPROVED / APPROVED with minor recommendations}
 
 **Git Commit Message:**
@@ -534,6 +541,15 @@ File name: `.github/plans/<plan-name>/<plan-name>-complete.md` (use kebab-case)
 - Event-driven: ✅ {No base modifications}
 - Naming conventions: ✅ {26-char limit}
 - Error handling: ✅
+
+**Skills Utilization Summary:**
+| Skill | Phases Applied | Key Patterns Used |
+|-------|---------------|-------------------|
+| skill-api | Phase 2, 3 | ODataKeyFields, APIPublisher, bound action |
+| skill-testing | Phase 1, 2, 3 | Given/When/Then, Library Assert |
+| skill-permissions | Phase 3 | READ/CALC permission sets |
+| skill-performance | Phase 2 | SetLoadFields, CalcFields grouping |
+*(Consolidated from all phase-complete files. List only skills actually applied.)*
 
 **Recommendations for Next Steps:**
 - {Optional suggestion 1}

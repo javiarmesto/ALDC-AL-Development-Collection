@@ -363,6 +363,12 @@ After completing a phase, return this structured summary to the Conductor:
 ```markdown
 ## Phase {N} Implementation Summary
 
+### Skills Loaded
+- skill-api.md — Applied: ODataKeyFields, APIPublisher conventions
+- skill-permissions.md — Applied: PermissionSet generation pattern
+*(List each skill loaded and the specific pattern applied from it.
+If no domain skills were required for this phase: "No domain skills required for this phase.")*
+
 ### Objects Created
 - {Type} {ID} "{Name}" — {purpose}
 
