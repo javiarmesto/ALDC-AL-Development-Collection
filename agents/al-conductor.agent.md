@@ -691,6 +691,38 @@ During planning or implementation, if you identify specialized needs:
 When orchestrating TDD cycles and test strategy is needed, load and follow:
 - @file skills/skill-testing.md
 
+## Skills Evidencing
+
+The Conductor enforces skills traceability across the entire orchestration lifecycle:
+
+### In phase-complete.md (per phase)
+Include a **"Skills Applied in This Phase"** table consolidating what the implement-subagent reported:
+
+```markdown
+### Skills Applied in This Phase
+| Skill | Pattern Used | Evidence |
+|-------|-------------|----------|
+| skill-testing | Given/When/Then | WQITests.Codeunit.al |
+| skill-api | ODataKeyFields = SystemId | Page 50103 line 8 |
+```
+*(Already present in `<phase_complete_style_guide>`. Remove table if no domain skills were loaded.)*
+
+### In plan-complete.md (final summary)
+Include a **"Skills Utilization Summary"** table aggregating all phases:
+
+```markdown
+## Skills Utilization Summary
+| Skill | Phases Applied | Key Patterns |
+|-------|---------------|--------------|
+| skill-testing | Phase 1, 2, 3 | Given/When/Then, Library Assert |
+| skill-api | Phase 2, 3 | ODataKeyFields, APIPublisher |
+```
+*(Already present in `<plan_complete_style_guide>`. List only skills actually applied.)*
+
+### Validation responsibility
+- Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "Skills Compliance Check"
+- If a skill was loaded but review found patterns not applied → flag as issue before committing
+
 <stopping_rules>
 ## Stopping Rules - When to Stop or Escalate
 

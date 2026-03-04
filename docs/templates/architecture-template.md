@@ -3,6 +3,8 @@
 
 # Architecture: {req_name}
 
+> **Skills applied**: {list skills loaded during design, e.g. skill-api, skill-events — or "None (general architecture patterns only)"}
+
 ## Resumen de arquitectura
 - Patrón principal:
 - Por qué este patrón:

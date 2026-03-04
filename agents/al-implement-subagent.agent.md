@@ -259,6 +259,30 @@ When the phase involves test strategy or test design, load and follow:
 
 </domain_skills>
 
+## Skills Evidencing
+
+In the **Phase Implementation Summary** (see Output Format), you MUST declare which skills you loaded and which specific pattern you applied from each.
+
+**Format — "### Skills Loaded" in every Phase Summary:**
+
+```markdown
+### Skills Loaded
+- skill-api.md — Applied: ODataKeyFields, APIPublisher conventions
+- skill-permissions.md — Applied: PermissionSet generation pattern
+```
+
+If no domain skills were required for the phase:
+
+```markdown
+### Skills Loaded
+No domain skills required for this phase.
+```
+
+**Rules:**
+- ONE entry per skill loaded, with the concrete pattern/workflow used
+- This section is MANDATORY — the Conductor uses it to verify skill coverage
+- If you loaded a skill but did not apply any pattern from it, state why (e.g., "skill-events.md — Loaded but no event patterns applicable to enum-only phase")
+
 <common_al_test_pitfalls>
 
 ## Common AL Test Pitfalls

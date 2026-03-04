@@ -269,6 +269,19 @@ When designing event-driven architecture (publishers, subscribers, extensibility
 When planning test strategy as part of architectural design, load and follow:
 - @file skills/skill-testing.md
 
+## Skills Evidencing
+
+When generating `{req_name}.architecture.md`, include at the TOP of the document (after the frontmatter):
+
+```markdown
+> **Skills applied**: skill-api, skill-events
+```
+
+- List only the skills you actually loaded and applied during the architecture design
+- If no domain skills were loaded: `> **Skills applied**: None (general architecture patterns only)`
+- This declaration is MANDATORY — the Conductor and Review Subagent use it to verify skill coverage downstream
+- The skills applied line is already included in the architecture template (`<response_style>` section) — ensure you populate it accurately
+
 <stopping_rules>
 ## Stopping Rules - When to Stop or Escalate
 

@@ -301,12 +301,12 @@ Return a **structured review** containing:
 - {Test improvement - add edge cases, integration tests}
 
 **Skills Compliance Check:**
-*(Check only skills relevant to this phase; omit rows for unrelated skills)*
-- [ ] skill-api patterns applied correctly (ODataKeyFields, APIPublisher, EntityName — if API phase)
-- [ ] skill-performance patterns applied (SetLoadFields, early CalcFields grouping — if performance-sensitive)
-- [ ] skill-events patterns applied (EventSubscriber attributes correct, IsHandled pattern — if event phase)
-- [ ] skill-permissions applied (PermissionSet generated for new objects — if objects created)
-- [ ] skill-testing patterns applied (Given/When/Then, Library Assert, IsInitialized — if tests created)
+*(Check each skill relevant to this phase. Mark N/A for skills not applicable to the phase under review.)*
+- [ ] **skill-api** — ODataKeyFields, APIPublisher, EntityName conventions applied | N/A
+- [ ] **skill-performance** — SetLoadFields, early CalcFields grouping, early filtering | N/A
+- [ ] **skill-events** — EventSubscriber attributes correct, IsHandled pattern used | N/A
+- [ ] **skill-permissions** — PermissionSet generated for all new objects | N/A
+- [ ] **skill-testing** — Given/When/Then structure, Library Assert, IsInitialized pattern | N/A
 
 **AL Best Practices Compliance:**
 - Event-Driven Architecture: {✅ Pass / ❌ Fail}
@@ -360,6 +360,27 @@ Return a **structured review** containing:
 - Requires user/architect decision (not just code changes)
 
 **Escalate to Conductor** - User intervention needed.
+
+## Skills Compliance Check
+
+Every review MUST include a **Skills Compliance Check** that verifies whether the implementer correctly applied domain skill patterns. This check appears in the Output Format and must be filled in every review.
+
+**How to evaluate:**
+1. Read the implementer's "### Skills Loaded" declaration in their Phase Summary
+2. For each skill they declared, verify the pattern was actually applied in code
+3. For skills NOT declared, check if they SHOULD have been loaded (flag as issue if missed)
+4. Mark skills that are genuinely not applicable to the phase as **N/A**
+
+**Checklist items:**
+| Skill | What to verify | Mark N/A when |
+|-------|---------------|---------------|
+| skill-api | ODataKeyFields, APIPublisher, EntityName, DelayedInsert | Phase has no API pages |
+| skill-performance | SetLoadFields before Find*, early filtering, CalcSums over loops | Phase has no record operations |
+| skill-events | EventSubscriber attributes, publisher signatures, IsHandled | Phase has no events |
+| skill-permissions | PermissionSet covers all new objects | Phase creates no new objects |
+| skill-testing | Given/When/Then, Library Assert, IsInitialized, test isolation | Phase has no tests |
+
+**If a skill SHOULD have been loaded but wasn't**: flag as **MAJOR** issue — "Missing skill-performance: SetLoadFields not applied on Customer table."
 
 ## AL-Specific Review Checklist
 

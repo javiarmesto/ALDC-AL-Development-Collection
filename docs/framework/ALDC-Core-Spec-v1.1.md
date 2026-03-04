@@ -325,6 +325,7 @@ El repositorio y los agentes **MUST** operar respetando:
 - **Immutable templates**: templates solo modificables por maintainer vía RFC.
 - **Global memory**: `memory.md` es acumulativo, nunca se borra.
 - **Skills-based**: capacidades especializadas se encapsulan en skills composables.
+- **Skills evidencing**: los agentes **MUST** declarar qué skills cargaron y qué patrones aplicaron. El implement-subagent declara `### Skills Loaded` en cada Phase Summary; el review-subagent verifica con `Skills Compliance Check`; el conductor consolida en `Skills Applied in This Phase` (phase-complete) y `Skills Utilization Summary` (plan-complete); el architect declara `> **Skills applied**:` en architecture.md.
 
 ## Gates HITL (obligatorios)
 

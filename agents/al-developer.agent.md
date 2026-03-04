@@ -580,6 +580,18 @@ When managing XLF translations, load and follow:
 When optimizing performance (SetLoadFields, queries, batch processing), load and follow:
 - @file skills/skill-performance.md
 
+## Skills Evidencing
+
+At the start of every response where you loaded one or more domain skills, include a blockquote declaring them:
+
+```markdown
+> **Skills loaded**: skill-debug (root cause analysis), skill-performance (SetLoadFields)
+```
+
+- List each skill and the specific pattern or workflow applied from it
+- If no skills were loaded for the current response, **omit the line entirely** (do not write "no skills loaded")
+- This declaration is MANDATORY when skills are loaded — it provides traceability for the Conductor and Review Subagent
+
 <response_style>
 
 ## Response Style

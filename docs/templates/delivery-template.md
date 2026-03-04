@@ -21,6 +21,12 @@
 - Tests:
 - Review:
 
+## Skills Utilization Summary
+| Skill | Phases Applied | Key Patterns Used |
+|-------|---------------|-------------------|
+| {skill-name} | {phases} | {patterns} |
+*(Consolidated from plan-complete.md. List only skills actually applied. Remove table if none.)*
+
 ## Enlaces internos
 - {req_name}.spec.md
 - {req_name}.architecture.md

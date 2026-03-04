@@ -77,6 +77,18 @@ Project estimation?        → @al-presales
 | `skill-testing` | TDD, test strategy, AL Test Toolkit | al-architect, al-conductor |
 | `skill-estimation` | PERT estimation, complexity scoring, SWOT | al-presales |
 
+## Skills Evidencing
+
+Agents MUST declare which skills they loaded and which patterns they applied:
+
+- **al-architect** → `> **Skills applied**: skill-api, skill-events` at top of architecture.md
+- **al-developer** → `> **Skills loaded**: skill-debug (root cause analysis)` at start of response
+- **al-implement-subagent** → `### Skills Loaded` section in Phase Summary returned to Conductor
+- **al-review-subagent** → `Skills Compliance Check` checklist verifying patterns were applied
+- **al-conductor** → `Skills Applied in This Phase` table in phase-complete.md; `Skills Utilization Summary` in plan-complete.md
+
+This traceability chain ensures every skill application is auditable end-to-end.
+
 ## Auto-Applied Instructions
 
 These instruction files activate automatically based on file type — no invocation needed:
