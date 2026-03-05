@@ -317,7 +317,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 ## What's New in v3.0.0 (ALDC Core v1.1)
 
 - **Skills-based modularization**: 11 composable skills replace 7 specialized agents + 12 prompts
-- **Restored TDD enforcement**: `al-implement-subagent` with hardcoded RED→GREEN→REFACTOR cycle
+
 - **Corrected agent roles**: architect = Solution Architect (DESIGNS), spec.create = technical blueprint (DETAILS), conductor = TDD orchestrator (EXECUTES)
 - **Contracts per requirement**: subdirectory structure `.github/plans/{req_name}/`
 - **Skills evidencing**: agents declare which skills they loaded and which patterns they applied
