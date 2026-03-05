@@ -363,6 +363,25 @@ Pero **MUST NOT**:
 - Modificar plantillas inmutables.
 - Borrar o sobrescribir contenido de `memory.md`.
 
+## Extension Packs
+
+Extension Packs add domain-specific capabilities without altering Core.
+Each pack provides agents, skills, workflows, and tools for a specific domain.
+
+Available packs:
+- **BC Agents**: AI Development Toolkit / Agent SDK development
+
+Packs MUST NOT:
+- Override Core agents or workflows
+- Modify Core contract structure
+- Weaken HITL gates
+
+Packs MAY:
+- Add new agents (user-invokable: true, pack: "{pack-name}")
+- Add new skills loadable by Core agents
+- Add new workflows
+- Add domain-specific tools and validators
+
 ## Resumen de primitives v1.1
 
 | Tipo | Cantidad | Detalles |

@@ -1,10 +1,11 @@
 {
   "name": "al-development-collection",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "AI Native AL Development toolkit for Microsoft Dynamics 365 Business Central with GitHub Copilot integration",
   "main": "scripts/install.js",
   "bin": {
-    "al-development-collection": "./scripts/install.js"
+    "al-development-collection": "./scripts/install.js",
+    "aldc": "./scripts/install.js"
   },
   "scripts": {
     "test": "node scripts/validate-al-collection.js"
@@ -16,7 +17,9 @@
     "GitHub Copilot",
     "AI Native",
     "Development",
-    "Toolkit"
+    "Toolkit",
+    "agent-sdk",
+    "ai-development-toolkit"
   ],
   "author": "javiarmesto",
   "license": "MIT",
@@ -36,6 +39,12 @@
     "skills/",
     "docs/framework/",
     "docs/templates/",
+    "collections/",
+    "tools/aldc-validate/index.js",
+    "tools/aldc-validate/package.json",
+    "tools/bc-agents/",
+    "docs/packs/",
+    "aldc.yaml",
     ".github/",
     "README.md",
     "LICENSE",

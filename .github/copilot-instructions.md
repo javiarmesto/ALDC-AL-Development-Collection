@@ -287,6 +287,17 @@ ALDC-Core/
 └── app.json
 ```
 
+## BC Agents Pack (Extension)
+
+For agent development with AI Development Toolkit:
+- @al-agent-builder — standalone agent builder (7-phase workflow)
+- skill-agent-task-patterns — 8 SDK integration patterns
+- skill-agent-instructions — instruction authoring framework
+- al-agent.create / al-agent.task / al-agent.instructions / al-agent.test — workflows
+
+Integrated mode: @al-architect + al-spec.create + @al-conductor
+(architect loads skill-agent-task-patterns for design decisions)
+
 ## Reference Documentation
 
 ### Microsoft Documentation

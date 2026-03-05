@@ -337,6 +337,15 @@ See [CHANGELOG.md](CHANGELOG.md) for full details.
 
 ---
 
+## Extension Packs
+
+### BC Agents Pack
+Build Business Central Agents with the AI Development Toolkit and Agent SDK.
+Includes: @al-agent-builder agent, 3 skills, 4 workflows, validation tools.
+See [BC Agents Pack documentation](docs/packs/bc-agents-pack.md).
+
+---
+
 ## Framework Documentation
 
 - [Core Specification v1.1](docs/framework/ALDC-Core-Spec-v1.1.md)

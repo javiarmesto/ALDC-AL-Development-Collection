@@ -1,5 +1,33 @@
 # ALDC Core Changelog
 
+## [3.1.0] - 2026-03-05
+
+### BC Agents Extension Pack
+
+First ALDC Extension Pack — domain-specific tooling for Business Central Agent development.
+
+**Added:**
+- @al-agent-builder agent (Designer + SDK paths, 7-phase workflow with gates)
+- skill-agent-instructions (Responsibilities-Guidelines-Instructions framework, official keywords)
+- skill-agent-task-patterns (8 integration patterns: Public API, Page Action, Business Event, Attachment, Multi-Turn, Lifecycle, Session Detection, Session Event Binding)
+- skill-agent-toolkit (Agent SDK reference: 3 core interfaces, setup patterns, troubleshooting, quality checklist)
+- al-agent.create workflow (end-to-end coded agent creation)
+- al-agent.task workflow (task integration code generation)
+- al-agent.instructions workflow (instruction authoring)
+- al-agent.test workflow (6-category test coverage)
+- al-agent-toolkit instruction (Agent SDK reference and conventions)
+- scaffold_agent.py tool (Agent Template project scaffolder)
+- validate_agent_config.sh tool (SDK configuration validator with anti-pattern detection)
+- Agent keywords reference (official BC runtime keywords)
+- Example instructions: simple (credit check) + advanced (lead qualification with handoff)
+- Extension Pack manifest and documentation
+- Extension Packs section in ALDC Core Spec v1.1
+
+**Framework:**
+- Defined Extension Pack contract (MUST NOT override Core, MAY add agents/skills/workflows/tools)
+- Added packs section to aldc.yaml for pack registration
+- Integrated pack skills with Core agents (architect, implement-subagent, review-subagent load pack skills)
+
 ## v1.1.0 (2026-03-01)
 
 ### Added

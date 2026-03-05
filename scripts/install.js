@@ -1,858 +1,567 @@
 #!/usr/bin/env node
 
 /**
- * AL Development Collection - Installation Script
- * 
- * Installs the AL Development toolkit into a user's project by copying
- * agents, instructions, and prompts to .github/copilot/ directory.
- * 
+ * ALDC Core v1.1 — Local Installer
+ *
+ * Installs the ALDC toolkit into any AL project.
+ *
  * Usage:
- *   npm install al-development-collection
- *   npx al-collection install [target-directory]
- * 
- * Or interactively:
- *   npx al-collection install
+ *   npx aldc install [--target-dir <dir>] [--yes] [--force]
+ *   npx aldc validate [--target-dir <dir>]
+ *   npx aldc --help
  */
 
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-// ANSI color codes
-const colors = {
+// ─── ANSI helpers ───────────────────────────────────────────────────────────
+const C = {
   reset: '\x1b[0m',
-  bright: '\x1b[1m',
+  bold: '\x1b[1m',
   red: '\x1b[31m',
   green: '\x1b[32m',
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
-  cyan: '\x1b[36m'
+  cyan: '\x1b[36m',
+  dim: '\x1b[2m',
+};
+
+const log = (msg, c = '') => console.log(`${c}${msg}${C.reset}`);
+const ok = (msg) => log(`  + ${msg}`, C.green);
+const skip = (msg) => log(`  - ${msg} (exists, skipped)`, C.yellow);
+const err = (msg) => log(`  x ${msg}`, C.red);
+const info = (msg) => log(msg, C.cyan);
+const header = (title) => {
+  console.log('');
+  log('='.repeat(60), C.cyan);
+  log(` ${title}`, C.bold);
+  log('='.repeat(60), C.cyan);
 };
 
 /**
- * Log formatted message
+ * Show the ALDC banner
  */
-function log(message, color = 'reset') {
-  console.log(`${colors[color]}${message}${colors.reset}`);
+function banner() {
+  console.log('');
+  console.log(`${C.cyan}    ╔══════════════════════════════════════════════════════╗${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}█████╗ ██╗     ██████╗  ██████╗${C.reset}               ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}██╔══██╗██║     ██╔══██╗██╔════╝${C.reset}               ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}███████║██║     ██║  ██║██║${C.reset}                    ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}██╔══██║██║     ██║  ██║██║${C.reset}                    ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}██║  ██║███████╗██████╔╝╚██████╗${C.reset}               ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝${C.reset}               ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.dim}AL Development Collection${C.reset}                        ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}      ${C.green}Core v1.1${C.reset} ${C.dim}— Skills-based AI-native toolkit${C.reset}     ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
+  console.log(`${C.cyan}    ╚══════════════════════════════════════════════════════╝${C.reset}`);
+  console.log('');
 }
 
-/**
- * Log section header
- */
-function header(message) {
-  console.log('');
-  log('═'.repeat(60), 'cyan');
-  log(message, 'bright');
-  log('═'.repeat(60), 'cyan');
-  console.log('');
-}
+// ─── CLI argument parsing ───────────────────────────────────────────────────
+function parseArgs(argv) {
+  const args = argv.slice(2);
+  const parsed = {
+    command: null,
+    targetDir: null,
+    yes: false,
+    force: false,
+    withPacks: null, // null = ask, true = include, false = skip
+  };
 
-/**
- * Copy directory recursively with merge support
- * Does not overwrite existing files, only adds new ones
- * Excludes npm-related files and directories
- */
-function copyDirectory(source, destination, merge = false) {
-  if (!fs.existsSync(destination)) {
-    fs.mkdirSync(destination, { recursive: true });
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === '--target-dir' && args[i + 1]) {
+      parsed.targetDir = args[++i];
+    } else if (a === '--yes' || a === '-y') {
+      parsed.yes = true;
+    } else if (a === '--force' || a === '-f') {
+      parsed.force = true;
+    } else if (a === '--with-packs') {
+      parsed.withPacks = true;
+    } else if (a === '--no-packs') {
+      parsed.withPacks = false;
+    } else if (a === '--help' || a === '-h') {
+      parsed.command = 'help';
+    } else if (!a.startsWith('-') && !parsed.command) {
+      parsed.command = a;
+    }
   }
 
-  const items = fs.readdirSync(source);
-  let copiedCount = 0;
-  let skippedCount = 0;
+  return parsed;
+}
 
-  // Files and directories to exclude from copying
-  const excludeList = [
-    'node_modules',
-    'package.json',
-    'package-lock.json',
-    '.git',
-    '.gitignore',
-    '.npmignore',
-    'validate-al-collection.js',
-    'install.js'
-  ];
+// ─── Filesystem helpers ────────────────────────────────────────────────────
+function ensureDir(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
 
-  items.forEach(item => {
-    // Skip excluded items
-    if (excludeList.includes(item)) {
-      return;
-    }
+/**
+ * Copy a directory recursively.
+ * @param {string} src  Source directory
+ * @param {string} dst  Destination directory
+ * @param {boolean} force  Overwrite existing files
+ * @returns {{ copied: number, skipped: number }}
+ */
+function copyDir(src, dst, force = false) {
+  if (!fs.existsSync(src)) return { copied: 0, skipped: 0 };
+  ensureDir(dst);
 
-    const sourcePath = path.join(source, item);
-    const destPath = path.join(destination, item);
-    const stat = fs.statSync(sourcePath);
+  let copied = 0;
+  let skipped = 0;
+
+  const EXCLUDE = new Set([
+    'node_modules', 'package.json', 'package-lock.json',
+    '.git', '.gitignore', '.npmignore',
+    'install.js', 'validate-al-collection.js',
+  ]);
+
+  for (const item of fs.readdirSync(src)) {
+    if (EXCLUDE.has(item)) continue;
+
+    const srcPath = path.join(src, item);
+    const dstPath = path.join(dst, item);
+    const stat = fs.statSync(srcPath);
 
     if (stat.isDirectory()) {
-      const result = copyDirectory(sourcePath, destPath, merge);
-      copiedCount += result.copied;
-      skippedCount += result.skipped;
+      const r = copyDir(srcPath, dstPath, force);
+      copied += r.copied;
+      skipped += r.skipped;
+    } else if (force || !fs.existsSync(dstPath)) {
+      fs.copyFileSync(srcPath, dstPath);
+      ok(path.relative(dst, dstPath) || item);
+      copied++;
     } else {
-      // Check if file exists when merging
-      if (merge && fs.existsSync(destPath)) {
-        log(`  ⊘ ${item} (already exists, skipped)`, 'yellow');
-        skippedCount++;
-      } else {
-        fs.copyFileSync(sourcePath, destPath);
-        copiedCount++;
-        log(`  ✓ ${item}`, 'green');
-      }
-    }
-  });
-
-  return { copied: copiedCount, skipped: skippedCount };
-}
-
-/**
- * Create quick start guide
- */
-function createQuickStartGuide(targetDir) {
-  const quickStartContent = `# 🚀 AL Development Collection - Quick Start
-
-You've successfully installed the AL Development Collection!
-
-## What's Installed
-
-The following directories have been copied to \`.github/\`:
-
-- **agents/** - 7 role-based strategic agents + 4 orchestra subagents with MCP tool boundaries
-- **instructions/** - 9 auto-applied coding guidelines
-- **prompts/** - 18 agentic workflows for common tasks
-- **collections/** - Collection manifest for validation
-- **getting-started.md** - This guide
-
-## Quick Start Guide
-
-### 1. Understanding the Structure
-
-**Instructions** (Auto-applied):
-- Automatically activate based on file patterns (\`applyTo\`)
-- Enforce coding standards, naming conventions, and best practices
-- No manual invocation needed
-
-**Prompts** (Manual workflows):
-- Invoke with: \`@workspace use [prompt-name]\`
-- Example: \`@workspace use al-initialize\` (setup new project)
-- Example: \`@workspace use al-diagnose\` (debug issues)
-
-**Agents** (Strategic modes):
-- Switch with: \`Use [agent-name] mode\`
-- Example: \`Use al-architect mode\` (design solutions)
-- Example: \`Use al-debugger mode\` (diagnose problems)
-
-### 2. Essential First Steps
-
-**Start here for new features:**
-\`\`\`
-Use al-architect mode
-\`\`\`
-Then describe what you want to accomplish. The architect will design your solution.
-
-**Common workflows:**
-- **New project setup**: \`@workspace use al-initialize\`
-- **Debug runtime issue**: \`@workspace use al-diagnose\`
-- **Build & deploy**: \`@workspace use al-build\`
-- **Performance analysis**: \`@workspace use al-performance\`
-
-### 3. Key Agents
-
-- **al-architect** - Solution design and architecture (START HERE)
-- **al-developer** - Tactical implementation with build tools
-- **al-debugger** - Systematic debugging and diagnosis
-- **al-tester** - Test strategy and TDD
-- **al-api** - API design and implementation
-- **al-copilot** - AI-powered features design
-
-**Orchestra System** (Multi-agent TDD for MEDIUM/HIGH complexity):
-- **al-conductor** - Main orchestration agent (use: \`Use al-conductor mode\`)
-- **al-planning-subagent** - AL-aware research specialist
-- **al-implement-subagent** - TDD-focused implementation
-- **al-review-subagent** - Code review validation
-
-### 4. Auto-Applied Guidelines
-
-These activate automatically based on file type:
-- **al-guidelines** - Master hub referencing all patterns
-- **al-code-style** - 2-space indent, PascalCase, feature folders
-- **al-naming-conventions** - 26-char limits, descriptive names
-- **al-performance** - SetLoadFields, early filtering, temp tables
-- **al-error-handling** - TryFunctions, error labels (context-activated)
-- **al-events** - Event subscribers, integration events (context-activated)
-- **al-testing** - AL-Go structure, test patterns
-- **copilot-instructions** - Master coordination document
-- **index** - Complete instructions catalog
-
-### 5. Complete Workflow List
-
-**Project Setup:**
-- \`al-initialize\` - Environment setup (VS Code, extensions, symbols)
-
-**Development:**
-- \`al-events\` - Event-driven development patterns
-- \`al-pages\` - Page development with Page Designer
-- \`al-permissions\` - Permission set generation
-
-**Quality & Testing:**
-- \`al-build\` - Build, package, publish
-- \`al-diagnose\` - Debug runtime issues
-- \`al-performance\` - Deep profiling with CPU profiles
-- \`al-performance.triage\` - Quick static analysis
-
-**AI Features:**
-- \`al-copilot-capability\` - Register Copilot capability
-- \`al-copilot-promptdialog\` - Create PromptDialog pages
-- \`al-copilot-test\` - Test Copilot features
-- \`al-copilot-generate\` - Generate AI feature code
-
-**Collaboration & Documentation:**
-- \`al-spec.create\` - Generate technical specifications
-- \`al-pr-prepare\` - Prepare pull request descriptions
-- \`al-context.create\` - Generate project context.md for AI assistants
-- \`al-memory.create\` - Generate/update session memory.md
-- \`al-translate\` - XLF translation workflows
-- \`al-migrate\` - Migration assistance
-
-### 6. Best Practices
-
-**Event-Driven Development:**
-AL extensions cannot modify base objects. Use:
-- Table Extensions to add fields
-- Page Extensions to add UI elements
-- Event Subscribers to react to base app events
-- Integration Events for extensibility
-
-**Feature-Based Organization:**
-Organize by business capability, not object type:
-\`\`\`
-src/
-├── CustomerManagement/
-│   ├── Data/
-│   ├── Processing/
-│   └── UI/
-└── SalesWorkflow/
-\`\`\`
-
-**Performance Patterns:**
-- Use early filtering (SetRange before FindSet)
-- Load only needed fields (SetLoadFields)
-- Use temporary tables for intermediate processing
-
-### 7. Getting Help
-
-**Within the collection:**
-- Check \`agents/index.md\` for complete agent guide
-- Check \`prompts/index.md\` for workflow descriptions
-- Check \`instructions/index.md\` for coding guidelines
-
-**Online resources:**
-- GitHub: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-- Issues: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues
-- Documentation: https://javiarmesto.github.io/AL-Development-Collection-for-GitHub-Copilot/
-
-### 8. Validation
-
-To validate your setup works correctly:
-1. Open any \`.al\` file - instructions should auto-apply
-2. Try: \`@workspace use al-initialize\` - should execute
-3. Try: \`Use al-architect mode\` - should switch context
-
-### 9. Updates
-
-To update to the latest version:
-\`\`\`bash
-npm update al-development-collection
-npx al-collection install
-\`\`\`
-
-This will overwrite files in \`.github/copilot/\`.
-
----
-
-## Next Steps
-
-1. **Start with the architect**: \`Use al-architect mode\` and describe your feature
-2. **Initialize a project**: \`@workspace use al-initialize\` to set up your environment
-3. **Explore the collection**: Browse the files in \`.github/copilot/\` to understand what's available
-
-**Happy coding with AL Development Collection! 🚀**
-
----
-
-*Version: ${require('../package.json').version}*
-*Framework: AI Native-Instructions Architecture (3 layers)*
-*Total Primitives: 38 (9 instructions + 18 workflows + 7 agents + 4 orchestra)*
-`;
-
-  const destPath = path.join(targetDir, 'getting-started.md');
-  fs.writeFileSync(destPath, quickStartContent, 'utf8');
-  log(`  ✓ getting-started.md`, 'green');
-}
-
-/**
- * Detect if current directory is an AL project
- */
-function isALProject(directory) {
-  const appJsonPath = path.join(directory, 'app.json');
-  return fs.existsSync(appJsonPath);
-}
-
-/**
- * Find AL projects in directory tree
- */
-function findALProjects(startDir, maxDepth = 2) {
-  const projects = [];
-  
-  function search(dir, depth) {
-    if (depth > maxDepth) return;
-    
-    try {
-      const items = fs.readdirSync(dir);
-      
-      // Check if this directory is an AL project
-      if (items.includes('app.json')) {
-        projects.push(dir);
-        return; // Don't search subdirectories of AL projects
-      }
-      
-      // Search subdirectories
-      items.forEach(item => {
-        const fullPath = path.join(dir, item);
-        try {
-          const stat = fs.statSync(fullPath);
-          if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
-            search(fullPath, depth + 1);
-          }
-        } catch (err) {
-          // Skip directories we can't access
-        }
-      });
-    } catch (err) {
-      // Skip directories we can't read
+      skip(path.relative(dst, dstPath) || item);
+      skipped++;
     }
   }
-  
-  search(startDir, 0);
-  return projects;
+
+  return { copied, skipped };
 }
 
 /**
- * Get target directory from user or command line
+ * Copy a single file. Returns true if copied.
  */
-async function getTargetDirectory() {
-  const args = process.argv.slice(2);
-  
-  // Check if directory provided as argument
-  if (args.length > 1 && args[0] === 'install') {
-    return path.resolve(process.cwd(), args[1]);
+function copyFile(src, dst, force = false) {
+  if (!fs.existsSync(src)) {
+    err(`Source not found: ${src}`);
+    return false;
   }
-
-  // Auto-detect AL projects
-  const currentDir = process.cwd();
-  const isCurrentAL = isALProject(currentDir);
-  
-  if (isCurrentAL) {
-    log(`\n✓ AL project detected in current directory!`, 'green');
-    const defaultPath = path.join(currentDir, '.github');
-    
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
-    return new Promise((resolve) => {
-      rl.question(
-        `${colors.cyan}Install to ${defaultPath}? (Y/n): ${colors.reset}`,
-        (answer) => {
-          rl.close();
-          if (!answer || answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
-            resolve(defaultPath);
-          } else {
-            resolve(getTargetDirectoryInteractive());
-          }
-        }
-      );
-    });
+  if (!force && fs.existsSync(dst)) {
+    skip(path.basename(dst));
+    return false;
   }
-  
-  // Search for AL projects nearby
-  log(`\n🔍 Searching for AL projects...`, 'cyan');
-  const foundProjects = findALProjects(currentDir);
-  
-  if (foundProjects.length > 0) {
-    log(`\n✓ Found ${foundProjects.length} AL project(s):`, 'green');
-    foundProjects.forEach((proj, idx) => {
-      log(`  ${idx + 1}. ${proj}`, 'blue');
-    });
-    
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
-    return new Promise((resolve) => {
-      rl.question(
-        `${colors.cyan}\nSelect project number (1-${foundProjects.length}) or Enter for manual path: ${colors.reset}`,
-        (answer) => {
-          rl.close();
-          const selection = parseInt(answer);
-          if (selection >= 1 && selection <= foundProjects.length) {
-            resolve(path.join(foundProjects[selection - 1], '.github'));
-          } else {
-            resolve(getTargetDirectoryInteractive());
-          }
-        }
-      );
-    });
-  }
-
-  // No AL projects found, interactive mode
-  return getTargetDirectoryInteractive();
+  ensureDir(path.dirname(dst));
+  fs.copyFileSync(src, dst);
+  ok(path.basename(dst));
+  return true;
 }
 
-/**
- * Get target directory interactively
- */
-async function getTargetDirectoryInteractive() {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
+// ─── Prompt helper ─────────────────────────────────────────────────────────
+function ask(question, defaultYes = true) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const hint = defaultYes ? '(Y/n)' : '(y/N)';
   return new Promise((resolve) => {
-    const defaultPath = path.join(process.cwd(), '.github');
-    
-    rl.question(
-      `${colors.cyan}Install location (default: ${defaultPath}): ${colors.reset}`,
-      (answer) => {
-        rl.close();
-        resolve(answer.trim() || defaultPath);
-      }
-    );
+    rl.question(`${C.cyan}${question} ${hint}: ${C.reset}`, (answer) => {
+      rl.close();
+      const a = answer.trim().toLowerCase();
+      if (!a) return resolve(defaultYes);
+      resolve(a === 'y' || a === 'yes');
+    });
   });
 }
 
+// ─── ALDC Core v1.1 component map ──────────────────────────────────────────
+const COMPONENTS = [
+  { name: 'Agents',      src: 'agents',         count: '4 public + 3 subagents' },
+  { name: 'Skills',       src: 'skills',          count: '7 required + 4 recommended' },
+  { name: 'Prompts',      src: 'prompts',         count: '6 workflows' },
+  { name: 'Instructions', src: 'instructions',    count: '9 auto-applied' },
+  { name: 'Templates',    src: 'docs/templates',  count: '7 contract templates' },
+  { name: 'Framework',    src: 'docs/framework',  count: 'spec + docs' },
+];
+
+// ─── Extension Packs ─────────────────────────────────────────────────────
+const PACKS = [
+  {
+    id: 'bc-agents',
+    name: 'BC Agents Extension Pack',
+    description: 'Business Central Agent development with AI Development Toolkit & Agent SDK',
+    components: [
+      { name: 'Agent',       src: 'agents/al-agent-builder.agent.md' },
+      { name: 'Skills',      src: 'skills/skill-agent-instructions.md' },
+      { name: 'Skills',      src: 'skills/skill-agent-task-patterns.md' },
+      { name: 'Skills',      src: 'skills/skill-agent-toolkit.md' },
+      { name: 'References',  src: 'skills/references/agent-keywords-reference.md' },
+      { name: 'Examples',    src: 'skills/examples/agent-simple-instructions.txt' },
+      { name: 'Examples',    src: 'skills/examples/agent-advanced-instructions.txt' },
+      { name: 'Workflow',    src: 'prompts/al-agent.create.prompt.md' },
+      { name: 'Workflow',    src: 'prompts/al-agent.task.prompt.md' },
+      { name: 'Workflow',    src: 'prompts/al-agent.instructions.prompt.md' },
+      { name: 'Workflow',    src: 'prompts/al-agent.test.prompt.md' },
+      { name: 'Instruction', src: 'instructions/al-agent-toolkit.instructions.md' },
+    ],
+    tools: [
+      { name: 'Tools', src: 'tools/bc-agents' },
+    ],
+    docs: [
+      { name: 'Pack docs', src: 'docs/packs' },
+    ],
+  },
+];
+
 /**
- * Check if target directory exists and determine merge mode
+ * Install a single extension pack.
  */
-async function checkMergeMode(targetDir) {
-  // Check if .github exists
-  if (!fs.existsSync(targetDir)) {
-    return { merge: false, reason: 'new' };
+function installPack(pack, packageDir, targetDir, projectDir, force) {
+  let copied = 0;
+  let skipped = 0;
+
+  // Copy individual component files
+  for (const comp of pack.components) {
+    const src = path.join(packageDir, comp.src);
+    const dst = path.join(targetDir, comp.src);
+    if (copyFile(src, dst, force)) copied++; else skipped++;
   }
 
-  // Check if any of our directories exist
-  const agentsPath = path.join(targetDir, 'agents');
-  const instructionsPath = path.join(targetDir, 'instructions');
-  const promptsPath = path.join(targetDir, 'prompts');
-
-  const existingDirs = [];
-  if (fs.existsSync(agentsPath)) existingDirs.push('agents/');
-  if (fs.existsSync(instructionsPath)) existingDirs.push('instructions/');
-  if (fs.existsSync(promptsPath)) existingDirs.push('prompts/');
-
-  if (existingDirs.length === 0) {
-    return { merge: false, reason: 'empty' };
+  // Copy tool directories
+  for (const tool of pack.tools) {
+    const src = path.join(packageDir, tool.src);
+    const dst = path.join(targetDir, tool.src);
+    const r = copyDir(src, dst, force);
+    copied += r.copied;
+    skipped += r.skipped;
   }
 
-  // Some directories exist, need to merge
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
+  // Copy doc directories
+  for (const doc of pack.docs) {
+    const src = path.join(packageDir, doc.src);
+    const dst = path.join(targetDir, doc.src);
+    const r = copyDir(src, dst, force);
+    copied += r.copied;
+    skipped += r.skipped;
+  }
 
-  return new Promise((resolve) => {
-    log(`\n⚠️  Found existing directories: ${existingDirs.join(', ')}`, 'yellow');
-    log('Existing files will be preserved. Only new files will be added.', 'cyan');
-    rl.question(
-      `${colors.cyan}Continue with merge? (Y/n): ${colors.reset}`,
-      (answer) => {
-        rl.close();
-        const proceed = !answer || answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes';
-        resolve({ 
-          merge: proceed, 
-          reason: proceed ? 'merge' : 'cancelled',
-          existingDirs 
-        });
-      }
-    );
-  });
+  return { copied, skipped };
 }
 
-/**
- * Check if target directory exists and confirm overwrite
- * @deprecated Use checkMergeMode instead
- */
-async function confirmOverwrite(targetDir) {
-  if (!fs.existsSync(targetDir)) {
-    return true;
+// ─── INSTALL command ───────────────────────────────────────────────────────
+async function install(opts) {
+  const packageDir = path.resolve(__dirname, '..');
+  const projectDir = process.cwd();
+  const targetDir = path.resolve(projectDir, opts.targetDir || '.github');
+
+  banner();
+  header('ALDC Core v1.1 — Installer');
+
+  info('Components to install:');
+  for (const c of COMPONENTS) {
+    log(`  ${c.name.padEnd(14)} ${c.count}`, C.blue);
+  }
+  console.log('');
+  info(`Target directory: ${targetDir}`);
+  info(`Project root:     ${projectDir}`);
+
+  // Check for existing installation
+  const hasExisting = fs.existsSync(targetDir) &&
+    (fs.existsSync(path.join(targetDir, 'agents')) ||
+     fs.existsSync(path.join(targetDir, 'skills')));
+
+  if (hasExisting) {
+    log('\nExisting ALDC installation detected.', C.yellow);
+    if (opts.force) {
+      log('--force: existing files will be overwritten.', C.yellow);
+    } else {
+      log('Merge mode: existing files will be preserved.', C.dim);
+    }
   }
 
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  return new Promise((resolve) => {
-    log(`\n⚠️  Directory ${targetDir} already exists.`, 'yellow');
-    rl.question(
-      `${colors.yellow}Overwrite existing files? (y/N): ${colors.reset}`,
-      (answer) => {
-        rl.close();
-        resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
-      }
-    );
-  });
-}
-
-/**
- * Main installation function
- */
-async function install() {
-  header('🚀 AL Development Collection - Installer');
-
-  log('This will install the AL Development toolkit into your project.', 'cyan');
-  log('The following will be copied to .github/:', 'cyan');
-  log('  • agents/      - 7 strategic agents + 4 orchestra subagents', 'blue');
-  log('  • instructions/ - 9 auto-applied guidelines', 'blue');
-  log('  • prompts/     - 18 agentic workflows', 'blue');
-  log('  • collections/ - Collection manifest', 'blue');
-  log('  • getting-started.md - Quick start guide', 'blue');
-
-  // Get target directory
-  const targetDir = await getTargetDirectory();
-  log(`\n📁 Target directory: ${targetDir}`, 'cyan');
-
-  // Check merge mode and confirm
-  const mergeMode = await checkMergeMode(targetDir);
-  
-  if (!mergeMode.merge && mergeMode.reason === 'cancelled') {
-    log('\n❌ Installation cancelled.', 'red');
-    process.exit(0);
+  // Confirm unless --yes
+  if (!opts.yes) {
+    const proceed = await ask('\nProceed with installation?');
+    if (!proceed) {
+      log('\nInstallation cancelled.', C.red);
+      process.exit(0);
+    }
   }
 
-  // Create .github directory if it doesn't exist
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-    log(`\n✓ Created directory: ${targetDir}`, 'green');
-  }
-
-  // Get source directory (package root, one level up from scripts/)
-  const packageDir = path.join(__dirname, '..');
   let totalCopied = 0;
   let totalSkipped = 0;
 
-  const isMerge = mergeMode.reason === 'merge';
-  
-  if (isMerge) {
-    log('\n📦 Merge mode: Preserving existing files, adding new ones only', 'cyan');
+  // 1. Copy each component into target dir
+  for (const comp of COMPONENTS) {
+    header(`Installing ${comp.name} (${comp.count})`);
+    const src = path.join(packageDir, comp.src);
+    const dst = path.join(targetDir, comp.src);
+    const r = copyDir(src, dst, opts.force);
+    totalCopied += r.copied;
+    totalSkipped += r.skipped;
   }
 
-  // Copy agents
-  header('📋 Installing Agents');
-  const agentsSource = path.join(packageDir, 'agents');
-  const agentsDest = path.join(targetDir, 'agents');
-  const agentsResult = copyDirectory(agentsSource, agentsDest, isMerge);
-  totalCopied += agentsResult.copied;
-  totalSkipped += agentsResult.skipped;
-
-  // Copy instructions
-  header('📋 Installing Instructions');
-  const instructionsSource = path.join(packageDir, 'instructions');
-  const instructionsDest = path.join(targetDir, 'instructions');
-  const instructionsResult = copyDirectory(instructionsSource, instructionsDest, isMerge);
-  totalCopied += instructionsResult.copied;
-  totalSkipped += instructionsResult.skipped;
-
-  // Copy prompts
-  header('📋 Installing Prompts');
-  const promptsSource = path.join(packageDir, 'prompts');
-  const promptsDest = path.join(targetDir, 'prompts');
-  const promptsResult = copyDirectory(promptsSource, promptsDest, isMerge);
-  totalCopied += promptsResult.copied;
-  totalSkipped += promptsResult.skipped;
-
-  // Copy collections
-  header('📋 Installing Collections');
-  const collectionsSource = path.join(packageDir, 'collections');
-  const collectionsDest = path.join(targetDir, 'collections');
-  if (fs.existsSync(collectionsSource)) {
-    const collectionsResult = copyDirectory(collectionsSource, collectionsDest, isMerge);
-    totalCopied += collectionsResult.copied;
-    totalSkipped += collectionsResult.skipped;
+  // 2. Copy collections/ into target dir
+  header('Installing Collections');
+  const colSrc = path.join(packageDir, 'collections');
+  if (fs.existsSync(colSrc)) {
+    const r = copyDir(colSrc, path.join(targetDir, 'collections'), opts.force);
+    totalCopied += r.copied;
+    totalSkipped += r.skipped;
   } else {
-    log('  ⊘ collections directory not found (optional)', 'yellow');
+    log('  collections/ not found (optional)', C.dim);
   }
 
-  // Create/update quick start guide
-  header('📋 Creating Quick Start Guide');
-  const quickStartPath = path.join(targetDir, 'getting-started.md');
-  if (isMerge && fs.existsSync(quickStartPath)) {
-    log(`  ⊘ getting-started.md (already exists, skipped)`, 'yellow');
-    totalSkipped++;
-  } else {
-    createQuickStartGuide(targetDir);
+  // 3. Copy aldc.yaml to project root
+  header('Installing Configuration');
+  if (copyFile(
+    path.join(packageDir, 'aldc.yaml'),
+    path.join(projectDir, 'aldc.yaml'),
+    opts.force
+  )) totalCopied++; else totalSkipped++;
+
+  // 4. Copy copilot-instructions.md entrypoint to .github/
+  const copilotSrc = path.join(packageDir, 'instructions', 'copilot-instructions.md');
+  const copilotDst = path.join(projectDir, '.github', 'copilot-instructions.md');
+  if (copyFile(copilotSrc, copilotDst, opts.force)) {
     totalCopied++;
+  } else {
+    totalSkipped++;
   }
 
-  // Success summary
-  header('✅ Installation Complete!');
-  log(`Files copied: ${totalCopied}`, 'green');
-  if (totalSkipped > 0) {
-    log(`Files skipped (already exist): ${totalSkipped}`, 'yellow');
+  // 5. Create .github/plans/ and memory.md from template
+  header('Initializing Plans & Memory');
+  const plansDir = path.join(projectDir, '.github', 'plans');
+  ensureDir(plansDir);
+  ok('plans/ directory');
+
+  const memoryTemplate = path.join(packageDir, 'docs', 'templates', 'memory-template.md');
+  const memoryDst = path.join(plansDir, 'memory.md');
+  if (copyFile(memoryTemplate, memoryDst, false)) {
+    totalCopied++;
+  } else {
+    totalSkipped++;
   }
-  log(`Installation directory: ${targetDir}`, 'cyan');
-  
+
+  // 6. Extension Packs (optional)
+  const availablePacks = PACKS.filter(p => {
+    // Check if the pack source files exist in the package
+    return p.components.some(c => fs.existsSync(path.join(packageDir, c.src)));
+  });
+
+  if (availablePacks.length > 0) {
+    header('Extension Packs');
+
+    for (const pack of availablePacks) {
+      log(`\n  ${C.bold}${pack.name}${C.reset}`);
+      log(`  ${pack.description}`, C.dim);
+      log(`  ${pack.components.length} components + ${pack.tools.length} tools`, C.dim);
+
+      let installPack_ = opts.withPacks;
+
+      // If not set via CLI flag, ask interactively (unless --yes)
+      if (installPack_ === null) {
+        if (opts.yes) {
+          installPack_ = true; // --yes defaults to including packs
+        } else {
+          installPack_ = await ask(`\n  Install ${pack.name}?`);
+        }
+      }
+
+      if (installPack_) {
+        log(`\n  Installing ${pack.name}...`, C.cyan);
+        const r = installPack(pack, packageDir, targetDir, projectDir, opts.force);
+        totalCopied += r.copied;
+        totalSkipped += r.skipped;
+        ok(`${pack.name} installed (${r.copied} files)`);
+      } else {
+        log(`  Skipped ${pack.name}`, C.dim);
+      }
+    }
+  }
+
+  // ─── Summary ──────────────────────────────────────────────────────────────
+  header('Installation Complete');
+  log(`Files copied:  ${totalCopied}`, C.green);
+  if (totalSkipped > 0) {
+    log(`Files skipped: ${totalSkipped} (already exist)`, C.yellow);
+  }
+  log(`Location:      ${targetDir}`, C.cyan);
+
   console.log('');
-  log('🎯 Next Steps:', 'bright');
-  log('  1. Open VS Code in your AL project', 'blue');
-  log(`  2. Read: ${path.join(targetDir, 'getting-started.md')}`, 'blue');
-  log('  3. Try: Use al-architect mode', 'blue');
-  log('  4. Or try: @workspace use al-initialize', 'blue');
-  
+  log('Next steps:', C.bold);
+  log('  1. Open VS Code in your AL project', C.blue);
+  log('  2. Try: @al-architect to design a solution', C.blue);
+  log('  3. Or:  @workspace /al-initialize to set up environment', C.blue);
   console.log('');
-  log('📚 Documentation:', 'bright');
-  log('  GitHub: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot', 'blue');
-  log('  Docs: https://javiarmesto.github.io/AL-Development-Collection-for-GitHub-Copilot/', 'blue');
-  
-  console.log('');
-  if (isMerge) {
-    log('💡 Tip: Existing files were preserved. Check skipped files for updates.', 'cyan');
+
+  if (!opts.force && totalSkipped > 0) {
+    log('Tip: Use --force to overwrite existing files on next run.', C.dim);
     console.log('');
   }
-  log('Happy coding! 🚀', 'green');
+}
+
+// ─── VALIDATE command ──────────────────────────────────────────────────────
+async function validate(opts) {
+  const projectDir = process.cwd();
+  const targetDir = path.resolve(projectDir, opts.targetDir || '.github');
+
+  banner();
+  header('ALDC Core v1.1 — Validation');
+  info(`Checking: ${targetDir}`);
   console.log('');
-}
 
-/**
- * Update existing installation
- */
-async function updateToolkit() {
-  header('🔄 AL Development Collection - Update');
-
-  log('This will update your existing installation.', 'cyan');
-  log('Existing files will be preserved. Only new files will be added.', 'cyan');
-
-  // Find existing installation
-  const currentDir = process.cwd();
-  const possiblePaths = [
-    path.join(currentDir, '.github'),
-    path.join(currentDir, '.github', 'copilot')
-  ];
-
-  let existingPath = null;
-  for (const testPath of possiblePaths) {
-    const agentsPath = path.join(testPath, 'agents');
-    if (fs.existsSync(agentsPath)) {
-      existingPath = testPath;
-      break;
-    }
-  }
-
-  if (!existingPath) {
-    log('\n⚠️  No existing installation found.', 'yellow');
-    log('Use "install" command instead.', 'cyan');
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
-    return new Promise((resolve) => {
-      rl.question(
-        `${colors.cyan}Run install command now? (Y/n): ${colors.reset}`,
-        async (answer) => {
-          rl.close();
-          if (!answer || answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
-            await install();
-          }
-          resolve();
-        }
-      );
-    });
-  }
-
-  log(`\n✓ Found installation at: ${existingPath}`, 'green');
-  
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  return new Promise((resolve) => {
-    rl.question(
-      `${colors.cyan}Update this installation? (Y/n): ${colors.reset}`,
-      async (answer) => {
-        rl.close();
-        if (!answer || answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
-          // Use install with merge mode
-          process.argv = ['node', 'install.js', 'install', existingPath];
-          await install();
-        }
-        resolve();
-      }
-    );
-  });
-}
-
-/**
- * Validate existing installation
- */
-async function validateInstallation() {
-  header('✓ AL Development Collection - Validation');
-
-  // Find installation
-  const currentDir = process.cwd();
-  const possiblePaths = [
-    path.join(currentDir, '.github'),
-    path.join(currentDir, '.github', 'copilot')
-  ];
-
-  let installPath = null;
-  for (const testPath of possiblePaths) {
-    const agentsPath = path.join(testPath, 'agents');
-    if (fs.existsSync(agentsPath)) {
-      installPath = testPath;
-      break;
-    }
-  }
-
-  if (!installPath) {
-    log('\n❌ No installation found in .github/', 'red');
-    log('Run "npx al-collection install" first.', 'cyan');
-    return;
-  }
-
-  log(`\n📁 Checking installation at: ${installPath}`, 'cyan');
-  
-  // Check required directories
-  const requiredDirs = [
-    { name: 'agents', desc: 'Agent modes' },
-    { name: 'instructions', desc: 'Instruction files' },
-    { name: 'prompts', desc: 'Workflow prompts' }
-  ];
-
-  let allValid = true;
+  let errors = 0;
+  let warnings = 0;
   let totalFiles = 0;
 
-  for (const dir of requiredDirs) {
-    const dirPath = path.join(installPath, dir.name);
-    if (fs.existsSync(dirPath)) {
-      const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.md'));
+  // Check each component directory
+  for (const comp of COMPONENTS) {
+    const dir = path.join(targetDir, comp.src);
+    if (fs.existsSync(dir)) {
+      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
       totalFiles += files.length;
-      log(`  ✓ ${dir.name}/ (${files.length} files) - ${dir.desc}`, 'green');
+      ok(`${comp.src}/ (${files.length} files) — ${comp.name}`);
     } else {
-      log(`  ✗ ${dir.name}/ - Missing!`, 'red');
-      allValid = false;
+      err(`${comp.src}/ — MISSING`);
+      errors++;
     }
   }
 
-  // Check getting-started.md
-  const gettingStartedPath = path.join(installPath, 'getting-started.md');
-  if (fs.existsSync(gettingStartedPath)) {
-    log(`  ✓ getting-started.md`, 'green');
+  // Check aldc.yaml
+  const aldcYaml = path.join(projectDir, 'aldc.yaml');
+  if (fs.existsSync(aldcYaml)) {
+    ok('aldc.yaml');
   } else {
-    log(`  ⚠ getting-started.md - Missing (optional)`, 'yellow');
+    err('aldc.yaml — MISSING');
+    errors++;
   }
 
-  console.log('');
-  if (allValid) {
-    log('═'.repeat(60), 'green');
-    log(`✅ Installation is valid! (${totalFiles} files found)`, 'green');
-    log('═'.repeat(60), 'green');
-    console.log('');
-    log('🚀 Next steps:', 'bright');
-    log('  1. Open any .al file in VS Code', 'blue');
-    log('  2. Try: Use al-architect mode', 'blue');
-    log('  3. Or: @workspace use al-initialize', 'blue');
+  // Check copilot-instructions.md entrypoint
+  const copilotEntry = path.join(projectDir, '.github', 'copilot-instructions.md');
+  if (fs.existsSync(copilotEntry)) {
+    ok('.github/copilot-instructions.md');
   } else {
-    log('═'.repeat(60), 'red');
-    log('❌ Installation is incomplete!', 'red');
-    log('═'.repeat(60), 'red');
+    log(`  ! .github/copilot-instructions.md — missing (recommended)`, C.yellow);
+    warnings++;
+  }
+
+  // Check plans directory and memory
+  const plansDir = path.join(projectDir, '.github', 'plans');
+  if (fs.existsSync(plansDir)) {
+    ok('.github/plans/');
+    const memory = path.join(plansDir, 'memory.md');
+    if (fs.existsSync(memory)) {
+      ok('.github/plans/memory.md');
+    } else {
+      log(`  ! .github/plans/memory.md — missing (recommended)`, C.yellow);
+      warnings++;
+    }
+  } else {
+    err('.github/plans/ — MISSING');
+    errors++;
+  }
+
+  // Summary
+  console.log('');
+  if (errors === 0) {
+    log('='.repeat(60), C.green);
+    log(` VALID — ${totalFiles} files, ${warnings} warning(s)`, C.green);
+    log('='.repeat(60), C.green);
+  } else {
+    log('='.repeat(60), C.red);
+    log(` INVALID — ${errors} error(s), ${warnings} warning(s)`, C.red);
+    log('='.repeat(60), C.red);
     console.log('');
-    log('Run "npx al-collection update" to fix.', 'cyan');
+    log('Run "npx aldc install" to fix missing components.', C.cyan);
   }
   console.log('');
 }
 
-/**
- * Show help
- */
+// ─── HELP ──────────────────────────────────────────────────────────────────
 function showHelp() {
+  banner();
   console.log(`
-${colors.bright}AL Development Collection - CLI${colors.reset}
+${C.bold}ALDC Core v1.1 — CLI${C.reset}
 
-${colors.cyan}Usage:${colors.reset}
-  npx al-collection <command> [options]
+${C.cyan}Usage:${C.reset}
+  npx aldc <command> [options]
 
-${colors.cyan}Commands:${colors.reset}
-  install [path]      Install toolkit to specified path (default: .github)
-  update              Update existing installation (preserves files)
-  validate            Verify installation is complete and valid
-  --help, -h          Show this help message
+${C.cyan}Commands:${C.reset}
+  install     Install ALDC toolkit into current project
+  validate    Verify installation is complete
+  --help      Show this help
 
-${colors.cyan}Examples:${colors.reset}
-  ${colors.green}# Interactive installation (auto-detects AL projects)${colors.reset}
-  npx al-collection install
+${C.cyan}Options:${C.reset}
+  --target-dir <dir>  Installation directory (default: .github)
+  --yes, -y           Skip confirmation prompts
+  --force, -f         Overwrite existing files
+  --with-packs        Include all extension packs (no prompt)
+  --no-packs          Skip all extension packs (no prompt)
 
-  ${colors.green}# Install to specific path${colors.reset}
-  npx al-collection install .github
+${C.cyan}Examples:${C.reset}
+  ${C.green}# Install to default .github/ directory${C.reset}
+  npx aldc install
 
-  ${colors.green}# Update existing installation${colors.reset}
-  npx al-collection update
+  ${C.green}# Install to custom directory, non-interactive${C.reset}
+  npx aldc install --target-dir .copilot --yes
 
-  ${colors.green}# Validate installation${colors.reset}
-  npx al-collection validate
+  ${C.green}# Force-update all files${C.reset}
+  npx aldc install --force --yes
 
-${colors.cyan}Features:${colors.reset}
-  ✓ Auto-detects AL projects (searches for app.json)
-  ✓ Interactive project selection if multiple found
-  ✓ Merge mode preserves existing files
-  ✓ Validation ensures complete installation
+  ${C.green}# Install from local .tgz${C.reset}
+  npm install ./al-development-collection-3.1.0.tgz
+  npx aldc install
 
-${colors.cyan}What gets installed:${colors.reset}
-  • agents/           - 7 strategic agents + 4 orchestra subagents
-  • instructions/     - 9 auto-applied coding guidelines  
-  • prompts/          - 18 agentic workflows
-  • collections/      - Collection manifest (optional)
-  • getting-started.md - Quick start documentation
+  ${C.green}# Install with BC Agents Extension Pack${C.reset}
+  npx aldc install --with-packs
 
-${colors.cyan}Merge behavior:${colors.reset}
-  When updating or installing to existing location:
-  - Preserves all existing files (no overwriting)
-  - Only adds new files from the collection
-  - Shows summary of copied vs skipped files
+  ${C.green}# Install Core only (skip packs)${C.reset}
+  npx aldc install --no-packs
 
-${colors.cyan}More info:${colors.reset}
-  GitHub: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-  Docs: https://javiarmesto.github.io/AL-Development-Collection-for-GitHub-Copilot/
+  ${C.green}# Validate current installation${C.reset}
+  npx aldc validate
+
+${C.cyan}What gets installed:${C.reset}
+  ${C.bold}Core:${C.reset}
+  <target-dir>/
+    agents/           4 public agents + 3 subagents
+    skills/           7 required + 4 recommended skills
+    prompts/          6 agentic workflows
+    instructions/     9 auto-applied guidelines
+    docs/framework/   Core specification & docs
+    docs/templates/   7 contract templates
+    collections/      Collection manifest
+  <project-root>/
+    aldc.yaml         ALDC Core configuration
+    .github/copilot-instructions.md   Copilot entrypoint
+    .github/plans/memory.md           Global memory template
+
+  ${C.bold}Extension Pack — BC Agents (optional):${C.reset}
+  <target-dir>/
+    agents/           +1 agent (al-agent-builder)
+    skills/           +3 skills (instructions, task-patterns, toolkit)
+    prompts/          +4 workflows (create, task, instructions, test)
+    instructions/     +1 instruction (al-agent-toolkit)
+    tools/bc-agents/  Scaffolder + validator scripts
+    docs/packs/       Pack manifest
 `);
 }
 
-// Main execution
-const args = process.argv.slice(2);
-const command = args[0];
+// ─── Main ──────────────────────────────────────────────────────────────────
+const opts = parseArgs(process.argv);
 
-if (args.includes('--help') || args.includes('-h')) {
-  showHelp();
-} else if (!command || command === 'install') {
-  install().catch(err => {
-    log(`\n❌ Installation failed: ${err.message}`, 'red');
-    console.error(err);
-    process.exit(1);
-  });
-} else if (command === 'update') {
-  updateToolkit().catch(err => {
-    log(`\n❌ Update failed: ${err.message}`, 'red');
-    console.error(err);
-    process.exit(1);
-  });
-} else if (command === 'validate') {
-  validateInstallation().catch(err => {
-    log(`\n❌ Validation failed: ${err.message}`, 'red');
-    console.error(err);
-    process.exit(1);
-  });
-} else {
-  log(`\n❌ Unknown command: ${command}`, 'red');
-  log('Use --help for usage information.', 'cyan');
-  process.exit(1);
+switch (opts.command) {
+  case 'help':
+    showHelp();
+    break;
+  case 'validate':
+    validate(opts).catch((e) => { err(e.message); process.exit(1); });
+    break;
+  case 'install':
+  default:
+    install(opts).catch((e) => { err(e.message); process.exit(1); });
+    break;
 }

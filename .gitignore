@@ -71,3 +71,7 @@ VSCODE-EXTENSION-GUIDE.md
 VSCODE-EXTENSION-READY.md
 PROJECT-COMPLETION-SUMMARY.md
 NEXT-STEPS.md
+#tgz files (packaged extensions)
+*.tgz
+# Agent pack (not for public repo)
+/bcagentpack

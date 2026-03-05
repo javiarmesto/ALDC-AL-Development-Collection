@@ -1,7 +1,12 @@
 # AL Development Collection - npm package exclusions
 
 # Development and documentation (not needed in package)
-docs/
+# Note: docs/framework/ and docs/templates/ ARE included via package.json files array
+docs/agents/
+docs/prompts/
+docs/getting-started/
+docs/schema/
+docs/index.md
 archive/
 .vscode/
 
@@ -29,3 +34,12 @@ al-development.md
 *.test.js
 test/
 tests/
+
+# Nested node_modules in tools
+tools/aldc-validate/node_modules/
+
+# Source pack files (already copied to target locations)
+bcagentpack/
+
+# Pack .tgz files
+*.tgz

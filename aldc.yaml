@@ -77,6 +77,24 @@ required:
     - "docs/templates/delivery-template.md"
     - "docs/templates/skill-template.md"
 
+packs:
+  bc-agents:
+    agent: "al-agent-builder"
+    skills:
+      - "skill-agent-instructions"
+      - "skill-agent-task-patterns"
+      - "skill-agent-toolkit"
+    workflows:
+      - "al-agent.create"
+      - "al-agent.task"
+      - "al-agent.instructions"
+      - "al-agent.test"
+    instructions:
+      - "al-agent-toolkit"
+    tools:
+      - "tools/bc-agents/scaffold_agent.py"
+      - "tools/bc-agents/validate_agent_config.sh"
+
 validation:
   rules:
     missingPlansDir: "error"

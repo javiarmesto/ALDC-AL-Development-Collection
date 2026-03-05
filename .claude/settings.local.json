@@ -17,7 +17,18 @@
       "Bash(cmp \"aldc-core-v1.1/.github/actions/aldc-validate/action.yml\" \".github/actions/aldc-validate/action.yml\")",
       "Bash(cmp \"aldc-core-v1.1/.github/plans/memory.md\" \".github/plans/memory.md\")",
       "Bash(cmp \"aldc-core-v1.1/skills/index.md\" \"skills/index.md\")",
-      "Bash(ls CLAUDE-*.md ALDC-Conductor-*.md aldc-core-v1.1-package.zip aldc-core-v1.1/)"
+      "Bash(ls CLAUDE-*.md ALDC-Conductor-*.md aldc-core-v1.1-package.zip aldc-core-v1.1/)",
+      "Bash(npx aldc validate)",
+      "Bash(npx aldc install --yes)",
+      "Read(//c/Users/JavierArmestoGonzële/Documents/AL/ALDC/ALDC-AL-Development-Collection-for-GitHub-Copilot/scripts/**)",
+      "Read(//c/Users/JavierArmestoGonzële/Documents/AL/ALDC/ALDC-AL-Development-Collection-for-GitHub-Copilot/**)",
+      "Bash(npm pack)",
+      "Bash(node prepare-package.js)",
+      "Bash(npx @vscode/vsce --version)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\JavierArmestoGonzále\\Documents\\AL\\ALDC\\ALDC-AL-Development-Collection-for-GitHub-Copilot\\tools",
+      "\\tmp"
     ]
   }
 }
