@@ -107,28 +107,27 @@ function ensureDir(dir) {
  * @param {boolean} force  Overwrite existing files
  * @returns {{ copied: number, skipped: number }}
  */
-function copyDir(src, dst, force = false) {
+function copyDir(src, dst, force = false, depth = 0) {
   if (!fs.existsSync(src)) return { copied: 0, skipped: 0 };
   ensureDir(dst);
 
   let copied = 0;
   let skipped = 0;
 
-  const EXCLUDE = new Set([
-    'node_modules', 'package.json', 'package-lock.json',
-    '.git', '.gitignore', '.npmignore',
-    'install.js', 'validate-al-collection.js',
-  ]);
+  // Only exclude root-level scaffolding; allow package.json in subdirs (e.g. tools/aldc-validate)
+  const ALWAYS_EXCLUDE = new Set(['node_modules', 'package-lock.json', '.git', '.gitignore', '.npmignore']);
+  const ROOT_EXCLUDE = new Set(['package.json', 'install.js', 'validate-al-collection.js']);
 
   for (const item of fs.readdirSync(src)) {
-    if (EXCLUDE.has(item)) continue;
+    if (ALWAYS_EXCLUDE.has(item)) continue;
+    if (depth === 0 && ROOT_EXCLUDE.has(item)) continue;
 
     const srcPath = path.join(src, item);
     const dstPath = path.join(dst, item);
     const stat = fs.statSync(srcPath);
 
     if (stat.isDirectory()) {
-      const r = copyDir(srcPath, dstPath, force);
+      const r = copyDir(srcPath, dstPath, force, depth + 1);
       copied += r.copied;
       skipped += r.skipped;
     } else if (force || !fs.existsSync(dstPath)) {
@@ -200,6 +199,7 @@ const COMPONENTS = [
   { name: 'Instructions', src: 'instructions',    count: '9 auto-applied' },
   { name: 'Templates',    src: 'docs/templates',  count: '7 contract templates' },
   { name: 'Framework',    src: 'docs/framework',  count: 'spec + docs' },
+  { name: 'Validator',    src: 'tools/aldc-validate', count: 'compliance checker' },
 ];
 
 // ─── Extension Packs ─────────────────────────────────────────────────────
@@ -374,7 +374,19 @@ async function install(opts) {
     totalSkipped++;
   }
 
-  // 6. Extension Packs (optional)
+  // 6. Install validator dependencies (js-yaml)
+  const validatorDir = path.join(targetDir, 'tools', 'aldc-validate');
+  if (fs.existsSync(path.join(validatorDir, 'package.json'))) {
+    try {
+      const { execSync } = require('child_process');
+      execSync('npm install --production --silent', { cwd: validatorDir, stdio: 'ignore' });
+      ok('Validator dependencies installed');
+    } catch {
+      log('  ! Could not install validator dependencies (run npm install in tools/aldc-validate/)', C.yellow);
+    }
+  }
+
+  // 7. Extension Packs (optional)
   const availablePacks = PACKS.filter(p => {
     // Check if the pack source files exist in the package
     return p.components.some(c => fs.existsSync(path.join(packageDir, c.src)));
