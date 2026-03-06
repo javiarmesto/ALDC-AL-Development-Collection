@@ -114,9 +114,8 @@ function copyDir(src, dst, force = false, depth = 0) {
   let copied = 0;
   let skipped = 0;
 
-  // Only exclude root-level scaffolding; allow package.json in subdirs (e.g. tools/aldc-validate)
   const ALWAYS_EXCLUDE = new Set(['node_modules', 'package-lock.json', '.git', '.gitignore', '.npmignore']);
-  const ROOT_EXCLUDE = new Set(['package.json', 'install.js', 'validate-al-collection.js']);
+  const ROOT_EXCLUDE = new Set(['install.js', 'validate-al-collection.js']);
 
   for (const item of fs.readdirSync(src)) {
     if (ALWAYS_EXCLUDE.has(item)) continue;
