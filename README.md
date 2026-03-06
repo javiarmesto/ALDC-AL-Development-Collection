@@ -316,22 +316,19 @@ AL-Development-Collection-for-GitHub-Copilot/
 
 ## What's New in v3.2.0 (ALDC Core v1.1)
 
-- **Skills-based modularization**: 11 composable skills replace 7 specialized agents + 12 prompts
-
-- **Corrected agent roles**: architect = Solution Architect (DESIGNS), spec.create = technical blueprint (DETAILS), conductor = TDD orchestrator (EXECUTES)
-- **Contracts per requirement**: subdirectory structure `.github/plans/{req_name}/`
-- **Skills evidencing**: agents declare which skills they loaded and which patterns they applied
-- **HITL gates enforced**: mandatory stops at plan approval, each phase, and completion
-- **Test infrastructure checks**: Library Assert, Any dependency, ID range verification before writing tests
-- **Phase 1 completion document**: mandatory after plan approval, before Phase 2 starts
+- **Skills-based architecture**: 11 composable skills that agents load on demand — api, copilot, debug, performance, events, permissions, testing, migrate, pages, translate, estimation
+- **Simplified agent model**: 4 public agents (@al-architect, @al-developer, @al-conductor, @al-presales) + 3 internal subagents for TDD orchestration
+- **Contracts per requirement**: spec, architecture, and test-plan per requirement in `.github/plans/{req_name}/`
+- **Global memory**: cross-session `memory.md` for project-wide decisions
+- **HITL gates**: mandatory stops at plan approval, each TDD phase, and completion
+- **BC Agents Extension Pack**: @al-agent-builder agent, 3 skills, 4 workflows for Business Central Agent SDK development
 
 ### Breaking Changes from v2.x
 
 - Agent count: 11 → 4 public + 3 internal subagents
-- Agent references changed: `Use al-architect mode` → `@al-architect`
+- Agent invocation: `Use al-architect mode` → `@al-architect`
 - Plans directory: flat `.github/plans/` → per-requirement `.github/plans/{req_name}/`
-- 12 prompts absorbed into 11 composable skills
-- Agents removed from public interface: al-debugger, al-tester, al-api, al-copilot (absorbed into skills)
+- Specialized agents (al-debugger, al-tester, al-api, al-copilot) absorbed into composable skills
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.
 
