@@ -41,7 +41,7 @@ Requerido (todo debe cumplirse):
 - [ ] `memory.md` se actualiza en cada handoff significativo
 - [ ] Existen las 7 plantillas inmutables en `docs/templates/` sin alteración
 - [ ] Existen los 4 agentes Core bajo `toolkitRoot/agents/`
-- [ ] Existen los 3 subagents en `toolkitRoot/agents/` (planning, implement, review — `user-invokable: false`)
+- [ ] Existen los 3 subagents en `toolkitRoot/agents/` (planning, implement, review — `user-invocable: false`)
 - [ ] Existen los 6 workflows Core bajo `toolkitRoot/prompts/`
 - [ ] Existen los 7 skills requeridos en `toolkitRoot/skills/`
 - [ ] Existen las 9 instructions

@@ -1,6 +1,6 @@
 ---
 name: skill-performance
-description: "SetLoadFields, CalcFields grouping, early filtering, temporary tables, triage"
+description: "AL performance optimization patterns for Business Central. Use when optimizing queries with SetLoadFields, working with FlowFields and CalcFields, profiling codeunits, or resolving performance issues."
 ---
 
 # Skill: AL Performance Optimization

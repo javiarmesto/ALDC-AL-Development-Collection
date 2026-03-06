@@ -10,7 +10,7 @@ The full ALDC Core v1.1 component map: 4 public agents, 3 internal subagents, 11
 
 ```mermaid
 graph TB
-    subgraph PUBLIC["Public Agents (user-invokable)"]
+    subgraph PUBLIC["Public Agents (user-invocable)"]
         ARCH["@al-architect\nSolution Architect"]
         DEV["@al-developer\nImplementation Specialist"]
         COND["@al-conductor\nTDD Orchestrator"]

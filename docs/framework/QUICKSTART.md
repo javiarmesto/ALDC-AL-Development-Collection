@@ -26,9 +26,9 @@ agents/                                ← 4 agentes públicos
   al-conductor.agent.md
   al-developer.agent.md
   al-presales.agent.md
-  al-planning-subagent.agent.md        ← subagent interno (user-invokable: false)
-  al-implement-subagent.agent.md       ← subagent interno (user-invokable: false)
-  al-review-subagent.agent.md          ← subagent interno (user-invokable: false)
+  al-planning-subagent.agent.md        ← subagent interno (user-invocable: false)
+  al-implement-subagent.agent.md       ← subagent interno (user-invocable: false)
+  al-review-subagent.agent.md          ← subagent interno (user-invocable: false)
 
 prompts/                               ← 6 workflows
   al-spec.create.prompt.md
@@ -39,17 +39,17 @@ prompts/                               ← 6 workflows
   al-initialize.prompt.md
 
 skills/                                ← 11 skills composables
-  skill-api.md
-  skill-copilot.md
-  skill-debug.md
-  skill-performance.md
-  skill-events.md
-  skill-permissions.md
-  skill-testing.md
-  skill-migrate.md
-  skill-pages.md
-  skill-translate.md
-  skill-estimation.md
+  skill-api/SKILL.md
+  skill-copilot/SKILL.md
+  skill-debug/SKILL.md
+  skill-performance/SKILL.md
+  skill-events/SKILL.md
+  skill-permissions/SKILL.md
+  skill-testing/SKILL.md
+  skill-migrate/SKILL.md
+  skill-pages/SKILL.md
+  skill-translate/SKILL.md
+  skill-estimation/SKILL.md
   index.md
 
 instructions/                          ← 9 instructions (auto-applied)

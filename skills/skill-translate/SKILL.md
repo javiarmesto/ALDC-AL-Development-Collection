@@ -1,6 +1,6 @@
 ---
 name: skill-translate
-description: "XLIFF, multi-language, localization, translation management"
+description: "AL translation and localization for Business Central. Use when working with XLF files, NAB tools, or implementing multi-language support in extensions."
 ---
 
 # Skill: AL Translation Management

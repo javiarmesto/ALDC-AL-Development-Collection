@@ -1,5 +1,17 @@
 # ALDC Core Changelog
 
+## [3.2.0] - 2026-03-06
+
+### Fixed
+
+- Typo `user-invokable` corrected to `user-invocable` across all files
+- Added `disable-model-invocation: true` to 3 internal subagents
+- Fixed skill paths: `.github/skills/` corrected to `skills/` in aldc.yaml, collections, docs
+- Fixed instruction counter: 7 corrected to 9 in copilot-instructions overview
+- Fixed overview.md counters (primitives, agents, workflows, instructions)
+- Fixed ROADMAP subagent count: 2 corrected to 3
+- Version aligned to 3.2.0 across package.json, README, CHANGELOG
+
 ## [3.1.0] - 2026-03-05
 
 ### BC Agents Extension Pack

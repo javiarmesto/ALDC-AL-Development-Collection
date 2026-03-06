@@ -1,7 +1,8 @@
 ---
 name: AL Implementation Subagent
 description: 'TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via runSubagent.'
-user-invokable: false
+user-invocable: false
+disable-model-invocation: true
 tools: [read/readFile, read/problems, edit/createFile, edit/editFiles, edit/createDirectory, search/codebase, search/fileSearch, search/textSearch, execute/runInTerminal, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch]
 model: Claude Sonnet 4.5
 ---
@@ -239,23 +240,17 @@ end;
 
 ## Domain Skills
 
-When the phase involves API page creation, load and follow:
-- @file skills/skill-api/SKILL.md
+This agent works with the following skills from .github/skills/.
+Copilot loads them automatically when relevant to the task:
 
-When the phase involves event subscribers/publishers, load and follow:
-- @file skills/skill-events/SKILL.md
+- **skill-api** — When creating API pages, OData endpoints, HttpClient integrations
+- **skill-events** — When implementing event subscribers/publishers
+- **skill-permissions** — When creating permission sets
+- **skill-performance** — When optimizing queries, SetLoadFields, FlowFields
+- **skill-copilot** — When implementing Copilot/AI features
+- **skill-testing** — When designing tests, Given/When/Then patterns
 
-When the phase involves permission sets, load and follow:
-- @file skills/skill-permissions/SKILL.md
-
-When the phase involves performance optimization, load and follow:
-- @file skills/skill-performance/SKILL.md
-
-When the phase involves Copilot/AI features, load and follow:
-- @file skills/skill-copilot/SKILL.md
-
-When the phase involves test strategy or test design, load and follow:
-- @file skills/skill-testing/SKILL.md
+To explicitly invoke a skill, use: /skill-api, /skill-testing, etc.
 
 </domain_skills>
 
@@ -267,8 +262,8 @@ In the **Phase Implementation Summary** (see Output Format), you MUST declare wh
 
 ```markdown
 ### Skills Loaded
-- skill-api.md — Applied: ODataKeyFields, APIPublisher conventions
-- skill-permissions.md — Applied: PermissionSet generation pattern
+- skill-api — Applied: ODataKeyFields, APIPublisher conventions
+- skill-permissions — Applied: PermissionSet generation pattern
 ```
 
 If no domain skills were required for the phase:
@@ -279,9 +274,9 @@ No domain skills required for this phase.
 ```
 
 **Rules:**
-- ONE entry per skill loaded, with the concrete pattern/workflow used
+- ONE entry per skill loaded (folder name, not file), with the concrete pattern/workflow used
 - This section is MANDATORY — the Conductor uses it to verify skill coverage
-- If you loaded a skill but did not apply any pattern from it, state why (e.g., "skill-events.md — Loaded but no event patterns applicable to enum-only phase")
+- If you loaded a skill but did not apply any pattern from it, state why (e.g., "skill-events — Loaded but no event patterns applicable to enum-only phase")
 
 <common_al_test_pitfalls>
 
@@ -388,8 +383,8 @@ After completing a phase, return this structured summary to the Conductor:
 ## Phase {N} Implementation Summary
 
 ### Skills Loaded
-- skill-api.md — Applied: ODataKeyFields, APIPublisher conventions
-- skill-permissions.md — Applied: PermissionSet generation pattern
+- skill-api — Applied: ODataKeyFields, APIPublisher conventions
+- skill-permissions — Applied: PermissionSet generation pattern
 *(List each skill loaded and the specific pattern applied from it.
 If no domain skills were required for this phase: "No domain skills required for this phase.")*
 

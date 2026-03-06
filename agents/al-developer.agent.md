@@ -2,7 +2,7 @@
 name: AL Implementation Specialist
 description: 'AL Developer - Tactical implementation specialist for Business Central extensions. Focuses on code execution with full access to build/edit/test tools. Implements features following specifications without architectural decisions.'
 argument-hint: 'Implementation task, bug fix, or feature to code (e.g., "Add email validation field to Customer table")'
-tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'github/*', 'microsoft-docs/*', 'upstash/context7/*', 'memory', 'todo']
+tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'github/*', 'microsoft-docs/*', 'upstash/context7/*', 'vscode/memory', 'todo']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Request Architecture Design
@@ -527,7 +527,7 @@ Once the design is established, I can implement it."
 **When loading a skill:**
 ```markdown
 "Loading skill-testing for test strategy guidance..."
-[Load @file skills/skill-testing/SKILL.md]
+[Load skill-testing from .github/skills/]
 ```
 
 **MANDATORY — Declare loaded skills at the start of your response:**
@@ -553,32 +553,19 @@ I'll build and validate after each step."
 
 ## Domain Skills
 
-When debugging is needed (runtime errors, event subscribers not firing, performance bottlenecks), load and follow:
-- @file skills/skill-debug/SKILL.md
+This agent works with the following skills from .github/skills/.
+Copilot loads them automatically when relevant to the task:
 
-When the task involves API page design or implementation, load and follow:
-- @file skills/skill-api/SKILL.md
+- **skill-api** — When creating API pages, OData endpoints, HttpClient integrations
+- **skill-events** — When implementing event subscribers/publishers
+- **skill-permissions** — When creating permission sets
+- **skill-performance** — When optimizing queries, SetLoadFields, FlowFields
+- **skill-debug** — When performing snapshot debugging, CPU profiling, diagnostics
+- **skill-testing** — When designing tests, Given/When/Then patterns
+- **skill-copilot** — When implementing Copilot/AI features
+- **skill-pages** — When creating or extending pages (Card, List, Document)
 
-When the task involves Copilot/AI feature implementation (PromptDialog, Azure OpenAI), load and follow:
-- @file skills/skill-copilot/SKILL.md
-
-When implementing or subscribing to events (publishers, subscribers, IsHandled pattern), load and follow:
-- @file skills/skill-events/SKILL.md
-
-When generating or managing permission sets, load and follow:
-- @file skills/skill-permissions/SKILL.md
-
-When creating or extending pages (Card, List, Document, page extensions), load and follow:
-- @file skills/skill-pages/SKILL.md
-
-When migrating an extension to a newer BC version, load and follow:
-- @file skills/skill-migrate/SKILL.md
-
-When managing XLF translations, load and follow:
-- @file skills/skill-translate/SKILL.md
-
-When optimizing performance (SetLoadFields, queries, batch processing), load and follow:
-- @file skills/skill-performance/SKILL.md
+To explicitly invoke a skill, use: /skill-api, /skill-testing, etc.
 
 ## Skills Evidencing
 

@@ -254,20 +254,16 @@ When provided with a requirements document (requisites.md, spec.md, requirements
 
 ## Domain Skills
 
-When the task involves API design or endpoint architecture, load and follow:
-- @file skills/skill-api/SKILL.md
+This agent works with the following skills from .github/skills/.
+Copilot loads them automatically when relevant to the task:
 
-When the task involves Copilot/AI feature architecture (capability registration, PromptDialog design), load and follow:
-- @file skills/skill-copilot/SKILL.md
+- **skill-api** — When designing API pages, OData endpoints, integration strategy
+- **skill-events** — When designing event-driven architecture, publishers/subscribers
+- **skill-performance** — When designing for performance, keys, caching, batch processing
+- **skill-copilot** — When designing Copilot/AI feature architecture
+- **skill-pages** — When designing page layouts, UX patterns, navigation
 
-When designing for performance (keys, caching, batch processing), load and follow:
-- @file skills/skill-performance/SKILL.md
-
-When designing event-driven architecture (publishers, subscribers, extensibility points), load and follow:
-- @file skills/skill-events/SKILL.md
-
-When planning test strategy as part of architectural design, load and follow:
-- @file skills/skill-testing/SKILL.md
+To explicitly invoke a skill, use: /skill-api, /skill-events, etc.
 
 ## Skills Evidencing
 

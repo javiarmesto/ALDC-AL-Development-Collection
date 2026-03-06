@@ -4,7 +4,7 @@
 
 ## Overview
 
-This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.1** skills-based architecture: **4 agents + 11 skills + 6 workflows + 7 instructions**.
+This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.1** skills-based architecture: **4 agents + 11 skills + 6 workflows + 9 instructions**.
 
 ## Core Principles
 
@@ -256,21 +256,21 @@ ALDC-Core/
 │   ├── al-developer.agent.md              # Tactical implementation
 │   ├── al-conductor.agent.md              # TDD orchestrator
 │   ├── al-presales.agent.md               # Estimation & planning
-│   ├── al-planning-subagent.agent.md      # Research (internal, user-invokable: false)
+│   ├── al-planning-subagent.agent.md      # Research (internal, user-invocable: false)
 │   ├── al-implement-subagent.agent.md     # TDD implementation (internal)
 │   └── al-review-subagent.agent.md        # Code review (internal)
 ├── skills/                                # Composable knowledge modules (11)
-│   ├── skill-api.md
-│   ├── skill-copilot.md
-│   ├── skill-debug.md
-│   ├── skill-events.md
-│   ├── skill-estimation.md
-│   ├── skill-migrate.md
-│   ├── skill-pages.md
-│   ├── skill-performance.md
-│   ├── skill-permissions.md
-│   ├── skill-testing.md
-│   └── skill-translate.md
+│   ├── skill-api/SKILL.md
+│   ├── skill-copilot/SKILL.md
+│   ├── skill-debug/SKILL.md
+│   ├── skill-events/SKILL.md
+│   ├── skill-estimation/SKILL.md
+│   ├── skill-migrate/SKILL.md
+│   ├── skill-pages/SKILL.md
+│   ├── skill-performance/SKILL.md
+│   ├── skill-permissions/SKILL.md
+│   ├── skill-testing/SKILL.md
+│   └── skill-translate/SKILL.md
 ├── prompts/                               # Workflows (6)
 │   ├── al-spec.create.prompt.md
 │   ├── al-build.prompt.md

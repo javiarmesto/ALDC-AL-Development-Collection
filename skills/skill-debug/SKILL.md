@@ -1,6 +1,6 @@
 ---
 name: skill-debug
-description: "Root cause analysis workflow, profiling, diagnostic patterns"
+description: "AL debugging and diagnostics for Business Central. Use when performing snapshot debugging, CPU profiling, analyzing telemetry, or troubleshooting runtime issues."
 ---
 
 # Skill: AL Debugging & Diagnostics

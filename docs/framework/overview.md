@@ -37,15 +37,15 @@ Human-readable structured instructions in Markdown format with YAML frontmatter.
 
 Three types of reusable components:
 
-### 📋 Instructions (7 primitives)
+### 📋 Instructions (9 primitives)
 
 Auto-applied persistent rules via `applyTo` patterns.
 
-### 🎯 Agentic Workflows (14 primitives)
+### 🎯 Agentic Workflows (6 primitives)
 
 Complete task execution processes as `.prompt.md` files.
 
-### 💬 Agents (6 primitives)
+### 💬 Agents (7 primitives — 4 public + 3 subagents)
 
 Role-based specialists with defined tool boundaries.
 
@@ -70,11 +70,13 @@ Optimization strategies:
 
 | Metric | Value |
 |:-------|:------|
-| **Total Primitives** | 28 |
-| **Instructions** | 7 |
-| **Agentic Workflows** | 14 |
-| **Agents** | 6 |
-| **Framework Version** | 2.2.0 |
+| **Total Primitives** | 40 |
+| **Instructions** | 9 |
+| **Skills** | 11 |
+| **Agentic Workflows** | 6 |
+| **Agents** | 7 (4 public + 3 subagents) |
+| **Templates** | 7 |
+| **Framework Version** | 1.1.0 |
 
 ## Learn More
 

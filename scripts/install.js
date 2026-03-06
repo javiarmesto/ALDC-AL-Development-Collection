@@ -210,12 +210,12 @@ const PACKS = [
     description: 'Business Central Agent development with AI Development Toolkit & Agent SDK',
     components: [
       { name: 'Agent',       src: 'agents/al-agent-builder.agent.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-instructions/SKILL.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-task-patterns/SKILL.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-toolkit/SKILL.md' },
-      { name: 'References',  src: 'skills/skill-agent-instructions/references/agent-keywords-reference.md' },
-      { name: 'Examples',    src: 'skills/skill-agent-instructions/examples/agent-simple-instructions.txt' },
-      { name: 'Examples',    src: 'skills/skill-agent-instructions/examples/agent-advanced-instructions.txt' },
+      { name: 'Skills',      src: '.github/skills/skill-agent-instructions/SKILL.md' },
+      { name: 'Skills',      src: '.github/skills/skill-agent-task-patterns/SKILL.md' },
+      { name: 'Skills',      src: '.github/skills/skill-agent-toolkit/SKILL.md' },
+      { name: 'References',  src: '.github/skills/skill-agent-instructions/references/agent-keywords-reference.md' },
+      { name: 'Examples',    src: '.github/skills/skill-agent-instructions/examples/agent-simple-instructions.txt' },
+      { name: 'Examples',    src: '.github/skills/skill-agent-instructions/examples/agent-advanced-instructions.txt' },
       { name: 'Workflow',    src: 'prompts/al-agent.create.prompt.md' },
       { name: 'Workflow',    src: 'prompts/al-agent.task.prompt.md' },
       { name: 'Workflow',    src: 'prompts/al-agent.instructions.prompt.md' },
@@ -552,7 +552,7 @@ ${C.cyan}What gets installed:${C.reset}
   ${C.bold}Core:${C.reset}
   <target-dir>/
     agents/           4 public agents + 3 subagents
-    skills/           7 required + 4 recommended skills
+    .github/skills/   7 required + 4 recommended skills
     prompts/          6 agentic workflows
     instructions/     9 auto-applied guidelines
     docs/framework/   Core specification & docs
@@ -566,7 +566,7 @@ ${C.cyan}What gets installed:${C.reset}
   ${C.bold}Extension Pack — BC Agents (optional):${C.reset}
   <target-dir>/
     agents/           +1 agent (al-agent-builder)
-    skills/           +3 skills (instructions, task-patterns, toolkit)
+    .github/skills/   +3 skills (instructions, task-patterns, toolkit)
     prompts/          +4 workflows (create, task, instructions, test)
     instructions/     +1 instruction (al-agent-toolkit)
     tools/bc-agents/  Scaffolder + validator scripts
@@ -598,7 +598,7 @@ async function testLocal() {
   let skillCount = 0;
 
   if (!fs.existsSync(skillsDir)) {
-    err('skills/ directory not found in target');
+    err('.github/skills/ directory not found in target');
     skillErrors++;
   } else {
     for (const entry of fs.readdirSync(skillsDir)) {

@@ -85,7 +85,7 @@ items:
     kind: instruction
     description: Project estimation, PERT, SWOT analysis, effort scoping
 
-  # ─── Public Agents (4 — user-invokable) ───────────────────────────────────
+  # ─── Public Agents (4 — user-invocable) ───────────────────────────────────
   - path: agents/al-architect.agent.md
     kind: agent
     usage: recommended
@@ -130,7 +130,7 @@ items:
       Requires: {req_name}.spec.md in .github/plans/{req_name}/ (from al-spec.create)
       Produces: {req_name}-plan.md and {req_name}-phase-N-complete.md
 
-      Subagents invoked automatically (not user-invokable):
+      Subagents invoked automatically (not user-invocable):
       - al-planning-subagent: context research
       - al-implement-subagent: TDD implementation (tests FIRST)
       - al-review-subagent: code review against spec + architecture
@@ -144,7 +144,7 @@ items:
 
       Produces: effort estimates, project plans, risk assessments
 
-  # ─── Internal Subagents (3 — conductor-only, not user-invokable) ──────────
+  # ─── Internal Subagents (3 — conductor-only, not user-invocable) ──────────
   - path: agents/al-planning-subagent.agent.md
     kind: agent
     usage: optional

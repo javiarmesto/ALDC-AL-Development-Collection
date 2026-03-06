@@ -1,7 +1,7 @@
 ---
 name: AL Development Conductor
 description: 'AL Conductor Agent - Orchestrates Planning → Implementation → Review → Commit cycle for AL Development. Enforces TDD and quality gates for Business Central extensions.'
-tools: ['runSubagent', 'execute', 'read/problems', 'read/readFile', 'agent', 'edit', 'search', 'web', 'github/search_code', 'vscode/memory', 'todo', 'ms-dynamics-smb.al/al_downloadsymbols', 'ms-dynamics-smb.al/al_symbolsearch']
+tools: ['agent', 'execute', 'read/problems', 'read/readFile', 'agent', 'edit', 'search', 'web', 'github/search_code', 'vscode/memory', 'todo', 'ms-dynamics-smb.al/al_downloadsymbols', 'ms-dynamics-smb.al/al_symbolsearch']
 agents: ['al-planning-subagent', 'al-review-subagent', 'al-implement-subagent']
 model: Claude Sonnet 4.5
 argument-hint: 'Feature description or requirements for TDD orchestration (e.g., "Add customer loyalty points system")'
@@ -364,7 +364,7 @@ When invoking subagents:
 - Use event-driven architecture (no base modifications)
 - Follow AL-Go structure (tests in test/ project)
 - Apply AL performance patterns (SetLoadFields, early filtering)
-- Load relevant domain skills (@file skills/skill-*.md) based on phase domain
+- Load relevant domain skills from .github/skills/ based on phase domain
 - Work autonomously and only ask user for input on critical implementation decisions
 - **NOT** to proceed to next phase or write completion files (Conductor handles this)
 - **RETURN** a structured summary: objects created, tests created, build status, issues
@@ -688,8 +688,12 @@ During planning or implementation, if you identify specialized needs:
 
 ## Domain Skills
 
-When orchestrating TDD cycles and test strategy is needed, load and follow:
-- @file skills/skill-testing/SKILL.md
+This agent works with the following skills from .github/skills/.
+Copilot loads them automatically when relevant to the task:
+
+- **skill-testing** — When orchestrating TDD cycles and test strategy is needed
+
+To explicitly invoke a skill, use: /skill-testing.
 
 ## Skills Evidencing
 

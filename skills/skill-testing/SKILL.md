@@ -1,6 +1,6 @@
 ---
 name: skill-testing
-description: "Given/When/Then, Library Assert, IsInitialized, TDD cycle, AL-Go structure"
+description: "AL test development patterns for Business Central. Use when creating test codeunits, writing Given/When/Then test procedures, using Library Assert, configuring test projects, or implementing TDD workflows."
 ---
 
 # Skill: AL Testing & Test Strategy

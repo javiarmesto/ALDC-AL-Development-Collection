@@ -5,7 +5,7 @@
 > From vibe coding to controlled engineering.
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-purple.svg)](docs/framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.2.0-blue)](CHANGELOG.md)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-purple)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/AL-Development-Collection-for-GitHub-Copilot)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
@@ -118,7 +118,7 @@ flowchart LR
 
 ```mermaid
 graph TB
-    subgraph PUBLIC["Public Agents (user-invokable)"]
+    subgraph PUBLIC["Public Agents (user-invocable)"]
         ARCH[@al-architect]
         DEV[@al-developer]
         COND[@al-conductor]
@@ -257,21 +257,21 @@ AL-Development-Collection-for-GitHub-Copilot/
 │   ├── al-conductor.agent.md
 │   ├── al-developer.agent.md
 │   ├── al-presales.agent.md
-│   ├── al-planning-subagent.agent.md     # user-invokable: false
-│   ├── al-implement-subagent.agent.md    # user-invokable: false
-│   └── al-review-subagent.agent.md       # user-invokable: false
+│   ├── al-planning-subagent.agent.md     # user-invocable: false
+│   ├── al-implement-subagent.agent.md    # user-invocable: false
+│   └── al-review-subagent.agent.md       # user-invocable: false
 ├── skills/                               # 11 composable skills
-│   ├── skill-api.md
-│   ├── skill-copilot.md
-│   ├── skill-debug.md
-│   ├── skill-performance.md
-│   ├── skill-events.md
-│   ├── skill-permissions.md
-│   ├── skill-testing.md
-│   ├── skill-migrate.md
-│   ├── skill-pages.md
-│   ├── skill-translate.md
-│   └── skill-estimation.md
+│   ├── skill-api/SKILL.md
+│   ├── skill-copilot/SKILL.md
+│   ├── skill-debug/SKILL.md
+│   ├── skill-performance/SKILL.md
+│   ├── skill-events/SKILL.md
+│   ├── skill-permissions/SKILL.md
+│   ├── skill-testing/SKILL.md
+│   ├── skill-migrate/SKILL.md
+│   ├── skill-pages/SKILL.md
+│   ├── skill-translate/SKILL.md
+│   └── skill-estimation/SKILL.md
 ├── prompts/                              # 6 retained workflows
 │   ├── al-spec.create.prompt.md
 │   ├── al-build.prompt.md
@@ -314,7 +314,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 
 ---
 
-## What's New in v3.0.0 (ALDC Core v1.1)
+## What's New in v3.2.0 (ALDC Core v1.1)
 
 - **Skills-based modularization**: 11 composable skills replace 7 specialized agents + 12 prompts
 
@@ -401,5 +401,5 @@ MIT — See [LICENSE](LICENSE) for details.
 ---
 
 **Status**: ✅ ALDC Core v1.1 COMPLIANT
-**Version**: 3.0.0 (ALDC Core v1.1)
+**Version**: 3.2.0 (ALDC Core v1.1)
 **Last Updated**: 2026-03-04

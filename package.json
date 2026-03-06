@@ -1,6 +1,6 @@
 {
   "name": "al-development-collection",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "AI Native AL Development toolkit for Microsoft Dynamics 365 Business Central with GitHub Copilot integration",
   "main": "scripts/install.js",
   "bin": {

@@ -2,8 +2,9 @@
 name: AL Code Review Subagent
 description: 'AL Code Review Subagent - Quality assurance for Business Central AL code. Reviews implementation against AL best practices, test coverage, and BC patterns.'
 user-invocable: false
+disable-model-invocation: true
 argument-hint: 'Phase implementation to review with acceptance criteria and AL validation requirements'
-tools: ['search', 'usages', 'problems', 'changes', 'testFailure']
+tools: ['search', 'search/usages', 'read/problems', 'search/changes', 'execute/testFailure']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Return to Conductor
@@ -381,6 +382,8 @@ Every review MUST include a **Skills Compliance Check** that verifies whether th
 | skill-testing | Given/When/Then, Library Assert, IsInitialized, test isolation | Phase has no tests |
 
 **If a skill SHOULD have been loaded but wasn't**: flag as **MAJOR** issue — "Missing skill-performance: SetLoadFields not applied on Customer table."
+
+> **Note**: Skill references use folder names (e.g., `skill-api`). The full path is `.github/skills/skill-api/SKILL.md`.
 
 ## AL-Specific Review Checklist
 

@@ -47,7 +47,7 @@ Un repositorio ALDC Core **MUST** contener:
   - Requirement sets: `{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md` por cada requerimiento activo
 - Un entrypoint repo-wide de Copilot en `.github/copilot-instructions.md`.
 - Un toolkit (en `toolkitRoot`) con:
-  - `agents/` (agentes invocables por el usuario + subagents internos con `user-invokable: false`)
+  - `agents/` (agentes invocables por el usuario + subagents internos con `user-invocable: false`)
   - `instructions/`
   - `prompts/`
   - `skills/` (módulos de conocimiento composables)
@@ -59,14 +59,14 @@ Nota: `toolkitRoot` **MAY** ser `.` en repos de framework y `.github` en repos c
 
 ALDC Core v1.1 adopta un modelo simplificado de **4 agentes públicos + 3 subagents internos**.
 
-### Agentes públicos (`user-invokable: true`)
+### Agentes públicos (`user-invocable: true`)
 
 - **al-architect** — Diseño, arquitectura, decisiones estratégicas. Carga skills según dominio (API, Copilot, performance).
 - **al-conductor** — Orquestador TDD principal. Coordina subagents via `runSubagent`. Ciclo: Plan → Implement → Review → Commit.
 - **al-developer** — Implementación táctica + debugging. Carga skills según tarea (debug, events, permissions, etc.). Invocable directamente por el usuario.
 - **al-presales** — Estimación y planificación de proyectos. Vive fuera del ciclo de desarrollo.
 
-### Subagents internos (`user-invokable: false`)
+### Subagents internos (`user-invocable: false`)
 
 - **al-planning-subagent** — Research AL-aware y context gathering. Devuelve findings estructurados al conductor.
 - **al-implement-subagent** — Implementación TDD-only. Crea tests PRIMERO, luego código. Carga skills por dominio. No interactúa con el usuario.
@@ -170,11 +170,11 @@ En GitHub Copilot, los agentes referencian skills condicionalmente:
 ```markdown
 ## Domain Skills
 
-When the task involves API design or implementation, load and follow:
-- @file skills/skill-api/SKILL.md
+This agent works with the following skills from skills/.
+Copilot loads them automatically when relevant to the task:
 
-When debugging is needed, load and follow:
-- @file skills/skill-debug/SKILL.md
+- **skill-api** — When designing or implementing API pages, OData endpoints
+- **skill-debug** — When performing debugging, CPU profiling, diagnostics
 ```
 
 ### Creación de nuevos skills
@@ -344,7 +344,7 @@ Un repositorio es **ALDC Core v1.1 compliant** si:
 4. Las 7 plantillas inmutables existen en `docs/templates/` sin alteración.
 5. Los 4 agentes Core + 3 subagents internos existen bajo `toolkitRoot`.
 6. Los 6 workflows Core existen bajo `toolkitRoot`.
-7. Los 7 skills Core requeridos existen en `skills/`.
+7. Los 7 skills Core requeridos existen en `skills/` bajo toolkitRoot.
 8. Las 9 instructions existen.
 9. El entrypoint `.github/copilot-instructions.md` es coherente.
 10. En MEDIUM/HIGH: flujo spec → architecture → conductor(subagents) → review → entrega con gates HITL.
@@ -377,7 +377,7 @@ Packs MUST NOT:
 - Weaken HITL gates
 
 Packs MAY:
-- Add new agents (user-invokable: true, pack: "{pack-name}")
+- Add new agents (user-invocable: true, pack: "{pack-name}")
 - Add new skills loadable by Core agents
 - Add new workflows
 - Add domain-specific tools and validators

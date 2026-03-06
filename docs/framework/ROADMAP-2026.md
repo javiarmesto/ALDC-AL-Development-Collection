@@ -6,7 +6,7 @@ timeline
 
   2026-03 : Core v1.1 estabilizado
           : Skills-based architecture (11 skills)
-          : 4 agentes + 2 subagents + 6 workflows
+          : 4 agentes + 3 subagents + 6 workflows
           : Contratos por requerimiento + memory global
           : aldc-validate en CI
 
@@ -17,7 +17,7 @@ timeline
 
   2026-05 : ALDC para Claude Code
           : CLAUDE.md + slash commands
-          : Skills en /mnt/skills/ convention
+          : Skills en skills/ convention
           : Paridad funcional con versión Copilot
 
   2026-06 : Core vs Extensions

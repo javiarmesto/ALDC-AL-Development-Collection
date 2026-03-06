@@ -29,7 +29,7 @@ v1.1 is a **compatible evolution** of v1.0, not a breaking change. Existing v1.0
 ### Phase 1: Add skills directory (no breaking changes)
 
 ```bash
-mkdir -p skills/
+mkdir -p .github/skills/
 # Copy skill-template.md to docs/templates/
 # Create required skill files (can be stubs initially)
 ```

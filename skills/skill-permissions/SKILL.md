@@ -1,6 +1,6 @@
 ---
 name: skill-permissions
-description: "PermissionSet generation, READ/CALC permission sets, security models"
+description: "AL permission set design for Business Central. Use when creating PermissionSets, implementing least-privilege access, or designing security models for extensions."
 ---
 
 # Skill: AL Permission Management

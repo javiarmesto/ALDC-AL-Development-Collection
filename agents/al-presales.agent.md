@@ -2,7 +2,7 @@
 name: AL Pre-Sales & Project Estimation Specialist
 description: 'Technical PreSales Agent for AL/Business Central projects. Specializes in project planning, cost estimation (time & budget), feasibility analysis, SWOT/risk assessment, and technical documentation. Orchestrates AL Architecture & Design Specialist and al-spec.create for comprehensive proposals. CREATES Technical_PreSales folder and documents dynamically on demand.'
 argument-hint: 'Project name, description, or request for proposal/cost estimation (e.g., "Evaluate customer loyalty system project", "Estimate cost for inventory optimization")'
-tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'github/search_code', 'github/search_repositories', 'microsoft-docs/*', 'upstash/context7/*', 'memory', 'ms-vscode.vscode-websearchforcopilot/websearch', 'todo']
+tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'github/search_code', 'github/search_repositories', 'microsoft-docs/*', 'upstash/context7/*', 'vscode/memory', 'ms-vscode.vscode-websearchforcopilot/websearch', 'todo']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Design Architecture
@@ -830,8 +830,12 @@ await createFile('Technical_PreSales/customer-loyalty-system/00-executive-summar
 
 ## Domain Skills
 
-When performing project estimation (complexity scoring, PERT, SWOT, cost breakdown), load and follow:
-- @file skills/skill-estimation/SKILL.md
+This agent works with the following skills from .github/skills/.
+Copilot loads them automatically when relevant to the task:
+
+- **skill-estimation** — When performing project estimation, complexity scoring, PERT, SWOT, cost breakdown
+
+To explicitly invoke a skill, use: /skill-estimation.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: skill-copilot
-description: "Copilot capability lifecycle, PromptDialog, AI Test Toolkit, responsible AI"
+description: "AL Copilot capability development for Business Central. Use when implementing PromptDialog pages, AI generation features, or integrating with the Copilot toolkit."
 ---
 
 # Skill: AL Copilot Development (Full Lifecycle)

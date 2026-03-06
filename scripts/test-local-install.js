@@ -161,7 +161,7 @@ for (const asset of expectedAssets) {
   else { fail(`${asset} — MISSING`); errors++; }
 }
 
-// Check NO loose skill-*.md files remain at skills/ root
+// Check NO loose skill-*.md files remain at .github/skills/ root
 const looseSkills = fs.readdirSync(skillsDir)
   .filter(f => f.startsWith('skill-') && f.endsWith('.md'));
 if (looseSkills.length > 0) {
@@ -170,7 +170,7 @@ if (looseSkills.length > 0) {
     errors++;
   }
 } else {
-  ok('No loose skill-*.md files at skills/ root');
+  ok('No loose skill-*.md files at .github/skills/ root');
 }
 
 // ─── Step 5: Run aldc-validate ─────────────────────────────────────────────

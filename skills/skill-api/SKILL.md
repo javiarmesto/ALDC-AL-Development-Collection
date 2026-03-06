@@ -1,6 +1,6 @@
 ---
 name: skill-api
-description: "API design, OData/REST, versioning, EntityName conventions, bound actions"
+description: "AL API development patterns for Business Central. Use when creating OData/REST API pages, HttpClient integrations, webhook implementations, or any external system integration via API."
 ---
 
 # Skill: AL API Development
