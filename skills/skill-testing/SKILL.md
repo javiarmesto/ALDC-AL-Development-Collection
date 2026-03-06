@@ -1,3 +1,8 @@
+---
+name: skill-testing
+description: "Given/When/Then, Library Assert, IsInitialized, TDD cycle, AL-Go structure"
+---
+
 # Skill: AL Testing & Test Strategy
 
 ## Purpose

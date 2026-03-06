@@ -831,7 +831,7 @@ await createFile('Technical_PreSales/customer-loyalty-system/00-executive-summar
 ## Domain Skills
 
 When performing project estimation (complexity scoring, PERT, SWOT, cost breakdown), load and follow:
-- @file skills/skill-estimation.md
+- @file skills/skill-estimation/SKILL.md
 
 ---
 

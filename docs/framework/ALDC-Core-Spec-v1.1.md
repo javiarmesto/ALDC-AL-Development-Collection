@@ -171,10 +171,10 @@ En GitHub Copilot, los agentes referencian skills condicionalmente:
 ## Domain Skills
 
 When the task involves API design or implementation, load and follow:
-- @file skills/skill-api.md
+- @file skills/skill-api/SKILL.md
 
 When debugging is needed, load and follow:
-- @file skills/skill-debug.md
+- @file skills/skill-debug/SKILL.md
 ```
 
 ### Creación de nuevos skills

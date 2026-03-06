@@ -50,38 +50,38 @@ items:
 
   # ─── Skills (11 composable — loaded on demand by agents) ──────────────────
   # Required skills (7)
-  - path: skills/skill-api.md
+  - path: skills/skill-api/SKILL.md
     kind: instruction
     description: API design, OData/REST, versioning, EntityName conventions, bound actions
-  - path: skills/skill-copilot.md
+  - path: skills/skill-copilot/SKILL.md
     kind: instruction
     description: Copilot capability lifecycle, PromptDialog, AI Test Toolkit, responsible AI
-  - path: skills/skill-debug.md
+  - path: skills/skill-debug/SKILL.md
     kind: instruction
     description: Root cause analysis workflow, profiling, diagnostic patterns
-  - path: skills/skill-performance.md
+  - path: skills/skill-performance/SKILL.md
     kind: instruction
     description: SetLoadFields, CalcFields grouping, early filtering, temporary tables, triage
-  - path: skills/skill-events.md
+  - path: skills/skill-events/SKILL.md
     kind: instruction
     description: Event subscriber/publisher patterns, IsHandled, integration events
-  - path: skills/skill-permissions.md
+  - path: skills/skill-permissions/SKILL.md
     kind: instruction
     description: PermissionSet generation, READ/CALC permission sets, security models
-  - path: skills/skill-testing.md
+  - path: skills/skill-testing/SKILL.md
     kind: instruction
     description: Given/When/Then, Library Assert, IsInitialized, TDD cycle, AL-Go structure
   # Recommended skills (4)
-  - path: skills/skill-migrate.md
+  - path: skills/skill-migrate/SKILL.md
     kind: instruction
     description: BC version migration, breaking changes, upgrade codeunits
-  - path: skills/skill-pages.md
+  - path: skills/skill-pages/SKILL.md
     kind: instruction
     description: Page types, UX patterns, controls, Page Designer integration
-  - path: skills/skill-translate.md
+  - path: skills/skill-translate/SKILL.md
     kind: instruction
     description: XLIFF, multi-language, localization, translation management
-  - path: skills/skill-estimation.md
+  - path: skills/skill-estimation/SKILL.md
     kind: instruction
     description: Project estimation, PERT, SWOT analysis, effort scoping
 
@@ -197,10 +197,10 @@ items:
     kind: prompt
     description: "Test agent SDK integration — 6 categories (pack: bc-agents)"
 
-  - path: skills/skill-agent-instructions.md
+  - path: skills/skill-agent-instructions/SKILL.md
     kind: instruction
     description: "Generate/review natural language instructions for BC agents (pack: bc-agents)"
-  - path: skills/skill-agent-task-patterns.md
+  - path: skills/skill-agent-task-patterns/SKILL.md
     kind: instruction
     description: "8 Agent SDK task integration patterns (pack: bc-agents)"
 

@@ -1,3 +1,8 @@
+---
+name: skill-migrate
+description: "BC version migration, breaking changes, upgrade codeunits"
+---
+
 # Skill: AL Project Migration
 
 ## Purpose

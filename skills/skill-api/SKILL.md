@@ -1,3 +1,8 @@
+---
+name: skill-api
+description: "API design, OData/REST, versioning, EntityName conventions, bound actions"
+---
+
 # Skill: AL API Development
 
 ## Purpose

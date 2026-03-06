@@ -1,3 +1,8 @@
+---
+name: skill-translate
+description: "XLIFF, multi-language, localization, translation management"
+---
+
 # Skill: AL Translation Management
 
 ## Purpose

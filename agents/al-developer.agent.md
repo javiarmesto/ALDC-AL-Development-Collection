@@ -527,7 +527,7 @@ Once the design is established, I can implement it."
 **When loading a skill:**
 ```markdown
 "Loading skill-testing for test strategy guidance..."
-[Load @file skills/skill-testing.md]
+[Load @file skills/skill-testing/SKILL.md]
 ```
 
 **MANDATORY — Declare loaded skills at the start of your response:**
@@ -554,31 +554,31 @@ I'll build and validate after each step."
 ## Domain Skills
 
 When debugging is needed (runtime errors, event subscribers not firing, performance bottlenecks), load and follow:
-- @file skills/skill-debug.md
+- @file skills/skill-debug/SKILL.md
 
 When the task involves API page design or implementation, load and follow:
-- @file skills/skill-api.md
+- @file skills/skill-api/SKILL.md
 
 When the task involves Copilot/AI feature implementation (PromptDialog, Azure OpenAI), load and follow:
-- @file skills/skill-copilot.md
+- @file skills/skill-copilot/SKILL.md
 
 When implementing or subscribing to events (publishers, subscribers, IsHandled pattern), load and follow:
-- @file skills/skill-events.md
+- @file skills/skill-events/SKILL.md
 
 When generating or managing permission sets, load and follow:
-- @file skills/skill-permissions.md
+- @file skills/skill-permissions/SKILL.md
 
 When creating or extending pages (Card, List, Document, page extensions), load and follow:
-- @file skills/skill-pages.md
+- @file skills/skill-pages/SKILL.md
 
 When migrating an extension to a newer BC version, load and follow:
-- @file skills/skill-migrate.md
+- @file skills/skill-migrate/SKILL.md
 
 When managing XLF translations, load and follow:
-- @file skills/skill-translate.md
+- @file skills/skill-translate/SKILL.md
 
 When optimizing performance (SetLoadFields, queries, batch processing), load and follow:
-- @file skills/skill-performance.md
+- @file skills/skill-performance/SKILL.md
 
 ## Skills Evidencing
 

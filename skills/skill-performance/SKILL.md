@@ -1,3 +1,8 @@
+---
+name: skill-performance
+description: "SetLoadFields, CalcFields grouping, early filtering, temporary tables, triage"
+---
+
 # Skill: AL Performance Optimization
 
 ## Purpose

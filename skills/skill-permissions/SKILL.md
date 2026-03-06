@@ -1,3 +1,8 @@
+---
+name: skill-permissions
+description: "PermissionSet generation, READ/CALC permission sets, security models"
+---
+
 # Skill: AL Permission Management
 
 ## Purpose

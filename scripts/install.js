@@ -162,6 +162,22 @@ function copyFile(src, dst, force = false) {
   return true;
 }
 
+/**
+ * Count files recursively in a directory (for folder-based skills).
+ */
+function countFiles(dir) {
+  let count = 0;
+  for (const item of fs.readdirSync(dir)) {
+    const full = path.join(dir, item);
+    if (fs.statSync(full).isDirectory()) {
+      count += countFiles(full);
+    } else {
+      count++;
+    }
+  }
+  return count;
+}
+
 // ─── Prompt helper ─────────────────────────────────────────────────────────
 function ask(question, defaultYes = true) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -194,12 +210,12 @@ const PACKS = [
     description: 'Business Central Agent development with AI Development Toolkit & Agent SDK',
     components: [
       { name: 'Agent',       src: 'agents/al-agent-builder.agent.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-instructions.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-task-patterns.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-toolkit.md' },
-      { name: 'References',  src: 'skills/references/agent-keywords-reference.md' },
-      { name: 'Examples',    src: 'skills/examples/agent-simple-instructions.txt' },
-      { name: 'Examples',    src: 'skills/examples/agent-advanced-instructions.txt' },
+      { name: 'Skills',      src: 'skills/skill-agent-instructions/SKILL.md' },
+      { name: 'Skills',      src: 'skills/skill-agent-task-patterns/SKILL.md' },
+      { name: 'Skills',      src: 'skills/skill-agent-toolkit/SKILL.md' },
+      { name: 'References',  src: 'skills/skill-agent-instructions/references/agent-keywords-reference.md' },
+      { name: 'Examples',    src: 'skills/skill-agent-instructions/examples/agent-simple-instructions.txt' },
+      { name: 'Examples',    src: 'skills/skill-agent-instructions/examples/agent-advanced-instructions.txt' },
       { name: 'Workflow',    src: 'prompts/al-agent.create.prompt.md' },
       { name: 'Workflow',    src: 'prompts/al-agent.task.prompt.md' },
       { name: 'Workflow',    src: 'prompts/al-agent.instructions.prompt.md' },
@@ -252,7 +268,7 @@ function installPack(pack, packageDir, targetDir, projectDir, force) {
 
 // ─── INSTALL command ───────────────────────────────────────────────────────
 async function install(opts) {
-  const packageDir = path.resolve(__dirname, '..');
+  const packageDir = process.env.ALDC_PACKAGE_DIR || path.resolve(__dirname, '..');
   const projectDir = process.cwd();
   const targetDir = path.resolve(projectDir, opts.targetDir || '.github');
 
@@ -276,8 +292,16 @@ async function install(opts) {
     log('\nExisting ALDC installation detected.', C.yellow);
     if (opts.force) {
       log('--force: existing files will be overwritten.', C.yellow);
+    } else if (!opts.yes) {
+      const update = await ask('\nUpdate existing installation? (overwrites changed files)', true);
+      if (update) {
+        opts.force = true;
+        log('Update mode: existing files will be overwritten.', C.yellow);
+      } else {
+        log('Merge mode: existing files will be preserved.', C.dim);
+      }
     } else {
-      log('Merge mode: existing files will be preserved.', C.dim);
+      log('Merge mode: existing files will be preserved (use --force to overwrite).', C.dim);
     }
   }
 
@@ -421,9 +445,9 @@ async function validate(opts) {
   for (const comp of COMPONENTS) {
     const dir = path.join(targetDir, comp.src);
     if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
-      totalFiles += files.length;
-      ok(`${comp.src}/ (${files.length} files) — ${comp.name}`);
+      const count = countFiles(dir);
+      totalFiles += count;
+      ok(`${comp.src}/ (${count} files) — ${comp.name}`);
     } else {
       err(`${comp.src}/ — MISSING`);
       errors++;
@@ -550,6 +574,109 @@ ${C.cyan}What gets installed:${C.reset}
 `);
 }
 
+// ─── TEST-LOCAL command ──────────────────────────────────────────────────
+async function testLocal() {
+  const os = require('os');
+  const tmpBase = path.join(os.tmpdir(), 'aldc-test-' + Date.now());
+  const tmpProject = path.join(tmpBase, 'test-project');
+  fs.mkdirSync(tmpProject, { recursive: true });
+
+  banner();
+  header('ALDC Core v1.1 — Local Test');
+  info(`Test directory: ${tmpProject}`);
+  console.log('');
+
+  // Run install into temp dir
+  const origCwd = process.cwd();
+  process.chdir(tmpProject);
+  await install({ targetDir: '.github', yes: true, force: true, withPacks: true });
+
+  // Validate skills structure
+  header('Verifying Skills Folder Structure');
+  const skillsDir = path.join(tmpProject, '.github', 'skills');
+  let skillErrors = 0;
+  let skillCount = 0;
+
+  if (!fs.existsSync(skillsDir)) {
+    err('skills/ directory not found in target');
+    skillErrors++;
+  } else {
+    for (const entry of fs.readdirSync(skillsDir)) {
+      const entryPath = path.join(skillsDir, entry);
+      if (!fs.statSync(entryPath).isDirectory()) {
+        if (entry === 'index.md') continue;
+        log(`  ? ${entry} (loose file, expected folder)`, C.yellow);
+        continue;
+      }
+      const skillMd = path.join(entryPath, 'SKILL.md');
+      if (fs.existsSync(skillMd)) {
+        // Check frontmatter
+        const content = fs.readFileSync(skillMd, 'utf8');
+        const hasFrontmatter = content.startsWith('---');
+        if (hasFrontmatter) {
+          ok(`${entry}/SKILL.md (frontmatter OK)`);
+        } else {
+          err(`${entry}/SKILL.md (MISSING frontmatter)`);
+          skillErrors++;
+        }
+        skillCount++;
+      } else {
+        err(`${entry}/ — SKILL.md MISSING`);
+        skillErrors++;
+      }
+    }
+  }
+
+  // Verify agent-instructions has assets
+  const agentInstrDir = path.join(skillsDir, 'skill-agent-instructions');
+  if (fs.existsSync(agentInstrDir)) {
+    const refs = path.join(agentInstrDir, 'references', 'agent-keywords-reference.md');
+    const ex1 = path.join(agentInstrDir, 'examples', 'agent-simple-instructions.txt');
+    const ex2 = path.join(agentInstrDir, 'examples', 'agent-advanced-instructions.txt');
+    if (fs.existsSync(refs)) ok('references/agent-keywords-reference.md'); else { err('references/ missing'); skillErrors++; }
+    if (fs.existsSync(ex1)) ok('examples/agent-simple-instructions.txt'); else { err('examples/ missing'); skillErrors++; }
+    if (fs.existsSync(ex2)) ok('examples/agent-advanced-instructions.txt'); else { err('examples/ missing'); skillErrors++; }
+  }
+
+  // Run ALDC validator on the installed output
+  header('Running ALDC Validator on Installed Output');
+  const aldcYamlDst = path.join(tmpProject, 'aldc.yaml');
+  if (fs.existsSync(aldcYamlDst)) {
+    const { execSync } = require('child_process');
+    try {
+      const validatorPath = path.join(tmpProject, '.github', 'tools', 'aldc-validate', 'index.js');
+      if (fs.existsSync(validatorPath)) {
+        const out = execSync(`node "${validatorPath}" --config aldc.yaml`, {
+          cwd: tmpProject,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+        });
+        console.log(out);
+      } else {
+        log('  Validator not found in installed output (tools/ not copied by default)', C.dim);
+      }
+    } catch (e) {
+      err('Validator failed:');
+      console.log(e.stdout || e.message);
+    }
+  }
+
+  // Summary
+  header('Test Results');
+  log(`Skills verified: ${skillCount}`, C.green);
+  if (skillErrors === 0) {
+    log('ALL CHECKS PASSED', C.green + C.bold);
+  } else {
+    log(`${skillErrors} error(s) found`, C.red);
+  }
+  console.log('');
+  info(`Test output preserved at: ${tmpProject}`);
+  log('Delete manually when done: rm -rf "' + tmpBase + '"', C.dim);
+  console.log('');
+
+  process.chdir(origCwd);
+}
+
 // ─── Main ──────────────────────────────────────────────────────────────────
 const opts = parseArgs(process.argv);
 
@@ -559,6 +686,9 @@ switch (opts.command) {
     break;
   case 'validate':
     validate(opts).catch((e) => { err(e.message); process.exit(1); });
+    break;
+  case 'test-local':
+    testLocal().catch((e) => { err(e.message); process.exit(1); });
     break;
   case 'install':
   default:

@@ -255,19 +255,19 @@ When provided with a requirements document (requisites.md, spec.md, requirements
 ## Domain Skills
 
 When the task involves API design or endpoint architecture, load and follow:
-- @file skills/skill-api.md
+- @file skills/skill-api/SKILL.md
 
 When the task involves Copilot/AI feature architecture (capability registration, PromptDialog design), load and follow:
-- @file skills/skill-copilot.md
+- @file skills/skill-copilot/SKILL.md
 
 When designing for performance (keys, caching, batch processing), load and follow:
-- @file skills/skill-performance.md
+- @file skills/skill-performance/SKILL.md
 
 When designing event-driven architecture (publishers, subscribers, extensibility points), load and follow:
-- @file skills/skill-events.md
+- @file skills/skill-events/SKILL.md
 
 When planning test strategy as part of architectural design, load and follow:
-- @file skills/skill-testing.md
+- @file skills/skill-testing/SKILL.md
 
 ## Skills Evidencing
 

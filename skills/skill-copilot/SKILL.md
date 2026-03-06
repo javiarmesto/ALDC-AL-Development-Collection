@@ -1,3 +1,8 @@
+---
+name: skill-copilot
+description: "Copilot capability lifecycle, PromptDialog, AI Test Toolkit, responsible AI"
+---
+
 # Skill: AL Copilot Development (Full Lifecycle)
 
 ## Purpose

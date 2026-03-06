@@ -1,3 +1,8 @@
+---
+name: skill-pages
+description: "Page types, UX patterns, controls, Page Designer integration"
+---
+
 # Skill: AL Page Design
 
 ## Purpose

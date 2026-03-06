@@ -44,18 +44,18 @@ required:
 
   skills:
     required:
-      - "skills/skill-api.md"
-      - "skills/skill-copilot.md"
-      - "skills/skill-debug.md"
-      - "skills/skill-performance.md"
-      - "skills/skill-events.md"
-      - "skills/skill-permissions.md"
-      - "skills/skill-testing.md"
+      - "skills/skill-api/SKILL.md"
+      - "skills/skill-copilot/SKILL.md"
+      - "skills/skill-debug/SKILL.md"
+      - "skills/skill-performance/SKILL.md"
+      - "skills/skill-events/SKILL.md"
+      - "skills/skill-permissions/SKILL.md"
+      - "skills/skill-testing/SKILL.md"
     recommended:
-      - "skills/skill-migrate.md"
-      - "skills/skill-pages.md"
-      - "skills/skill-translate.md"
-      - "skills/skill-estimation.md"
+      - "skills/skill-migrate/SKILL.md"
+      - "skills/skill-pages/SKILL.md"
+      - "skills/skill-translate/SKILL.md"
+      - "skills/skill-estimation/SKILL.md"
 
   instructions:
     - "instructions/al-guidelines.instructions.md"

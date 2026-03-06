@@ -1,3 +1,8 @@
+---
+name: skill-events
+description: "Event subscriber/publisher patterns, IsHandled, integration events"
+---
+
 # Skill: AL Event-Driven Architecture
 
 ## Purpose

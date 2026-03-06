@@ -1,3 +1,8 @@
+---
+name: skill-debug
+description: "Root cause analysis workflow, profiling, diagnostic patterns"
+---
+
 # Skill: AL Debugging & Diagnostics
 
 ## Purpose

@@ -689,7 +689,7 @@ During planning or implementation, if you identify specialized needs:
 ## Domain Skills
 
 When orchestrating TDD cycles and test strategy is needed, load and follow:
-- @file skills/skill-testing.md
+- @file skills/skill-testing/SKILL.md
 
 ## Skills Evidencing
 

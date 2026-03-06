@@ -240,22 +240,22 @@ end;
 ## Domain Skills
 
 When the phase involves API page creation, load and follow:
-- @file skills/skill-api.md
+- @file skills/skill-api/SKILL.md
 
 When the phase involves event subscribers/publishers, load and follow:
-- @file skills/skill-events.md
+- @file skills/skill-events/SKILL.md
 
 When the phase involves permission sets, load and follow:
-- @file skills/skill-permissions.md
+- @file skills/skill-permissions/SKILL.md
 
 When the phase involves performance optimization, load and follow:
-- @file skills/skill-performance.md
+- @file skills/skill-performance/SKILL.md
 
 When the phase involves Copilot/AI features, load and follow:
-- @file skills/skill-copilot.md
+- @file skills/skill-copilot/SKILL.md
 
 When the phase involves test strategy or test design, load and follow:
-- @file skills/skill-testing.md
+- @file skills/skill-testing/SKILL.md
 
 </domain_skills>
 

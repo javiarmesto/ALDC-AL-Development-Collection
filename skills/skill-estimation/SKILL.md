@@ -1,3 +1,8 @@
+---
+name: skill-estimation
+description: "Project estimation, PERT, SWOT analysis, effort scoping"
+---
+
 # Skill: AL Project Estimation
 
 ## Purpose
