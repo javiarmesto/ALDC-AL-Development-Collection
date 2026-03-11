@@ -342,13 +342,24 @@ async function install(opts) {
     log('  collections/ not found (optional)', C.dim);
   }
 
-  // 3. Copy aldc.yaml to project root
+  // 3. Copy aldc.yaml to project root and update toolkitRoot
   header('Installing Configuration');
+  const aldcYamlDst = path.join(projectDir, 'aldc.yaml');
   if (copyFile(
     path.join(packageDir, 'aldc.yaml'),
-    path.join(projectDir, 'aldc.yaml'),
+    aldcYamlDst,
     opts.force
-  )) totalCopied++; else totalSkipped++;
+  )) {
+    totalCopied++;
+    // Update toolkitRoot to match the target directory relative to project root
+    const relTarget = path.relative(projectDir, targetDir).replace(/\\/g, '/') || '.';
+    if (relTarget !== '.') {
+      let yamlContent = fs.readFileSync(aldcYamlDst, 'utf8');
+      yamlContent = yamlContent.replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: "${relTarget}"`);
+      fs.writeFileSync(aldcYamlDst, yamlContent, 'utf8');
+      ok(`toolkitRoot updated to "${relTarget}"`);
+    }
+  } else { totalSkipped++; }
 
   // 4. Copy copilot-instructions.md entrypoint to .github/
   const copilotSrc = path.join(packageDir, 'instructions', 'copilot-instructions.md');

@@ -2,10 +2,10 @@
 
 > **ALDC** — Skills-based, spec-driven, TDD-orchestrated development framework for Microsoft Dynamics 365 Business Central with GitHub Copilot agents.
 >
-> ALDC Core v1.1 | Extension v3.0.0
+> ALDC Core v1.1 | Extension v3.2.0
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-purple.svg)](framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.2.0-blue)](../CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](../LICENSE)
 
 ---
@@ -79,7 +79,7 @@ The architect is a **Solution Architect** (DESIGNS). The spec.create workflow pr
 
 ---
 
-## What's New in v3.0.0
+## What's New in v3.2.0
 
 - **Skills-based modularization**: 11 composable skills replace 7 specialized agents + 12 prompts
 - **Restored TDD enforcement**: `al-implement-subagent` with hardcoded RED→GREEN→REFACTOR

@@ -1,4 +1,4 @@
-# Getting Started with ALDC v3.0.0
+# Getting Started with ALDC v3.2.0
 
 Welcome to the **AL Development Collection** (ALDC Core v1.1).
 This guide helps you start developing Business Central extensions

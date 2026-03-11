@@ -211,7 +211,7 @@ aldc.yaml          (configuration at workspace root)
 ## Framework Compliance
 
 **Framework**: ALDC Core v1.1
-**Version**: 3.0.0
+**Version**: 3.2.0
 **Agents**: 4 public + 3 internal subagents
 **Skills**: 11 composable (7 required + 4 recommended)
 **Workflows**: 6
