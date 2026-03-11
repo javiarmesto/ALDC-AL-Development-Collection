@@ -25,10 +25,10 @@ timeline
           : Policy de extensiones publicada
           : Compatibilidad install.js (modo legacy)
 
-  2026-09 : Skills packs v1
-          : Industry-specific skill packs
+  2026-09 : Skills extensions v1
+          : Industry-specific skill collections
           : Community-contributed skills
-          : Skill marketplace / registry
+          : Skill registry
 
   2026-11 : Comunidad y escalado
           : RFCs activos

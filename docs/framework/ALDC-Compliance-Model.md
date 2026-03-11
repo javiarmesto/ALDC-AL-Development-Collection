@@ -29,7 +29,7 @@ Incluye Core v1.1 + operación multi-sesión/autónoma:
 
 ### ALDC Core + Extensions
 
-Incluye Core v1.1 + módulos/packs opcionales, sin alterar contratos Core.
+Incluye Core v1.1 + componentes opcionales, sin alterar contratos Core.
 
 ## Checklist Core v1.1
 

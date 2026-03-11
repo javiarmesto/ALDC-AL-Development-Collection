@@ -363,21 +363,23 @@ Pero **MUST NOT**:
 - Modificar plantillas inmutables.
 - Borrar o sobrescribir contenido de `memory.md`.
 
-## Extension Packs
+## Optional Components
 
-Extension Packs add domain-specific capabilities without altering Core.
-Each pack provides agents, skills, workflows, and tools for a specific domain.
+Optional components add domain-specific capabilities without altering Core.
 
-Available packs:
-- **BC Agents**: AI Development Toolkit / Agent SDK development
+Available optional components:
 
-Packs MUST NOT:
+- **BC Agent Builder**: @al-agent-builder agent, 3 skills, 4 workflows for AI Development Toolkit / Agent SDK development
+
+Optional components MUST NOT:
+
 - Override Core agents or workflows
 - Modify Core contract structure
 - Weaken HITL gates
 
-Packs MAY:
-- Add new agents (user-invocable: true, pack: "{pack-name}")
+Optional components MAY:
+
+- Add new agents (user-invocable: true)
 - Add new skills loadable by Core agents
 - Add new workflows
 - Add domain-specific tools and validators

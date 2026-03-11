@@ -11,9 +11,9 @@
 
 ## [3.1.0] - 2026-03-05
 
-### BC Agents Extension Pack
+### BC Agent Builder
 
-First ALDC Extension Pack — tooling for Business Central Agent development with the AI Development Toolkit and Agent SDK.
+Optional agent and skills for Business Central Agent development with the AI Development Toolkit and Agent SDK.
 
 - **@al-agent-builder** agent — Designer (no-code) and SDK (pro-code) paths, 7-phase workflow with HITL gates
 - **skill-agent-instructions** — Responsibilities-Guidelines-Instructions authoring framework

@@ -174,39 +174,39 @@ items:
       Checks skills compliance (api patterns, performance patterns, test patterns).
       NOT for direct use — invoked automatically by @al-conductor.
 
-  # ─── BC Agents Extension Pack (pack: bc-agents) ─────────────────────────────
+  # ─── BC Agent Builder (optional) ────────────────────────────────────────────
   - path: agents/al-agent-builder.agent.md
     kind: agent
     usage: optional
     description: |
-      Agent Toolkit Builder (pack: bc-agents) — specialist in designing and coding
+      Agent Toolkit Builder — specialist in designing and coding
       Business Central agents using the AI Development Toolkit and Agent SDK.
       Follows the official Agent Template project structure. Handles both Designer
       (no-code) and SDK (pro-code) paths. 7-phase workflow with HITL gates.
 
   - path: prompts/al-agent.create.prompt.md
     kind: prompt
-    description: "End-to-end coded agent creation workflow (pack: bc-agents)"
+    description: "End-to-end coded agent creation workflow"
   - path: prompts/al-agent.task.prompt.md
     kind: prompt
-    description: "Generate agent task integration code (pack: bc-agents)"
+    description: "Generate agent task integration code"
   - path: prompts/al-agent.instructions.prompt.md
     kind: prompt
-    description: "Generate optimized agent instructions (pack: bc-agents)"
+    description: "Generate optimized agent instructions"
   - path: prompts/al-agent.test.prompt.md
     kind: prompt
-    description: "Test agent SDK integration — 6 categories (pack: bc-agents)"
+    description: "Test agent SDK integration — 6 categories"
 
   - path: skills/skill-agent-instructions/SKILL.md
     kind: instruction
-    description: "Generate/review natural language instructions for BC agents (pack: bc-agents)"
+    description: "Generate/review natural language instructions for BC agents"
   - path: skills/skill-agent-task-patterns/SKILL.md
     kind: instruction
-    description: "8 Agent SDK task integration patterns (pack: bc-agents)"
+    description: "8 Agent SDK task integration patterns"
 
   - path: instructions/al-agent-toolkit.instructions.md
     kind: instruction
-    description: "Agent SDK reference and conventions (pack: bc-agents)"
+    description: "Agent SDK reference and conventions"
 
 display:
   ordering: manual

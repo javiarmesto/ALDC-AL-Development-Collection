@@ -43,7 +43,7 @@
     "tools/aldc-validate/index.js",
     "tools/aldc-validate/package.json",
     "tools/bc-agents/",
-    "docs/packs/",
+    "docs/",
     "aldc.yaml",
     ".github/",
     "README.md",

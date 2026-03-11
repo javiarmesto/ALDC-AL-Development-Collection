@@ -321,7 +321,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 - **Contracts per requirement**: spec, architecture, and test-plan per requirement in `.github/plans/{req_name}/`
 - **Global memory**: cross-session `memory.md` for project-wide decisions
 - **HITL gates**: mandatory stops at plan approval, each TDD phase, and completion
-- **BC Agents Extension Pack**: @al-agent-builder agent, 3 skills, 4 workflows for Business Central Agent SDK development
+- **BC Agent Builder** (optional): @al-agent-builder agent, 3 skills, 4 workflows for Business Central Agent SDK development
 
 ### Breaking Changes from v2.x
 
@@ -334,12 +334,11 @@ See [CHANGELOG.md](CHANGELOG.md) for full details.
 
 ---
 
-## Extension Packs
+## BC Agent Builder (optional)
 
-### BC Agents Pack
 Build Business Central Agents with the AI Development Toolkit and Agent SDK.
 Includes: @al-agent-builder agent, 3 skills, 4 workflows, validation tools.
-See [BC Agents Pack documentation](docs/packs/bc-agents-pack.md).
+See [BC Agent Builder documentation](docs/bc-agent-builder.md).
 
 ---
 

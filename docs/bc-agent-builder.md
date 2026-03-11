@@ -1,8 +1,8 @@
-# ALDC Extension Pack: BC Agents
+# BC Agent Builder
 
-> Extension Pack for building Business Central Agents with the AI Development Toolkit and Agent SDK.
+> Optional component for building Business Central Agents with the AI Development Toolkit and Agent SDK.
 
-## Pack Contents
+## Contents
 
 | Type | Name | Description |
 |------|------|-------------|
@@ -51,7 +51,7 @@ al-spec.create
 
 ### Skills loading by ALDC agents
 
-| ALDC Agent | Loads from this pack |
+| ALDC Agent | Loads these skills |
 |------------|---------------------|
 | @al-architect | skill-agent-task-patterns (architecture decisions), skill-agent-instructions (instruction design) |
 | al-implement-subagent | skill-agent-task-patterns (correct SDK code generation) |

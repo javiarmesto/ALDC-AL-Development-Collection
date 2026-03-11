@@ -68,7 +68,7 @@ function parseArgs(argv) {
     targetDir: null,
     yes: false,
     force: false,
-    withPacks: null, // null = ask, true = include, false = skip
+    // withPacks removed — bc-agents components are now regular optional content
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -79,10 +79,6 @@ function parseArgs(argv) {
       parsed.yes = true;
     } else if (a === '--force' || a === '-f') {
       parsed.force = true;
-    } else if (a === '--with-packs') {
-      parsed.withPacks = true;
-    } else if (a === '--no-packs') {
-      parsed.withPacks = false;
     } else if (a === '--help' || a === '-h') {
       parsed.command = 'help';
     } else if (!a.startsWith('-') && !parsed.command) {
@@ -192,78 +188,15 @@ function ask(question, defaultYes = true) {
 
 // ─── ALDC Core v1.1 component map ──────────────────────────────────────────
 const COMPONENTS = [
-  { name: 'Agents',      src: 'agents',         count: '4 public + 3 subagents' },
-  { name: 'Skills',       src: 'skills',          count: '7 required + 4 recommended' },
-  { name: 'Prompts',      src: 'prompts',         count: '6 workflows' },
-  { name: 'Instructions', src: 'instructions',    count: '9 auto-applied' },
-  { name: 'Templates',    src: 'docs/templates',  count: '7 contract templates' },
-  { name: 'Framework',    src: 'docs/framework',  count: 'spec + docs' },
-  { name: 'Validator',    src: 'tools/aldc-validate', count: 'compliance checker' },
+  { name: 'Agents',      src: 'agents',             count: '5 agents (4 public + 1 optional) + 3 subagents' },
+  { name: 'Skills',      src: 'skills',             count: '14 skills (7 required + 4 recommended + 3 optional)' },
+  { name: 'Prompts',     src: 'prompts',            count: '10 workflows (6 core + 4 agent-builder)' },
+  { name: 'Instructions',src: 'instructions',       count: '10 auto-applied' },
+  { name: 'Templates',   src: 'docs/templates',     count: '7 contract templates' },
+  { name: 'Framework',   src: 'docs/framework',     count: 'spec + docs' },
+  { name: 'Validator',   src: 'tools/aldc-validate', count: 'compliance checker' },
+  { name: 'BC Tools',    src: 'tools/bc-agents',    count: 'scaffolder + validator' },
 ];
-
-// ─── Extension Packs ─────────────────────────────────────────────────────
-const PACKS = [
-  {
-    id: 'bc-agents',
-    name: 'BC Agents Extension Pack',
-    description: 'Business Central Agent development with AI Development Toolkit & Agent SDK',
-    components: [
-      { name: 'Agent',       src: 'agents/al-agent-builder.agent.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-instructions/SKILL.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-task-patterns/SKILL.md' },
-      { name: 'Skills',      src: 'skills/skill-agent-toolkit/SKILL.md' },
-      { name: 'References',  src: 'skills/skill-agent-instructions/references/agent-keywords-reference.md' },
-      { name: 'Examples',    src: 'skills/skill-agent-instructions/examples/agent-simple-instructions.txt' },
-      { name: 'Examples',    src: 'skills/skill-agent-instructions/examples/agent-advanced-instructions.txt' },
-      { name: 'Workflow',    src: 'prompts/al-agent.create.prompt.md' },
-      { name: 'Workflow',    src: 'prompts/al-agent.task.prompt.md' },
-      { name: 'Workflow',    src: 'prompts/al-agent.instructions.prompt.md' },
-      { name: 'Workflow',    src: 'prompts/al-agent.test.prompt.md' },
-      { name: 'Instruction', src: 'instructions/al-agent-toolkit.instructions.md' },
-    ],
-    tools: [
-      { name: 'Tools', src: 'tools/bc-agents' },
-    ],
-    docs: [
-      { name: 'Pack docs', src: 'docs/packs' },
-    ],
-  },
-];
-
-/**
- * Install a single extension pack.
- */
-function installPack(pack, packageDir, targetDir, projectDir, force) {
-  let copied = 0;
-  let skipped = 0;
-
-  // Copy individual component files
-  for (const comp of pack.components) {
-    const src = path.join(packageDir, comp.src);
-    const dst = path.join(targetDir, comp.src);
-    if (copyFile(src, dst, force)) copied++; else skipped++;
-  }
-
-  // Copy tool directories
-  for (const tool of pack.tools) {
-    const src = path.join(packageDir, tool.src);
-    const dst = path.join(targetDir, tool.src);
-    const r = copyDir(src, dst, force);
-    copied += r.copied;
-    skipped += r.skipped;
-  }
-
-  // Copy doc directories
-  for (const doc of pack.docs) {
-    const src = path.join(packageDir, doc.src);
-    const dst = path.join(targetDir, doc.src);
-    const r = copyDir(src, dst, force);
-    copied += r.copied;
-    skipped += r.skipped;
-  }
-
-  return { copied, skipped };
-}
 
 // ─── INSTALL command ───────────────────────────────────────────────────────
 async function install(opts) {
@@ -396,43 +329,6 @@ async function install(opts) {
     }
   }
 
-  // 7. Extension Packs (optional)
-  const availablePacks = PACKS.filter(p => {
-    // Check if the pack source files exist in the package
-    return p.components.some(c => fs.existsSync(path.join(packageDir, c.src)));
-  });
-
-  if (availablePacks.length > 0) {
-    header('Extension Packs');
-
-    for (const pack of availablePacks) {
-      log(`\n  ${C.bold}${pack.name}${C.reset}`);
-      log(`  ${pack.description}`, C.dim);
-      log(`  ${pack.components.length} components + ${pack.tools.length} tools`, C.dim);
-
-      let installPack_ = opts.withPacks;
-
-      // If not set via CLI flag, ask interactively (unless --yes)
-      if (installPack_ === null) {
-        if (opts.yes) {
-          installPack_ = true; // --yes defaults to including packs
-        } else {
-          installPack_ = await ask(`\n  Install ${pack.name}?`);
-        }
-      }
-
-      if (installPack_) {
-        log(`\n  Installing ${pack.name}...`, C.cyan);
-        const r = installPack(pack, packageDir, targetDir, projectDir, opts.force);
-        totalCopied += r.copied;
-        totalSkipped += r.skipped;
-        ok(`${pack.name} installed (${r.copied} files)`);
-      } else {
-        log(`  Skipped ${pack.name}`, C.dim);
-      }
-    }
-  }
-
   // ─── Summary ──────────────────────────────────────────────────────────────
   header('Installation Complete');
   log(`Files copied:  ${totalCopied}`, C.green);
@@ -549,8 +445,6 @@ ${C.cyan}Options:${C.reset}
   --target-dir <dir>  Installation directory (default: .github)
   --yes, -y           Skip confirmation prompts
   --force, -f         Overwrite existing files
-  --with-packs        Include all extension packs (no prompt)
-  --no-packs          Skip all extension packs (no prompt)
 
 ${C.cyan}Examples:${C.reset}
   ${C.green}# Install to default .github/ directory${C.reset}
@@ -566,38 +460,24 @@ ${C.cyan}Examples:${C.reset}
   npm install ./al-development-collection-3.2.0.tgz
   npx aldc install
 
-  ${C.green}# Install with BC Agents Extension Pack${C.reset}
-  npx aldc install --with-packs
-
-  ${C.green}# Install Core only (skip packs)${C.reset}
-  npx aldc install --no-packs
-
   ${C.green}# Validate current installation${C.reset}
   npx aldc validate
 
 ${C.cyan}What gets installed:${C.reset}
   ${C.bold}Core:${C.reset}
   <target-dir>/
-    agents/           4 public agents + 3 subagents
-    skills/   7 required + 4 recommended skills
-    prompts/          6 agentic workflows
-    instructions/     9 auto-applied guidelines
+    agents/           5 agents (4 public + 1 optional) + 3 subagents
+    skills/           14 skills (7 required + 4 recommended + 3 optional)
+    prompts/          10 workflows (6 core + 4 agent-builder)
+    instructions/     10 auto-applied guidelines
     docs/framework/   Core specification & docs
     docs/templates/   7 contract templates
     collections/      Collection manifest
+    tools/bc-agents/  Agent SDK scaffolder + validator
   <project-root>/
     aldc.yaml         ALDC Core configuration
     .github/copilot-instructions.md   Copilot entrypoint
     .github/plans/memory.md           Global memory template
-
-  ${C.bold}Extension Pack — BC Agents (optional):${C.reset}
-  <target-dir>/
-    agents/           +1 agent (al-agent-builder)
-    skills/   +3 skills (instructions, task-patterns, toolkit)
-    prompts/          +4 workflows (create, task, instructions, test)
-    instructions/     +1 instruction (al-agent-toolkit)
-    tools/bc-agents/  Scaffolder + validator scripts
-    docs/packs/       Pack manifest
 `);
 }
 
@@ -616,7 +496,7 @@ async function testLocal() {
   // Run install into temp dir
   const origCwd = process.cwd();
   process.chdir(tmpProject);
-  await install({ targetDir: '.github', yes: true, force: true, withPacks: true });
+  await install({ targetDir: '.github', yes: true, force: true });
 
   // Validate skills structure
   header('Verifying Skills Folder Structure');

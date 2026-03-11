@@ -77,23 +77,23 @@ required:
     - "docs/templates/delivery-template.md"
     - "docs/templates/skill-template.md"
 
-packs:
-  bc-agents:
-    agent: "al-agent-builder"
-    skills:
-      - "skill-agent-instructions"
-      - "skill-agent-task-patterns"
-      - "skill-agent-toolkit"
-    workflows:
-      - "al-agent.create"
-      - "al-agent.task"
-      - "al-agent.instructions"
-      - "al-agent.test"
-    instructions:
-      - "al-agent-toolkit"
-    tools:
-      - "tools/bc-agents/scaffold_agent.py"
-      - "tools/bc-agents/validate_agent_config.sh"
+optional:
+  agents:
+    - "agents/al-agent-builder.agent.md"
+  skills:
+    - "skills/skill-agent-instructions/SKILL.md"
+    - "skills/skill-agent-task-patterns/SKILL.md"
+    - "skills/skill-agent-toolkit/SKILL.md"
+  workflows:
+    - "prompts/al-agent.create.prompt.md"
+    - "prompts/al-agent.task.prompt.md"
+    - "prompts/al-agent.instructions.prompt.md"
+    - "prompts/al-agent.test.prompt.md"
+  instructions:
+    - "instructions/al-agent-toolkit.instructions.md"
+  tools:
+    - "tools/bc-agents/scaffold_agent.py"
+    - "tools/bc-agents/validate_agent_config.sh"
 
 validation:
   rules:

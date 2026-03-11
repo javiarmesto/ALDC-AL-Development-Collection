@@ -1,8 +1,7 @@
 ---
 name: "AL Agent Builder"
-tools: ["read", "agent", "edit/editFiles", "search/codebase", "memory", "todo"]
+tools: ["read", "agent", "edit/editFiles", "search/codebase", "vscode/memory", "todo"]
 description: "Agent Toolkit Builder — specialist in designing and coding Business Central agents using the AI Development Toolkit and Agent SDK. Follows the official Agent Template project structure. Handles both Designer (no-code) and SDK (pro-code) paths."
-pack: "bc-agents"
 user-invocable: true
 ---
 
