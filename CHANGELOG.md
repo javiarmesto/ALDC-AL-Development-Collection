@@ -15,7 +15,7 @@
 
 Optional agent and skills for Business Central Agent development with the AI Development Toolkit and Agent SDK.
 
-- **@al-agent-builder** agent — Designer (no-code) and SDK (pro-code) paths, 7-phase workflow with HITL gates
+- **@AL Agent Builder** agent — Designer (no-code) and SDK (pro-code) paths, 7-phase workflow with HITL gates
 - **skill-agent-instructions** — Responsibilities-Guidelines-Instructions authoring framework
 - **skill-agent-task-patterns** — 8 integration patterns (Public API, Page Action, Business Event, Attachment, Multi-Turn, Lifecycle, Session Detection, Session Event Binding)
 - **skill-agent-toolkit** — Agent SDK reference (core interfaces, setup, troubleshooting, quality checklist)
@@ -37,7 +37,7 @@ Optional agent and skills for Business Central Agent development with the AI Dev
 
 - **Agent model**: 11 agents → 4 public + 3 internal subagents
   - Public: al-architect, al-conductor, al-developer, al-presales
-  - Internal: al-planning-subagent, al-implement-subagent, al-review-subagent
+  - Internal: AL Planning Subagent, AL Implementation Subagent, AL Code Review Subagent
 - **Workflow model**: 18 prompts → 6 workflows (spec.create, build, pr-prepare, memory.create, context.create, initialize)
 - Specialized agent capabilities (debug, events, API, etc.) absorbed into composable skills
 

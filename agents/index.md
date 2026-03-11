@@ -6,27 +6,27 @@
 
 | Agent | Purpose | Loads Skills |
 |-------|---------|--------------|
-| [@al-architect](al-architect.agent.md) | Solution architecture & design | skill-api, skill-copilot, skill-performance, skill-events, skill-testing |
-| [@al-conductor](al-conductor.agent.md) | TDD orchestration: Planning → Implementation → Review → Commit | skill-testing |
-| [@al-developer](al-developer.agent.md) | Tactical implementation with full build tools | skill-debug, skill-api, skill-copilot, skill-events, skill-permissions, skill-pages, skill-migrate, skill-translate, skill-performance |
-| [@al-presales](al-presales.agent.md) | Project estimation & pre-sales analysis | skill-estimation |
+| [@AL Architecture & Design Specialist](al-architect.agent.md) | Solution architecture & design | skill-api, skill-copilot, skill-performance, skill-events, skill-testing |
+| [@AL Development Conductor](al-conductor.agent.md) | TDD orchestration: Planning → Implementation → Review → Commit | skill-testing |
+| [@AL Implementation Specialist](al-developer.agent.md) | Tactical implementation with full build tools | skill-debug, skill-api, skill-copilot, skill-events, skill-permissions, skill-pages, skill-migrate, skill-translate, skill-performance |
+| [@AL Pre-Sales & Project Estimation Specialist](al-presales.agent.md) | Project estimation & pre-sales analysis | skill-estimation |
 
 ## Subagents (3)
 
 | Agent | Purpose | Invoked By |
 |-------|---------|------------|
-| [al-planning-subagent](al-planning-subagent.agent.md) | AL-aware research & context gathering | @al-conductor |
-| [al-implement-subagent](al-implement-subagent.agent.md) | TDD implementation (RED→GREEN→REFACTOR) | @al-conductor |
-| [al-review-subagent](al-review-subagent.agent.md) | Code review and quality gates | @al-conductor |
+| [AL Planning Subagent](al-planning-subagent.agent.md) | AL-aware research & context gathering | @AL Development Conductor |
+| [AL Implementation Subagent](al-implement-subagent.agent.md) | TDD implementation (RED→GREEN→REFACTOR) | @AL Development Conductor |
+| [AL Code Review Subagent](al-review-subagent.agent.md) | Code review and quality gates | @AL Development Conductor |
 
 ## Agent Selection Guide
 
 | Need | Agent |
 |------|-------|
-| Design a solution | @al-architect |
-| Implement a feature (simple) | @al-developer |
-| Implement a feature (complex, TDD) | @al-conductor |
-| Estimate a project | @al-presales |
+| Design a solution | @AL Architecture & Design Specialist |
+| Implement a feature (simple) | @AL Implementation Specialist |
+| Implement a feature (complex, TDD) | @AL Development Conductor |
+| Estimate a project | @AL Pre-Sales & Project Estimation Specialist |
 
 ## Requirement Contracts
 

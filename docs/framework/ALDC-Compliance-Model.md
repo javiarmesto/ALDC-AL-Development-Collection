@@ -7,8 +7,8 @@
 Cumple el backbone mínimo:
 - Contratos por requerimiento en `.github/plans/` (3-file sets)
 - Memory global (`memory.md`) acumulativo
-- Flujo MEDIUM/HIGH: @al-architect → al-spec.create → @al-conductor(subagents) → HITL → entrega
-- Flujo LOW: al-spec.create → @al-developer → entrega
+- Flujo MEDIUM/HIGH: @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor(subagents) → HITL → entrega
+- Flujo LOW: al-spec.create → @AL Implementation Specialist → entrega
 - 4 agentes públicos + 3 subagents internos + 6 workflows + 7 skills requeridos + 9 instructions
 - Templates inmutables (7)
 - `aldc-validate` en verde

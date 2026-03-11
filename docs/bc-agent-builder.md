@@ -6,7 +6,7 @@
 
 | Type | Name | Description |
 |------|------|-------------|
-| Agent | @al-agent-builder | Specialist in designing and coding BC agents (Designer + SDK paths) |
+| Agent | @AL Agent Builder | Specialist in designing and coding BC agents (Designer + SDK paths) |
 | Skill | skill-agent-instructions | Generate/review natural language instructions for BC agents |
 | Skill | skill-agent-task-patterns | 8 task integration patterns (Public API, Page Action, Business Event, etc.) |
 | Skill | skill-agent-toolkit | Agent SDK reference: interfaces, setup patterns, troubleshooting, quality checklist |
@@ -27,7 +27,7 @@
 
 Invoke the agent builder directly:
 ```
-@al-agent-builder
+@AL Agent Builder
 Create an agent for [purpose]
 ```
 The agent runs its own 7-phase workflow with HITL gates.
@@ -35,7 +35,7 @@ The agent runs its own 7-phase workflow with HITL gates.
 ### Integrated with Core (MEDIUM/HIGH complexity / production)
 
 ```
-@al-architect (loads skill-agent-task-patterns + skill-agent-instructions)
+@AL Architecture & Design Specialist (loads skill-agent-task-patterns + skill-agent-instructions)
   → designs agent: interfaces, patterns, permissions, profile
   → generates architecture.md
 
@@ -43,7 +43,7 @@ al-spec.create
   → details AL objects for the agent
   → generates spec.md
 
-@al-conductor
+@AL Development Conductor
   → implements with TDD
   → implement-subagent loads skill-agent-task-patterns for correct SDK usage
   → review-subagent validates against SDK patterns
@@ -53,10 +53,10 @@ al-spec.create
 
 | ALDC Agent | Loads these skills |
 |------------|---------------------|
-| @al-architect | skill-agent-task-patterns (architecture decisions), skill-agent-instructions (instruction design) |
-| al-implement-subagent | skill-agent-task-patterns (correct SDK code generation) |
-| al-review-subagent | skill-agent-task-patterns (SDK compliance check) |
-| @al-developer | skill-agent-task-patterns (quick fixes) |
+| @AL Architecture & Design Specialist | skill-agent-task-patterns (architecture decisions), skill-agent-instructions (instruction design) |
+| AL Implementation Subagent | skill-agent-task-patterns (correct SDK code generation) |
+| AL Code Review Subagent | skill-agent-task-patterns (SDK compliance check) |
+| @AL Implementation Specialist | skill-agent-task-patterns (quick fixes) |
 
 ## Validation
 

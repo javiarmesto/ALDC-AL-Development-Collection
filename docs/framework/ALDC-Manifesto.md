@@ -22,18 +22,18 @@ ALDC Core v1.1 impone:
 
 | Herramienta | Rol SE | Produce | Cuándo usar |
 | ----------- | ------ | ------- | ----------- |
-| `@al-architect` | Software Architect — define solución técnica, patrones de integración, ADRs | `{req_name}.architecture.md` | MEDIUM/HIGH: primer paso |
+| `@AL Architecture & Design Specialist` | Software Architect — define solución técnica, patrones de integración, ADRs | `{req_name}.architecture.md` | MEDIUM/HIGH: primer paso |
 | `al-spec.create` | Design Doc Generator — traduce arquitectura en spec implementable (IDs, firmas, tests) | `{req_name}.spec.md` | Siempre: LOW y MEDIUM/HIGH |
-| `@al-conductor` | TDD Orchestrator — ciclo planning → implementation → review con HITL gates | implementación completa | MEDIUM/HIGH: tras spec y architecture |
-| `@al-developer` | AL Developer — implementación directa, debugging, correcciones | código AL | LOW / ajustes puntuales |
-| `@al-presales` | Solution Engineer — estimación, análisis técnico-económico, propuestas | sizing, SWOT, propuesta | Antes del proyecto |
+| `@AL Development Conductor` | TDD Orchestrator — ciclo planning → implementation → review con HITL gates | implementación completa | MEDIUM/HIGH: tras spec y architecture |
+| `@AL Implementation Specialist` | AL Developer — implementación directa, debugging, correcciones | código AL | LOW / ajustes puntuales |
+| `@AL Pre-Sales & Project Estimation Specialist` | Solution Engineer — estimación, análisis técnico-económico, propuestas | sizing, SWOT, propuesta | Antes del proyecto |
 
 ### Flujo canónico
 
 **MEDIUM / HIGH:**
 
 ```text
-@al-architect → al-spec.create → @al-conductor → entrega
+@AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor → entrega
      ↓               ↓                ↓
 architecture.md   spec.md     plan → TDD → review
   [GATE]          [GATE]        [GATE por fase]
@@ -42,7 +42,7 @@ architecture.md   spec.md     plan → TDD → review
 **LOW:**
 
 ```text
-al-spec.create → @al-developer → entrega
+al-spec.create → @AL Implementation Specialist → entrega
      ↓                ↓
    spec.md      implementación directa
    [GATE]
@@ -52,11 +52,11 @@ al-spec.create → @al-developer → entrega
 
 4 agentes públicos + 1 workflow de especificación. Una pregunta para elegir:
 
-- ¿Diseñando arquitectura? → `@al-architect`
+- ¿Diseñando arquitectura? → `@AL Architecture & Design Specialist`
 - ¿Generando spec técnica detallada? → `@workspace use al-spec.create`
-- ¿Implementando (LOW)? → `@al-developer`
-- ¿Feature TDD completa (MEDIUM/HIGH)? → `@al-conductor`
-- ¿Estimando proyecto? → `@al-presales`
+- ¿Implementando (LOW)? → `@AL Implementation Specialist`
+- ¿Feature TDD completa (MEDIUM/HIGH)? → `@AL Development Conductor`
+- ¿Estimando proyecto? → `@AL Pre-Sales & Project Estimation Specialist`
 
 Los agentes cargan skills especializados (api, copilot, debug, performance, events, permissions, testing, migrate, pages, translate, estimation) según lo que necesiten. Menos agentes, más conocimiento disponible.
 

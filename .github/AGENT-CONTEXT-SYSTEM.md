@@ -11,13 +11,13 @@
 .github/plans/
 ├── memory.md                              # Global context (all agents read/update)
 └── {req_name}/                            # Per-requirement subdirectory
-    ├── {req_name}.architecture.md         # Architecture design (@al-architect)
+    ├── {req_name}.architecture.md         # Architecture design (@AL Architecture & Design Specialist)
     ├── {req_name}.spec.md                 # Technical spec (al-spec.create)
     ├── {req_name}.test-plan.md            # Test strategy (al-spec.create or conductor)
-    ├── {req_name}-plan.md                 # Execution plan (@al-conductor Phase 1)
-    ├── {req_name}-phase-1-complete.md     # Phase completion (@al-conductor)
+    ├── {req_name}-plan.md                 # Execution plan (@AL Development Conductor Phase 1)
+    ├── {req_name}-phase-1-complete.md     # Phase completion (@AL Development Conductor)
     ├── {req_name}-phase-N-complete.md
-    └── {req_name}-plan-complete.md        # Final report (@al-conductor)
+    └── {req_name}-plan-complete.md        # Final report (@AL Development Conductor)
 ```
 
 **Why single directory?**
@@ -270,7 +270,7 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
 - `.github/testing/<feature>-test-plan.md` (if from al-tester)
 - `.github/api/<endpoint>-design.md` (if from al-api)
 
-### 🔍 al-planning-subagent (Orchestra)
+### 🔍 AL Planning Subagent (Orchestra)
 **No file creation** - Returns research to al-conductor
 
 **Reads**:
@@ -278,7 +278,7 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
 - All `.github/specs/` files
 - All `.github/context/architecture/` files
 
-### 💻 al-implement-subagent (Orchestra)
+### 💻 AL Implementation Subagent (Orchestra)
 **No file creation** - Implements code per conductor instructions
 
 **Reads**:
@@ -286,7 +286,7 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
 - `.github/specs/` for object structure
 - `.github/context/architecture/` for patterns
 
-### ✅ al-review-subagent (Orchestra)
+### ✅ AL Code Review Subagent (Orchestra)
 **No file creation** - Returns review results to al-conductor
 
 **Reads**:
@@ -304,10 +304,10 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
    → Creates: .github/context/architecture/customer-loyalty-arch.md
 3. Use al-conductor mode
    → Reads: architecture file
-   → al-planning-subagent reads: all context
+   → AL Planning Subagent reads: all context
    → Creates: .github/plans/customer-loyalty-plan.md (after approval)
-   → al-implement-subagent implements Phase 1
-   → al-review-subagent validates
+   → AL Implementation Subagent implements Phase 1
+   → AL Code Review Subagent validates
    → Creates: .github/plans/customer-loyalty-phase-1-complete.md
    → Repeat for remaining phases
    → Creates: .github/plans/customer-loyalty-complete.md

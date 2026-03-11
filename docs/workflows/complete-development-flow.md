@@ -246,15 +246,15 @@ graph TD
     C -->|"User reviews & approves"| D[Use al-conductor mode]
     
     D --> E[PLANNING PHASE]
-    E --> E1[al-planning-subagent]
+    E --> E1[AL Planning Subagent]
     E1 --> E2["Reads spec.md, Analyzes AL codebase, Returns findings"]
     
     E2 --> F["Multi-phase plan (3-5 phases, TDD per phase)"]
     F -->|User approves| G[IMPLEMENTATION CYCLE]
     
     G --> H[Phase Loop]
-    H --> H1["1. al-implement-subagent (RED → GREEN → REFACTOR)"]
-    H1 --> H2["2. al-review-subagent (Validate AL patterns, Check test coverage)"]
+    H --> H1["1. AL Implementation Subagent (RED → GREEN → REFACTOR)"]
+    H1 --> H2["2. AL Code Review Subagent (Validate AL patterns, Check test coverage)"]
     H2 --> H3{Review Result}
     H3 -->|APPROVED| H4[3. User commits]
     H3 -->|"NEEDS REVISION"| H1
@@ -277,9 +277,9 @@ graph TD
 **Agents/Workflows used**:
 1. `@workspace use al-spec.create` - Document requirements
 2. `Use al-conductor mode` - Orchestrate implementation
-   - Delegates to `al-planning-subagent` (research)
-   - Delegates to `al-implement-subagent` (TDD)
-   - Delegates to `al-review-subagent` (QA)
+   - Delegates to `AL Planning Subagent` (research)
+   - Delegates to `AL Implementation Subagent` (TDD)
+   - Delegates to `AL Code Review Subagent` (QA)
 3. `@workspace use al-pr-prepare` - Finalize
 
 **Time**: 1-2 hours for complete feature with tests and docs
@@ -340,7 +340,7 @@ graph TD
     E3 --> F
     
     F --> G[PLANNING PHASE]
-    G --> G1["al-planning-subagent: Reads architecture, Analyzes AL codebase, Aligns with design, Returns findings"]
+    G --> G1["AL Planning Subagent: Reads architecture, Analyzes AL codebase, Aligns with design, Returns findings"]
     
     G1 --> H["Multi-phase plan (5-10 phases, Aligned with architecture)"]
     
@@ -490,7 +490,7 @@ Use al-conductor mode
 
 # Orchestra executes:
 # 2.1: Planning
-#   - Invokes al-planning-subagent
+#   - Invokes AL Planning Subagent
 #   - Reads architecture + spec.md
 #   - Analyzes AL codebase
 #   - Returns structured findings
@@ -499,41 +499,41 @@ Use al-conductor mode
 # 2.2: User reviews plan → APPROVES
 
 # 2.3: Phase 1 - Approval Data Model
-#   - Invokes al-implement-subagent
+#   - Invokes AL Implementation Subagent
 #     - Creates failing tests (RED)
 #     - Creates Table 50100, TableExtension 50101 (GREEN)
 #     - Tests pass
-#   - Invokes al-review-subagent
+#   - Invokes AL Code Review Subagent
 #     - Reviews AL patterns → APPROVED
 #   - Presents summary + commit message
 #   → User commits
 
 # 2.4: Phase 2 - Approval Logic
-#   - Invokes al-implement-subagent
+#   - Invokes AL Implementation Subagent
 #     - Failing tests for approval flow (RED)
 #     - Codeunit 50102 with TryFunctions (GREEN)
 #     - Tests pass
-#   - Invokes al-review-subagent
+#   - Invokes AL Code Review Subagent
 #     - Reviews error handling → APPROVED
 #   → User commits
 
 # 2.5: Phase 3 - Sales Post Integration
-#   - al-implement-subagent creates event subscriber
+#   - AL Implementation Subagent creates event subscriber
 #   - Tests verify posting blocked when pending
 #   → User commits
 
 # 2.6: Phase 4 - Approval UI
-#   - al-implement-subagent creates Page + PageExtension
+#   - AL Implementation Subagent creates Page + PageExtension
 #   - UI tests pass
 #   → User commits
 
 # 2.7: Phase 5 - Email Integration
-#   - al-implement-subagent implements SMTP with TryFunction
+#   - AL Implementation Subagent implements SMTP with TryFunction
 #   - Email tests pass
 #   → User commits
 
 # 2.8: Phase 6 - Permissions
-#   - al-implement-subagent generates permission sets
+#   - AL Implementation Subagent generates permission sets
 #   - Permission tests pass
 #   → User commits
 
@@ -582,9 +582,9 @@ Use al-conductor mode
 |----------------|-----------|------------|----------|
 | **al-architect** | None | User | Strategic design |
 | **al-conductor** | al-planning, al-implement, al-review | User | TDD orchestration |
-| **al-planning-subagent** | None | al-conductor | Research AL context |
-| **al-implement-subagent** | None | al-conductor | TDD implementation |
-| **al-review-subagent** | None | al-conductor | Code quality review |
+| **AL Planning Subagent** | None | al-conductor | Research AL context |
+| **AL Implementation Subagent** | None | al-conductor | TDD implementation |
+| **AL Code Review Subagent** | None | al-conductor | Code quality review |
 | **al-developer** | None | User | Direct implementation |
 | **al-api** | None | User | API design |
 | **al-copilot** | None | User | AI feature design |

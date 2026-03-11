@@ -11,16 +11,16 @@ The full ALDC Core v1.1 component map: 4 public agents, 3 internal subagents, 11
 ```mermaid
 graph TB
     subgraph PUBLIC["Public Agents (user-invocable)"]
-        ARCH["@al-architect\nSolution Architect"]
-        DEV["@al-developer\nImplementation Specialist"]
-        COND["@al-conductor\nTDD Orchestrator"]
-        PRE["@al-presales\nEstimation & Scoping"]
+        ARCH["@AL Architecture & Design Specialist\nSolution Architect"]
+        DEV["@AL Implementation Specialist\nImplementation Specialist"]
+        COND["@AL Development Conductor\nTDD Orchestrator"]
+        PRE["@AL Pre-Sales & Project Estimation Specialist\nEstimation & Scoping"]
     end
 
     subgraph INTERNAL["Internal Subagents (conductor-only)"]
-        PLAN["al-planning-subagent\nContext Research"]
-        IMPL["al-implement-subagent\nTDD Implementation"]
-        REV["al-review-subagent\nCode Review"]
+        PLAN["AL Planning Subagent\nContext Research"]
+        IMPL["AL Implementation Subagent\nTDD Implementation"]
+        REV["AL Code Review Subagent\nCode Review"]
     end
 
     subgraph SKILLS_REQ["Required Skills (7)"]
@@ -82,9 +82,9 @@ flowchart TD
     REQ[Requirement] --> CLASSIFY{Complexity?}
 
     CLASSIFY -->|LOW| SPEC_LOW[al-spec.create]
-    SPEC_LOW --> DEV[@al-developer\nDirect Implementation]
+    SPEC_LOW --> DEV[@AL Implementation Specialist\nDirect Implementation]
 
-    CLASSIFY -->|MEDIUM/HIGH| ARCH[@al-architect\nSolution Architect]
+    CLASSIFY -->|MEDIUM/HIGH| ARCH[@AL Architecture & Design Specialist\nSolution Architect]
     ARCH -->|Produces architecture.md| ARCH_DOC[(architecture.md)]
     ARCH --> DECOMPOSE{Decompose\ninto sub-requirements?}
 
@@ -92,9 +92,9 @@ flowchart TD
     DECOMPOSE -->|Yes| SPEC_B[al-spec.create\n→ spec-B.md]
     DECOMPOSE -->|No| SPEC_SINGLE[al-spec.create\n→ spec.md]
 
-    SPEC_A --> COND_A[@al-conductor\nTDD Orchestration A]
-    SPEC_B --> COND_B[@al-conductor\nTDD Orchestration B]
-    SPEC_SINGLE --> COND[@al-conductor\nTDD Orchestration]
+    SPEC_A --> COND_A[@AL Development Conductor\nTDD Orchestration A]
+    SPEC_B --> COND_B[@AL Development Conductor\nTDD Orchestration B]
+    SPEC_SINGLE --> COND[@AL Development Conductor\nTDD Orchestration]
 
     COND_A --> DONE_A[Delivery A]
     COND_B --> DONE_B[Delivery B]
@@ -114,10 +114,10 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    START([User: @al-conductor\nwith spec.md]) --> PHASE1
+    START([User: @AL Development Conductor\nwith spec.md]) --> PHASE1
 
     subgraph PHASE1["Phase 1: Planning"]
-        P1A[al-planning-subagent\nContext Research]
+        P1A[AL Planning Subagent\nContext Research]
         P1B[Conductor creates\nPhased Plan]
         P1C{HITL Gate\nPlan Approval}
         P1D[phase-1-complete.md]
@@ -129,14 +129,14 @@ flowchart TD
     P1D --> PHASE_N
 
     subgraph PHASE_N["Phase N: Implementation"]
-        PN1[al-implement-subagent]
+        PN1[AL Implementation Subagent]
         subgraph TDD["TDD Cycle"]
             RED["RED\nWrite failing tests\nVerify failure"]
             GREEN["GREEN\nMinimal code\nTests pass"]
             REFACTOR["REFACTOR\nAL patterns\nOptimize"]
             RED --> GREEN --> REFACTOR
         end
-        PN2[al-review-subagent\nValidates vs spec+arch]
+        PN2[AL Code Review Subagent\nValidates vs spec+arch]
         PN3{Review Decision}
         PN4[phase-N-complete.md]
 
@@ -170,10 +170,10 @@ graph TB
         MEMORY[("memory.md\nGlobal — cross-session context\nNever deleted, only appended")]
 
         subgraph REQ_A["{req_name}/"]
-            ARCH_A["{req_name}.architecture.md\nFrom: @al-architect"]
+            ARCH_A["{req_name}.architecture.md\nFrom: @AL Architecture & Design Specialist"]
             SPEC_A["{req_name}.spec.md\nFrom: al-spec.create"]
             TP_A["{req_name}.test-plan.md\nFrom: al-spec.create or conductor"]
-            PLAN_A["{req_name}-plan.md\nFrom: @al-conductor Phase 1"]
+            PLAN_A["{req_name}-plan.md\nFrom: @AL Development Conductor Phase 1"]
             PH1["{req_name}-phase-1-complete.md"]
             PHN["{req_name}-phase-N-complete.md"]
             DONE["{req_name}-plan-complete.md"]
@@ -186,10 +186,10 @@ graph TB
         end
     end
 
-    ARCH["@al-architect"] -->|produces| ARCH_A
+    ARCH["@AL Architecture & Design Specialist"] -->|produces| ARCH_A
     SPEC_WF["al-spec.create"] -->|produces| SPEC_A
     SPEC_WF -->|produces| TP_A
-    COND["@al-conductor"] -->|produces| PLAN_A
+    COND["@AL Development Conductor"] -->|produces| PLAN_A
     COND -->|produces| PH1
     COND -->|produces| PHN
     COND -->|produces| DONE

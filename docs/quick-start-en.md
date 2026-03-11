@@ -247,7 +247,7 @@ Implement the loyalty points system designed by al-architect
 #### 🔴 Phase 1: Loyalty Point Entry Table (RED → GREEN → REFACTOR)
 ```
 RED (2 min):
-- Implement: al-implement-subagent creates failing test
+- Implement: AL Implementation Subagent creates failing test
 - Test: "Insert Loyalty Point Entry with required fields"
 
 GREEN (3 min):
@@ -255,7 +255,7 @@ GREEN (3 min):
 - Test: ✅ PASS
 
 REFACTOR (2 min):
-- Review: al-review-subagent validates structure
+- Review: AL Code Review Subagent validates structure
 - Result: Clean and efficient code
 ```
 
@@ -463,7 +463,7 @@ While coding, these rules apply **automatically**:
 1. Don't skip architectural design (for medium/complex features)
 2. Don't implement without tests (al-conductor does it automatically)
 3. Don't modify BC base objects (always use events and extensions)
-4. Don't ignore automatic code reviews from al-review-subagent
+4. Don't ignore automatic code reviews from AL Code Review Subagent
 
 ---
 

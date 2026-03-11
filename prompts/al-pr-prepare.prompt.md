@@ -330,8 +330,8 @@ Create `/reports/pr-draft.md` with this structure:
 
 **For final validation:**
 ```
-@al-conductor   # TDD orchestration with review subagent
-@al-developer   # Direct testing and fixes
+@AL Development Conductor   # TDD orchestration with review subagent
+@AL Implementation Specialist   # Direct testing and fixes
 ```
 
 ---

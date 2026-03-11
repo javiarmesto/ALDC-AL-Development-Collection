@@ -52,10 +52,10 @@ mv .github/plans/test-plan.md .github/plans/{req_name}.test-plan.md
 
 Remove specialized agents and rely on modular model:
 - Delete `al-debugger`, `al-tester`, `al-api`, `al-copilot`
-- Create `al-implement-subagent` as TDD-only subagent (invoked by conductor)
+- Create `AL Implementation Subagent` as TDD-only subagent (invoked by conductor)
 - Update `al-developer` to reference `skill-debug`, `skill-api`, etc.
-- Move `al-planning-subagent`, `al-implement-subagent`, and `al-review-subagent` to `agents/` (or `agents/orchestra/`)
-- Update `al-conductor` frontmatter: `agents: ['al-planning-subagent', 'al-review-subagent', 'al-implement-subagent']`
+- Move `AL Planning Subagent`, `AL Implementation Subagent`, and `AL Code Review Subagent` to `agents/` (or `agents/orchestra/`)
+- Update `al-conductor` frontmatter: `agents: ['AL Planning Subagent', 'AL Code Review Subagent', 'AL Implementation Subagent']`
 
 ### Phase 5: Validate
 

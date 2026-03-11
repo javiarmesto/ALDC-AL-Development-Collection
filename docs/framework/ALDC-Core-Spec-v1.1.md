@@ -22,9 +22,9 @@ ALDC Core v1.1 reorganiza las capacidades en módulos composables (skills) mante
 
 ALDC Core está diseñado para el enfoque:
 
-**MEDIUM/HIGH:** `@al-architect` (diseño) → `al-spec.create` (spec técnica) → `@al-conductor` (TDD orquestado: planning → implement → review) → gates HITL → entrega
+**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (diseño) → `al-spec.create` (spec técnica) → `@AL Development Conductor` (TDD orquestado: planning → implement → review) → gates HITL → entrega
 
-**LOW:** `al-spec.create` (spec técnica) → `@al-developer` (implementación directa) → entrega
+**LOW:** `al-spec.create` (spec técnica) → `@AL Implementation Specialist` (implementación directa) → entrega
 
 ## Definiciones
 
@@ -68,26 +68,26 @@ ALDC Core v1.1 adopta un modelo simplificado de **4 agentes públicos + 3 subage
 
 ### Subagents internos (`user-invocable: false`)
 
-- **al-planning-subagent** — Research AL-aware y context gathering. Devuelve findings estructurados al conductor.
-- **al-implement-subagent** — Implementación TDD-only. Crea tests PRIMERO, luego código. Carga skills por dominio. No interactúa con el usuario.
-- **al-review-subagent** — Code review contra spec + architecture + test-plan. Devuelve veredicto APPROVED/NEEDS_REVISION/FAILED.
+- **AL Planning Subagent** — Research AL-aware y context gathering. Devuelve findings estructurados al conductor.
+- **AL Implementation Subagent** — Implementación TDD-only. Crea tests PRIMERO, luego código. Carga skills por dominio. No interactúa con el usuario.
+- **AL Code Review Subagent** — Code review contra spec + architecture + test-plan. Devuelve veredicto APPROVED/NEEDS_REVISION/FAILED.
 
 ### Flujo de orquestación del conductor
 
 ```
 al-conductor (orquestador)
-  ├── runSubagent → al-planning-subagent (research, devuelve findings)
-  ├── runSubagent → al-implement-subagent (TDD implementation, devuelve objetos + tests)
-  └── runSubagent → al-review-subagent (review, devuelve veredicto)
+  ├── runSubagent → AL Planning Subagent (research, devuelve findings)
+  ├── runSubagent → AL Implementation Subagent (TDD implementation, devuelve objetos + tests)
+  └── runSubagent → AL Code Review Subagent (review, devuelve veredicto)
 ```
 
 Frontmatter del conductor:
 ```yaml
 tools: ['runSubagent', ...]
-agents: ['al-planning-subagent', 'al-review-subagent', 'al-implement-subagent']
+agents: ['AL Planning Subagent', 'AL Code Review Subagent', 'AL Implementation Subagent']
 ```
 
-Nota: `al-implement-subagent` es TDD-only y no interactúa con el usuario. `al-developer` sigue siendo invocable directamente por el usuario para tareas tácticas.
+Nota: `AL Implementation Subagent` es TDD-only y no interactúa con el usuario. `al-developer` sigue siendo invocable directamente por el usuario para tareas tácticas.
 
 ### Agentes eliminados respecto a v1.0
 
@@ -265,23 +265,23 @@ Los agentes y humanos **SHOULD** actualizar `memory.md` en cada handoff signific
 
 | Agente / Workflow | Rol | Produce |
 |-------------------|-----|---------|
-| `@al-architect` | Solution Architect — diseña la solución, flujos de datos, decisiones estratégicas | `.github/plans/{req_name}/{req_name}.architecture.md` |
+| `@AL Architecture & Design Specialist` | Solution Architect — diseña la solución, flujos de datos, decisiones estratégicas | `.github/plans/{req_name}/{req_name}.architecture.md` |
 | `al-spec.create` | Spec técnica detallada — lee `architecture.md`, genera blueprint implementable con IDs, firmas, código AL | `.github/plans/{req_name}/{req_name}.spec.md` |
-| `@al-conductor` | Orquestador TDD — lee spec + architecture, coordina planning → implement → review | implementación + `.github/plans/{req_name}/{req_name}.test-plan.md` |
-| `@al-developer` | Implementación táctica directa — lee spec, sin TDD orquestado | implementación |
+| `@AL Development Conductor` | Orquestador TDD — lee spec + architecture, coordina planning → implement → review | implementación + `.github/plans/{req_name}/{req_name}.test-plan.md` |
+| `@AL Implementation Specialist` | Implementación táctica directa — lee spec, sin TDD orquestado | implementación |
 
 ### Flujo de creación de artefactos
 
 #### MEDIUM / HIGH (con arquitectura + TDD)
 
 1. Asignar `{req_name}` (kebab-case)
-2. `@al-architect` → genera `.github/plans/{req_name}/{req_name}.architecture.md` con diseño aprobado
+2. `@AL Architecture & Design Specialist` → genera `.github/plans/{req_name}/{req_name}.architecture.md` con diseño aprobado
    - ⚠️ **GATE**: aprobar arquitectura antes de continuar
 3. `@workspace use al-spec.create` → lee `architecture.md` y codebase → genera `.github/plans/{req_name}/{req_name}.spec.md`
    - Spec técnica: object IDs, field types, procedure signatures, tests Given/When/Then
    - ⚠️ **GATE**: aprobar spec antes de implementar
 4. Actualizar `memory.md` global con contexto del requerimiento
-5. `@al-conductor` → orquesta ciclo TDD desde `.github/plans/{req_name}/`:
+5. `@AL Development Conductor` → orquesta ciclo TDD desde `.github/plans/{req_name}/`:
    - planning-subagent (research) → implement-subagent (TDD) → review-subagent (review)
    - ⚠️ **GATE**: validación humana por fase
 6. Entrega → `@workspace use al-pr-prepare` → actualizar `memory.md`
@@ -293,7 +293,7 @@ Los agentes y humanos **SHOULD** actualizar `memory.md` en cada handoff signific
 2. `@workspace use al-spec.create` → genera `.github/plans/{req_name}/{req_name}.spec.md` directamente desde codebase
    - ⚠️ **GATE**: aprobar spec antes de implementar
 3. Actualizar `memory.md` global
-4. `@al-developer` → implementa directamente usando spec como blueprint
+4. `@AL Implementation Specialist` → implementa directamente usando spec como blueprint
 5. Entrega → actualizar `memory.md`
 
 ## Templates inmutables
@@ -369,7 +369,7 @@ Optional components add domain-specific capabilities without altering Core.
 
 Available optional components:
 
-- **BC Agent Builder**: @al-agent-builder agent, 3 skills, 4 workflows for AI Development Toolkit / Agent SDK development
+- **BC Agent Builder**: @AL Agent Builder agent, 3 skills, 4 workflows for AI Development Toolkit / Agent SDK development
 
 Optional components MUST NOT:
 

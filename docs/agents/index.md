@@ -64,9 +64,9 @@ I need to build a sales forecasting system...
 
 | Mode | Role | Model | Purpose |
 |------|------|-------|---------|
-| **al-planning-subagent** | AL-aware Research Specialist | Sonnet 4.5 | Analyzes codebase, gathers context for planning |
-| **al-implement-subagent** | TDD Implementation Executor | Haiku 4.5 | Executes RED→GREEN→REFACTOR cycle |
-| **al-review-subagent** | Quality Assurance Validator | Sonnet 4.5 | Reviews code against AL best practices |
+| **AL Planning Subagent** | AL-aware Research Specialist | Sonnet 4.5 | Analyzes codebase, gathers context for planning |
+| **AL Implementation Subagent** | TDD Implementation Executor | Haiku 4.5 | Executes RED→GREEN→REFACTOR cycle |
+| **AL Code Review Subagent** | Quality Assurance Validator | Sonnet 4.5 | Reviews code against AL best practices |
 
 > 💡 **Note**: Subagents are automatically invoked by `al-conductor` via `runSubagent` tool. You don't invoke them directly.
 

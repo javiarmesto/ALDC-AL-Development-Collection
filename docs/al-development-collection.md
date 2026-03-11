@@ -22,8 +22,8 @@ The AL Development Collection provides a complete AI-native development toolkit 
 - al-presales 💼 (project planning & cost estimation)
 
 **4 Orchestra System Agents** (Multi-agent TDD):
-- al-conductor 🎭 (orchestration), al-planning-subagent 🔍 (research)
-- al-implement-subagent 💻 (TDD implementation), al-review-subagent ✅ (validation)
+- al-conductor 🎭 (orchestration), AL Planning Subagent 🔍 (research)
+- AL Implementation Subagent 💻 (TDD implementation), AL Code Review Subagent ✅ (validation)
 
 **9 Auto-Applied Instructions**:
 - Code style, naming conventions, performance patterns

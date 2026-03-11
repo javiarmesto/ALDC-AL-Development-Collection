@@ -50,7 +50,7 @@ al-initialize → al-context.create → al-spec.create → al-conductor
 
 ### 🔨 Build & Deploy
 
-Use these for **standalone deployment** tasks. Orchestra uses build tools internally via `al-implement-subagent`.
+Use these for **standalone deployment** tasks. Orchestra uses build tools internally via `AL Implementation Subagent`.
 
 | Workflow | Description | When to Use Directly | When Orchestra Handles It |
 |----------|-------------|---------------------|--------------------------|
@@ -152,12 +152,12 @@ The **al-conductor** multi-agent system leverages these workflows as building bl
 
 ### How Orchestra Uses Workflows
 
-**1. Planning Phase** (`al-planning-subagent`):
+**1. Planning Phase** (`AL Planning Subagent`):
 - Uses patterns from `al-events`, `al-pages`, `al-permissions` to understand existing codebase
 - References `al-context.create` output if available for project context
 - Identifies AL objects and patterns similar to those in workflows
 
-**2. Implementation Phase** (`al-implement-subagent`):
+**2. Implementation Phase** (`AL Implementation Subagent`):
 - Applies implementation patterns from:
   - `al-events.prompt.md` → Event subscriber implementation patterns
   - `al-pages.prompt.md` → Page creation and extension patterns
@@ -166,7 +166,7 @@ The **al-conductor** multi-agent system leverages these workflows as building bl
 - Calls build tools from `al-build` workflow
 - Follows TDD: Tests first (RED) → Code (GREEN) → Refactor
 
-**3. Review Phase** (`al-review-subagent`):
+**3. Review Phase** (`AL Code Review Subagent`):
 - Validates against patterns documented in workflows
 - Checks performance patterns from `al-performance` workflow
 - Ensures event-driven architecture from `al-events` patterns

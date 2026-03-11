@@ -170,14 +170,14 @@ Implementation requirements:
 - Generate tests BEFORE implementation code
 - Use AL-Go structure (App/ and Test/ separated)
 - Document each phase in .github/plans/
-- Automatic code review with al-review-subagent
+- Automatic code review with AL Code Review Subagent
 ```
 
 **⏳ Automatic process (90 minutes)**:
 
 ```mermaid
 graph TB
-    Start([👤 User: Use al-conductor mode]) --> Planning[🔍 Planning Phase<br/>al-planning-subagent<br/>5 min]
+    Start([👤 User: Use al-conductor mode]) --> Planning[🔍 Planning Phase<br/>AL Planning Subagent<br/>5 min]
     Planning --> Plan[📋 7-Phase Implementation Plan]
     
     Plan --> Phase1[🔴 Phase 1: Core Table]
@@ -188,7 +188,7 @@ graph TB
     Refactor1 --> Phase2[🔴 Phase 2-7: Repeat TDD Cycle]
     Phase2 --> Objects[📦 10 AL Objects<br/>63 Tests<br/>100% Coverage]
     
-    Objects --> Review[✅ al-review-subagent<br/>Quality Gates]
+    Objects --> Review[✅ AL Code Review Subagent<br/>Quality Gates]
     Review --> Pass{All tests<br/>passing?}
     
     Pass -->|✅ Yes| Docs[📖 Auto-generate docs<br/>.github/plans/]
@@ -207,7 +207,7 @@ graph TB
 
 #### 🔍 Planning Phase (5 min)
 ```
-al-planning-subagent analyzes:
+AL Planning Subagent analyzes:
 - Project structure
 - Available BC objects
 - Dependencies
@@ -224,7 +224,7 @@ Proposes 7 phases:
 
 #### 🔴 Phase 1: Core Table (15 min)
 
-**RED (5 min)** - al-implement-subagent:
+**RED (5 min)** - AL Implementation Subagent:
 ```al
 // Test/LoyaltyTests.Codeunit.al
 [Test]
@@ -248,7 +248,7 @@ end;
 ```
 **Run test** → ❌ FAILS (table doesn't exist)
 
-**GREEN (7 min)** - al-implement-subagent:
+**GREEN (7 min)** - AL Implementation Subagent:
 ```al
 // App/Tables/LoyaltyPointEntry.Table.al
 table 50100 "Loyalty Point Entry"
@@ -286,7 +286,7 @@ table 50100 "Loyalty Point Entry"
 ```
 **Run test** → ✅ PASSES
 
-**REFACTOR (3 min)** - al-review-subagent validates:
+**REFACTOR (3 min)** - AL Code Review Subagent validates:
 - ✅ Naming conventions OK
 - ✅ DataClassification correct
 - ✅ Indexes optimized
@@ -300,9 +300,9 @@ table 50100 "Loyalty Point Entry"
 #### 🔴 Phase 2-7: Complete TDD Cycle (75 min)
 
 **Each phase follows**:
-1. **RED**: Failing test (al-implement-subagent)
-2. **GREEN**: Minimal passing code (al-implement-subagent)
-3. **REFACTOR**: Review and optimization (al-review-subagent)
+1. **RED**: Failing test (AL Implementation Subagent)
+2. **GREEN**: Minimal passing code (AL Implementation Subagent)
+3. **REFACTOR**: Review and optimization (AL Code Review Subagent)
 
 **Objects generated progressively**:
 - ✅ Loyalty Point Entry Table
@@ -383,7 +383,7 @@ Verify you have:
 - [ ] `architecture.md` (al-architect design)
 - [ ] `implementation-plan.md` (al-conductor phases)
 - [ ] `test-results.md` (test results)
-- [ ] `review-notes.md` (al-review-subagent feedback)
+- [ ] `review-notes.md` (AL Code Review Subagent feedback)
 
 **Metrics**:
 - [ ] 10 AL objects created
@@ -424,9 +424,9 @@ mindmap
       100% test coverage
     AL Orchestra
       al-conductor orchestration
-      al-planning-subagent research
-      al-implement-subagent coding
-      al-review-subagent quality
+      AL Planning Subagent research
+      AL Implementation Subagent coding
+      AL Code Review Subagent quality
     Documentation
       Auto-generated plans
       Architecture docs
@@ -443,7 +443,7 @@ mindmap
 ✅ **Automatic TDD** with al-conductor (RED → GREEN → REFACTOR)  
 ✅ **Event-driven BC** without modifying base objects  
 ✅ **Optimized FlowFields** for aggregate calculations  
-✅ **Automatic code review** with al-review-subagent  
+✅ **Automatic code review** with AL Code Review Subagent  
 ✅ **Automatic documentation** in `.github/plans/`  
 ✅ **Comprehensive tests** 100% coverage  
 
@@ -499,7 +499,7 @@ Now that you master the complete flow:
 1. **Save the architect prompt** → Reuse for similar features
 2. **Document decisions** → al-conductor generates docs automatically
 3. **Review the tests** → They are excellent usage examples
-4. **Use the reviews** → al-review-subagent teaches best practices
+4. **Use the reviews** → AL Code Review Subagent teaches best practices
 5. **Iterate quickly** → TDD enables confident changes
 
 ---

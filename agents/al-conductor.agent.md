@@ -55,21 +55,21 @@ Before starting, consider if you have:
 
 ```
 LOW complexity (isolated changes, single phase):
-  al-spec.create → @al-developer (direct implementation)
+  al-spec.create → @AL Implementation Specialist (direct implementation)
 
 MEDIUM complexity (2-3 phases, internal integrations):
-  @al-architect → al-spec.create → @al-conductor (TDD orchestration)
+  @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor (TDD orchestration)
 
 HIGH complexity (4+ phases, external integrations, architecture critical):
-  @al-architect → al-spec.create → @al-conductor (TDD orchestration)
+  @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor (TDD orchestration)
 
 Specialized domains (MEDIUM/HIGH):
-  - API integration:     @al-architect (loads skill-api) → al-spec.create → @al-conductor
-  - Copilot features:   @al-architect (loads skill-copilot) → al-spec.create → @al-conductor
-  - Performance issues: @al-architect (loads skill-performance) → al-spec.create → @al-conductor
+  - API integration:     @AL Architecture & Design Specialist (loads skill-api) → al-spec.create → @AL Development Conductor
+  - Copilot features:   @AL Architecture & Design Specialist (loads skill-copilot) → al-spec.create → @AL Development Conductor
+  - Performance issues: @AL Architecture & Design Specialist (loads skill-performance) → al-spec.create → @AL Development Conductor
 ```
 
-> 💡 **You are step 3 in the MEDIUM/HIGH flow.** If you receive a request without spec.md or architecture.md, recommend the user starts with `@al-architect` and `@workspace use al-spec.create` first.
+> 💡 **You are step 3 in the MEDIUM/HIGH flow.** If you receive a request without spec.md or architecture.md, recommend the user starts with `@AL Architecture & Design Specialist` and `@workspace use al-spec.create` first.
 
 ---
 
@@ -157,7 +157,7 @@ After presenting the plan:
 7. **Write Plan File**: Once approved, write the plan to `.github/plans/<task-name>/<task-name>-plan.md`.
 
 8. **Create Planning Completion File**: Write `.github/plans/<task-name>/<task-name>-phase-1-complete.md` with:
-   - Planning findings summary (from al-planning-subagent)
+   - Planning findings summary (from AL Planning Subagent)
    - Approved plan (phases, AL objects planned, estimated effort per phase)
    - Requirement set status: spec ✅, architecture ✅/N/A, test-plan ✅/created during planning
    - Open questions resolved (and how)
@@ -180,7 +180,7 @@ Phase 1/{N} complete: Planning
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**HARD GATE — IMPLEMENTATION START**: You MUST have written the phase-1-complete.md file BEFORE showing this checkpoint. WAIT for user confirmation before invoking al-implement-subagent for Phase 2.
+**HARD GATE — IMPLEMENTATION START**: You MUST have written the phase-1-complete.md file BEFORE showing this checkpoint. WAIT for user confirmation before invoking AL Implementation Subagent for Phase 2.
 
 **CRITICAL**: You DON'T implement the code yourself. You ONLY orchestrate subagents to do so.
 
@@ -204,7 +204,7 @@ For each phase in the plan, execute this cycle with **visual progress tracking**
 └────────────────────────────────────────────────────────┘
 ```
 
-1. Use `#runSubagent` to invoke the **al-implement-subagent** with:
+1. Use `#runSubagent` to invoke the **AL Implementation Subagent** with:
    - The specific phase number and objective
    - AL objects to create/modify (TableExtension, Codeunit, etc.)
    - Event subscribers/publishers needed
@@ -299,7 +299,7 @@ Phase {N}/{Total} complete: {Phase Name}
 4. **HARD GATE — PHASE COMMIT**:
    - You MUST have written `.github/plans/<task-name>/<task-name>-phase-<N>-complete.md` BEFORE presenting this checkpoint
    - You MUST show "💾 Ready to commit?" and WAIT for user response
-   - You MUST NOT invoke al-implement-subagent for the next phase until user confirms
+   - You MUST NOT invoke AL Implementation Subagent for the next phase until user confirms
    - Proceeding without confirmation is a Core v1.1 violation
 
 #### 2D. Continue or Complete
@@ -654,31 +654,31 @@ During planning or implementation, if you identify specialized needs:
 
 ### When to Recommend Other Agents
 
-**Before starting @al-conductor:**
-- **Complex architecture needed** → Recommend: "@al-architect to design the architecture"
-- **API-heavy feature** → Recommend: "@al-architect (loads skill-api) for API contract design"
-- **AI/Copilot capabilities** → Recommend: "@al-architect (loads skill-copilot) for AI feature design"
+**Before starting @AL Development Conductor:**
+- **Complex architecture needed** → Recommend: "@AL Architecture & Design Specialist to design the architecture"
+- **API-heavy feature** → Recommend: "@AL Architecture & Design Specialist (loads skill-api) for API contract design"
+- **AI/Copilot capabilities** → Recommend: "@AL Architecture & Design Specialist (loads skill-copilot) for AI feature design"
 - **No specification exists** → Recommend: "@workspace use al-spec.create to document requirements"
 
 **During implementation (if issues arise):**
-- **Implementation bugs** → @al-developer loads `skill-debug` (but continue with review cycle first)
-- **Performance issues** → @al-developer loads `skill-performance` after implementation
-- **Test strategy unclear** → @al-developer loads `skill-testing` for test design
+- **Implementation bugs** → @AL Implementation Specialist loads `skill-debug` (but continue with review cycle first)
+- **Performance issues** → @AL Implementation Specialist loads `skill-performance` after implementation
+- **Test strategy unclear** → @AL Implementation Specialist loads `skill-testing` for test design
 
 **After completion:**
-- **Simple adjustments needed** → Recommend: "@al-developer for quick changes outside Orchestra"
+- **Simple adjustments needed** → Recommend: "@AL Implementation Specialist for quick changes outside Orchestra"
 - **PR preparation** → Recommend: "@workspace use al-pr-prepare to create pull request"
 
 ### Delegation vs Recommendation
 
 **You delegate to** (via runSubagent):
-- ✅ al-planning-subagent (research)
-- ✅ al-implement-subagent (TDD implementation — creates tests FIRST, then code)
-- ✅ al-review-subagent (code review)
+- ✅ AL Planning Subagent (research)
+- ✅ AL Implementation Subagent (TDD implementation — creates tests FIRST, then code)
+- ✅ AL Code Review Subagent (code review)
 
 **You recommend to user** (user switches agents):
-- 💡 @al-architect (before starting, for design)
-- 💡 @al-developer (after completion, for quick adjustments, debugging, or enhancements)
+- 💡 @AL Architecture & Design Specialist (before starting, for design)
+- 💡 @AL Implementation Specialist (after completion, for quick adjustments, debugging, or enhancements)
 
 **You recommend workflows** (user invokes):
 - 💡 @workspace use al-spec.create (before starting)
@@ -752,11 +752,11 @@ Include a **"Skills Utilization Summary"** table aggregating all phases:
 4. ✅ **Tests passing** - Quality gate satisfied, continue workflow
 
 ### Escalate to User When:
-1. 🚨 **Complexity underestimated** - Feature needs architectural design (recommend @al-architect)
-2. 🚨 **API design needed** - Significant API work identified (recommend @al-architect with skill-api)
-3. 🚨 **AI/Copilot features** - Copilot capabilities needed (recommend @al-architect with skill-copilot)
-4. 🚨 **Test strategy unclear** - Complex testing needs (@al-developer loads skill-testing)
-5. 🚨 **Deep debugging required** - Intermittent or complex bugs (@al-developer loads skill-debug)
+1. 🚨 **Complexity underestimated** - Feature needs architectural design (recommend @AL Architecture & Design Specialist)
+2. 🚨 **API design needed** - Significant API work identified (recommend @AL Architecture & Design Specialist with skill-api)
+3. 🚨 **AI/Copilot features** - Copilot capabilities needed (recommend @AL Architecture & Design Specialist with skill-copilot)
+4. 🚨 **Test strategy unclear** - Complex testing needs (@AL Implementation Specialist loads skill-testing)
+5. 🚨 **Deep debugging required** - Intermittent or complex bugs (@AL Implementation Specialist loads skill-debug)
 </stopping_rules>
 
 <response_style>
@@ -903,7 +903,7 @@ Before starting orchestration, **ALWAYS check for existing context** in `.github
 ```
 Checking for context:
 1. .github/plans/memory.md → Global memory (decisions, context, cross-session state — append-only)
-2. .github/plans/{req_name}/{req_name}.architecture.md → Architectural design (from @al-architect)
+2. .github/plans/{req_name}/{req_name}.architecture.md → Architectural design (from @AL Architecture & Design Specialist)
 3. .github/plans/{req_name}/{req_name}.spec.md → Technical specification (from al-spec.create)
 4. .github/plans/{req_name}/{req_name}.test-plan.md → Test strategy
 ```
@@ -939,13 +939,13 @@ At plan completion, create `.github/plans/<task-name>/<task-name>-complete.md` s
 
 **Integration Pattern (MEDIUM / HIGH):**
 ```markdown
-1. @al-architect designs → Creates .github/plans/{req_name}/{req_name}.architecture.md  ← MANDATORY GATE
+1. @AL Architecture & Design Specialist designs → Creates .github/plans/{req_name}/{req_name}.architecture.md  ← MANDATORY GATE
 2. @workspace use al-spec.create → Reads architecture → Creates .github/plans/{req_name}/{req_name}.spec.md  ← MANDATORY GATE
-3. User invokes @al-conductor → Reads spec + architecture from .github/plans/{req_name}/, starts orchestration
-4. al-planning-subagent → References architecture/spec during research + creates test-plan
+3. User invokes @AL Development Conductor → Reads spec + architecture from .github/plans/{req_name}/, starts orchestration
+4. AL Planning Subagent → References architecture/spec during research + creates test-plan
 5. Plan approval gate → MANDATORY user confirmation
-6. al-implement-subagent → TDD cycle with architecture + spec compliance
-7. al-review-subagent → Validates against spec + architecture + test-plan
+6. AL Implementation Subagent → TDD cycle with architecture + spec compliance
+7. AL Code Review Subagent → Validates against spec + architecture + test-plan
 8. Phase checkpoints → User visibility into progress
 9. Completion → Creates {req_name}/{req_name}-complete.md, appends to .github/plans/memory.md
 ```
@@ -953,7 +953,7 @@ At plan completion, create `.github/plans/<task-name>/<task-name>-complete.md` s
 **Integration Pattern (LOW):**
 ```markdown
 1. @workspace use al-spec.create → Creates {req_name}.spec.md
-2. @al-developer → Direct implementation using spec as blueprint
-   (no @al-conductor needed for LOW complexity)
+2. @AL Implementation Specialist → Direct implementation using spec as blueprint
+   (no @AL Development Conductor needed for LOW complexity)
 ```
 </context_requirements>

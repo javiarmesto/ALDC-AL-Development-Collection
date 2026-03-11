@@ -316,7 +316,7 @@ page {ID} "{Prefix} {Entity} API"
 
 ### Quality
 - [ ] Unit tests cover all main scenarios (Given/When/Then defined above)
-- [ ] Code review passed by @al-review-subagent
+- [ ] Code review passed by @AL Code Review Subagent
 - [ ] Translation keys defined for all new Captions
 
 ---
@@ -339,7 +339,7 @@ page {ID} "{Prefix} {Entity} API"
 > 1. Human reviews and approves this spec
 > 2. Start TDD orchestration:
 >    ```
->    @al-conductor
+>    @AL Development Conductor
 >    ```
 >    Conductor will read this spec + architecture.md and orchestrate planning → implementation → review.
 
@@ -349,7 +349,7 @@ page {ID} "{Prefix} {Entity} API"
 > 1. Human reviews and approves this spec
 > 2. Direct implementation:
 >    ```
->    @al-developer
+>    @AL Implementation Specialist
 >    ```
 >    Developer reads this spec and implements directly (no TDD orchestration needed).
 ```
@@ -360,8 +360,8 @@ page {ID} "{Prefix} {Entity} API"
 
 | Complexity | Handoff to | Purpose |
 |-----------|-----------|---------|
-| MEDIUM / HIGH | `@al-conductor` | TDD-orchestrated implementation (planning → implementation → review) |
-| LOW | `@al-developer` | Direct implementation using this spec as blueprint |
+| MEDIUM / HIGH | `@AL Development Conductor` | TDD-orchestrated implementation (planning → implementation → review) |
+| LOW | `@AL Implementation Specialist` | Direct implementation using this spec as blueprint |
 
 ## Success Criteria
 

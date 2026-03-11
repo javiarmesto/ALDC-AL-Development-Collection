@@ -41,9 +41,9 @@ AL-Development-Collection-for-GitHub-Copilot
     ├── al-developer.agent.md
     ├── al-conductor.agent.md
     ├── al-presales.agent.md
-    ├── al-planning-subagent.agent.md
-    ├── al-implement-subagent.agent.md
-    └── al-review-subagent.agent.md
+    ├── AL Planning Subagent.agent.md
+    ├── AL Implementation Subagent.agent.md
+    └── AL Code Review Subagent.agent.md
 ```
 
 ## Key Improvements

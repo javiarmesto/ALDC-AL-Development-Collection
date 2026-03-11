@@ -53,26 +53,26 @@ This generates `{req_name}.spec.md` in `.github/plans/`.
 **LOW complexity** (simple field, single table extension):
 
 ```text
-@al-developer implement the spec
+@AL Implementation Specialist implement the spec
 ```
 
 **MEDIUM/HIGH complexity** (multi-table, events, business logic):
 
 ```text
-@al-architect design the architecture first
+@AL Architecture & Design Specialist design the architecture first
 ```
 
 Then:
 
 ```text
-@al-conductor orchestrate TDD implementation
+@AL Development Conductor orchestrate TDD implementation
 ```
 
 ### Step 3: Follow the flow
 
 ```text
-LOW:      al-spec.create -> @al-developer
-MED/HIGH: @al-architect -> al-spec.create -> @al-conductor
+LOW:      al-spec.create -> @AL Implementation Specialist
+MED/HIGH: @AL Architecture & Design Specialist -> al-spec.create -> @AL Development Conductor
 ```
 
 The conductor enforces TDD through subagents:
@@ -87,10 +87,10 @@ The conductor enforces TDD through subagents:
 
 | Agent | What it does |
 |-------|-------------|
-| `@al-architect` | Designs solutions, decomposes requirements, creates architecture docs |
-| `@al-developer` | Implements code, debugs, makes quick adjustments |
-| `@al-conductor` | Orchestrates multi-phase TDD with subagents |
-| `@al-presales` | Estimates effort, scopes projects |
+| `@AL Architecture & Design Specialist` | Designs solutions, decomposes requirements, creates architecture docs |
+| `@AL Implementation Specialist` | Implements code, debugs, makes quick adjustments |
+| `@AL Development Conductor` | Orchestrates multi-phase TDD with subagents |
+| `@AL Pre-Sales & Project Estimation Specialist` | Estimates effort, scopes projects |
 
 ## Available workflows
 

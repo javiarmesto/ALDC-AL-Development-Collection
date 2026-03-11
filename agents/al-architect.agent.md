@@ -71,7 +71,7 @@ Both analyze AL codebases, but serve different roles:
 ### Recommended Workflow
 
 ```
-1. @al-architect (DESIGN)
+1. @AL Architecture & Design Specialist (DESIGN)
    └─> Design solution architecture
        ├─> Evaluate patterns (events vs extensions)
        ├─> Design data model (tables, relationships)
@@ -85,13 +85,13 @@ Both analyze AL codebases, but serve different roles:
        └─> Create {req_name}.spec.md (objects, fields, code, IDs)
        └─> If decomposed: create spec per sub-requirement
 
-3. @al-conductor (IMPLEMENT)
+3. @AL Development Conductor (IMPLEMENT)
    └─> Reads spec.md + architecture.md
-       ├─> al-planning-subagent: Gather AL context
-       ├─> al-implement-subagent: TDD cycle per phase
-       └─> al-review-subagent: Quality gates
+       ├─> AL Planning Subagent: Gather AL context
+       ├─> AL Implementation Subagent: TDD cycle per phase
+       └─> AL Code Review Subagent: Quality gates
 
-4. @al-developer (ADJUST, optional)
+4. @AL Implementation Specialist (ADJUST, optional)
    └─> Quick fixes and adjustments after completion
 ```
 
@@ -126,7 +126,7 @@ Both analyze AL codebases, but serve different roles:
 2. **POPULATE** with the architectural design you just discussed
 3. **UPDATE** `.github/plans/memory.md` — append decision summary (append-only, never delete)
 4. **CONFIRM** to user: "✅ Created `.github/plans/{req_name}/{req_name}.architecture.md`"
-5. **SUGGEST** next steps (@al-conductor, @workspace use al-spec.create, etc.)
+5. **SUGGEST** next steps (@AL Development Conductor, @workspace use al-spec.create, etc.)
 
 ### Example Workflow
 
@@ -147,7 +147,7 @@ Created: .github/plans/customer-loyalty/customer-loyalty.architecture.md
 Updated: .github/plans/memory.md
 
 Next steps:
-1. @al-conductor — Implement with TDD orchestration
+1. @AL Development Conductor — Implement with TDD orchestration
 2. OR: @workspace use al-spec.create — Generate detailed specification first
 
 Would you like to proceed with implementation?"
@@ -155,7 +155,7 @@ Would you like to proceed with implementation?"
 
 ### Why This Matters
 
-- **Context Preservation**: Other agents (@al-conductor, al-planning-subagent, @al-developer) will read this file
+- **Context Preservation**: Other agents (@AL Development Conductor, AL Planning Subagent, @AL Implementation Specialist) will read this file
 - **Continuity**: Ensures implementation aligns with approved architecture
 - **Documentation Trail**: Creates permanent record of architectural decisions
 - **Memory**: `.github/plans/memory.md` maintains cross-session context
@@ -301,8 +301,8 @@ When generating `{req_name}.architecture.md`, include at the TOP of the document
 4. ✅ **Answering questions** - Provide architectural guidance
 
 ### Escalate/Handoff When:
-1. ➡️ **Architecture approved** → Handoff to **@al-conductor** for TDD implementation
-2. ➡️ **Simple implementation** → Handoff to **@al-developer** for direct coding
+1. ➡️ **Architecture approved** → Handoff to **@AL Development Conductor** for TDD implementation
+2. ➡️ **Simple implementation** → Handoff to **@AL Implementation Specialist** for direct coding
 3. ➡️ **API design needed** → Load `skill-api` for endpoint architecture
 4. ➡️ **AI/Copilot design** → Load `skill-copilot` for capability design
 5. ➡️ **Test strategy** → Load `skill-testing` for test planning
@@ -353,7 +353,7 @@ Based on requirements, create comprehensive architectural design following secti
 
    After all specs are created:
    ```
-   @al-conductor
+   @AL Development Conductor
    Implement {req_name}. Contracts in .github/plans/{req_name}/
    ```
 
@@ -361,7 +361,7 @@ Based on requirements, create comprehensive architectural design following secti
 
 **Correct flow** (MANDATORY):
 ```
-@al-architect (design) → al-spec.create (technical detail) → @al-conductor (TDD implementation)
+@AL Architecture & Design Specialist (design) → al-spec.create (technical detail) → @AL Development Conductor (TDD implementation)
         ↓
 Skills loaded on-demand by architect:
 skill-api, skill-copilot, skill-performance, skill-events, skill-testing
@@ -371,7 +371,7 @@ skill-api, skill-copilot, skill-performance, skill-events, skill-testing
 - **API design** → load `skill-api` for endpoint architecture decisions
 - **AI/Copilot design** → load `skill-copilot` for capability design
 - **Performance analysis** → load `skill-performance` for optimization strategy
-- **LOW complexity** → skip architect, use `al-spec.create` → `@al-developer` directly
+- **LOW complexity** → skip architect, use `al-spec.create` → `@AL Implementation Specialist` directly
 
 ---
 
@@ -989,13 +989,13 @@ Then repeat for each sub-spec in the defined order.
 
 After all specs are created → implement:
 ```
-@al-conductor
+@AL Development Conductor
 Implement {req_name}. Contracts in .github/plans/{req_name}/
 ```
 
 For LOW complexity (no architect needed):
 ```
-@al-developer
+@AL Implementation Specialist
 Implement {req_name}. Read .github/plans/{req_name}/{req_name}.spec.md
 ```
 
@@ -1067,7 +1067,7 @@ al-architect:
 5. 👉 COPY docs/templates/architecture-template.md → .github/plans/customer-loyalty/customer-loyalty.architecture.md
 6. 👉 APPEND summary to .github/plans/memory.md (never delete existing content)
 7. Confirm creation: "✅ Created .github/plans/customer-loyalty/customer-loyalty.architecture.md"
-8. Suggest next step: "@al-conductor" or "@workspace use al-spec.create"
+8. Suggest next step: "@AL Development Conductor" or "@workspace use al-spec.create"
 
 IMPORTANT: Steps 5-6 happen AUTOMATICALLY after approval - DO NOT wait for user request.
 Templates in docs/templates/ are IMMUTABLE — only copy, never edit.
@@ -1083,15 +1083,15 @@ Update the **Status** field in the document:
 
 ### Integration with Other Agents
 
-**@al-conductor reads this file**:
-- During Phase 1: Planning (al-planning-subagent references architecture)
+**@AL Development Conductor reads this file**:
+- During Phase 1: Planning (AL Planning Subagent references architecture)
 - Ensures implementation aligns with architectural decisions
 
-**al-planning-subagent reads this file**:
+**AL Planning Subagent reads this file**:
 - Uses architecture as research guide
 - Validates findings against design
 
-**@al-developer reads this file**:
+**@AL Implementation Specialist reads this file**:
 - Follows architectural patterns
 - Implements according to design
 
@@ -1124,7 +1124,7 @@ This documentation system ensures **continuity across sessions** and **alignment
 
 **Integration Pattern:**
 ```markdown
-1. User requests feature design → @al-architect activated
+1. User requests feature design → @AL Architecture & Design Specialist activated
 2. al-architect reads context → .github/plans/memory.md + */*.architecture.md
 3. Design discussion → Present options, discuss trade-offs
 4. User approval gate → MANDATORY before documentation
@@ -1134,6 +1134,6 @@ This documentation system ensures **continuity across sessions** and **alignment
    - Single spec: "@workspace use al-spec.create"
    - Decomposed: "@workspace use al-spec.create" per sub-spec
 8. al-spec.create reads {req_name}/{req_name}.architecture.md → creates {req_name}/{req_name}.spec.md
-9. @al-conductor reads {req_name}/{req_name}.spec.md + {req_name}/{req_name}.architecture.md → TDD implementation
+9. @AL Development Conductor reads {req_name}/{req_name}.spec.md + {req_name}/{req_name}.architecture.md → TDD implementation
 ```
 </context_requirements>

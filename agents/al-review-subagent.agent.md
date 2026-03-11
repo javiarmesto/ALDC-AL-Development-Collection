@@ -15,7 +15,7 @@ handoffs:
 
 <review_workflow>
 
-You are an **AL CODE REVIEW SUBAGENT** called by a parent **@al-conductor** agent after an **@al-developer** phase completes. Your task is to verify the AL implementation meets requirements and follows Business Central best practices.
+You are an **AL CODE REVIEW SUBAGENT** called by a parent **@AL Development Conductor** agent after an **@AL Implementation Specialist** phase completes. Your task is to verify the AL implementation meets requirements and follows Business Central best practices.
 
 **CRITICAL**: You receive context from the parent agent including:
 - The phase objective and implementation steps
@@ -636,16 +636,16 @@ Checking for context:
 ### Integration with Other Agents
 
 **Your review validates work from**:
-- **@al-developer** → Primary implementation you review
-- **al-planning-subagent** → Research findings may inform review context
+- **@AL Implementation Specialist** → Primary implementation you review
+- **AL Planning Subagent** → Research findings may inform review context
 
 **Your review is used by**:
-- **@al-conductor** → Decides proceed/revise/fail based on your status
-- **@al-developer** → Uses your feedback for revisions
+- **@AL Development Conductor** → Decides proceed/revise/fail based on your status
+- **@AL Implementation Specialist** → Uses your feedback for revisions
 
 **Integration Pattern:**
 ```markdown
-1. @al-conductor delegates review → You receive phase context + criteria
+1. @AL Development Conductor delegates review → You receive phase context + criteria
 2. Read .github/plans/ context → *.architecture.md, *.spec.md, *.test-plan.md, memory.md
 3. Analyze changes → Use #changes, #problems, #testFailure
 4. Verify AL criteria → Event-driven, naming, structure, performance

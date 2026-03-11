@@ -16,18 +16,18 @@ per-requirement contracts and a global memory system.
 
 | Agent | Role | When to use |
 |-------|------|-------------|
-| `@al-architect` | Solution Architect: designs solutions, information flows, technical decisions, requirement decomposition | New features, architecture decisions, MEDIUM/HIGH complexity |
-| `@al-developer` | Developer: implements, debugs, quick adjustments | LOW complexity, bug fixes, direct changes |
-| `@al-conductor` | Conductor: orchestrates TDD implementation with subagents | MEDIUM/HIGH complexity after architecture is defined |
-| `@al-presales` | Pre-sales: estimation, scoping, effort analysis | Project planning, customer estimation |
+| `@AL Architecture & Design Specialist` | Solution Architect: designs solutions, information flows, technical decisions, requirement decomposition | New features, architecture decisions, MEDIUM/HIGH complexity |
+| `@AL Implementation Specialist` | Developer: implements, debugs, quick adjustments | LOW complexity, bug fixes, direct changes |
+| `@AL Development Conductor` | Conductor: orchestrates TDD implementation with subagents | MEDIUM/HIGH complexity after architecture is defined |
+| `@AL Pre-Sales & Project Estimation Specialist` | Pre-sales: estimation, scoping, effort analysis | Project planning, customer estimation |
 
 ### Subagents (3 internal - invoked by conductor)
 
 | Subagent | Role |
 |----------|------|
-| `al-planning-subagent` | Research and context gathering (BC objects, events, patterns) |
-| `al-implement-subagent` | TDD-only implementation: tests FIRST, code SECOND (RED-GREEN-REFACTOR) |
-| `al-review-subagent` | Code review against spec + architecture |
+| `AL Planning Subagent` | Research and context gathering (BC objects, events, patterns) |
+| `AL Implementation Subagent` | TDD-only implementation: tests FIRST, code SECOND (RED-GREEN-REFACTOR) |
+| `AL Code Review Subagent` | Code review against spec + architecture |
 
 ### Composable Skills (11)
 
@@ -82,10 +82,10 @@ Coding standards that apply automatically via `applyTo` patterns:
 
 ```
 LOW complexity:
-  al-spec.create -> @al-developer
+  al-spec.create -> @AL Implementation Specialist
 
 MEDIUM/HIGH complexity:
-  @al-architect -> al-spec.create -> @al-conductor
+  @AL Architecture & Design Specialist -> al-spec.create -> @AL Development Conductor
 ```
 
 ### TDD Orchestration (conductor)
@@ -107,7 +107,7 @@ The conductor enforces Test-Driven Development through subagents:
 Each requirement produces a contract set in `.github/plans/`:
 
 - `{req_name}.spec.md` — Technical blueprint (from al-spec.create)
-- `{req_name}.architecture.md` — Solution design (from @al-architect)
+- `{req_name}.architecture.md` — Solution design (from @AL Architecture & Design Specialist)
 - `{req_name}.test-plan.md` — Test strategy
 - `memory.md` — Global context across sessions (append-only)
 
@@ -136,15 +136,15 @@ Patterns applied:
 ```
 @workspace use al-spec.create
 -> generates {req_name}.spec.md
--> @al-developer implements directly
+-> @AL Implementation Specialist implements directly
 ```
 
 ### For MEDIUM/HIGH Complexity
 
 ```
-@al-architect -> designs architecture
+@AL Architecture & Design Specialist -> designs architecture
 -> @workspace use al-spec.create -> generates spec
--> @al-conductor -> TDD orchestration with subagents
+-> @AL Development Conductor -> TDD orchestration with subagents
 -> Each phase: RED -> GREEN -> REFACTOR -> HITL approval
 -> Final review + delivery
 ```
@@ -154,9 +154,9 @@ Patterns applied:
 ### Building a New Feature (MEDIUM)
 
 ```
-1. @al-architect -> Design solution architecture
+1. @AL Architecture & Design Specialist -> Design solution architecture
 2. @workspace use al-spec.create -> Generate technical spec
-3. @al-conductor -> TDD orchestration
+3. @AL Development Conductor -> TDD orchestration
    - Planning: context research
    - Phase 1-N: implement + review per phase
    - Each phase: HITL gate
@@ -166,14 +166,14 @@ Patterns applied:
 ### Quick Fix (LOW)
 
 ```
-1. @al-developer -> Direct implementation
+1. @AL Implementation Specialist -> Direct implementation
 2. @workspace use al-build -> Deploy
 ```
 
 ### Debugging
 
 ```
-1. @al-developer with skill-debug -> Systematic diagnosis
+1. @AL Implementation Specialist with skill-debug -> Systematic diagnosis
 2. Fix implementation
 3. @workspace use al-build -> Deploy
 ```

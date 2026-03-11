@@ -23,16 +23,16 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 **4 Public Agents** — Specialized roles for every development phase
 
-- `@al-architect` — Solution Architect: designs solutions, information flows, technical decisions
-- `@al-developer` — Developer: implements, debugs, quick adjustments
-- `@al-conductor` — Conductor: orchestrates TDD implementation with subagents
-- `@al-presales` — Pre-sales: estimation and scoping
+- `@AL Architecture & Design Specialist` — Solution Architect: designs solutions, information flows, technical decisions
+- `@AL Implementation Specialist` — Developer: implements, debugs, quick adjustments
+- `@AL Development Conductor` — Conductor: orchestrates TDD implementation with subagents
+- `@AL Pre-Sales & Project Estimation Specialist` — Pre-sales: estimation and scoping
 
 **3 Internal Subagents** — Autonomous specialists within the conductor
 
-- `al-planning-subagent` — Research and context gathering
-- `al-implement-subagent` — TDD-only implementation (tests FIRST, code SECOND)
-- `al-review-subagent` — Code review against spec + architecture
+- `AL Planning Subagent` — Research and context gathering
+- `AL Implementation Subagent` — TDD-only implementation (tests FIRST, code SECOND)
+- `AL Code Review Subagent` — Code review against spec + architecture
 
 **11 Composable Skills** — Domain knowledge loaded on demand
 
@@ -60,10 +60,10 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 ```text
 LOW complexity:
-  al-spec.create → @al-developer
+  al-spec.create → @AL Implementation Specialist
 
 MEDIUM/HIGH complexity:
-  @al-architect → al-spec.create → @al-conductor
+  @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
 ```
 
 The architect designs the solution and can decompose complex requirements into multiple specs, each implemented independently by the conductor.
@@ -72,17 +72,17 @@ The architect designs the solution and can decompose complex requirements into m
 flowchart TD
     REQ[Requirement] --> CLASSIFY{Complexity?}
     CLASSIFY -->|LOW| SPEC_LOW[al-spec.create]
-    SPEC_LOW --> DEV[@al-developer]
+    SPEC_LOW --> DEV[@AL Implementation Specialist]
 
-    CLASSIFY -->|MEDIUM/HIGH| ARCH[@al-architect]
+    CLASSIFY -->|MEDIUM/HIGH| ARCH[@AL Architecture & Design Specialist]
     ARCH -->|Designs solution| ARCH_DOC[architecture.md]
     ARCH --> DECOMPOSE{Decompose?}
     DECOMPOSE -->|Yes| SPEC_A[al-spec.create → spec-A]
     DECOMPOSE -->|Yes| SPEC_B[al-spec.create → spec-B]
     DECOMPOSE -->|No| SPEC_SINGLE[al-spec.create → spec.md]
-    SPEC_A --> COND_A[@al-conductor]
-    SPEC_B --> COND_B[@al-conductor]
-    SPEC_SINGLE --> COND[@al-conductor]
+    SPEC_A --> COND_A[@AL Development Conductor]
+    SPEC_B --> COND_B[@AL Development Conductor]
+    SPEC_SINGLE --> COND[@AL Development Conductor]
 ```
 
 ---
@@ -119,16 +119,16 @@ flowchart LR
 ```mermaid
 graph TB
     subgraph PUBLIC["Public Agents (user-invocable)"]
-        ARCH[@al-architect]
-        DEV[@al-developer]
-        COND[@al-conductor]
-        PRE[@al-presales]
+        ARCH[@AL Architecture & Design Specialist]
+        DEV[@AL Implementation Specialist]
+        COND[@AL Development Conductor]
+        PRE[@AL Pre-Sales & Project Estimation Specialist]
     end
 
     subgraph INTERNAL["Internal Subagents (conductor-only)"]
-        PLAN[al-planning-subagent]
-        IMPL[al-implement-subagent]
-        REV[al-review-subagent]
+        PLAN[AL Planning Subagent]
+        IMPL[AL Implementation Subagent]
+        REV[AL Code Review Subagent]
     end
 
     subgraph SKILLS["11 Composable Skills"]
@@ -172,10 +172,10 @@ graph TB
 └── plans/
     ├── memory.md                          ← Global (cross-session context)
     └── {req_name}/
-        ├── {req_name}.architecture.md    ← From @al-architect
+        ├── {req_name}.architecture.md    ← From @AL Architecture & Design Specialist
         ├── {req_name}.spec.md            ← From al-spec.create
         ├── {req_name}.test-plan.md       ← From al-spec.create or conductor
-        ├── {req_name}-plan.md            ← From @al-conductor (Planning)
+        ├── {req_name}-plan.md            ← From @AL Development Conductor (Planning)
         ├── {req_name}-phase-1-complete.md
         └── {req_name}-phase-N-complete.md
 ```
@@ -214,14 +214,14 @@ See [QUICKSTART.md](aldc-core-v1.1/docs/framework/QUICKSTART.md) for the full on
 
 | Complexity | Route | When |
 | ---------- | ----- | ---- |
-| **LOW** | `al-spec.create` → `@al-developer` | Simple field, validation, single UI change |
-| **MEDIUM** | `@al-architect` → `al-spec.create` → `@al-conductor` | Business logic, event-driven feature |
-| **HIGH** | `@al-architect` → `al-spec.create` → `@al-conductor` | Multi-module, external integration, architectural change |
+| **LOW** | `al-spec.create` → `@AL Implementation Specialist` | Simple field, validation, single UI change |
+| **MEDIUM** | `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | Business logic, event-driven feature |
+| **HIGH** | `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | Multi-module, external integration, architectural change |
 
 **Not sure where to start?**
 
 ```text
-@al-architect
+@AL Architecture & Design Specialist
 
 I need to [describe your requirement]
 ```
@@ -317,16 +317,16 @@ AL-Development-Collection-for-GitHub-Copilot/
 ## What's New in v3.2.0 (ALDC Core v1.1)
 
 - **Skills-based architecture**: 11 composable skills that agents load on demand — api, copilot, debug, performance, events, permissions, testing, migrate, pages, translate, estimation
-- **Simplified agent model**: 4 public agents (@al-architect, @al-developer, @al-conductor, @al-presales) + 3 internal subagents for TDD orchestration
+- **Simplified agent model**: 4 public agents (@AL Architecture & Design Specialist, @AL Implementation Specialist, @AL Development Conductor, @AL Pre-Sales & Project Estimation Specialist) + 3 internal subagents for TDD orchestration
 - **Contracts per requirement**: spec, architecture, and test-plan per requirement in `.github/plans/{req_name}/`
 - **Global memory**: cross-session `memory.md` for project-wide decisions
 - **HITL gates**: mandatory stops at plan approval, each TDD phase, and completion
-- **BC Agent Builder** (optional): @al-agent-builder agent, 3 skills, 4 workflows for Business Central Agent SDK development
+- **BC Agent Builder** (optional): @AL Agent Builder agent, 3 skills, 4 workflows for Business Central Agent SDK development
 
 ### Breaking Changes from v2.x
 
 - Agent count: 11 → 4 public + 3 internal subagents
-- Agent invocation: `Use al-architect mode` → `@al-architect`
+- Agent invocation: `Use al-architect mode` → `@AL Architecture & Design Specialist`
 - Plans directory: flat `.github/plans/` → per-requirement `.github/plans/{req_name}/`
 - Specialized agents (al-debugger, al-tester, al-api, al-copilot) absorbed into composable skills
 
@@ -337,7 +337,7 @@ See [CHANGELOG.md](CHANGELOG.md) for full details.
 ## BC Agent Builder (optional)
 
 Build Business Central Agents with the AI Development Toolkit and Agent SDK.
-Includes: @al-agent-builder agent, 3 skills, 4 workflows, validation tools.
+Includes: @AL Agent Builder agent, 3 skills, 4 workflows, validation tools.
 See [BC Agent Builder documentation](docs/bc-agent-builder.md).
 
 ---

@@ -136,7 +136,7 @@ Prompts are invoked explicitly:
 Agents are activated via mode selection:
 
 ```text
-@al-architect
+@AL Architecture & Design Specialist
 
 I need to [describe your requirement]
 ```

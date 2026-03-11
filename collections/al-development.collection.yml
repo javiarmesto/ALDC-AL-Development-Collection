@@ -26,10 +26,10 @@ items:
     kind: instruction
     description: |
       Master integration document for GitHub Copilot. Routes to 4 public agents based on task:
-      - Designing/architecture? → @al-architect
-      - Implementing/coding/debugging? → @al-developer
-      - TDD orchestrated feature (MEDIUM/HIGH)? → @al-conductor
-      - Project estimation? → @al-presales
+      - Designing/architecture? → @AL Architecture & Design Specialist
+      - Implementing/coding/debugging? → @AL Implementation Specialist
+      - TDD orchestrated feature (MEDIUM/HIGH)? → @AL Development Conductor
+      - Project estimation? → @AL Pre-Sales & Project Estimation Specialist
       Auto-loaded as .github/copilot-instructions.md per GitHub Copilot conventions.
   - path: instructions/index.md
     kind: instruction
@@ -96,11 +96,11 @@ items:
 
       Loads skills on demand: skill-api, skill-copilot, skill-performance, skill-events
 
-      Flow: @al-architect → al-spec.create → @al-conductor
+      Flow: @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
 
       Tool Boundaries:
       - CAN: Design solutions, create architecture docs, decompose requirements
-      - CANNOT: Execute builds, deploy code (delegates to @al-developer or @al-conductor)
+      - CANNOT: Execute builds, deploy code (delegates to @AL Implementation Specialist or @AL Development Conductor)
 
   - path: agents/al-developer.agent.md
     kind: agent
@@ -112,12 +112,12 @@ items:
       Loads skills on demand: skill-debug, skill-api, skill-copilot, skill-events,
       skill-permissions, skill-pages, skill-migrate, skill-translate
 
-      For LOW complexity: al-spec.create → @al-developer
-      For debugging/quick fixes: @al-developer directly
+      For LOW complexity: al-spec.create → @AL Implementation Specialist
+      For debugging/quick fixes: @AL Implementation Specialist directly
 
       Tool Boundaries:
       - CAN: Create/edit files, build, publish, test, refactor, fix bugs
-      - CANNOT: Design architectures, orchestrate multi-phase TDD (delegates to @al-conductor)
+      - CANNOT: Design architectures, orchestrate multi-phase TDD (delegates to @AL Development Conductor)
 
   - path: agents/al-conductor.agent.md
     kind: agent
@@ -131,9 +131,9 @@ items:
       Produces: {req_name}-plan.md and {req_name}-phase-N-complete.md
 
       Subagents invoked automatically (not user-invocable):
-      - al-planning-subagent: context research
-      - al-implement-subagent: TDD implementation (tests FIRST)
-      - al-review-subagent: code review against spec + architecture
+      - AL Planning Subagent: context research
+      - AL Implementation Subagent: TDD implementation (tests FIRST)
+      - AL Code Review Subagent: code review against spec + architecture
 
   - path: agents/al-presales.agent.md
     kind: agent
@@ -149,30 +149,30 @@ items:
     kind: agent
     usage: optional
     description: |
-      AL-aware research and context gathering. Called by al-conductor.
+      AL-aware research and context gathering. Called by @AL Development Conductor.
       Analyzes codebase, dependencies, AL objects, event architecture, AL-Go structure.
       Returns structured findings to conductor for plan creation.
-      NOT for direct use — invoked automatically by @al-conductor.
+      NOT for direct use — invoked automatically by @AL Development Conductor.
 
   - path: agents/al-implement-subagent.agent.md
     kind: agent
     usage: optional
     description: |
-      TDD-only implementation subagent. Called by al-conductor per phase.
+      TDD-only implementation subagent. Called by @AL Development Conductor per phase.
       Step 0: Verify test infrastructure (Library Assert, Any, ID ranges).
       RED: Write failing tests. GREEN: Minimal code. REFACTOR: AL patterns.
       Loads domain skills (skill-api, skill-permissions, etc.) as needed.
-      NOT for direct use — invoked automatically by @al-conductor.
+      NOT for direct use — invoked automatically by @AL Development Conductor.
 
   - path: agents/al-review-subagent.agent.md
     kind: agent
     usage: optional
     description: |
-      Code review subagent. Called by al-conductor after each implementation phase.
+      Code review subagent. Called by @AL Development Conductor after each implementation phase.
       Validates against spec + architecture + AL best practices.
       Returns: APPROVED / NEEDS_REVISION / FAILED with CRITICAL/MAJOR/MINOR issues.
       Checks skills compliance (api patterns, performance patterns, test patterns).
-      NOT for direct use — invoked automatically by @al-conductor.
+      NOT for direct use — invoked automatically by @AL Development Conductor.
 
   # ─── BC Agent Builder (optional) ────────────────────────────────────────────
   - path: agents/al-agent-builder.agent.md
