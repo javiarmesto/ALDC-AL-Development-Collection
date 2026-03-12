@@ -8,9 +8,6 @@ handoffs:
   - label: Design Architecture
     agent: AL Architecture & Design Specialist
     prompt: Design the architecture for this project following BC best practices
-  - label: Create Specification
-    agent: al-spec.create
-    prompt: Generate detailed technical specification from the presales analysis
   - label: Implement with TDD
     agent: AL Development Conductor
     prompt: Implement the approved proposal using TDD orchestration
@@ -707,7 +704,7 @@ Output: .github/plans/{req_name}.spec.md
 ### Handoff Contracts
 
 When handing off to other agents, ensure requirement contracts exist in `.github/plans/`:
-- `{req_name}.architecture.md` → Created by @AL Architecture & Design Specialist (COPY from `docs/templates/architecture-template.md`)
+- `{req_name}.architecture.md` → Created by @al-architect (COPY from `docs/templates/architecture-template.md`)
 - `{req_name}.spec.md` → Created by al-spec.create (COPY from `docs/templates/spec-template.md`)
 - `{req_name}.test-plan.md` → Created during implementation planning
 

@@ -128,19 +128,19 @@ When working within an ALDC Core project, this agent follows two modes:
 ### Standalone Mode (invoke directly)
 For LOW complexity or prototyping. The agent runs its own 7-phase workflow.
 ```
-@AL Agent Builder
+@al-agent-builder
 Create an agent for [purpose]
 ```
 
 ### Integrated Mode (via ALDC flow)
 For MEDIUM/HIGH complexity or production agents:
-1. @AL Architecture & Design Specialist designs the agent (loads skill-agent-task-patterns)
+1. @al-architect designs the agent (loads skill-agent-task-patterns)
 2. al-spec.create details the AL objects
-3. @AL Development Conductor implements with TDD
+3. @al-conductor implements with TDD
 
-In integrated mode, AL Agent Builder serves as REFERENCE —
+In integrated mode, al-agent-builder serves as REFERENCE —
 the architect and conductor use its knowledge via skills,
-not by invoking AL Agent Builder directly.
+not by invoking al-agent-builder directly.
 
 ### Skills Evidencing
 When loaded, this agent declares:
