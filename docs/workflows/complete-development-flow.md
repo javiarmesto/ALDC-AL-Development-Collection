@@ -290,36 +290,6 @@ graph TD
 
 **Use when**: 5+ objects, architectural decisions needed, complex integrations
 
-```
-┌─────────────────┐
-│ requirements.md │
-└────────┬────────┘
-         ↓
-┌──────────────────────┐
-│ Use al-architect     │ Strategic design phase:
-│ mode                 │ - Analyzes requirements
-│                      │ - Reviews existing architecture
-│                      │ - Designs solution patterns
-│                      │ - Creates architecture spec
-│                      │ - Documents decisions
-└────────┬─────────────┘
-         ↓
-    ┌──────────────────────────┐
-    │ Architecture Document    │ Includes:
-    │                          │ - Object model design
-    │                          │ - Integration architecture
-    │                          │ - Data architecture
-    │                          │ - Security model
-    │                          │ - Performance strategy
-    │                          │ - Testing approach
-    └────────┬─────────────────┘
-             ↓ User reviews
-    ┌──────────────────────┐
-    │ Specialized Design   │ If needed:
-    │ (Optional)           │
-    ├──────────────────────┤
-**Use when**: 5+ objects, architectural decisions needed, complex integrations
-
 ```mermaid
 graph TD
     A[requirements.md] --> B[Use al-architect mode]
@@ -365,11 +335,6 @@ graph TD
     style F fill:#fff3cd
     style I fill:#d4edda
     style M fill:#d4edda
-```     ├─ Phase 2: Authorization logic
-        ├─ Phase 3: CRUD operations
-        └─ Phase 4: Integration tests
-    ↓
-@workspace use al-pr-prepare
 ```
 
 **Key agents**: `al-api` (design) → `al-conductor` (implement)
@@ -398,11 +363,8 @@ graph TD
     style B fill:#e7e7ff
     style C fill:#fff3cd
     style F fill:#d4edda
-``` C1 --> D1[Phase 1: API Page structure]
-    D1 --> D2[Phase 2: Authorization logic]
-    D2 --> D3[Phase 3: CRUD operations]
-    D3 --> D4[Phase 4: Integration tests]
-    
+```
+
 ### Flow C: Performance Optimization
 
 ```mermaid
@@ -438,11 +400,6 @@ graph TD
     style D fill:#fff3cd
     style E fill:#fff3cd
     style K1 fill:#d4edda
-```     ├─ Optimize keys/indices
-        └─ Verify no regressions
-    ↓
-@workspace use al-performance (re-profile)
-    └─ Confirm improvements
 ```
 
 **Key agents**: `al-debugger`, `al-architect`, `al-conductor`  

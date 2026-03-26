@@ -174,11 +174,11 @@ flowchart TD
     class D outcome
     
     %% Hide the row subgraph borders
-    style B_ROW1 fill:transparent,stroke:none
-    style B_ROW2 fill:transparent,stroke:none
+    style B_ROW1 fill:none,stroke:none
+    style B_ROW2 fill:none,stroke:none
     
     %% High contrast container styling for Agent Primitives with spacing
-    style B fill:#f3f4f6,stroke:#6b7280,stroke-width:2px,color:#1f2937,font-size:13px,font-weight:bold,margin-top:10px,padding-top:15px
+    style B fill:#f3f4f6,stroke:#6b7280,stroke-width:2px,color:#1f2937,font-size:13px,font-weight:bold
 ```
 
 </div>
