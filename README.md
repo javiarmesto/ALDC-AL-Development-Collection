@@ -342,6 +342,69 @@ See [BC Agent Builder documentation](docs/bc-agent-builder.md).
 
 ---
 
+## ALDC for Claude Code
+
+ALDC is also available as a native **Claude Code** integration. The `.claude/` directory contains the full framework adapted for Claude Code's architecture:
+
+### What's Included
+
+| Primitive | Location | Count |
+| --------- | -------- | ----- |
+| Agents | `.claude/agents/` | 5 public + 3 internal subagents |
+| Skills (slash commands) | `.claude/skills/` | 15 skills + 6 workflows |
+| Rules (auto-applied) | `.claude/rules/` | 8 coding standards |
+| MCP Servers | `.mcp.json` | 3 servers (al-symbols, context7, microsoft-docs) |
+| Settings & Hooks | `.claude/settings.json` | Permissions, post-edit & stop hooks |
+| Project instructions | `CLAUDE.md` | Agent routing, workflows, complexity guide |
+
+### How It Maps
+
+```text
+GitHub Copilot              →  Claude Code
+─────────────────────────────────────────────
+agents/*.agent.md           →  .claude/agents/*.md
+skills/*/SKILL.md           →  .claude/skills/*/SKILL.md (slash commands)
+instructions/*.md           →  .claude/rules/*.md (auto-applied)
+prompts/*.prompt.md         →  .claude/skills/ (workflows as skills)
+.github/copilot-instructions.md → CLAUDE.md
+```
+
+### Setup
+
+1. Clone the repository
+2. Open with Claude Code (`claude` CLI, VS Code extension, or Desktop app)
+3. The `CLAUDE.md` file and `.claude/` directory are detected automatically
+4. Start with any agent: `@al-architect`, `@al-developer`, `@al-conductor`, or `@al-presales`
+
+### Agent Routing (Claude Code)
+
+```text
+@al-architect   — Solution design, architecture decisions
+@al-developer   — Implementation, debugging, quick fixes
+@al-conductor   — TDD orchestration (plan → implement → review)
+@al-presales    — Estimation, SWOT, cost breakdown
+```
+
+### Slash Commands (Workflows)
+
+```text
+/al-spec.create    — Create functional-technical specifications
+/al-build          — Build, package, deploy
+/al-pr-prepare     — Prepare pull requests
+/al-memory.create  — Generate session memory
+/al-context.create — Generate project context
+/al-initialize     — Environment setup
+```
+
+### Hooks
+
+Claude Code hooks enforce quality gates automatically:
+
+- **PostToolUse** (Write/Edit) — Reminds to run tests after file modifications
+- **Stop** — Reminds to verify Skills Evidencing was declared
+
+---
+
 ## Framework Documentation
 
 - [Core Specification v1.1](docs/framework/ALDC-Core-Spec-v1.1.md)
