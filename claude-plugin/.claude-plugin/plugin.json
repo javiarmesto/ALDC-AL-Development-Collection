@@ -6,7 +6,8 @@
     "name": "javiarmesto",
     "url": "https://github.com/javiarmesto"
   },
-  "repository": "https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot",
+  "homepage": "https://github.com/javiarmesto/ALDC-AL-Development-Collection-for-GitHub-Copilot",
+  "repository": "https://github.com/javiarmesto/ALDC-AL-Development-Collection-for-GitHub-Copilot",
   "license": "MIT",
   "keywords": [
     "AL",
@@ -15,234 +16,36 @@
     "ERP",
     "extension-development",
     "TDD",
-    "event-driven"
+    "event-driven",
+    "Microsoft",
+    "architecture",
+    "testing",
+    "API",
+    "debugging"
   ],
-  "minClaudeCodeVersion": "1.0.0",
-  "agents": [
-    {
-      "name": "al-architect",
-      "description": "Solution design, data modeling, integration strategy for BC extensions",
-      "file": "agents/al-architect.md"
-    },
-    {
-      "name": "al-conductor",
-      "description": "TDD orchestration: plan → implement → review → commit",
-      "file": "agents/al-conductor.md"
-    },
-    {
-      "name": "al-developer",
-      "description": "Tactical AL implementation, debugging, and code generation",
-      "file": "agents/al-developer.md"
-    },
-    {
-      "name": "al-presales",
-      "description": "PERT estimation, SWOT analysis, cost breakdown for BC projects",
-      "file": "agents/al-presales.md"
-    },
-    {
-      "name": "al-implement-subagent",
-      "description": "Internal: executes implementation phases under al-conductor",
-      "file": "agents/al-implement-subagent.md",
-      "internal": true
-    },
-    {
-      "name": "al-planning-subagent",
-      "description": "Internal: creates detailed implementation plans under al-conductor",
-      "file": "agents/al-planning-subagent.md",
-      "internal": true
-    },
-    {
-      "name": "al-review-subagent",
-      "description": "Internal: reviews code quality and AL best practices under al-conductor",
-      "file": "agents/al-review-subagent.md",
-      "internal": true
-    },
-    {
-      "name": "al-agent-builder",
-      "description": "Creates custom agents for BC AI Development Toolkit",
-      "file": "agents/al-agent-builder.md"
-    }
-  ],
-  "skills": [
-    {
-      "name": "al-spec-create",
-      "description": "Create functional-technical specifications before development",
-      "directory": "skills/al-spec-create"
-    },
-    {
-      "name": "al-build",
-      "description": "Build, package, and deploy BC extensions",
-      "directory": "skills/al-build"
-    },
-    {
-      "name": "al-pr-prepare",
-      "description": "Prepare pull requests with documentation and validation",
-      "directory": "skills/al-pr-prepare"
-    },
-    {
-      "name": "al-memory-create",
-      "description": "Generate/update memory.md for session continuity",
-      "directory": "skills/al-memory-create"
-    },
-    {
-      "name": "al-context-create",
-      "description": "Generate project context.md for AI assistants",
-      "directory": "skills/al-context-create"
-    },
-    {
-      "name": "al-initialize",
-      "description": "Complete environment and workspace setup including rules injection",
-      "directory": "skills/al-initialize"
-    },
-    {
-      "name": "skill-api",
-      "description": "API pages, OData, REST integration patterns",
-      "directory": "skills/skill-api"
-    },
-    {
-      "name": "skill-copilot",
-      "description": "AI features, PromptDialog, Copilot toolkit patterns",
-      "directory": "skills/skill-copilot"
-    },
-    {
-      "name": "skill-debug",
-      "description": "Debugging, snapshot debugging, telemetry analysis",
-      "directory": "skills/skill-debug"
-    },
-    {
-      "name": "skill-estimation",
-      "description": "PERT estimation, complexity scoring, effort analysis",
-      "directory": "skills/skill-estimation"
-    },
-    {
-      "name": "skill-events",
-      "description": "Event subscribers, publishers, integration events",
-      "directory": "skills/skill-events"
-    },
-    {
-      "name": "skill-extension-manifest",
-      "description": "app.json configuration and extension manifest management",
-      "directory": "skills/skill-extension-manifest"
-    },
-    {
-      "name": "skill-migrate",
-      "description": "BC version migration, upgrade codeunits",
-      "directory": "skills/skill-migrate"
-    },
-    {
-      "name": "skill-pages",
-      "description": "Page types, FastTabs, actions, UI patterns",
-      "directory": "skills/skill-pages"
-    },
-    {
-      "name": "skill-performance",
-      "description": "CPU profiling, FlowField optimization, query tuning",
-      "directory": "skills/skill-performance"
-    },
-    {
-      "name": "skill-permissions",
-      "description": "Permission sets, XLIFF, security configuration",
-      "directory": "skills/skill-permissions"
-    },
-    {
-      "name": "skill-testing",
-      "description": "TDD, test strategy, AL Test Toolkit patterns",
-      "directory": "skills/skill-testing"
-    },
-    {
-      "name": "skill-translate",
-      "description": "XLF translation, NAB AL Tools integration",
-      "directory": "skills/skill-translate"
-    },
-    {
-      "name": "skill-agent-toolkit",
-      "description": "AI Development Toolkit agent patterns",
-      "directory": "skills/skill-agent-toolkit"
-    },
-    {
-      "name": "skill-agent-task-patterns",
-      "description": "8 SDK integration patterns for BC agents",
-      "directory": "skills/skill-agent-task-patterns"
-    },
-    {
-      "name": "skill-agent-instructions",
-      "description": "Agent instruction generation for BC AI Toolkit",
-      "directory": "skills/skill-agent-instructions"
-    },
-    {
-      "name": "al-agent-create",
-      "description": "Create new agents for BC AI Development Toolkit",
-      "directory": "skills/al-agent-create"
-    },
-    {
-      "name": "al-agent-instructions-create",
-      "description": "Generate agent instructions for AI Toolkit",
-      "directory": "skills/al-agent-instructions-create"
-    },
-    {
-      "name": "al-agent-task",
-      "description": "Create agent task definitions",
-      "directory": "skills/al-agent-task"
-    },
-    {
-      "name": "al-agent-test",
-      "description": "Generate agent test scenarios",
-      "directory": "skills/al-agent-test"
-    }
-  ],
-  "hooks": "hooks/hooks.json",
+  "hooks": "./hooks/hooks.json",
   "mcpServers": {
     "al-symbols-mcp": {
-      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@nicholasglazer/al-symbols-mcp"]
     },
     "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp"
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/context7-mcp"]
     },
     "microsoft-docs": {
-      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@nicholasglazer/microsoft-docs-mcp"]
     }
   },
-  "permissions": {
-    "allow": [
-      "Read",
-      "Glob",
-      "Grep",
-      "Bash(al.exe *)",
-      "Bash(dotnet build *)",
-      "Bash(dotnet test *)",
-      "Bash(git status*)",
-      "Bash(git log*)",
-      "Bash(git diff*)",
-      "Bash(git branch*)",
-      "Bash(npm run *)",
-      "Bash(npm install*)",
-      "Bash(npx *)"
-    ],
-    "deny": [
-      "Bash(rm -rf *)",
-      "Bash(sudo *)",
-      "Bash(chmod 777*)",
-      "Read(.env)",
-      "Read(.env.*)",
-      "Read(**/credentials*)",
-      "Read(**/secrets*)"
-    ]
-  },
   "userConfig": {
     "bcSandboxUrl": {
       "description": "URL of your Business Central sandbox environment (e.g., https://businesscentral.dynamics.com/your-tenant)",
-      "sensitive": false,
-      "required": false
+      "sensitive": false
     },
     "publisherName": {
       "description": "Your extension publisher name for app.json",
-      "sensitive": false,
-      "required": false
+      "sensitive": false
     }
   }
 }
