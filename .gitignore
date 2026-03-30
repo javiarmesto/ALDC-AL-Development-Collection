@@ -75,3 +75,7 @@ NEXT-STEPS.md
 *.tgz
 # Agent pack (not for public repo)
 /bcagentpack
+
+# Claude Code local files
+CLAUDE.local.md
+.claude/settings.local.json

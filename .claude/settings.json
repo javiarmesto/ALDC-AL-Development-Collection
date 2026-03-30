@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(al.exe *)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet test *)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(npm run *)",
+      "Bash(npm install*)",
+      "Bash(npx *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(chmod 777*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/credentials*)",
+      "Read(**/secrets*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'File modified — remember to run tests before completing phase'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Task complete. Verify Skills Evidencing was declared.'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
