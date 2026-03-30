@@ -1,11 +1,14 @@
-# AL Development Collection for GitHub Copilot
+# ALDC — AL Development Collection
 
-> **ALDC** — Skills-based, spec-driven, TDD-orchestrated development framework for Microsoft Dynamics 365 Business Central with GitHub Copilot agents.
+> **ALDC** — Skills-based, spec-driven, TDD-orchestrated development framework for Microsoft Dynamics 365 Business Central.
 >
 > From vibe coding to controlled engineering.
+>
+> **Now available for both GitHub Copilot and Claude Code.**
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-purple.svg)](docs/framework/ALDC-Core-Spec-v1.1.md)
 [![Version](https://img.shields.io/badge/version-3.2.0-blue)](CHANGELOG.md)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-orange.svg)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-purple)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/AL-Development-Collection-for-GitHub-Copilot)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
@@ -15,7 +18,11 @@
 
 ## What is ALDC?
 
-ALDC (AL Development Collection) transforms how you develop Business Central extensions with GitHub Copilot. Instead of ad-hoc code generation, ALDC provides **structured, contract-driven development** with human-in-the-loop gates.
+ALDC (AL Development Collection) transforms how you develop Business Central extensions. Instead of ad-hoc code generation, ALDC provides **structured, contract-driven development** with human-in-the-loop gates.
+
+**Works with:**
+- **GitHub Copilot** — Agents, skills, prompts, and instructions in `.github/` and `agents/`
+- **Claude Code** — Agents, skills, rules, and hooks in `.claude/` + official plugin in `claude-plugin/`
 
 ---
 
@@ -184,6 +191,8 @@ graph TB
 
 ## Installation
 
+### GitHub Copilot
+
 Install from VS Code Marketplace or:
 
 ```bash
@@ -196,15 +205,42 @@ After installation, use the Command Palette:
 - `AL Collection: Update Toolkit` — merges new version preserving your customizations
 - `AL Collection: Validate Installation` — verifies compliance
 
+### Claude Code (Plugin)
+
+```bash
+/plugin install aldc
+```
+
+Then initialize your project:
+
+```bash
+/aldc:al-initialize
+```
+
+This copies path-scoped rules to `.claude/rules/`, generates a project `CLAUDE.md`, and configures the workspace.
+
+### Claude Code (Direct)
+
+Clone this repo and open it with Claude Code. The `.claude/` directory and `CLAUDE.md` are detected automatically.
+
 ---
 
 ## Quick Start
+
+### GitHub Copilot
 
 1. Install the extension
 2. Open your AL project
 3. Run: `AL Collection: Install Toolkit to Workspace`
 4. Start with: `@workspace use al-spec.create` with your requirement
 5. Follow the guided flow
+
+### Claude Code
+
+1. Install the plugin: `/plugin install aldc`
+2. Initialize: `/aldc:al-initialize`
+3. Start with any agent: `@al-architect`, `@al-developer`, `@al-conductor`, or `@al-presales`
+4. Or run a workflow: `/aldc:al-spec-create`
 
 See [QUICKSTART.md](aldc-core-v1.1/docs/framework/QUICKSTART.md) for the full onboarding guide.
 
@@ -244,72 +280,48 @@ Expected result: `✅ ALDC Core v1.1 COMPLIANT`
 
 ```text
 AL-Development-Collection-for-GitHub-Copilot/
+│
+│── GitHub Copilot ─────────────────────────────────────
 ├── .github/
-│   ├── copilot-instructions.md           # Master coordination (matches instructions/)
-│   └── plans/
+│   ├── copilot-instructions.md           # Master coordination
+│   └── plans/                            # Per-requirement contracts
 │       ├── memory.md                     # Global memory (cross-session)
-│       └── {req_name}/                   # Per-requirement contracts
+│       └── {req_name}/
 │           ├── {req_name}.architecture.md
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
 ├── agents/                               # 4 public agents + 3 subagents
-│   ├── al-architect.agent.md
-│   ├── al-conductor.agent.md
-│   ├── al-developer.agent.md
-│   ├── al-presales.agent.md
-│   ├── al-planning-subagent.agent.md     # user-invocable: false
-│   ├── al-implement-subagent.agent.md    # user-invocable: false
-│   └── al-review-subagent.agent.md       # user-invocable: false
 ├── skills/                               # 11 composable skills
-│   ├── skill-api/SKILL.md
-│   ├── skill-copilot/SKILL.md
-│   ├── skill-debug/SKILL.md
-│   ├── skill-performance/SKILL.md
-│   ├── skill-events/SKILL.md
-│   ├── skill-permissions/SKILL.md
-│   ├── skill-testing/SKILL.md
-│   ├── skill-migrate/SKILL.md
-│   ├── skill-pages/SKILL.md
-│   ├── skill-translate/SKILL.md
-│   └── skill-estimation/SKILL.md
 ├── prompts/                              # 6 retained workflows
-│   ├── al-spec.create.prompt.md
-│   ├── al-build.prompt.md
-│   ├── al-pr-prepare.prompt.md
-│   ├── al-memory.create.prompt.md
-│   ├── al-context.create.prompt.md
-│   └── al-initialize.prompt.md
 ├── instructions/                         # 9 auto-applied coding standards
-│   ├── copilot-instructions.md
-│   ├── al-guidelines.instructions.md
-│   ├── al-code-style.instructions.md
-│   ├── al-naming-conventions.instructions.md
-│   ├── al-performance.instructions.md
-│   ├── al-error-handling.instructions.md
-│   ├── al-events.instructions.md
-│   └── al-testing.instructions.md
+│
+│── Claude Code (Direct) ───────────────────────────────
+├── CLAUDE.md                             # Master instructions
+├── .mcp.json                             # MCP server configuration
+├── .claude/
+│   ├── agents/                           # 8 agents (5 public + 3 internal)
+│   ├── skills/                           # 25 skills (11 knowledge + 10 workflows + 4 toolkit)
+│   ├── rules/                            # 8 path-scoped coding standards
+│   └── settings.json                     # Hooks + permissions
+│
+│── Claude Code Plugin ─────────────────────────────────
+├── claude-plugin/
+│   ├── .claude-plugin/plugin.json        # Plugin manifest
+│   ├── agents/                           # 8 agents (auto-discovered)
+│   ├── skills/                           # 25 skills (auto-discovered)
+│   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
+│   ├── rules-templates/                  # 8 rules (injected via al-initialize)
+│   ├── .mcp.json                         # 3 MCP servers
+│   └── README.md                         # Plugin documentation
+│
+│── Shared ─────────────────────────────────────────────
 ├── docs/
-│   ├── framework/
-│   │   ├── ALDC-Core-Spec-v1.1.md        # Normative specification
-│   │   ├── ALDC-Manifesto.md             # Philosophy
-│   │   ├── ALDC-Governance.md            # Contribution governance
-│   │   ├── ALDC-Compliance-Model.md      # Compliance checklist
-│   │   └── ALDC-Architecture-Diagrams.md # Mermaid diagrams
+│   ├── framework/                        # Normative spec + diagrams
 │   └── templates/                        # Immutable contract templates (7)
-│       ├── spec-template.md
-│       ├── architecture-template.md
-│       ├── test-plan-template.md
-│       ├── memory-template.md
-│       ├── technical-spec-template.md
-│       ├── delivery-template.md
-│       └── skill-template.md
-├── archive/v2.11.0/                      # Archived agents and prompts
 ├── tools/aldc-validate/                  # ALDC Core validator
 ├── aldc.yaml                             # Core v1.1 configuration
 ├── CHANGELOG.md                          # Version history
 └── README.md                             # This file
-
-# ALDC Core v1.1: 4 agents + 3 subagents + 11 skills + 6 workflows + 9 instructions
 ```
 
 ---
@@ -344,6 +356,21 @@ See [BC Agent Builder documentation](docs/bc-agent-builder.md).
 
 ## ALDC for Claude Code
 
+ALDC is available as a native **Claude Code** integration in two forms:
+
+- **Official Plugin** (`claude-plugin/`) — Install with `/plugin install aldc`, namespaced as `aldc:*`
+- **Direct Integration** (`.claude/`) — Auto-detected when opening the repo in Claude Code
+
+### What's Included
+
+| Primitive | Direct (`.claude/`) | Plugin (`aldc:`) | Count |
+| --------- | ------------------- | ---------------- | ----- |
+| Agents | `.claude/agents/` | `agents/` | 5 public + 3 internal |
+| Skills | `.claude/skills/` | `skills/` | 11 knowledge + 10 workflows + 4 agent-toolkit |
+| Rules | `.claude/rules/` | `rules-templates/` (injected via `al-initialize`) | 8 coding standards |
+| MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
+| Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
+| Instructions | `CLAUDE.md` | `README.md` | Agent routing, workflows |
 ALDC is also available as a native **Claude Code** integration. The `.claude/` directory contains the full framework adapted for Claude Code's architecture:
 
 ### What's Included
@@ -360,6 +387,35 @@ ALDC is also available as a native **Claude Code** integration. The `.claude/` d
 ### How It Maps
 
 ```text
+GitHub Copilot              →  Claude Code (Direct)         →  Claude Code (Plugin)
+──────────────────────────────────────────────────────────────────────────────────────
+agents/*.agent.md           →  .claude/agents/*.md          →  agents/*.md
+skills/*/SKILL.md           →  .claude/skills/*/SKILL.md    →  skills/*/SKILL.md
+instructions/*.md           →  .claude/rules/*.md           →  rules-templates/*.md
+prompts/*.prompt.md         →  .claude/skills/ (workflows)  →  skills/ (workflows)
+.github/copilot-instructions.md → CLAUDE.md                 →  plugin.json + README.md
+```
+
+### Agent Routing (Claude Code)
+
+| Agent | Direct | Plugin |
+| ----- | ------ | ------ |
+| Architecture & Design | `@al-architect` | `@aldc:al-architect` |
+| Implementation | `@al-developer` | `@aldc:al-developer` |
+| TDD Orchestration | `@al-conductor` | `@aldc:al-conductor` |
+| Estimation & Scoping | `@al-presales` | `@aldc:al-presales` |
+| Agent Builder | `@al-agent-builder` | `@aldc:al-agent-builder` |
+
+### Workflows (Claude Code)
+
+| Workflow | Direct | Plugin |
+| -------- | ------ | ------ |
+| Create specifications | `/al-spec-create` | `/aldc:al-spec-create` |
+| Build & deploy | `/al-build` | `/aldc:al-build` |
+| Prepare PR | `/al-pr-prepare` | `/aldc:al-pr-prepare` |
+| Session memory | `/al-memory-create` | `/aldc:al-memory-create` |
+| Project context | `/al-context-create` | `/aldc:al-context-create` |
+| Environment setup | `/al-initialize` | `/aldc:al-initialize` |
 GitHub Copilot              →  Claude Code
 ─────────────────────────────────────────────
 agents/*.agent.md           →  .claude/agents/*.md
@@ -403,6 +459,15 @@ Claude Code hooks enforce quality gates automatically:
 - **PostToolUse** (Write/Edit) — Reminds to run tests after file modifications
 - **Stop** — Reminds to verify Skills Evidencing was declared
 
+### Plugin User Configuration
+
+On first enable, the plugin prompts for optional settings:
+
+| Setting | Description |
+| ------- | ----------- |
+| `bcSandboxUrl` | URL of your Business Central sandbox environment |
+| `publisherName` | Your extension publisher name for app.json |
+
 ---
 
 ## Framework Documentation
@@ -429,10 +494,16 @@ Claude Code hooks enforce quality gates automatically:
 
 ## Requirements
 
+### GitHub Copilot
 - **Visual Studio Code**: 1.85.0 or higher
 - **GitHub Copilot**: Required for agent and skill features
 - **AL Language Extension**: For Business Central development
 - **Node.js**: 14+ (for validator)
+
+### Claude Code
+- **Claude Code CLI**: v1.0.33 or higher
+- **AL Language Extension**: For Business Central development
+- **Node.js**: 14+ (for MCP servers via npx)
 
 ---
 
@@ -459,6 +530,6 @@ MIT — See [LICENSE](LICENSE) for details.
 
 ---
 
-**Status**: ✅ ALDC Core v1.1 COMPLIANT
+**Status**: ALDC Core v1.1 COMPLIANT | **Platforms**: GitHub Copilot + Claude Code
 **Version**: 3.2.0 (ALDC Core v1.1)
-**Last Updated**: 2026-03-04
+**Last Updated**: 2026-03-30
