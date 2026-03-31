@@ -1,0 +1,18 @@
+{
+  "name": "aldc-marketplace",
+  "owner": {
+    "name": "javiarmesto",
+    "url": "https://github.com/javiarmesto"
+  },
+  "metadata": {
+    "description": "ALDC — AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents, skills, workflows, and coding standards for extension-only development."
+  },
+  "plugins": [
+    {
+      "name": "aldc",
+      "source": "./",
+      "description": "4 agents + 11 skills + 6 workflows for BC extension development with TDD, event-driven architecture, and HITL gates.",
+      "version": "3.2.0"
+    }
+  ]
+}
