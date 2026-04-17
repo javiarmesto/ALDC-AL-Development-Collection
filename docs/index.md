@@ -6,19 +6,19 @@ hide:
 
 # ALDC
 
-<div class="hero" markdown="1">
+<div class="hero">
 
 <div class="hero-eyebrow">AL Development Collection · Spec-driven AI for Business Central</div>
 
-## Ship Business Central extensions with AI agents that follow your process. { .hero-title }
+<h2 class="hero-title">Ship Business Central extensions with AI agents that follow your process.</h2>
 
-ALDC gives Copilot and Claude Code a working model for AL delivery: specs,
-plans, tests, review gates and reusable skills. Less vibe coding. More
-traceable implementation. { .hero-tagline }
+<p class="hero-tagline">ALDC gives Copilot and Claude Code a working model for AL delivery: specs, plans, tests, review gates and reusable skills. Less vibe coding. More traceable implementation.</p>
 
-[Start with the docs :material-rocket-launch:](getting-started.md){ .md-button .md-button--primary }
-[Understand the framework :material-sitemap-outline:](framework/overview.md){ .md-button }
-[:fontawesome-brands-github: &nbsp; GitHub](https://github.com/javiarmesto/ALDC-AL-Development-Collection){ .md-button }
+<div class="hero-actions">
+  <a class="md-button md-button--primary" href="getting-started/">Start with the docs</a>
+  <a class="md-button" href="framework/overview/">Understand the framework</a>
+  <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
+</div>
 
 <div class="hero-pills">
   <span class="pill"><b>4</b> agents</span>
@@ -171,89 +171,89 @@ flowchart TD
 
 Everything ALDC-related lives here. Pick your path.
 
-<div class="resource-grid" markdown="1">
+<div class="resource-grid">
 
-  <a class="resource-card" markdown="1" href="getting-started.md">
-    <span class="resource-icon">:material-rocket-launch-outline:</span>
+  <a class="resource-card" href="getting-started/">
+    <span class="resource-kicker">Start here</span>
     <h3>Getting Started</h3>
     <p>Install, configure and ship your first feature in under 10 minutes.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="framework/ALDC-Core-Spec-v1.1.md">
-    <span class="resource-icon">:material-file-document-check-outline:</span>
+  <a class="resource-card" href="framework/ALDC-Core-Spec-v1.1/">
+    <span class="resource-kicker">Specification</span>
     <h3>Core Spec v1.1</h3>
     <p>The normative specification. Read this to understand every primitive.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="agents/index.md">
-    <span class="resource-icon">:material-account-group-outline:</span>
+  <a class="resource-card" href="agents/">
+    <span class="resource-kicker">Roles</span>
     <h3>Agents</h3>
     <p>Architect, Developer, Conductor, Pre-Sales. What each one does and when.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="prompts/index.md">
-    <span class="resource-icon">:material-cog-transfer-outline:</span>
+  <a class="resource-card" href="prompts/">
+    <span class="resource-kicker">Automation</span>
     <h3>Workflows</h3>
     <p>6 workflows from initialize to PR prepare. Invocable from chat.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="instructions/index.md">
-    <span class="resource-icon">:material-ruler-square:</span>
+  <a class="resource-card" href="instructions/">
+    <span class="resource-kicker">Standards</span>
     <h3>Instructions</h3>
     <p>9 always-on AL coding standards. Style, perf, naming, errors, events.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="framework/ALDC-Architecture-Diagrams.md">
-    <span class="resource-icon">:material-sitemap-outline:</span>
+  <a class="resource-card" href="framework/ALDC-Architecture-Diagrams/">
+    <span class="resource-kicker">Visuals</span>
     <h3>Architecture</h3>
-    <p>Mermaid diagrams of how agents, skills, workflows and contracts fit.</p>
+    <p>Diagrams of how agents, skills, workflows and contracts fit together.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="framework/ALDC-Migration-v1.0-to-v1.1.md">
-    <span class="resource-icon">:material-map-marker-path:</span>
+  <a class="resource-card" href="framework/ALDC-Migration-v1.0-to-v1.1/">
+    <span class="resource-kicker">Upgrade</span>
     <h3>Migration v1.0 → v1.1</h3>
-    <p>Breaking changes, upgrade checklist, deprecated primitives.</p>
+    <p>Breaking changes, upgrade checklist and deprecated primitives.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="framework/ROADMAP-2026.md">
-    <span class="resource-icon">:material-road:</span>
+  <a class="resource-card" href="framework/ROADMAP-2026/">
+    <span class="resource-kicker">Next</span>
     <h3>Roadmap 2026</h3>
-    <p>What's shipping next. v1.2 priorities, community asks.</p>
+    <p>What is shipping next and which priorities are under discussion.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="framework/ALDC-Manifesto.md">
-    <span class="resource-icon">:material-heart-outline:</span>
+  <a class="resource-card" href="framework/ALDC-Manifesto/">
+    <span class="resource-kicker">Why</span>
     <h3>Manifesto</h3>
-    <p>Why spec-driven. Why HITL. Why skills. The philosophy.</p>
+    <p>Why spec-driven. Why HITL. Why skills. The philosophy behind ALDC.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">
-    <span class="resource-icon">:fontawesome-brands-github:</span>
+  <a class="resource-card" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">
+    <span class="resource-kicker">Open source</span>
     <h3>Source code</h3>
-    <p>Every agent, skill and workflow. MIT licensed. Star & fork welcome.</p>
+    <p>Every agent, skill and workflow. MIT licensed. Star and fork welcome.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/discussions">
-    <span class="resource-icon">:material-forum-outline:</span>
+  <a class="resource-card" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/discussions">
+    <span class="resource-kicker">Community</span>
     <h3>Discussions</h3>
-    <p>Ask questions, share patterns, propose primitives. Community-first.</p>
+    <p>Ask questions, share patterns and propose primitives with the community.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" markdown="1" href="framework/ALDC-Governance.md">
-    <span class="resource-icon">:material-scale-balance:</span>
+  <a class="resource-card" href="framework/ALDC-Governance/">
+    <span class="resource-kicker">Rules</span>
     <h3>Governance</h3>
-    <p>How decisions are made. How primitives are accepted. Compliance model.</p>
+    <p>How decisions are made, how primitives are accepted and the compliance model.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -263,40 +263,11 @@ Everything ALDC-related lives here. Pick your path.
 
 ## Events & talks { #events .section-title }
 
-ALDC also exists outside the repo: conference talks, Dev Days and hands-on
-sessions where the framework itself is the topic. This section is for agenda,
-registration and published follow-up material when it exists. { .section-lead }
-
-<div class="resource-grid" markdown="1">
-
-  <a class="resource-card" markdown="1" href="events.md#upcoming">
-    <span class="resource-icon">:material-calendar-clock-outline:</span>
-    <h3>Upcoming talks</h3>
-    <p>Confirmed sessions with dates, context and registration links.</p>
-    <span class="resource-arrow">→</span>
-  </a>
-
-  <a class="resource-card" markdown="1" href="events.md#past-sessions">
-    <span class="resource-icon">:material-history:</span>
-    <h3>Past sessions</h3>
-    <p>Decks, demos and notes from previous ALDC talks and workshops.</p>
-    <span class="resource-arrow">→</span>
-  </a>
-
-  <a class="resource-card" markdown="1" href="getting-started.md">
-    <span class="resource-icon">:material-school-outline:</span>
-    <h3>Learn before you attend</h3>
-    <p>Start with the docs so the live session can go deeper, not broader.</p>
-    <span class="resource-arrow">→</span>
-  </a>
-
-</div>
+<p class="section-lead">ALDC also exists outside the repo: conference talks, Dev Days and hands-on sessions where the framework itself is the topic. Here you only see confirmed upcoming talks.</p>
 
 <div class="cta-row">
-
-[Open the ALDC agenda :material-calendar-month:](events.md){ .md-button .md-button--primary }
-[Go to Getting Started :material-rocket-launch-outline:](getting-started.md){ .md-button }
-
+  <a class="md-button md-button--primary" href="events/">See upcoming talks</a>
+  <a class="md-button" href="getting-started/">Start with the docs</a>
 </div>
 
 ---
@@ -305,38 +276,38 @@ registration and published follow-up material when it exists. { .section-lead }
 
 Four ways to make ALDC better. No contribution is too small.
 
-<div class="collab-grid" markdown="1">
+<div class="collab-grid">
 
-  <div class="collab-card" markdown="1">
+  <div class="collab-card">
     <div class="collab-num">01</div>
     <h3>Try it and tell me</h3>
     <p>Install, build something real, and open an issue with what broke,
     what felt awkward, or what you wish existed. Bug reports are gold.</p>
-    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/issues/new/choose">Open an issue :material-arrow-right:</a>
+    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/issues/new/choose">Open an issue →</a>
   </div>
 
-  <div class="collab-card" markdown="1">
+  <div class="collab-card">
     <div class="collab-num">02</div>
     <h3>Contribute a primitive</h3>
     <p>Have a skill, workflow or agent you'd pay for? Propose it.
     Fork, follow the contribution guide, open a PR.</p>
-    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/CONTRIBUTING.md">Contribution guide :material-arrow-right:</a>
+    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/CONTRIBUTING.md">Contribution guide →</a>
   </div>
 
-  <div class="collab-card" markdown="1">
+  <div class="collab-card">
     <div class="collab-num">03</div>
     <h3>Shape v1.2</h3>
     <p>The roadmap is open. Vote on priorities, argue against trade-offs,
     propose alternatives in Discussions.</p>
-    <a href="framework/ROADMAP-2026.md">See the roadmap :material-arrow-right:</a>
+    <a href="framework/ROADMAP-2026/">See the roadmap →</a>
   </div>
 
-  <div class="collab-card" markdown="1">
+  <div class="collab-card">
     <div class="collab-num">04</div>
     <h3>Share the workflow</h3>
     <p>Star the repo. Mention ALDC in your BC community, internal enablement
     docs or session notes. Useful references beat generic hype.</p>
-    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">Star on GitHub :material-arrow-right:</a>
+    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">Star on GitHub →</a>
   </div>
 
 </div>
