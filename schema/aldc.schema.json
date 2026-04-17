@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ALDC Core Configuration v1.1",
+  "type": "object",
+  "required": ["core", "toolkitRoot", "plans", "contracts", "copilotEntrypoint", "required", "validation"],
+  "properties": {
+    "core": {
+      "type": "object",
+      "required": ["version", "specFile"],
+      "properties": {
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "specFile": { "type": "string" }
+      }
+    },
+    "toolkitRoot": { "type": "string" },
+    "plans": {
+      "type": "object",
+      "required": ["root"],
+      "properties": {
+        "root": { "type": "string" }
+      }
+    },
+    "contracts": {
+      "type": "object",
+      "required": ["globalMemory", "namingConvention", "types"],
+      "properties": {
+        "globalMemory": { "type": "string" },
+        "namingConvention": { "type": "string" },
+        "types": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3
+        },
+        "archiveFolder": { "type": "string" }
+      }
+    },
+    "copilotEntrypoint": { "type": "string" },
+    "copilotSource": { "type": "string" },
+    "required": {
+      "type": "object",
+      "required": ["agents", "subagents", "workflows", "skills", "instructions", "templates"],
+      "properties": {
+        "agents": { "type": "array", "items": { "type": "string" }, "minItems": 4 },
+        "subagents": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "workflows": { "type": "array", "items": { "type": "string" }, "minItems": 6 },
+        "skills": {
+          "type": "object",
+          "required": ["required"],
+          "properties": {
+            "required": { "type": "array", "items": { "type": "string" }, "minItems": 7 },
+            "recommended": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "instructions": { "type": "array", "items": { "type": "string" } },
+        "templates": { "type": "array", "items": { "type": "string" }, "minItems": 7 }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["rules"],
+      "properties": {
+        "rules": {
+          "type": "object",
+          "properties": {
+            "missingPlansDir": { "enum": ["warn", "error"] },
+            "missingGlobalMemory": { "enum": ["warn", "error"] },
+            "missingTemplates": { "enum": ["warn", "error"] },
+            "missingToolkitFiles": { "enum": ["warn", "error"] },
+            "missingSkills": { "enum": ["warn", "error"] },
+            "copilotEntrypointCoherence": { "enum": ["warn", "error"] },
+            "incompleteRequirementSets": { "enum": ["warn", "error"] },
+            "missingRecommendedSkills": { "enum": ["warn", "error"] }
+          }
+        }
+      }
+    }
+  }
+}
