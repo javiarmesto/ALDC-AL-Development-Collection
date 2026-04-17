@@ -128,8 +128,14 @@
   line-height: 1.6;
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
 .hero .md-button {
-  margin: 0.3rem;
   font-weight: 700;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -344,22 +350,17 @@
 
 .resource-card:hover::before { transform: scaleX(1); }
 
-.resource-card .resource-icon {
+.resource-card .resource-kicker {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem; height: 2.5rem;
   margin-bottom: 0.9rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
   background: var(--aldc-gradient-soft);
-  border-radius: 0.5rem;
-  font-size: 1.3rem;
-}
-
-.resource-card .resource-icon .twemoji {
-  width: 1.3rem; height: 1.3rem;
-}
-.resource-card .resource-icon svg {
-  fill: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .resource-card h3 {
@@ -651,6 +652,7 @@
   .hero { padding: 3.5rem 1rem 2.75rem; }
   .hero .hero-title { font-size: 2rem; }
   .hero .hero-tagline { font-size: 1rem; }
+  .hero-actions { gap: 0.5rem; }
   .hero-pills { gap: 0.35rem; }
   .hero-pills .pill { font-size: 0.72rem; }
 
