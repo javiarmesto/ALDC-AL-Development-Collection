@@ -165,7 +165,6 @@ nav:
       - Architect: agents/al-architect.agent.md
       - Developer: agents/al-developer.agent.md
       - Pre-Sales Specialist: agents/al-presales.agent.md
-      - Agent Builder: agents/al-agent-builder.agent.md
     - Orchestra System:
       - Conductor: agents/al-conductor.agent.md
       - Planning Subagent: agents/al-planning-subagent.agent.md

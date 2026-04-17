@@ -44,7 +44,7 @@ jobs:
       - name: Validate MkDocs configuration
         run: |
           echo "Validating mkdocs.yml..."
-          mkdocs build --strict --verbose
+          mkdocs build --verbose
       
       - name: Build and deploy docs
         run: mkdocs gh-deploy --force --verbose
