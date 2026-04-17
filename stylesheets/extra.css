@@ -196,6 +196,58 @@
   background: var(--aldc-gradient);
 }
 
+.section-lead {
+  max-width: 60ch;
+  margin: -0.35rem 0 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--md-default-fg-color--light);
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0;
+}
+
+.cta-row .md-button {
+  margin: 0;
+}
+
+.page-intro,
+.note-panel {
+  padding: 1.2rem 1.35rem;
+  border-radius: var(--aldc-radius);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.page-intro {
+  margin: 1.5rem 0 2rem;
+  background: var(--aldc-gradient-soft);
+}
+
+.page-intro p,
+.note-panel p {
+  margin: 0 !important;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.65;
+}
+
+.page-intro strong,
+.note-panel strong {
+  color: var(--md-default-fg-color);
+}
+
+.note-panel {
+  margin-top: 1.25rem;
+  background: rgba(94, 53, 177, 0.06);
+}
+
+[data-md-color-scheme="slate"] .note-panel {
+  background: rgba(126, 87, 194, 0.12);
+}
+
 /* =========================================================
    Two-col section (What's ALDC)
    ========================================================= */
@@ -603,6 +655,8 @@
   .hero-pills .pill { font-size: 0.72rem; }
 
   .md-typeset h2.section-title { font-size: 1.5rem; margin-top: 2.5rem; }
+  .section-lead { font-size: 0.96rem; margin-bottom: 1.25rem; }
+  .cta-row { gap: 0.5rem; }
 
   .footer-cta { padding: 2.5rem 1rem; }
   .footer-cta .footer-cta-title { font-size: 1.4rem; }
