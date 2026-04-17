@@ -1,1 +1,0 @@
-../../prompts/al-events.prompt.md

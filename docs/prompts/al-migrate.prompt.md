@@ -1,1 +1,0 @@
-../../prompts/al-migrate.prompt.md

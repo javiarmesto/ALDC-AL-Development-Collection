@@ -1,1 +1,0 @@
-../../prompts/al-copilot-test.prompt.md

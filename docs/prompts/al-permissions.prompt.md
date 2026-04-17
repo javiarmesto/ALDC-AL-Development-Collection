@@ -1,1 +1,0 @@
-../../prompts/al-permissions.prompt.md

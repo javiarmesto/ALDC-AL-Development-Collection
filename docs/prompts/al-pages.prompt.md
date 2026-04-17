@@ -1,1 +1,0 @@
-../../prompts/al-pages.prompt.md
