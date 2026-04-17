@@ -290,6 +290,28 @@ Where ALDC has been shown, and where it's going next.
   </div>
 
   <div class="timeline-item timeline-item--upcoming">
+    <div class="timeline-date">27 Apr 2026</div>
+    <div class="timeline-body">
+      <div class="timeline-kind">:material-tools: &nbsp; Workshop técnico</div>
+      <h3>Desarrollo asistido por IA para Business Central</h3>
+      <p>Sesión práctica sobre cómo aplicar agentes y skills al ciclo real
+      de desarrollo AL en BC. Workshop hands-on con casos reales.</p>
+      <a href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=Sr_QIymUv06it7s3VKRAJXq8JnPVlyFMjFwTfYxrWf1UQ0FQUFExNkZKQldBTVBZWVYwMFVaQzdSMi4u&route=shorturl">Registro →</a>
+    </div>
+  </div>
+
+  <div class="timeline-item timeline-item--upcoming">
+    <div class="timeline-date">29 Apr 2026 · 16:30–19:30</div>
+    <div class="timeline-body">
+      <div class="timeline-kind">:fontawesome-brands-github: &nbsp; GitHub Copilot Dev Days</div>
+      <h3>GitHub Copilot Dev Days · Valencia</h3>
+      <p>Evento presencial de Copilot Dev Days en Valencia. Charla sobre
+      ALDC y desarrollo spec-driven de extensiones Business Central con IA.</p>
+      <a href="https://luma.com/59b4iu6v">Apúntate en Luma →</a>
+    </div>
+  </div>
+
+  <div class="timeline-item timeline-item--upcoming">
     <div class="timeline-date">Coming up</div>
     <div class="timeline-body">
       <div class="timeline-kind">:material-calendar-star: &nbsp; Your event?</div>
