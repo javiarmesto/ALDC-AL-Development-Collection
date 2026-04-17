@@ -1,5 +1,5 @@
 site_name: AL Development Collection
-site_description: AI Native AL Development toolkit for Microsoft Dynamics 365 Business Central
+site_description: Spec-driven AI framework for Microsoft Dynamics 365 Business Central
 site_author: Javier Armesto González
 site_url: https://javiarmesto.github.io/ALDC-AL-Development-Collection/
 
@@ -16,23 +16,23 @@ theme:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: deep orange
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: deep orange
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   
   font:
-    text: Roboto
-    code: Roboto Mono
+    text: Space Grotesk
+    code: JetBrains Mono
   
   features:
     - navigation.instant

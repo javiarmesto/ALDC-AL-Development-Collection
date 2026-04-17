@@ -16,6 +16,12 @@
       "command": "npx",
       "args": ["-y", "@nicholasglazer/microsoft-docs-mcp"],
       "env": {}
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "env": {}
     }
   }
 }

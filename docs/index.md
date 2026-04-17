@@ -6,18 +6,18 @@ hide:
 
 # ALDC
 
-<div class="hero" markdown>
+<div class="hero" markdown="1">
 
-<div class="hero-eyebrow">AL Development Collection · v3.2.0</div>
+<div class="hero-eyebrow">AL Development Collection · Spec-driven AI for Business Central</div>
 
-## We don't generate AL code.<br>We **orchestrate** how it gets shipped. { .hero-title }
+## Ship Business Central extensions with AI agents that follow your process. { .hero-title }
 
-Spec first. Tests first. Humans in the loop. ALDC is the opinionated framework
-for building Business Central extensions with AI agents that actually understand
-how BC development works. { .hero-tagline }
+ALDC gives Copilot and Claude Code a working model for AL delivery: specs,
+plans, tests, review gates and reusable skills. Less vibe coding. More
+traceable implementation. { .hero-tagline }
 
-[Install ALDC :material-rocket-launch:](getting-started.md){ .md-button .md-button--primary }
-[Read the spec :material-file-document-outline:](framework/ALDC-Core-Spec-v1.1.md){ .md-button }
+[Start with the docs :material-rocket-launch:](getting-started.md){ .md-button .md-button--primary }
+[Understand the framework :material-sitemap-outline:](framework/overview.md){ .md-button }
 [:fontawesome-brands-github: &nbsp; GitHub](https://github.com/javiarmesto/ALDC-AL-Development-Collection){ .md-button }
 
 <div class="hero-pills">
@@ -35,7 +35,7 @@ how BC development works. { .hero-tagline }
 ## What's ALDC { #whats-aldc .section-title }
 
 <div class="two-col">
-<div class="two-col-text" markdown>
+<div class="two-col-text" markdown="1">
 
 Most AI coding tools generate a file and hope for the best. **ALDC is different.**
 
@@ -53,7 +53,7 @@ The result: AL code that passes review the first time, with traceable
 decisions from requirement to merge.
 
 </div>
-<div class="two-col-visual" markdown>
+<div class="two-col-visual" markdown="1">
 
 ```mermaid
 flowchart TD
@@ -80,7 +80,7 @@ flowchart TD
 
 ## Why it matters { .section-title }
 
-<div class="grid cards" markdown>
+<div class="grid cards" markdown="1">
 
 -   :material-file-document-check-outline: &nbsp; **Spec-driven, not prompt-and-pray**
 
@@ -263,11 +263,41 @@ Everything ALDC-related lives here. Pick your path.
 
 ## Events & talks { #events .section-title }
 
-Workshops, conferences and community sessions — upcoming and past. Two events
-coming up in April 2026.
+ALDC also exists outside the repo: conference talks, Dev Days and hands-on
+sessions where the framework itself is the topic. This section is for agenda,
+registration and published follow-up material when it exists. { .section-lead }
 
-[:material-calendar-month: &nbsp; See all events](events.md){ .md-button .md-button--primary }
-[:material-calendar-plus: &nbsp; Invite ALDC to your event](https://www.linkedin.com/in/javiarmesto){ .md-button }
+<div class="resource-grid" markdown="1">
+
+  <a class="resource-card" markdown="1" href="events.md#upcoming">
+    <span class="resource-icon">:material-calendar-clock-outline:</span>
+    <h3>Upcoming talks</h3>
+    <p>Confirmed sessions with dates, context and registration links.</p>
+    <span class="resource-arrow">→</span>
+  </a>
+
+  <a class="resource-card" markdown="1" href="events.md#past-sessions">
+    <span class="resource-icon">:material-history:</span>
+    <h3>Past sessions</h3>
+    <p>Decks, demos and notes from previous ALDC talks and workshops.</p>
+    <span class="resource-arrow">→</span>
+  </a>
+
+  <a class="resource-card" markdown="1" href="getting-started.md">
+    <span class="resource-icon">:material-school-outline:</span>
+    <h3>Learn before you attend</h3>
+    <p>Start with the docs so the live session can go deeper, not broader.</p>
+    <span class="resource-arrow">→</span>
+  </a>
+
+</div>
+
+<div class="cta-row">
+
+[Open the ALDC agenda :material-calendar-month:](events.md){ .md-button .md-button--primary }
+[Go to Getting Started :material-rocket-launch-outline:](getting-started.md){ .md-button }
+
+</div>
 
 ---
 
@@ -303,9 +333,9 @@ Four ways to make ALDC better. No contribution is too small.
 
   <div class="collab-card" markdown="1">
     <div class="collab-num">04</div>
-    <h3>Spread the word</h3>
-    <p>Star the repo. Talk about ALDC in your BC community.
-    Write a blog post. Tag us on LinkedIn. Word of mouth works.</p>
+    <h3>Share the workflow</h3>
+    <p>Star the repo. Mention ALDC in your BC community, internal enablement
+    docs or session notes. Useful references beat generic hype.</p>
     <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">Star on GitHub :material-arrow-right:</a>
   </div>
 
@@ -313,7 +343,7 @@ Four ways to make ALDC better. No contribution is too small.
 
 ---
 
-<div class="footer-cta" markdown>
+<div class="footer-cta" markdown="1">
 
 ### Ready to ship BC features with confidence? { .footer-cta-title }
 
@@ -323,7 +353,7 @@ Four ways to make ALDC better. No contribution is too small.
 
 </div>
 
-<div class="status-footer" markdown>
+<div class="status-footer" markdown="1">
 
 `✓ ALDC Core v1.1 COMPLIANT` &nbsp;·&nbsp; `v3.2.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Made by [Javier Armesto](https://www.linkedin.com/in/javiarmesto)
 Framework: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)

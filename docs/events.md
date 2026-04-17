@@ -3,17 +3,46 @@ hide:
   - toc
 ---
 
-# Events & talks
+# Talks about ALDC
 
-Where ALDC has been shown, and where it's going next. Workshops, conferences,
-community meetups — in Spanish and English.
+<div class="page-intro" markdown="1">
 
-[:material-calendar-plus: &nbsp; Invite ALDC to your event](https://www.linkedin.com/in/javiarmesto){ .md-button .md-button--primary }
-[:fontawesome-brands-github: &nbsp; Session materials](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/main/docs/sessions){ .md-button }
+ALDC events are sessions where the framework itself is discussed: architecture,
+workflows, demos and practical Business Central delivery patterns.
+
+Use this page for two things only: **register for confirmed upcoming talks** or
+**revisit published material from past sessions**.
+
+</div>
+
+<div class="resource-grid" markdown="1">
+
+  <a class="resource-card" markdown="1" href="#upcoming">
+    <span class="resource-icon">:material-calendar-clock-outline:</span>
+    <h3>Upcoming talks</h3>
+    <p>Confirmed sessions with registration links and scheduling details.</p>
+    <span class="resource-arrow">→</span>
+  </a>
+
+  <a class="resource-card" markdown="1" href="#past-sessions">
+    <span class="resource-icon">:material-history:</span>
+    <h3>Past sessions</h3>
+    <p>Decks, demos and notes when there is material worth publishing.</p>
+    <span class="resource-arrow">→</span>
+  </a>
+
+  <a class="resource-card" markdown="1" href="getting-started.md">
+    <span class="resource-icon">:material-school-outline:</span>
+    <h3>New to ALDC?</h3>
+    <p>Start with the docs first if you want the live session to land faster.</p>
+    <span class="resource-arrow">→</span>
+  </a>
+
+</div>
 
 ---
 
-## Upcoming { .section-title }
+## Upcoming { #upcoming .section-title }
 
 <div class="timeline" markdown="1">
 
@@ -24,8 +53,8 @@ community meetups — in Spanish and English.
 
 ### Desarrollo asistido por IA para Business Central
 
-Sesión práctica sobre cómo aplicar agentes y skills al ciclo real
-de desarrollo AL en BC. Workshop hands-on con casos reales.
+Sesión práctica centrada en ALDC: cómo usar agentes, skills y contratos para
+llevar el ciclo real de desarrollo AL en Business Central sin improvisar.
 
 [Registro →](https://forms.cloud.microsoft/pages/responsepage.aspx?id=Sr_QIymUv06it7s3VKRAJXq8JnPVlyFMjFwTfYxrWf1UQ0FQUFExNkZKQldBTVBZWVYwMFVaQzdSMi4u&amp;route=shorturl)
 
@@ -39,34 +68,25 @@ de desarrollo AL en BC. Workshop hands-on con casos reales.
 
 ### GitHub Copilot Dev Days · Valencia
 
-Evento presencial de Copilot Dev Days en Valencia. Charla sobre
-ALDC y desarrollo spec-driven de extensiones Business Central con IA.
+Evento presencial de Copilot Dev Days en Valencia. Charla sobre ALDC y sobre
+cómo aterrizar un flujo spec-driven para extensiones Business Central con IA.
 
 [Apúntate en Luma →](https://luma.com/59b4iu6v)
 
 </div>
 </div>
 
-<div class="timeline-item timeline-item--upcoming" markdown="1">
-<div class="timeline-date">Coming up</div>
-<div class="timeline-body" markdown="1">
-<div class="timeline-kind" markdown="span">:material-calendar-star: &nbsp; Your event?</div>
-
-### Want to invite ALDC to your event?
-
-I love talking about this at meetups, user groups and conferences
-— in Spanish or English.
-
-[Reach out on LinkedIn →](https://www.linkedin.com/in/javiarmesto)
-
 </div>
-</div>
+
+<div class="note-panel" markdown="1">
+
+New sessions are added here once the date, topic and registration are public.
 
 </div>
 
 ---
 
-## Past sessions { .section-title }
+## Past sessions { #past-sessions .section-title }
 
 <div class="timeline" markdown="1">
 
@@ -92,8 +112,8 @@ skills and contracts. Live demo of the TDD loop.
 
 ### GitHub Copilot — 10+1 practical tips for AL
 
-Practitioner-focused deck with tips and tricks, including the ALDC
-workflow for complex features.
+Practitioner-focused deck with the working habits that later shaped ALDC:
+prompt discipline, repo instructions, workflow structure and developer focus.
 
 [Open materials →](<sessions/Github Copilot-A practical approach to AL in 10 plus1 tips and tricks/README.md>)
 
