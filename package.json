@@ -29,12 +29,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot.git"
+    "url": "https://github.com/javiarmesto/ALDC-AL-Development-Collection.git"
   },
   "bugs": {
-    "url": "https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues"
+    "url": "https://github.com/javiarmesto/ALDC-AL-Development-Collection/issues"
   },
-  "homepage": "https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot#readme",
+  "homepage": "https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme",
   "files": [
     "scripts/",
     "agents/",

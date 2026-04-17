@@ -1,10 +1,10 @@
 site_name: AL Development Collection
 site_description: AI Native AL Development toolkit for Microsoft Dynamics 365 Business Central
 site_author: Javier Armesto González
-site_url: https://javiarmesto.github.io/AL-Development-Collection-for-GitHub-Copilot/
+site_url: https://javiarmesto.github.io/ALDC-AL-Development-Collection/
 
-repo_name: javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-repo_url: https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot
+repo_name: javiarmesto/ALDC-AL-Development-Collection
+repo_url: https://github.com/javiarmesto/ALDC-AL-Development-Collection
 edit_uri: edit/main/docs/
 
 copyright: Copyright &copy; 2025 Javier Armesto González
@@ -63,10 +63,6 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/javiarmesto
       name: LinkedIn
-  
-  version:
-    provider: mike
-    default: latest
   
   #analytics:
   #  provider: google

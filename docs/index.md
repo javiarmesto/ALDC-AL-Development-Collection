@@ -1,104 +1,287 @@
-# AL Development Collection for GitHub Copilot
+---
+hide:
+  - navigation
+  - toc
+---
 
-> **ALDC** — Skills-based, spec-driven, TDD-orchestrated development framework for Microsoft Dynamics 365 Business Central with GitHub Copilot agents.
->
-> ALDC Core v1.1 | Extension v3.2.0
+# ALDC
 
-[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-purple.svg)](framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-3.2.0-blue)](../CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-MIT-green)](../LICENSE)
+<div class="hero" markdown>
+
+## AI-Native Development for Business Central { .hero-title }
+
+Spec-driven, TDD-orchestrated, human-in-the-loop.
+Build AL extensions with **4 agents**, **11 skills** and **6 workflows** that actually know Business Central. { .hero-tagline }
+
+[Get started :material-rocket-launch:](getting-started.md){ .md-button .md-button--primary }
+[See the agents :material-account-group:](agents/index.md){ .md-button }
+[View on GitHub :fontawesome-brands-github:](https://github.com/javiarmesto/ALDC-AL-Development-Collection){ .md-button }
+
+</div>
 
 ---
 
-## What is ALDC?
+## Why ALDC { .section-title }
 
-ALDC transforms how you develop Business Central extensions with GitHub Copilot. Instead of ad-hoc code generation, ALDC provides **structured, contract-driven development** with human-in-the-loop gates and skills-based modularization with preserved orchestration.
+<div class="grid cards" markdown>
+
+-   :material-file-document-check-outline: &nbsp; **Spec-driven, not prompt-and-pray**
+
+    ---
+
+    Every feature starts with a functional-technical spec, architecture doc, and test plan.
+    Contracts live in `.github/plans/{req_name}/` and guide every agent.
+
+-   :material-test-tube: &nbsp; **TDD enforced by design**
+
+    ---
+
+    The Implementation Subagent writes tests **first**, code **second**, then refactors.
+    RED → GREEN → REFACTOR is hardcoded — not a suggestion.
+
+-   :material-account-check: &nbsp; **Human-in-the-Loop gates**
+
+    ---
+
+    Agents stop at phase transitions, architecture choices, and deployments.
+    You approve. Nothing ships without your review.
+
+-   :material-puzzle-outline: &nbsp; **Skills, not monoliths**
+
+    ---
+
+    11 composable skills (API, events, performance, testing…) load on demand.
+    Agents only know what they need. No 300kb prompt soup.
+
+-   :material-shield-lock-outline: &nbsp; **Extension-only discipline**
+
+    ---
+
+    Never modify base objects. Always `tableextensions`, `pageextensions`, event subscribers.
+    Least-privilege permissions. XLIFF for every user-facing string.
+
+-   :material-compare-horizontal: &nbsp; **Dual-runtime ready**
+
+    ---
+
+    First-class support for **GitHub Copilot** and **Claude Code**.
+    Same agents, same skills, same contracts — choose your runtime.
+
+</div>
 
 ---
 
-## Framework Components
+## Framework at a glance { .section-title }
 
-| Component | Count | Description |
-| --------- | ----- | ----------- |
-| **Public Agents** | 4 | @AL Architecture & Design Specialist, @AL Implementation Specialist, @AL Development Conductor, @AL Pre-Sales & Project Estimation Specialist |
-| **Internal Subagents** | 3 | AL Planning Subagent, AL Implementation Subagent, AL Code Review Subagent |
-| **Composable Skills** | 11 | Domain knowledge loaded on demand |
-| **Workflows** | 6 | Automated processes (spec.create, build, pr-prepare, …) |
-| **Instructions** | 9 | Auto-applied coding standards (always active) |
-| **Immutable Templates** | 7 | Contract document templates |
+<div class="stats-grid">
+  <div class="stat"><span class="num">4</span><span class="lbl">Public agents</span></div>
+  <div class="stat"><span class="num">3</span><span class="lbl">Subagents</span></div>
+  <div class="stat"><span class="num">11</span><span class="lbl">Skills</span></div>
+  <div class="stat"><span class="num">6</span><span class="lbl">Workflows</span></div>
+  <div class="stat"><span class="num">9</span><span class="lbl">Instructions</span></div>
+  <div class="stat"><span class="num">7</span><span class="lbl">Templates</span></div>
+</div>
+
+=== ":material-brain: Agents"
+
+    | Agent | Role |
+    |-------|------|
+    | **@AL Architecture & Design** | Designs solutions, information flow, decomposes requirements |
+    | **@AL Implementation Specialist** | Implements, debugs, quick fixes (LOW complexity) |
+    | **@AL Development Conductor** | Orchestrates TDD with planning + implement + review subagents |
+    | **@AL Pre-Sales & Estimation** | PERT estimation, SWOT, project scoping |
+
+=== ":material-puzzle: Skills"
+
+    | Skill | Domain |
+    |-------|--------|
+    | `skill-api` | OData pages, REST endpoints, HttpClient |
+    | `skill-copilot` | PromptDialog, capabilities, AI features |
+    | `skill-events` | Publishers, subscribers, integration events |
+    | `skill-performance` | SetLoadFields, FlowFields, profiling |
+    | `skill-testing` | Library Assert, test codeunits, TDD |
+    | `skill-debug` | Snapshot debug, CPU profile, telemetry |
+    | `skill-pages` | Card/List/Document pages, FastTabs |
+    | `skill-permissions` | Permission sets, GDPR, XLIFF |
+    | `skill-migrate` | BC version upgrades, breaking changes |
+    | `skill-translate` | XLF, NAB AL Tools, localization |
+    | `skill-estimation` | Effort modeling, complexity scoring |
+
+=== ":material-cog-transfer: Workflows"
+
+    | Workflow | What it does |
+    |----------|--------------|
+    | `al-spec.create` | Generate functional-technical spec from a requirement |
+    | `al-build` | Compile, package, publish the extension |
+    | `al-pr-prepare` | Assemble PR with docs, test report, checklist |
+    | `al-memory.create` | Append session decisions to global memory |
+    | `al-context.create` | Produce AI context document for the project |
+    | `al-initialize` | Bootstrap environment, rules, launch.json |
 
 ---
 
-## Development Flow
+## How it works { .section-title }
 
-```text
-LOW complexity:
-  al-spec.create → @AL Implementation Specialist
+```mermaid
+flowchart LR
+    A([Requirement]) --> B{Complexity?}
+    B -->|LOW| D[al-spec.create]
+    B -->|MED / HIGH| C[@AL Architect]
+    C --> D
+    D --> E[@AL Conductor]
+    E --> F[Planning Subagent]
+    F --> G{HITL: approve plan}
+    G -->|yes| H[Implement Subagent<br/>RED → GREEN → REFACTOR]
+    H --> I[Review Subagent]
+    I --> J{HITL: approve phase}
+    J -->|yes| K([Merged])
 
-MEDIUM/HIGH complexity:
-  @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
+    style A fill:#5E35B1,color:#fff,stroke:#fff
+    style K fill:#00C853,color:#fff,stroke:#fff
+    style G fill:#FF6D00,color:#fff,stroke:#fff
+    style J fill:#FF6D00,color:#fff,stroke:#fff
 ```
 
-The architect is a **Solution Architect** (DESIGNS). The spec.create workflow produces the **Technical Blueprint** (DETAILS). The conductor orchestrates **TDD Implementation** (EXECUTES).
+The architect **DESIGNS**. `al-spec.create` **DETAILS**. The conductor **EXECUTES**. You **APPROVE** at every gate.
 
 ---
 
-## Key Framework Documents
+## Quick start { .section-title }
 
-### Normative
+=== ":material-microsoft-visual-studio-code: GitHub Copilot (VS Code)"
 
-- [ALDC Core Specification v1.1](framework/ALDC-Core-Spec-v1.1.md) — The normative spec. Read this first.
-- [Architecture Diagrams](framework/ALDC-Architecture-Diagrams.md) — Mermaid diagrams of the framework
+    ```bash
+    # Clone into your AL workspace
+    git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
+    cd ALDC-AL-Development-Collection
+    npm install
 
-### Guides
+    # Initialize your project
+    npx aldc init
+    ```
 
-- [Quickstart](../aldc-core-v1.1/docs/framework/QUICKSTART.md) — Onboarding in minutes
-- [Migration v1.0 → v1.1](framework/ALDC-Migration-v1.0-to-v1.1.md) — Upgrade guide
+    Then in VS Code with Copilot enabled:
 
-### Governance
+    ```text
+    @workspace use al-initialize
+    ```
 
-- [ALDC Governance](framework/ALDC-Governance.md) — Contribution and change process
-- [Compliance Model](framework/ALDC-Compliance-Model.md) — Compliance checklist
-- [Manifesto](../aldc-core-v1.1/docs/framework/ALDC-Manifesto.md) — Philosophy
+=== ":material-robot: Claude Code"
 
----
+    ```bash
+    # From Plugin Marketplace
+    /plugin install aldc
 
-## Contract Structure
+    # Or local development
+    claude --plugin-dir ./claude-plugin
+    ```
 
-```text
-.github/
-└── plans/
-    ├── memory.md                          ← Global (cross-session context)
-    └── {req_name}/
-        ├── {req_name}.architecture.md    ← From @AL Architecture & Design Specialist
-        ├── {req_name}.spec.md            ← From al-spec.create
-        ├── {req_name}.test-plan.md       ← From al-spec.create or conductor
-        ├── {req_name}-plan.md            ← From @AL Development Conductor
-        └── {req_name}-phase-N-complete.md
-```
+    Then initialize:
 
----
+    ```text
+    /aldc:al-initialize
+    ```
 
-## What's New in v3.2.0
+=== ":material-github: Clone & explore"
 
-- **Skills-based modularization**: 11 composable skills replace 7 specialized agents + 12 prompts
-- **Restored TDD enforcement**: `AL Implementation Subagent` with hardcoded RED→GREEN→REFACTOR
-- **Contracts per requirement**: `.github/plans/{req_name}/` subdirectory structure
-- **Skills evidencing**: agents declare loaded skills and patterns applied
-- **HITL gates enforced**: mandatory stops at plan approval, each phase, completion
-- **Test infrastructure checks**: Library Assert, Any dependency, ID range verification
+    ```bash
+    git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
+    cd ALDC-AL-Development-Collection
 
----
-
-## Getting Started
-
-1. Install the VS Code extension from the Marketplace
-2. Open your AL project
-3. Run: `AL Collection: Install Toolkit to Workspace`
-4. Start: `@workspace use al-spec.create` with your requirement
+    # Validate the collection
+    npm install && npm run validate
+    ```
 
 ---
 
-**Status**: ✅ ALDC Core v1.1 COMPLIANT
-**Framework**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)
-**Last Updated**: 2026-03-04
+## Deep dive { .section-title }
+
+<div class="grid cards" markdown>
+
+-   :material-book-open-page-variant: &nbsp; **Specification**
+
+    ---
+
+    The normative spec that governs every primitive in the framework.
+
+    [Read ALDC Core v1.1 →](framework/ALDC-Core-Spec-v1.1.md)
+
+-   :material-sitemap: &nbsp; **Architecture**
+
+    ---
+
+    Mermaid diagrams of agents, skills, workflows and data flow.
+
+    [Architecture diagrams →](framework/ALDC-Architecture-Diagrams.md)
+
+-   :material-map-marker-path: &nbsp; **Migration guide**
+
+    ---
+
+    Moving from v1.0 to v1.1? Follow the breaking-change checklist.
+
+    [v1.0 → v1.1 migration →](framework/ALDC-Migration-v1.0-to-v1.1.md)
+
+-   :material-scale-balance: &nbsp; **Governance**
+
+    ---
+
+    How decisions are made, how primitives are proposed, compliance checklist.
+
+    [Governance + Compliance →](framework/ALDC-Governance.md)
+
+-   :material-heart-outline: &nbsp; **Manifesto**
+
+    ---
+
+    The philosophy behind ALDC. Why spec-driven, why HITL, why skills.
+
+    [Read the manifesto →](framework/ALDC-Manifesto.md)
+
+-   :material-road: &nbsp; **Roadmap**
+
+    ---
+
+    What's shipping in 2026 and beyond.
+
+    [2026 roadmap →](framework/ROADMAP-2026.md)
+
+</div>
+
+---
+
+## What's new in v3.2.0 { .section-title }
+
+!!! success "Skills-based modularization"
+    11 composable skills replace 7 specialized agents + 12 prompts. Smaller surface, clearer boundaries, same power.
+
+!!! success "Hardcoded TDD"
+    The Implementation Subagent enforces RED → GREEN → REFACTOR. No way to skip tests.
+
+!!! success "Per-requirement contracts"
+    `.github/plans/{req_name}/` groups spec + architecture + test plan + phase reports for every feature.
+
+!!! success "HITL gates everywhere"
+    Plan approval, phase transitions, deployments — all pause for your review.
+
+!!! success "Dual-runtime"
+    Same primitives on GitHub Copilot and Claude Code. Pick the tool that fits your team.
+
+---
+
+<div class="footer-cta" markdown>
+
+### Ready to ship BC features with confidence? { .footer-cta-title }
+
+[Install ALDC :material-download:](getting-started.md){ .md-button .md-button--primary }
+[Star on GitHub :material-star:](https://github.com/javiarmesto/ALDC-AL-Development-Collection){ .md-button }
+[Read the spec :material-file-document:](framework/ALDC-Core-Spec-v1.1.md){ .md-button }
+
+</div>
+
+<div class="status-footer" markdown>
+
+`✓ ALDC Core v1.1 COMPLIANT` &nbsp;&nbsp;·&nbsp;&nbsp; `v3.2.0` &nbsp;&nbsp;·&nbsp;&nbsp; `MIT`
+Framework: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)
+
+</div>
