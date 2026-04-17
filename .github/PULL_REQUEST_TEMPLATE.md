@@ -90,7 +90,7 @@ Describe how you tested this change:
 ## 📖 Documentation
 
 - [ ] Updated README.md (if needed)
-- [ ] Updated al-development.md (if needed)
+- [ ] Updated docs/al-development.md (if needed)
 - [ ] Updated collection manifest
 - [ ] Added/updated examples
 - [ ] Updated CONTRIBUTING.md (if process changed)

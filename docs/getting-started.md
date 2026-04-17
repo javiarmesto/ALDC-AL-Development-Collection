@@ -1,161 +1,136 @@
-# Getting Started
+# Getting Started with ALDC v3.2.0
 
-Complete guide to installing and using the AL Development Collection for GitHub Copilot.
+Welcome to the **AL Development Collection** (ALDC Core v1.1).
+This guide helps you start developing Business Central extensions
+with structured, contract-driven, TDD-orchestrated workflows.
 
----
+## What was installed
 
-## Prerequisites
+Your workspace now has the ALDC toolkit in `.github/`:
 
-Before starting, ensure you have:
+```text
+.github/
+  agents/          4 public agents + 3 internal subagents
+  instructions/    9 auto-applied coding standards
+  prompts/         6 workflows
+  skills/          11 composable skills (7 required + 4 recommended)
+  plans/
+    memory.md      Global memory (append-only, cross-session context)
+  docs/
+    schema/        aldc.schema.json (configuration schema)
+    templates/     7 document templates (spec, architecture, test-plan, etc.)
+  tools/
+    aldc-validate/ Compliance validator
+aldc.yaml          Configuration file (workspace root)
+```
 
-### Required Tools
-- **Visual Studio Code** (latest version)
-- **AL Language Extension** (Microsoft's official extension)
-- **GitHub Copilot** or compatible AI assistant
-- **Git** for version control
+## Validate your installation
 
-### Recommended Tools
-- **AL Test Runner** for test management
-- **Business Central Docker Container** for local development
-- **AL Object Designer** for navigation
-- **GitLens** for enhanced git integration
-
----
-
-## Installation
-
-### Step 1: Clone the Repository
+Run the ALDC validator to confirm everything is in place:
 
 ```bash
-git clone https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot.git
-cd AL-Development-Collection-for-GitHub-Copilot
+cd your-workspace
+node .github/tools/aldc-validate/index.js --config aldc.yaml
 ```
 
-### Step 2: Copy to Your AL Project
+Expected output: `ALDC Core v1.1 COMPLIANT (0 warning(s))`
 
-```bash
-# Copy instruction files
-cp -r instructions your-al-project/.github/copilot/
+## Your first requirement
 
-# Copy prompt files
-cp -r prompts your-al-project/.github/copilot/
+### Step 1: Create a spec
 
-# Copy agent files
-cp -r agents your-al-project/.github/copilot/
+```text
+@workspace use al-spec.create
 
-# Copy collection manifest
-cp -r collections your-al-project/.github/copilot/
+"I need to add a Loyalty Points field to the Customer table,
+incremented on each posted sales order."
 ```
 
-### Step 3: Reload VS Code
+This generates `{req_name}.spec.md` in `.github/plans/`.
 
-1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-2. Type: `Developer: Reload Window`
-3. Press Enter
+### Step 2: Choose your path
 
-### Step 4: Verify Installation
+**LOW complexity** (simple field, single table extension):
 
-```bash
-npm install
-npm run validate
+```text
+@AL Implementation Specialist implement the spec
 ```
 
-Expected output:
-```
-✅ Collection is fully compliant and ready for contribution!
-```
+**MEDIUM/HIGH complexity** (multi-table, events, business logic):
 
----
-
-## First Use
-
-### Try Your First Prompt
-
-Open any `.al` file and use:
-
-```
-@workspace use al-initialize
+```text
+@AL Architecture & Design Specialist design the architecture first
 ```
 
-This will initialize your AL workspace with proper configuration.
+Then:
 
-### Start with the Architect
-
-The architect mode helps design your solution from the start:
-
-```
-Switch to al-architect mode and ask: 
-"I need to build a sales approval workflow. How should I design it?"
+```text
+@AL Development Conductor orchestrate TDD implementation
 ```
 
----
+### Step 3: Follow the flow
 
-## Common Workflows
+```text
+LOW:      al-spec.create -> @AL Implementation Specialist
+MED/HIGH: @AL Architecture & Design Specialist -> al-spec.create -> @AL Development Conductor
+```
 
-### Building a New Feature
+The conductor enforces TDD through subagents:
 
-1. **al-architect** → Design solution
-2. `@workspace use al-initialize` → Setup
-3. Code (auto-guidelines active)
-4. `@workspace use al-events` → Add events
-5. **al-tester** → Test strategy
-6. `@workspace use al-permissions` → Security
-7. `@workspace use al-build` → Deploy
+1. Planning subagent researches context
+2. You approve the plan (HITL gate)
+3. Implement subagent: tests FIRST, code SECOND (RED-GREEN-REFACTOR)
+4. Review subagent validates against spec + architecture
+5. You approve each phase (HITL gate)
 
-### Debugging Issues
+## Available agents
 
-1. **al-debugger** → Diagnose
-2. `@workspace use al-diagnose` → Debug tools
-3. `@workspace use al-performance` → Profile
-4. Fix (auto-guidelines active)
-5. **al-tester** → Regression tests
+| Agent | What it does |
+|-------|-------------|
+| `@AL Architecture & Design Specialist` | Designs solutions, decomposes requirements, creates architecture docs |
+| `@AL Implementation Specialist` | Implements code, debugs, makes quick adjustments |
+| `@AL Development Conductor` | Orchestrates multi-phase TDD with subagents |
+| `@AL Pre-Sales & Project Estimation Specialist` | Estimates effort, scopes projects |
 
-### API Development
+## Available workflows
 
-1. **al-architect** → Design API
-2. **al-api** → Implement
-3. `@workspace use al-permissions` → Security
-4. **al-tester** → API tests
-5. `@workspace use al-build` → Deploy
+| Workflow | Invoke with |
+|----------|-------------|
+| Create spec | `@workspace use al-spec.create` |
+| Build/deploy | `@workspace use al-build` |
+| Prepare PR | `@workspace use al-pr-prepare` |
+| Update memory | `@workspace use al-memory.create` |
+| Generate context | `@workspace use al-context.create` |
+| Initialize project | `@workspace use al-initialize` |
 
----
+## Composable skills
 
-## Next Steps
+Skills are domain knowledge loaded on demand by agents.
+They provide AL-specific patterns and rules:
 
-- [Explore Instructions](instructions/index.md) - Learn about auto-applied guidelines
-- [Browse Workflows](prompts/index.md) - See all available agentic workflows
-- [Discover Agents](agents/index.md) - Meet the specialist modes
-- [Read Contributing Guide](CONTRIBUTING.md) - Help improve the collection
+- **skill-api**: API pages, OData, custom endpoints
+- **skill-copilot**: Copilot capability, PromptDialog
+- **skill-debug**: Diagnosis, CPU profiling, telemetry
+- **skill-performance**: SetLoadFields, early filtering
+- **skill-events**: Event subscribers/publishers
+- **skill-permissions**: Permission sets, GDPR
+- **skill-testing**: AL-Go tests, Library Assert
+- **skill-migrate**: BC version upgrades
+- **skill-pages**: Page Designer, UX patterns
+- **skill-translate**: XLF translation
+- **skill-estimation**: Effort estimation
 
----
+## Contracts and memory
 
-## Troubleshooting
+Each requirement generates a contract set in `.github/plans/`:
 
-### Collection Not Loading
+- `{req_name}.spec.md` - Technical blueprint
+- `{req_name}.architecture.md` - Solution design
+- `{req_name}.test-plan.md` - Test strategy
+- `memory.md` - Global context (append-only, shared across sessions)
 
-1. Verify files are in `.github/copilot/` directory
-2. Reload VS Code window
-3. Check GitHub Copilot is enabled
-4. Review VS Code output console for errors
+## Need help?
 
-### Validation Failing
-
-1. Run `npm install` to ensure dependencies are installed
-2. Check file naming conventions
-3. Verify frontmatter in all files
-4. Review validation output for specific errors
-
-### Agents Not Appearing
-
-1. Ensure files end with `.agent.md`
-2. Verify frontmatter includes `description` and `tools`
-3. Reload VS Code
-4. Check Copilot settings
-
----
-
-## Getting Help
-
-- **Issues**: [GitHub Issues](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/discussions)
-- **Documentation**: [Full Documentation](al-development.md)
+- Run validation: `node .github/tools/aldc-validate/index.js --config aldc.yaml`
+- Check the [ALDC Core Spec v1.1](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/blob/main/docs/framework/ALDC-Core-Spec-v1.1.md)
+- Report issues: [GitHub Issues](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)

@@ -148,7 +148,7 @@ How should this primitive be tested?
 What documentation changes are needed?
 
 - [ ] Update README.md
-- [ ] Update al-development.md
+- [ ] Update docs/al-development.md
 - [ ] Update collection manifest
 - [ ] Add examples
 

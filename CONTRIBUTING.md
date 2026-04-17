@@ -484,7 +484,7 @@ Have an idea for improvement?
 
 ## 📞 Questions?
 
-- **Documentation**: See [al-development.md](./al-development.md)
+- **Documentation**: See [al-development.md](./docs/al-development.md)
 - **Discussions**: Use GitHub Discussions
 - **Issues**: For bugs or specific problems
 
