@@ -1,120 +1,120 @@
 # ALDC Core Specification v1.1
 
-## Estado
+## Status
 
-- Versión: 1.1.0
-- Fecha: 2026-03-01
-- Alcance: repositorios AL (Business Central) que adopten ALDC Core como backbone operativo.
-- Cambio respecto a v1.0: modularización skills-based, contratos por requerimiento, memory global.
+- Version: 1.1.0
+- Date: 2026-03-01
+- Scope: AL (Business Central) repositories that adopt ALDC Core as their operational backbone.
+- Change from v1.0: skills-based modularization, per-requirement contracts, global memory.
 
-## Lenguaje normativo
+## Normative Language
 
-Las palabras **MUST**, **SHOULD**, **MAY** y sus negaciones se interpretan como requisitos normativos.
+The words **MUST**, **SHOULD**, **MAY**, and their negations are interpreted as normative requirements.
 
-## Objetivo
+## Purpose
 
-ALDC Core define el mínimo común verificable para convertir el trabajo con agentes en un flujo:
-- repetible (siempre los mismos artefactos y gates),
-- auditable (decisiones y cambios rastreables),
-- gobernable (con validación automática y HITL).
+ALDC Core defines the minimum verifiable baseline required to turn agent-based work into a flow that is:
+- repeatable, with the same artifacts and gates every time,
+- auditable, with traceable decisions and changes,
+- governable, with automated validation and HITL.
 
-ALDC Core v1.1 reorganiza las capacidades en módulos composables (skills) manteniendo la rigurosidad de orquestación TDD. La reducción de agentes públicos (11→4) simplifica la decisión del usuario, pero la orquestación interna (conductor + 3 subagents) preserva el ciclo completo: Plan → TDD Implementation → Review → Commit con gates HITL por fase.
+ALDC Core v1.1 reorganizes capabilities into composable modules (skills) while preserving rigorous TDD orchestration. Reducing public agents from 11 to 4 simplifies user choice, while the internal orchestration model (conductor + 3 subagents) preserves the full cycle: Plan → TDD Implementation → Review → Commit with HITL gates for each phase.
 
-ALDC Core está diseñado para el enfoque:
+ALDC Core is designed for this routing model:
 
-**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (diseño) → `al-spec.create` (spec técnica) → `@AL Development Conductor` (TDD orquestado: planning → implement → review) → gates HITL → entrega
+**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (design) → `al-spec.create` (technical spec) → `@AL Development Conductor` (orchestrated TDD: planning → implement → review) → HITL gates → delivery
 
-**LOW:** `al-spec.create` (spec técnica) → `@AL Implementation Specialist` (implementación directa) → entrega
+**LOW:** `al-spec.create` (technical spec) → `@AL Implementation Specialist` (direct implementation) → delivery
 
-## Definiciones
+## Definitions
 
-- **Toolkit**: conjunto de agentes / instrucciones / prompts / skills instalados en el repo.
-- **toolkitRoot**: ruta raíz del toolkit en el repo (configurable en `aldc.yaml`).
-- **Plans folder**: carpeta canónica para contratos compartidos: `.github/plans/`.
-- **Entrypoint de Copilot**: fichero repo-wide que Copilot lee por convención: `.github/copilot-instructions.md`.
-- **Skill**: módulo de conocimiento composable que agentes cargan bajo demanda. Vive en `skills/` bajo `toolkitRoot`.
-- **Requirement set**: conjunto de 3 artefactos contractuales por requerimiento (`{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md`).
-- **Memory global**: fichero único acumulativo (`.github/plans/memory.md`) que registra decisiones transversales, contexto inter-sesión y estado del proyecto.
-- **Template**: fichero inmutable en `docs/templates/`, solo modificable por maintainer vía RFC.
+- **Toolkit**: the set of agents, instructions, prompts, and skills installed in the repository.
+- **toolkitRoot**: the root path of the toolkit inside the repository, configurable in `aldc.yaml`.
+- **Plans folder**: the canonical folder for shared contracts: `.github/plans/`.
+- **Copilot entrypoint**: the repo-wide file that Copilot reads by convention: `.github/copilot-instructions.md`.
+- **Skill**: a composable knowledge module loaded by agents on demand. It lives in `skills/` under `toolkitRoot`.
+- **Requirement set**: the set of 3 contractual artifacts for a requirement (`{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md`).
+- **Global memory**: the single append-only file (`.github/plans/memory.md`) that records cross-cutting decisions, inter-session context, and project state.
+- **Template**: an immutable file in `docs/templates/`, modifiable only by a maintainer through RFC.
 
-## Estructura de repositorio obligatoria
+## Mandatory Repository Structure
 
-Un repositorio ALDC Core **MUST** contener:
+An ALDC Core repository **MUST** contain:
 
-- `aldc.yaml` en la raíz.
-- `.github/plans/` con:
-  - `memory.md` global obligatorio
-  - Requirement sets: `{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md` por cada requerimiento activo
-- Un entrypoint repo-wide de Copilot en `.github/copilot-instructions.md`.
-- Un toolkit (en `toolkitRoot`) con:
-  - `agents/` (agentes invocables por el usuario + subagents internos con `user-invocable: false`)
+- `aldc.yaml` at the repository root.
+- `.github/plans/` with:
+  - the mandatory global `memory.md`
+  - requirement sets: `{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md` for every active requirement
+- A repo-wide Copilot entrypoint at `.github/copilot-instructions.md`.
+- A toolkit under `toolkitRoot` with:
+  - `agents/` (user-invocable agents + internal subagents with `user-invocable: false`)
   - `instructions/`
   - `prompts/`
-  - `skills/` (módulos de conocimiento composables)
-  - `docs/templates/` (plantillas inmutables)
+  - `skills/` (composable knowledge modules)
+  - `docs/templates/` (immutable templates)
 
-Nota: `toolkitRoot` **MAY** ser `.` en repos de framework y `.github` en repos consumidores.
+Note: `toolkitRoot` **MAY** be `.` in framework repositories and `.github` in consumer repositories.
 
-## Agentes Core requeridos
+## Required Core Agents
 
-ALDC Core v1.1 adopta un modelo simplificado de **4 agentes públicos + 3 subagents internos**.
+ALDC Core v1.1 adopts a simplified model of **4 public agents + 3 internal subagents**.
 
-### Agentes públicos (`user-invocable: true`)
+### Public Agents (`user-invocable: true`)
 
-- **al-architect** — Diseño, arquitectura, decisiones estratégicas. Carga skills según dominio (API, Copilot, performance).
-- **al-conductor** — Orquestador TDD principal. Coordina subagents via `runSubagent`. Ciclo: Plan → Implement → Review → Commit.
-- **al-developer** — Implementación táctica + debugging. Carga skills según tarea (debug, events, permissions, etc.). Invocable directamente por el usuario.
-- **al-presales** — Estimación y planificación de proyectos. Vive fuera del ciclo de desarrollo.
+- **al-architect**: design, architecture, and strategic decisions. Loads skills by domain, such as API, Copilot, and performance.
+- **al-conductor**: primary TDD orchestrator. Coordinates subagents via `runSubagent`. Cycle: Plan → Implement → Review → Commit.
+- **al-developer**: tactical implementation and debugging. Loads skills based on the task, such as debug, events, permissions, and more. Directly invocable by the user.
+- **al-presales**: project estimation and planning. Lives outside the delivery cycle.
 
-### Subagents internos (`user-invocable: false`)
+### Internal Subagents (`user-invocable: false`)
 
-- **AL Planning Subagent** — Research AL-aware y context gathering. Devuelve findings estructurados al conductor.
-- **AL Implementation Subagent** — Implementación TDD-only. Crea tests PRIMERO, luego código. Carga skills por dominio. No interactúa con el usuario.
-- **AL Code Review Subagent** — Code review contra spec + architecture + test-plan. Devuelve veredicto APPROVED/NEEDS_REVISION/FAILED.
+- **AL Planning Subagent**: AL-aware research and context gathering. Returns structured findings to the conductor.
+- **AL Implementation Subagent**: TDD-only implementation. Creates tests FIRST, then code. Loads skills by domain. Does not interact with the user.
+- **AL Code Review Subagent**: code review against spec + architecture + test-plan. Returns an APPROVED/NEEDS_REVISION/FAILED verdict.
 
-### Flujo de orquestación del conductor
+### Conductor Orchestration Flow
 
 ```
-al-conductor (orquestador)
-  ├── runSubagent → AL Planning Subagent (research, devuelve findings)
-  ├── runSubagent → AL Implementation Subagent (TDD implementation, devuelve objetos + tests)
-  └── runSubagent → AL Code Review Subagent (review, devuelve veredicto)
+al-conductor (orchestrator)
+  ├── runSubagent → AL Planning Subagent (research, returns findings)
+  ├── runSubagent → AL Implementation Subagent (TDD implementation, returns objects + tests)
+  └── runSubagent → AL Code Review Subagent (review, returns verdict)
 ```
 
-Frontmatter del conductor:
+Conductor frontmatter:
 ```yaml
 tools: ['runSubagent', ...]
 agents: ['AL Planning Subagent', 'AL Code Review Subagent', 'AL Implementation Subagent']
 ```
 
-Nota: `AL Implementation Subagent` es TDD-only y no interactúa con el usuario. `al-developer` sigue siendo invocable directamente por el usuario para tareas tácticas.
+Note: `AL Implementation Subagent` is TDD-only and does not interact with the user. `al-developer` remains directly invocable for tactical tasks.
 
-### Agentes eliminados respecto a v1.0
+### Agents Removed from v1.0
 
-Los siguientes agentes se absorben en el modelo simplificado:
+The following agents are absorbed into the simplified model:
 
-| Eliminado | Absorbido en |
-|-----------|-------------|
+| Removed | Absorbed into |
+|---------|---------------|
 | `al-debugger` | `al-developer` + `skill-debug` |
-| `al-tester` | `al-conductor` (TDD inherente) + `skill-testing` |
-| `al-api` | `al-architect` + `skill-api` (diseño) / `al-developer` + `skill-api` (impl) |
-| `al-copilot` | `al-architect` + `skill-copilot` (diseño) / `al-developer` + `skill-copilot` (impl) |
+| `al-tester` | `al-conductor` (TDD is inherent) + `skill-testing` |
+| `al-api` | `al-architect` + `skill-api` (design) / `al-developer` + `skill-api` (implementation) |
+| `al-copilot` | `al-architect` + `skill-copilot` (design) / `al-developer` + `skill-copilot` (implementation) |
 
-## Workflows Core requeridos
+## Required Core Workflows
 
-Para ejecutar el flujo Core, el toolkit **MUST** incluir:
+To execute the Core flow, the toolkit **MUST** include:
 
-- **al-spec.create** — Normalizar requerimientos → `{req_name}.spec.md`
-- **al-build** — Verificación/compilación/packaging
-- **al-pr-prepare** — Documentación y entrega en PR
-- **al-context.create** — Generar/actualizar contexto del proyecto
-- **al-memory.create** — Actualizar `memory.md` global
-- **al-initialize** — Setup inicial del entorno (baja frecuencia)
+- **al-spec.create**: normalize requirements → `{req_name}.spec.md`
+- **al-build**: verification, compilation, and packaging
+- **al-pr-prepare**: documentation and PR delivery
+- **al-context.create**: generate or update project context
+- **al-memory.create**: update the global `memory.md`
+- **al-initialize**: initial environment setup, used infrequently
 
-### Workflows eliminados respecto a v1.0
+### Workflows Removed from v1.0
 
-| Eliminado | Absorbido en |
-|-----------|-------------|
+| Removed | Absorbed into |
+|---------|---------------|
 | `al-diagnose` | `al-developer` + `skill-debug` |
 | `al-events` (prompt) | `skill-events` |
 | `al-performance` + `al-performance.triage` | `skill-performance` |
@@ -122,50 +122,50 @@ Para ejecutar el flujo Core, el toolkit **MUST** incluir:
 | `al-migrate` | `skill-migrate` |
 | `al-pages` | `skill-pages` |
 | `al-translate` | `skill-translate` |
-| `al-copilot-capability` | `skill-copilot` (fase 1) |
-| `al-copilot-promptdialog` | `skill-copilot` (fase 2) |
-| `al-copilot-generate` | `skill-copilot` (fase 3) |
-| `al-copilot-test` | `skill-copilot` (fase 4) |
+| `al-copilot-capability` | `skill-copilot` (phase 1) |
+| `al-copilot-promptdialog` | `skill-copilot` (phase 2) |
+| `al-copilot-generate` | `skill-copilot` (phase 3) |
+| `al-copilot-test` | `skill-copilot` (phase 4) |
 
-## Skills Core
+## Core Skills
 
-### Definición
+### Definition
 
-Un **skill** es un módulo de conocimiento composable en formato markdown que reside en `skills/` bajo `toolkitRoot`. Los agentes cargan skills bajo demanda según el contexto de la tarea.
+A **skill** is a composable knowledge module in markdown format that lives in `skills/` under `toolkitRoot`. Agents load skills on demand depending on task context.
 
-### Características
+### Characteristics
 
-- Los skills **MUST NOT** tener frontmatter de agente (no son invocables directamente).
-- Los skills **MUST** ser autocontenidos: incluyen patrones, ejemplos, workflows y referencias.
-- Los skills **SHOULD** mantenerse bajo 500 líneas para optimizar context window.
-- Los skills **MUST** seguir la convención de nombre `skill-{domain}.md`.
+- Skills **MUST NOT** have agent frontmatter because they are not directly invocable.
+- Skills **MUST** be self-contained and include patterns, examples, workflows, and references.
+- Skills **SHOULD** stay under 500 lines to optimize context window usage.
+- Skills **MUST** follow the naming convention `skill-{domain}.md`.
 
-### Skills Core requeridos
+### Required Core Skills
 
-El toolkit **MUST** incluir estos skills mínimos para cubrir las capacidades absorbidas:
+The toolkit **MUST** include the following minimum set of skills to cover absorbed capabilities:
 
-| Skill | Contenido | Cargado por |
-|-------|-----------|-------------|
-| `skill-api.md` | API design, OData/REST, versionado, BC API pages | architect (diseño), developer (impl) |
-| `skill-copilot.md` | Copilot capability, PromptDialog, AI generation, AI testing — lifecycle completo | architect (diseño), developer (impl) |
-| `skill-debug.md` | Debugging workflow, snapshot, CPU profiling, root cause analysis | developer |
-| `skill-performance.md` | Profiling, triage, SetLoadFields, FlowField, perf patterns | architect (análisis), developer (fix) |
+| Skill | Content | Loaded by |
+|-------|---------|-----------|
+| `skill-api.md` | API design, OData/REST, versioning, BC API pages | architect (design), developer (implementation) |
+| `skill-copilot.md` | Copilot capability, PromptDialog, AI generation, AI testing, complete lifecycle | architect (design), developer (implementation) |
+| `skill-debug.md` | Debugging workflow, snapshot debugging, CPU profiling, root cause analysis | developer |
+| `skill-performance.md` | Profiling, triage, SetLoadFields, FlowField, performance patterns | architect (analysis), developer (fixes) |
 | `skill-events.md` | Event discovery, subscriber/publisher patterns, event recorder | developer, architect |
-| `skill-permissions.md` | Permission set generation, security patterns, least-privilege | developer |
-| `skill-testing.md` | Test strategy design, Given/When/Then, AI Test Toolkit | conductor (strategy), developer (impl) |
+| `skill-permissions.md` | Permission set generation, security patterns, least privilege | developer |
+| `skill-testing.md` | Test strategy design, Given/When/Then, AI Test Toolkit | conductor (strategy), developer (implementation) |
 
-### Skills recomendados (SHOULD)
+### Recommended Skills (SHOULD)
 
-| Skill | Contenido | Cargado por |
-|-------|-----------|-------------|
+| Skill | Content | Loaded by |
+|-------|---------|-----------|
 | `skill-migrate.md` | Version migration, breaking changes, rollback | developer |
 | `skill-pages.md` | Page Designer, page types, UX patterns | developer |
-| `skill-translate.md` | XLF workflow, NAB tools, multi-language | developer |
+| `skill-translate.md` | XLF workflow, NAB tools, multilingual support | developer |
 | `skill-estimation.md` | Cost models, SWOT, project structure | presales |
 
-### Mecanismo de carga
+### Loading Mechanism
 
-En GitHub Copilot, los agentes referencian skills condicionalmente:
+In GitHub Copilot, agents reference skills conditionally:
 
 ```markdown
 ## Domain Skills
@@ -177,191 +177,191 @@ Copilot loads them automatically when relevant to the task:
 - **skill-debug** — When performing debugging, CPU profiling, diagnostics
 ```
 
-### Creación de nuevos skills
+### Creating New Skills
 
-Los skills siguen la plantilla `docs/templates/skill-template.md`. Cualquier contributor **MAY** proponer nuevos skills via PR. Skills que alteren el comportamiento Core **MUST** seguir el proceso RFC.
+Skills follow the `docs/templates/skill-template.md` template. Any contributor **MAY** propose new skills through a pull request. Skills that alter Core behavior **MUST** follow the RFC process.
 
-## Instructions (sin cambios)
+## Instructions (Unchanged)
 
-Las 9 instructions files se mantienen sin cambios. Son reglas pasivas auto-aplicadas por `applyTo` patterns:
+The 9 instruction files remain unchanged. They are passive rules auto-applied through `applyTo` patterns:
 
-- `al-guidelines.instructions.md` — Master hub (`**/*.{al,json}`)
-- `al-code-style.instructions.md` — Code formatting (`**/*.al`)
-- `al-naming-conventions.instructions.md` — Naming rules (`**/*.al`)
-- `al-performance.instructions.md` — Performance patterns (`**/*.al`)
-- `al-error-handling.instructions.md` — Error handling (`**/*.al`)
-- `al-events.instructions.md` — Event patterns (`**/*.al`)
-- `al-testing.instructions.md` — Testing rules (`**/test/**/*.al`)
-- `copilot-instructions.md` — Master coordination (repo-wide)
-- `index.md` — Catalog
+- `al-guidelines.instructions.md`: master hub (`**/*.{al,json}`)
+- `al-code-style.instructions.md`: code formatting (`**/*.al`)
+- `al-naming-conventions.instructions.md`: naming rules (`**/*.al`)
+- `al-performance.instructions.md`: performance patterns (`**/*.al`)
+- `al-error-handling.instructions.md`: error handling (`**/*.al`)
+- `al-events.instructions.md`: event patterns (`**/*.al`)
+- `al-testing.instructions.md`: testing rules (`**/test/**/*.al`)
+- `copilot-instructions.md`: master coordination (repo-wide)
+- `index.md`: catalog
 
-## Contratos por requerimiento en `.github/plans/`
+## Requirement Contracts in `.github/plans/`
 
-### Estructura
+### Structure
 
 ```
 .github/plans/
-  memory.md                              ← GLOBAL (único, acumulativo)
-  {req_name}/                            ← un directorio por requerimiento
+  memory.md                              ← GLOBAL (single, append-only)
+  {req_name}/                            ← one directory per requirement
     {req_name}.spec.md
     {req_name}.architecture.md
     {req_name}.test-plan.md
-    {req_name}-phase-<N>-complete.md     ← generado por al-conductor
-    {req_name}-complete.md               ← generado por al-conductor
-  archive/                               ← requerimientos completados
+    {req_name}-phase-<N>-complete.md     ← generated by al-conductor
+    {req_name}-complete.md               ← generated by al-conductor
+  archive/                               ← completed requirements
 ```
 
-### Convención de nombres
+### Naming Convention
 
-- `{req_name}` **MUST** ser kebab-case (ej: `customer-discount`, `api-integration`)
-- `{req_name}` **MUST** ser consistente en todos los ficheros del set y en el nombre del directorio
-- Los tipos de contrato son: `spec`, `architecture`, `test-plan`
-- El patrón completo es: `.github/plans/{req_name}/{req_name}.{type}.md`
+- `{req_name}` **MUST** be kebab-case, for example `customer-discount` or `api-integration`
+- `{req_name}` **MUST** be consistent across every file in the set and in the directory name
+- The supported contract types are `spec`, `architecture`, and `test-plan`
+- The full pattern is `.github/plans/{req_name}/{req_name}.{type}.md`
 
-### Contrato `{req_name}.spec.md`
+### `{req_name}.spec.md` Contract
 
-**MUST** contener:
-- Contexto y objetivo
-- Alcance / no alcance
-- Requisitos normalizados (R1…Rn)
-- Criterios de aceptación (AC-F, AC-T, AC-Q)
-- Restricciones (incl. extensión-only)
-- Especificación técnica (MUST para MEDIUM/HIGH)
+It **MUST** contain:
+- context and objective
+- scope and out-of-scope
+- normalized requirements (R1…Rn)
+- acceptance criteria (AC-F, AC-T, AC-Q)
+- constraints, including extension-only
+- technical specification, required for MEDIUM/HIGH
 
-### Contrato `{req_name}.architecture.md`
+### `{req_name}.architecture.md` Contract
 
-**MUST** contener:
-- Diseño de alto nivel
-- Mapa de objetos AL
-- Arquitectura de eventos
-- Seguridad/permisos
-- Rendimiento
-- Decisiones (rationale + alternativas)
+It **MUST** contain:
+- high-level design
+- AL object map
+- event architecture
+- security and permissions
+- performance considerations
+- decisions, including rationale and alternatives
 
-### Contrato `{req_name}.test-plan.md`
+### `{req_name}.test-plan.md` Contract
 
-**MUST** contener:
-- Estrategia de test
-- Matriz de escenarios (Given/When/Then)
-- Datos de prueba
-- Quality gates
+It **MUST** contain:
+- test strategy
+- scenario matrix (Given/When/Then)
+- test data
+- quality gates
 
-### Memory global (`memory.md`)
+### Global Memory (`memory.md`)
 
-Fichero único y acumulativo. **MUST NOT** borrarse ni sobrescribirse.
+This file is single and append-only. It **MUST NOT** be deleted or overwritten.
 
-**MUST** contener:
-- Estado actual del proyecto
-- Requerimientos activos (tabla)
-- Decisiones tomadas (transversales y por requerimiento)
-- Cambios de alcance
-- Lecciones aprendidas
-- Contexto inter-sesión
-- Próximos pasos
+It **MUST** contain:
+- current project status
+- active requirements table
+- recorded decisions, both cross-cutting and per requirement
+- scope changes
+- lessons learned
+- inter-session context
+- next steps
 
-Los agentes y humanos **SHOULD** actualizar `memory.md` en cada handoff significativo.
+Agents and humans **SHOULD** update `memory.md` at every significant handoff.
 
-### Roles de los agentes y artefactos
+### Agent Roles and Produced Artifacts
 
-| Agente / Workflow | Rol | Produce |
-|-------------------|-----|---------|
-| `@AL Architecture & Design Specialist` | Solution Architect — diseña la solución, flujos de datos, decisiones estratégicas | `.github/plans/{req_name}/{req_name}.architecture.md` |
-| `al-spec.create` | Spec técnica detallada — lee `architecture.md`, genera blueprint implementable con IDs, firmas, código AL | `.github/plans/{req_name}/{req_name}.spec.md` |
-| `@AL Development Conductor` | Orquestador TDD — lee spec + architecture, coordina planning → implement → review | implementación + `.github/plans/{req_name}/{req_name}.test-plan.md` |
-| `@AL Implementation Specialist` | Implementación táctica directa — lee spec, sin TDD orquestado | implementación |
+| Agent / Workflow | Role | Produces |
+|------------------|------|----------|
+| `@AL Architecture & Design Specialist` | Solution Architect: designs the solution, data flows, and strategic decisions | `.github/plans/{req_name}/{req_name}.architecture.md` |
+| `al-spec.create` | Detailed technical spec: reads `architecture.md` and generates an implementable blueprint with IDs, signatures, and AL code | `.github/plans/{req_name}/{req_name}.spec.md` |
+| `@AL Development Conductor` | TDD orchestrator: reads spec + architecture and coordinates planning → implement → review | implementation + `.github/plans/{req_name}/{req_name}.test-plan.md` |
+| `@AL Implementation Specialist` | Direct tactical implementation: reads the spec, without orchestrated TDD | implementation |
 
-### Flujo de creación de artefactos
+### Artifact Creation Flow
 
-#### MEDIUM / HIGH (con arquitectura + TDD)
+#### MEDIUM / HIGH (with architecture + TDD)
 
-1. Asignar `{req_name}` (kebab-case)
-2. `@AL Architecture & Design Specialist` → genera `.github/plans/{req_name}/{req_name}.architecture.md` con diseño aprobado
-   - ⚠️ **GATE**: aprobar arquitectura antes de continuar
-3. `@workspace use al-spec.create` → lee `architecture.md` y codebase → genera `.github/plans/{req_name}/{req_name}.spec.md`
-   - Spec técnica: object IDs, field types, procedure signatures, tests Given/When/Then
-   - ⚠️ **GATE**: aprobar spec antes de implementar
-4. Actualizar `memory.md` global con contexto del requerimiento
-5. `@AL Development Conductor` → orquesta ciclo TDD desde `.github/plans/{req_name}/`:
+1. Assign `{req_name}` in kebab-case.
+2. `@AL Architecture & Design Specialist` generates `.github/plans/{req_name}/{req_name}.architecture.md` with the approved design.
+   - ⚠️ **GATE**: architecture must be approved before continuing
+3. `@workspace use al-spec.create` reads `architecture.md` and the codebase, then generates `.github/plans/{req_name}/{req_name}.spec.md`
+   - Technical spec includes object IDs, field types, procedure signatures, and Given/When/Then tests
+   - ⚠️ **GATE**: spec must be approved before implementation
+4. Update the global `memory.md` with the requirement context.
+5. `@AL Development Conductor` orchestrates the TDD cycle from `.github/plans/{req_name}/`:
    - planning-subagent (research) → implement-subagent (TDD) → review-subagent (review)
-   - ⚠️ **GATE**: validación humana por fase
-6. Entrega → `@workspace use al-pr-prepare` → actualizar `memory.md`
-7. Archivar set completado en `archive/` (opcional)
+   - ⚠️ **GATE**: human validation for each phase
+6. Delivery → `@workspace use al-pr-prepare` → update `memory.md`
+7. Archive the completed set in `archive/` if desired
 
-#### LOW (sin arquitectura formal)
+#### LOW (without formal architecture)
 
-1. Asignar `{req_name}` (kebab-case)
-2. `@workspace use al-spec.create` → genera `.github/plans/{req_name}/{req_name}.spec.md` directamente desde codebase
-   - ⚠️ **GATE**: aprobar spec antes de implementar
-3. Actualizar `memory.md` global
-4. `@AL Implementation Specialist` → implementa directamente usando spec como blueprint
-5. Entrega → actualizar `memory.md`
+1. Assign `{req_name}` in kebab-case.
+2. `@workspace use al-spec.create` generates `.github/plans/{req_name}/{req_name}.spec.md` directly from the codebase
+   - ⚠️ **GATE**: spec must be approved before implementation
+3. Update the global `memory.md`
+4. `@AL Implementation Specialist` implements directly using the spec as a blueprint
+5. Deliver and update `memory.md`
 
-## Templates inmutables
+## Immutable Templates
 
-Los templates viven en `docs/templates/` y **MUST NOT** ser modificados por agentes/workflows. Solo el maintainer puede modificarlos vía RFC.
+Templates live in `docs/templates/` and **MUST NOT** be modified by agents or workflows. Only a maintainer can change them through RFC.
 
-Templates requeridos (7):
+Required templates (7):
 - `spec-template.md`
 - `architecture-template.md`
 - `test-plan-template.md`
-- `memory-template.md` (para inicializar memory global)
+- `memory-template.md` for initializing global memory
 - `technical-spec-template.md`
 - `delivery-template.md`
-- `skill-template.md` (NUEVO en v1.1)
+- `skill-template.md` (NEW in v1.1)
 
-Los agentes **MUST** copiar template → rellenar → escribir en plans (nunca editar template directamente).
+Agents **MUST** copy the template, fill it in, and write the output into plans. They must never edit the template directly.
 
-## Principios Core
+## Core Principles
 
-El repositorio y los agentes **MUST** operar respetando:
+The repository and its agents **MUST** operate according to the following principles:
 
-- **Extensión-only**: **MUST NOT** modificar objetos base directamente.
-- **Event-driven**: **SHOULD** usar subscribers/publishers.
-- **Spec-driven**: **MUST** existir contrato de comportamiento antes de implementar.
-- **Architecture-first** (MEDIUM/HIGH): **MUST** existir `{req_name}.architecture.md` aprobado.
-- **HITL**: el humano sigue siendo decisor; gates obligatorios.
-- **TDD**: en MEDIUM/HIGH, **SHOULD** aplicarse RED → GREEN → REFACTOR.
-- **Immutable templates**: templates solo modificables por maintainer vía RFC.
-- **Global memory**: `memory.md` es acumulativo, nunca se borra.
-- **Skills-based**: capacidades especializadas se encapsulan en skills composables.
-- **Skills evidencing**: los agentes **MUST** declarar qué skills cargaron y qué patrones aplicaron. El implement-subagent declara `### Skills Loaded` en cada Phase Summary; el review-subagent verifica con `Skills Compliance Check`; el conductor consolida en `Skills Applied in This Phase` (phase-complete) y `Skills Utilization Summary` (plan-complete); el architect declara `> **Skills applied**:` en architecture.md.
+- **Extension-only**: they **MUST NOT** modify base objects directly.
+- **Event-driven**: they **SHOULD** use subscribers and publishers.
+- **Spec-driven**: a behavior contract **MUST** exist before implementation begins.
+- **Architecture-first** for MEDIUM/HIGH: an approved `{req_name}.architecture.md` **MUST** exist.
+- **HITL**: a human remains the decision maker and gates are mandatory.
+- **TDD**: for MEDIUM/HIGH, RED → GREEN → REFACTOR **SHOULD** be applied.
+- **Immutable templates**: templates can only be modified by a maintainer through RFC.
+- **Global memory**: `memory.md` is append-only and is never deleted.
+- **Skills-based**: specialized capabilities are encapsulated in composable skills.
+- **Skills evidencing**: agents **MUST** declare which skills they loaded and which patterns they applied. The implement-subagent declares `### Skills Loaded` in each Phase Summary, the review-subagent validates via `Skills Compliance Check`, the conductor consolidates into `Skills Applied in This Phase` in phase-complete files and `Skills Utilization Summary` in plan-complete files, and the architect declares `> **Skills applied**:` in `architecture.md`.
 
-## Gates HITL (obligatorios)
+## HITL Gates (Mandatory)
 
-- **Gate de complejidad**: sistema **MUST** esperar confirmación humana antes de rutear.
-- **Gate de arquitectura** (MEDIUM/HIGH): `{req_name}.architecture.md` **MUST** ser aprobado.
-- **Gate por fase** (MEDIUM/HIGH): `al-conductor` **MUST** solicitar validación humana.
-- **Gate de review**: implementación **MUST** pasar revisión contra spec + architecture + test-plan.
-- **Gate de entrega**: **MUST** entregar sin errores conocidos + documentación actualizada.
+- **Complexity gate**: the system **MUST** wait for human confirmation before routing.
+- **Architecture gate** for MEDIUM/HIGH: `{req_name}.architecture.md` **MUST** be approved.
+- **Per-phase gate** for MEDIUM/HIGH: `al-conductor` **MUST** request human validation.
+- **Review gate**: implementation **MUST** pass review against spec + architecture + test-plan.
+- **Delivery gate**: delivery **MUST** be free from known errors and include updated documentation.
 
-## Criterios de conformidad (ALDC Core v1.1 Compliant)
+## Conformance Criteria (ALDC Core v1.1 Compliant)
 
-Un repositorio es **ALDC Core v1.1 compliant** si:
+A repository is **ALDC Core v1.1 compliant** if:
 
-1. Existe `aldc.yaml` válido contra el schema.
-2. Existe `.github/plans/memory.md` (global).
-3. Cada requerimiento activo tiene set completo: `{req_name}.spec.md`, `.architecture.md`, `.test-plan.md`.
-4. Las 7 plantillas inmutables existen en `docs/templates/` sin alteración.
-5. Los 4 agentes Core + 3 subagents internos existen bajo `toolkitRoot`.
-6. Los 6 workflows Core existen bajo `toolkitRoot`.
-7. Los 7 skills Core requeridos existen en `skills/` bajo toolkitRoot.
-8. Las 9 instructions existen.
-9. El entrypoint `.github/copilot-instructions.md` es coherente.
-10. En MEDIUM/HIGH: flujo spec → architecture → conductor(subagents) → review → entrega con gates HITL.
+1. A valid `aldc.yaml` exists and conforms to the schema.
+2. `.github/plans/memory.md` exists.
+3. Every active requirement has the full set: `{req_name}.spec.md`, `.architecture.md`, `.test-plan.md`.
+4. The 7 immutable templates exist under `docs/templates/` without alteration.
+5. The 4 Core agents + 3 internal subagents exist under `toolkitRoot`.
+6. The 6 Core workflows exist under `toolkitRoot`.
+7. The 7 required Core skills exist under `skills/` inside `toolkitRoot`.
+8. All 9 instructions exist.
+9. The `.github/copilot-instructions.md` entrypoint is coherent.
+10. For MEDIUM/HIGH, the flow spec → architecture → conductor(subagents) → review → delivery runs with HITL gates.
 
-## Extensibilidad
+## Extensibility
 
-Extensiones **MAY** añadir:
-- Skills adicionales por dominio.
-- Agentes especializados (como extensiones, no Core).
-- Workflows adicionales.
+Extensions **MAY** add:
+- additional domain-specific skills
+- specialized agents, as extensions rather than Core agents
+- additional workflows
 
-Pero **MUST NOT**:
-- Romper contratos de `.github/plans/`.
-- Redefinir nombres de agentes/workflows/skills Core.
-- Debilitar gates o reglas de extensión-only.
-- Modificar plantillas inmutables.
-- Borrar o sobrescribir contenido de `memory.md`.
+But they **MUST NOT**:
+- break `.github/plans/` contracts
+- redefine Core agent, workflow, or skill names
+- weaken gates or extension-only rules
+- modify immutable templates
+- delete or overwrite `memory.md` content
 
 ## Optional Components
 
@@ -369,30 +369,30 @@ Optional components add domain-specific capabilities without altering Core.
 
 Available optional components:
 
-- **BC Agent Builder**: @AL Agent Builder agent, 3 skills, 4 workflows for AI Development Toolkit / Agent SDK development
+- **BC Agent Builder**: `@AL Agent Builder`, plus 3 skills and 4 workflows for AI Development Toolkit / Agent SDK development
 
-Optional components MUST NOT:
+Optional components **MUST NOT**:
 
-- Override Core agents or workflows
-- Modify Core contract structure
-- Weaken HITL gates
+- override Core agents or workflows
+- modify the Core contract structure
+- weaken HITL gates
 
-Optional components MAY:
+Optional components **MAY**:
 
-- Add new agents (user-invocable: true)
-- Add new skills loadable by Core agents
-- Add new workflows
-- Add domain-specific tools and validators
+- add new user-invocable agents
+- add new skills that Core agents can load
+- add new workflows
+- add domain-specific tools and validators
 
-## Resumen de primitives v1.1
+## v1.1 Primitive Summary
 
-| Tipo | Cantidad | Detalles |
-|------|----------|---------|
-| Agentes públicos | 4 | architect, conductor, developer, presales |
-| Subagents internos | 3 | planning-subagent, implement-subagent, review-subagent |
+| Type | Count | Details |
+|------|-------|---------|
+| Public agents | 4 | architect, conductor, developer, presales |
+| Internal subagents | 3 | planning-subagent, implement-subagent, review-subagent |
 | Workflows | 6 | spec.create, build, pr-prepare, memory.create, context.create, initialize |
-| Skills requeridos | 7 | api, copilot, debug, performance, events, permissions, testing |
-| Skills recomendados | 4 | migrate, pages, translate, estimation |
-| Instructions | 9 | Sin cambios |
-| Templates | 7 | +1 skill-template.md |
-| **Total** | **40** | (vs 38 en v1.0, +1 implement-subagent, menor complejidad cognitiva) |
+| Required skills | 7 | api, copilot, debug, performance, events, permissions, testing |
+| Recommended skills | 4 | migrate, pages, translate, estimation |
+| Instructions | 9 | Unchanged |
+| Templates | 7 | +1 `skill-template.md` |
+| **Total** | **40** | compared to 38 in v1.0, with +1 implement-subagent and lower cognitive complexity |

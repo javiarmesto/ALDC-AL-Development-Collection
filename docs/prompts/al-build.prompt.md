@@ -1,1 +1,1 @@
-../../prompts/al-build.prompt.md
+--8<-- "prompts/al-build.prompt.md:9"

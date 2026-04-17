@@ -489,10 +489,10 @@ npm run validate
 
 ## 📚 Documentación Completa
 
-- **[Framework Completo](./al-development.md)** - Guía técnica detallada
-- **[Instrucciones](./instructions/)** - Auto-guidelines
-- **[Workflows](./prompts/README.md)** - Comandos disponibles
-- **[Modos](./agents/)** - Especialistas
+- **[Collection Guide](./al-development.md)** - Guía técnica detallada
+- **[Instrucciones](./instructions/index.md)** - Auto-guidelines
+- **[Workflows](./prompts/index.md)** - Comandos disponibles
+- **[Modos](./agents/index.md)** - Especialistas
 
 ---
 
@@ -520,7 +520,7 @@ Use al-debugger mode
 ---
 
 **Versión**: 2.11.0  
-**Framework**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)  
+**Modelo de referencia**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)  
 **Última Actualización**: 2026-02-06
 
 ---

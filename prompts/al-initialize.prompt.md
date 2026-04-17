@@ -42,44 +42,29 @@ Verify the following are available:
 **Step 2: Authentication**
 - Sign in to GitHub when prompted
 - Authorize the extension
-- Verify connection is active
-
-### VS Code Workspace Configuration
-
 Create or update `.vscode/settings.json` in the workspace root:
 
 ```json
-{
-  // AL Language settings
-  "al.enableCodeAnalysis": true,
-  "al.codeAnalyzers": ["${CodeCop}", "${PerTenantExtensionCop}", "${UICop}"],
 
   // GitHub Copilot settings
   "github.copilot.enable": {
     "*": true,
     "al": true
-  },
-
-  // Editor settings for better AI integration
   "editor.inlineSuggest.enabled": true,
   "editor.quickSuggestions": {
     "other": true,
     "comments": true,
     "strings": true
   }
-}
-```
+    #### Required Tools
 
-**Configuration Benefits:**
 - Code analysis with CodeCop, PerTenantExtensionCop, and UICop
 - AI suggestions optimized for AL files
-- Enhanced inline completion
-
-## Phase 2: Project Initialization
 
 ### Choose Project Type
 
-**For New Projects:**
+    #### Recommended Tools
+
 ```
 al_new_project
 ```
@@ -87,7 +72,8 @@ al_new_project
 **For Existing Folders:**
 ```
 al_go
-```
+    #### Step 1: Install VS Code Extensions
+
 
 ### Project Structure
 
@@ -95,33 +81,23 @@ Implement feature-based organization:
 
 ```
 ${input:ProjectName}/
-├── .vscode/
-│   ├── settings.json          # Workspace settings
-│   └── launch.json            # Debug configurations
-├── src/
+    #### Step 2: Authentication
+
 │   ├── Tables/                # Table objects
 │   ├── Pages/                 # Page objects
 │   ├── Codeunits/             # Codeunit objects
 │   ├── Reports/               # Report objects
-│   ├── Queries/               # Query objects
-│   ├── XMLports/              # XMLport objects
-│   ├── PageExtensions/        # Page extensions
-│   ├── TableExtensions/       # Table extensions
 │   └── Enums/                 # Enum objects
-├── test/
-│   ├── TestCodeunits/         # Test codeunits
 │   └── TestData/              # Test data and helpers
 ├── app.json                   # Application manifest
-├── .gitignore                 # Git ignore rules
-└── README.md                  # Project documentation
-```
-
 ### Download Symbols
+    #### For New Projects
 
 Download required symbols:
 ```
 al_download_symbols
 ```
+    #### For Existing Folders
 
 Verify all base application dependencies are available.
 
@@ -130,70 +106,54 @@ Verify all base application dependencies are available.
 Create manifest file:
 ```
 al_generate_manifest
-```
-
-**Human Review:** Validate manifest contents before proceeding.
 
 ## Phase 3: Launch Configuration
 
 ### 🔒 Human Gate: Authentication Configuration Review
-
-**SECURITY CHECKPOINT - Configuration contains sensitive information**
-
-Before creating launch.json:
 1. **Review authentication method** with stakeholder
 2. **Confirm server URLs** are correct for target environment
 3. **Verify credentials handling** follows security policies
-4. **Obtain approval** before saving configuration
 
-### Configure Debugging
-
-Create `.vscode/launch.json` based on your environment:
-
-**For Cloud Sandbox:**
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
         {
-            "type": "al",
-            "request": "launch",
-            "name": "Your own server",
-            "server": "https://businesscentral.dynamics.com",
             "serverInstance": "BC",
-            "authentication": "AAD",
             "startupObjectType": "Page",
             "startupObjectId": 22,
             "schemaUpdateMode": "Synchronize",
-            "tenant": "default"
+    #### For Development
+
         }
     ]
 }
 ```
 
-**For On-Premises:**
+    #### For Architecture
+
 ```json
 {
     "version": "0.2.0",
     "configurations": [
-        {
+    #### For TDD Orchestration
+
             "type": "al",
             "request": "launch",
             "name": "Local server",
             "server": "http://localhost",
             "serverInstance": "BC210",
             "authentication": "Windows",
-            "startupObjectType": "Page",
+    #### What Gets Sent to AI Services
+
             "startupObjectId": 22,
             "schemaUpdateMode": "Synchronize"
         }
     ]
-}
+    #### What You Should Not Include
+
 ```
 
 **For Agent Debugging (Copilot features):**
 ```json
-{
+    #### Best Practices
+
     "version": "0.2.0",
     "configurations": [
         {

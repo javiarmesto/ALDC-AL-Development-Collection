@@ -8,7 +8,7 @@ nav_order: 3
 ---
 ## This document is a copy from https://danielmeppiel.github.io/awesome-ai-native/docs/concepts/ .
 ---
-Now that you understand the [three-layer framework](../concepts/), it's time to build your first Agent Primitives. This hands-on implementation will give you imMEDIUMte productivity improvements while establishing the foundation for more advanced workflows.
+Now that you understand the [three-layer framework](./ai-native-concepts.md), it's time to build your first Agent Primitives. This hands-on implementation will give you immediate productivity improvements while establishing the foundation for more advanced workflows.
 
 The setup follows a logical progression: start with instructions that guide AI behavior, add agents that create safe boundaries, build reusable prompts for common tasks, and create specification templates that bridge planning to implementation.
 
@@ -22,7 +22,7 @@ The key insight is modularity: instead of one massive instruction file that appl
 - Create the general [`copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilot-instructionsmd-file) file in the `.github` folder for the repository with common rules
 - Create modular [`.instructions.md` files](https://code.visualstudio.com/docs/copilot/copilot-customization#_use-instructionsmd-files) in the `.github/instructions/` folder by domain (frontend, backend, testing, docs, specs...)
 - Use [`applyTo: "**/*.{js,ts...}"`](https://code.visualstudio.com/docs/copilot/copilot-customization#_instructions-file-structure) patterns for selective application
-- Compile to [AGENTS.md standard](https://agents.md) so your context works across all coding agents. See [Tooling](../tooling/) to learn about **context compilation**
+- Compile to [AGENTS.md standard](https://agents.md) so your context works across all coding agents. See the [Collection Guide](../al-development.md) to understand how ALDC organizes context, workflows, and reusable primitives.
 
 > 💡 **Context Engineering in Action**: Modular instructions preserve context space by loading only relevant guidelines when working on specific file types, leaving maximum buffer for code understanding.
 
@@ -183,7 +183,7 @@ Confirm: Architecture alignment, test strategy, and breaking change impact.
 
 The final piece of your foundation addresses the gap between planning and implementation. Specification templates transform high-level ideas into implementation-ready blueprints that work consistently whether executed by humans or AI agents.
 
-These `.spec.md` templates are the foundation of **spec-driven team workflows**. When you scale to team contexts (see [Team & Enterprise Scale](../team-adoption/)), product owners use these templates during sprint planning to create explicit, agent-executable specifications. [Spec-Kit](https://github.com/github/spec-kit) provides `/speckit.specify` commands that generate these files following the constitution → specify → plan → tasks → implement pattern, but understanding the underlying template structure gives you flexibility to customize for your team's needs.
+These `.spec.md` templates are the foundation of **spec-driven team workflows**. When you scale this approach across a team, product owners can use these templates during sprint planning to create explicit, agent-executable specifications. [Spec-Kit](https://github.com/github/spec-kit) provides `/speckit.specify` commands that generate these files following the constitution → specify → plan → tasks → implement pattern, but understanding the underlying template structure gives you flexibility to customize for your team's needs.
 
 **✅ Quick Actions:**
 - Create standardized [`.spec.md` templates](https://docs.github.com/en/copilot/copilot-chat/copilot-chat-cookbook) for feature specifications
@@ -251,7 +251,7 @@ With all primitives in place, you now have a complete foundation for systematic 
 ### Implementation Steps  
 4. **[ ]** Create [`.github/copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilot-instructionsmd-file) with basic project guidelines (Context Engineering: global rules)
 5. **[ ]** Set up domain-specific [`.instructions.md` files](https://code.visualstudio.com/docs/copilot/copilot-customization#_use-instructionsmd-files) with `applyTo` patterns (Context Engineering: selective loading)
-6. **[ ]** Compile instructions to `AGENTS.md` standard for universal portability—see [Tooling](../tooling/)
+6. **[ ]** Compile instructions to `AGENTS.md` standard for universal portability—see the [Collection Guide](../al-development.md)
 7. **[ ]** Configure [agents](https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-chat-modes) for your tech stack domains (Context Engineering: domain boundaries)
 8. **[ ]** Create your first [`.prompt.md` Agentic Workflow](https://code.visualstudio.com/docs/copilot/copilot-customization#_prompt-files-experimental)
 9. **[ ]** Build your first `.spec.md` template for feature specifications (Agent Primitive: deterministic planning-to-implementation bridge)
@@ -259,10 +259,10 @@ With all primitives in place, you now have a complete foundation for systematic 
 
 ## What's Next?
 
-**Foundation Complete?** You've built your first Agent Primitives and understand how they work. Before diving into execution strategies, continue to [Tooling](../tooling/) to understand the infrastructure that makes these primitives scale—context compilation, package management, and Agent CLI runtimes that enable everything that follows.
+**Foundation Complete?** You've built your first Agent Primitives and understand how they work. Before diving into execution strategies, continue to the [Collection Guide](../al-development.md) to understand the structure that makes these primitives reusable across agents, workflows, and validation tooling.
 
-**Want to understand the theory better?** Return to [Core Concepts](../concepts/) for deeper theoretical understanding.
+**Want to understand the theory better?** Return to [Core Concepts](./ai-native-concepts.md) for deeper theoretical understanding.
 
-**Ready to jump ahead?** After Tooling, [Agent Delegation](../agent-delegation/) shows execution strategies, and [Team & Enterprise Scale](../team-adoption/) covers organizational implementation.
+**Ready to jump ahead?** After the Collection Guide, review the [Orchestration Architecture](./orchestration-architecture.md) and the [Complete Development Flow](../workflows/complete-development-flow.md) for execution strategies and team-friendly implementation patterns.
 
 *You now have complete Agent Primitives and your first Agentic Workflow. The next step is understanding the infrastructure that makes these primitives executable, shareable, and production-ready.*

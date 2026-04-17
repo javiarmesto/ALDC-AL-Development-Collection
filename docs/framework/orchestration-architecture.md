@@ -6,14 +6,14 @@
 
 1. [Conceptos Fundamentales](#1-conceptos-fundamentales)
 2. [Estructura de Archivos `.agent.md`](#2-estructura-de-archivos-agentmd)
-3. [Diseño del Patrón Conductor-Subagentes](#3-diseño-del-patrón-conductor-subagentes)
-4. [Configuración de Cada Componente](#4-configuración-de-cada-componente)
-5. [Mecanismo de Invocación](#5-mecanismo-de-invocación-de-subagentes)
-6. [Configuración de Herramientas](#6-configuración-de-herramientas-tools)
+3. [Diseño del Patrón Conductor-Subagentes](#3-diseno-del-patron-conductor-subagentes)
+4. [Configuración de Cada Componente](#4-configuracion-de-cada-componente)
+5. [Mecanismo de Invocación](#5-mecanismo-de-invocacion-de-subagentes)
+6. [Configuración de Herramientas](#6-configuracion-de-herramientas-tools)
 7. [Handoffs (Transiciones)](#7-handoffs-transiciones)
 8. [Modelos de Lenguaje por Agente](#8-modelo-de-lenguaje-por-agente)
-9. [Ejemplo Completo](#9-ejemplo-completo-de-orquestación)
-10. [Guía de Implementación](#10-guía-para-implementar-en-tu-proyecto)
+9. [Ejemplo Completo](#9-ejemplo-completo-de-orquestacion)
+10. [Guía de Implementación](#10-guia-para-implementar-en-tu-proyecto)
 
 ---
 
@@ -148,7 +148,7 @@ Reporta los problemas encontrados con severidad.
 
 ---
 
-## 3. Diseño del Patrón Conductor-Subagentes
+## 3. Diseño del Patrón Conductor-Subagentes { #3-diseno-del-patron-conductor-subagentes }
 
 ### 3.1 Arquitectura Visual
 
@@ -212,7 +212,7 @@ Reporta los problemas encontrados con severidad.
 
 ---
 
-## 4. Configuración de Cada Componente
+## 4. Configuración de Cada Componente { #4-configuracion-de-cada-componente }
 
 ### 4.1 Conductor (Orquestador)
 
@@ -311,7 +311,7 @@ model: Claude Sonnet 4.5
 
 ---
 
-## 5. Mecanismo de Invocación de Subagentes
+## 5. Mecanismo de Invocación de Subagentes { #5-mecanismo-de-invocacion-de-subagentes }
 
 ### 5.1 La Herramienta `runSubagent`
 
@@ -391,7 +391,7 @@ CONDUCTOR                              SUBAGENT
 
 ---
 
-## 6. Configuración de Herramientas (Tools)
+## 6. Configuración de Herramientas (Tools) { #6-configuracion-de-herramientas-tools }
 
 ### 6.1 Tipos de Herramientas Disponibles
 
@@ -546,7 +546,7 @@ tools: ['edit', 'search']
 
 ---
 
-## 9. Ejemplo Completo de Orquestación
+## 9. Ejemplo Completo de Orquestación { #9-ejemplo-completo-de-orquestacion }
 
 ### Escenario: "Añadir autenticación OAuth"
 
@@ -639,7 +639,7 @@ tools: ['edit', 'search']
 
 ---
 
-## 10. Guía para Implementar en Tu Proyecto
+## 10. Guía para Implementar en Tu Proyecto { #10-guia-para-implementar-en-tu-proyecto }
 
 ### 10.1 Paso 1: Crear Estructura de Carpetas
 

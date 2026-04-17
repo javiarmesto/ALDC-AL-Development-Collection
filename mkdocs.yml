@@ -133,12 +133,7 @@ nav:
     - Quick Start (EN): quick-start-en.md
     - Inicio Rápido (ES): quick-start-es.md
     - Reproducible Example: reproducible-example.md
-  - Framework:
-    - Overview: framework/overview.md
-    - Architecture: framework/architecture.md
-    - AI Native Concepts: framework/ai-native-concepts.md
-    - AI Native Structure: framework/ai-native-structure.md
-    - Instructions Architecture: framework/ai-native-instructions-architecture.md
+  - Collection Guide: al-development.md
   - Instructions:
     - Overview: instructions/index.md
     - Guidelines: instructions/al-guidelines.instructions.md
@@ -173,6 +168,5 @@ nav:
       - Review Subagent: agents/al-review-subagent.agent.md
   - Workflows:
     - Complete Development Flow: workflows/complete-development-flow.md
-  - Collection Guide: al-development.md
   - Contributing: CONTRIBUTING.md
   - Changelog: CHANGELOG.md

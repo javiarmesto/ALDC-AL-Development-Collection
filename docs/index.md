@@ -16,7 +16,7 @@ hide:
 
 <div class="hero-actions">
   <a class="md-button md-button--primary" href="getting-started/">Start with the docs</a>
-  <a class="md-button" href="framework/overview/">Understand the framework</a>
+  <a class="md-button" href="al-development/">Open the collection guide</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
 
@@ -35,22 +35,17 @@ hide:
 ## What's ALDC { #whats-aldc .section-title }
 
 <div class="two-col">
-<div class="two-col-text" markdown="1">
+<div class="two-col-text">
 
-Most AI coding tools generate a file and hope for the best. **ALDC is different.**
+<p>Most AI coding tools generate a file and hope for the best. <strong>ALDC is different.</strong></p>
 
-Every feature starts with a **spec contract** — functional, technical, testable —
-kept in `.github/plans/{req_name}/`. Architecture and test plans live next to it.
+<p>Every feature starts with a <strong>spec contract</strong> that is functional, technical, and testable, kept in <code>.github/plans/{req_name}/</code>. Architecture and test plans live next to it.</p>
 
-A **conductor agent** orchestrates a TDD cycle: the Implementation Subagent
-writes tests first, code second, then refactors. A Review Subagent validates
-against the spec. You approve every phase.
+<p>A <strong>conductor agent</strong> orchestrates a TDD cycle: the Implementation Subagent writes tests first, code second, then refactors. A Review Subagent validates against the spec. You approve every phase.</p>
 
-Underneath it all, **11 composable skills** (API, events, performance, testing…)
-load on demand so agents only know what they need for the task in front of them.
+<p>Underneath it all, <strong>11 composable skills</strong> covering API, events, performance, testing, and more load on demand so agents only know what they need for the task in front of them.</p>
 
-The result: AL code that passes review the first time, with traceable
-decisions from requirement to merge.
+<p>The result: AL code that passes review the first time, with traceable decisions from requirement to merge.</p>
 
 </div>
 <div class="two-col-visual" markdown="1">
@@ -110,7 +105,7 @@ flowchart TD
     Never touches base app objects. Always tableextensions, pageextensions,
     event subscribers. Least-privilege permissions by default.
 
--   :material-compare-horizontal: &nbsp; **One framework, two runtimes**
+-   :material-compare-horizontal: &nbsp; **One toolkit, two runtimes**
 
     ---
 
@@ -180,10 +175,10 @@ Everything ALDC-related lives here. Pick your path.
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" href="framework/ALDC-Core-Spec-v1.1/">
-    <span class="resource-kicker">Specification</span>
-    <h3>Core Spec v1.1</h3>
-    <p>The normative specification. Read this to understand every primitive.</p>
+  <a class="resource-card" href="al-development/">
+    <span class="resource-kicker">Guide</span>
+    <h3>Collection Guide</h3>
+    <p>The public guide to ALDC: architecture, primitives, flow, validation and adoption.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -208,31 +203,31 @@ Everything ALDC-related lives here. Pick your path.
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" href="framework/ALDC-Architecture-Diagrams/">
-    <span class="resource-kicker">Visuals</span>
-    <h3>Architecture</h3>
-    <p>Diagrams of how agents, skills, workflows and contracts fit together.</p>
+  <a class="resource-card" href="workflows/complete-development-flow/">
+    <span class="resource-kicker">Execution</span>
+    <h3>Complete Development Flow</h3>
+    <p>See the end-to-end path from requirement intake to validated delivery.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" href="framework/ALDC-Migration-v1.0-to-v1.1/">
-    <span class="resource-kicker">Upgrade</span>
-    <h3>Migration v1.0 → v1.1</h3>
-    <p>Breaking changes, upgrade checklist and deprecated primitives.</p>
+  <a class="resource-card" href="events/">
+    <span class="resource-kicker">Talks</span>
+    <h3>Events & Talks</h3>
+    <p>Conference sessions, community talks and upcoming public appearances.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" href="framework/ROADMAP-2026/">
-    <span class="resource-kicker">Next</span>
-    <h3>Roadmap 2026</h3>
-    <p>What is shipping next and which priorities are under discussion.</p>
+  <a class="resource-card" href="reproducible-example/">
+    <span class="resource-kicker">Example</span>
+    <h3>Reproducible Example</h3>
+    <p>Walk through a concrete ALDC setup with a documented starting point.</p>
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" href="framework/ALDC-Manifesto/">
-    <span class="resource-kicker">Why</span>
-    <h3>Manifesto</h3>
-    <p>Why spec-driven. Why HITL. Why skills. The philosophy behind ALDC.</p>
+  <a class="resource-card" href="CONTRIBUTING/">
+    <span class="resource-kicker">Contribute</span>
+    <h3>Contributing</h3>
+    <p>Open issues, submit improvements and propose new primitives with the repo guidelines.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -250,10 +245,10 @@ Everything ALDC-related lives here. Pick your path.
     <span class="resource-arrow">→</span>
   </a>
 
-  <a class="resource-card" href="framework/ALDC-Governance/">
-    <span class="resource-kicker">Rules</span>
-    <h3>Governance</h3>
-    <p>How decisions are made, how primitives are accepted and the compliance model.</p>
+  <a class="resource-card" href="CHANGELOG/">
+    <span class="resource-kicker">History</span>
+    <h3>Changelog</h3>
+    <p>Track releases, fixes and the evolution of the collection over time.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -263,7 +258,7 @@ Everything ALDC-related lives here. Pick your path.
 
 ## Events & talks { #events .section-title }
 
-<p class="section-lead">ALDC also exists outside the repo: conference talks, Dev Days and hands-on sessions where the framework itself is the topic. Here you only see confirmed upcoming talks.</p>
+<p class="section-lead">ALDC also exists outside the repo: conference talks, Dev Days and hands-on sessions where the collection, workflow and delivery model are the topic. Here you only see confirmed upcoming talks.</p>
 
 <div class="cta-row">
   <a class="md-button md-button--primary" href="events/">See upcoming talks</a>
@@ -297,9 +292,9 @@ Four ways to make ALDC better. No contribution is too small.
   <div class="collab-card">
     <div class="collab-num">03</div>
     <h3>Shape v1.2</h3>
-    <p>The roadmap is open. Vote on priorities, argue against trade-offs,
-    propose alternatives in Discussions.</p>
-    <a href="framework/ROADMAP-2026/">See the roadmap →</a>
+    <p>Priorities are discussed openly. Vote on trade-offs, challenge assumptions,
+    and propose alternatives with the community.</p>
+    <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/discussions">Join the discussion →</a>
   </div>
 
   <div class="collab-card">
@@ -319,7 +314,7 @@ Four ways to make ALDC better. No contribution is too small.
 ### Ready to ship BC features with confidence? { .footer-cta-title }
 
 [Install ALDC :material-download:](getting-started.md){ .md-button .md-button--primary }
-[Read the spec :material-file-document:](framework/ALDC-Core-Spec-v1.1.md){ .md-button }
+[Open the collection guide :material-book-open-page-variant:](al-development.md){ .md-button }
 [:material-star: &nbsp; Star the repo](https://github.com/javiarmesto/ALDC-AL-Development-Collection){ .md-button }
 
 </div>
@@ -327,6 +322,6 @@ Four ways to make ALDC better. No contribution is too small.
 <div class="status-footer" markdown="1">
 
 `✓ ALDC Core v1.1 COMPLIANT` &nbsp;·&nbsp; `v3.2.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Made by [Javier Armesto](https://www.linkedin.com/in/javiarmesto)
-Framework: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)
+Reference model: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)
 
 </div>

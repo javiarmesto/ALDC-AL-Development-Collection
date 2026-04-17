@@ -193,10 +193,10 @@ flowchart TD
 3. **Agentic Workflows** in Markdown apply prompt and context engineering leveraging Agent Primitives to implement complete, reliable agentic processes
 5. **The Framework** creates compound intelligence that improves through iterative refinement
 
-**Ready for hands-on implementation?** Continue to [Getting Started](../getting-started/) to build your first Agent Primitives with hierarchical organization.
+**Ready for hands-on implementation?** Continue to [Getting Started](../getting-started.md) to build your first Agent Primitives with hierarchical organization.
 
-**Want to understand the tooling ecosystem?** Jump to [Tooling](../tooling/) to learn about Agent CLI Runtimes, context compilation, and agent package management.
+**Want to understand the toolkit structure?** Jump to the [Collection Guide](../al-development.md) to see how ALDC organizes agents, workflows, instructions, and validation tooling.
 
-**Ready for hands-on implementation?** Jump to [Getting Started](../getting-started/) to build your first Agent Primitives and culminate with your first Agentic Workflow.
+**Ready for hands-on implementation?** Jump to [Getting Started](../getting-started.md) to build your first Agent Primitives and culminate with your first Agentic Workflow.
 
-**Want to see complete workflow execution strategies?** Jump to [Agent Delegation](../agent-delegation/) for local and async orchestration patterns.
+**Want to see complete workflow execution strategies?** Jump to [Complete Development Flow](../workflows/complete-development-flow.md) for orchestration patterns across planning, implementation, and review.
