@@ -8,7 +8,11 @@
     "aldc": "./scripts/install.js"
   },
   "scripts": {
-    "test": "node scripts/validate-al-collection.js"
+    "test": "node scripts/validate-al-collection.js",
+    "validate": "node scripts/validate-al-collection.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
   },
   "keywords": [
     "AL",

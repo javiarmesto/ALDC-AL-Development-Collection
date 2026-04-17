@@ -287,12 +287,13 @@ function validateFileNaming(manifest) {
 function validateDocumentation(manifest) {
   log('\n📖 Validating Documentation...', 'cyan');
   
-  const docFile = `${manifest.id}.md`;
-  if (!fileExists(docFile)) {
-    addError(`Collection documentation not found: ${docFile}`);
+  const docCandidates = [`docs/${manifest.id}.md`, `${manifest.id}.md`];
+  const docFile = docCandidates.find(fileExists);
+  if (!docFile) {
+    addError(`Collection documentation not found in any of: ${docCandidates.join(', ')}`);
   } else {
     addSuccess(`Collection documentation exists: ${docFile}`);
-    
+
     // Validate documentation content
     const docContent = fs.readFileSync(docFile, 'utf8');
     
