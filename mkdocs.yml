@@ -127,6 +127,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Events: events.md
   - Getting Started:
     - Overview: getting-started.md
     - Quick Start (EN): quick-start-en.md

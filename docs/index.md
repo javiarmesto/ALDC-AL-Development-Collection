@@ -263,66 +263,11 @@ Everything ALDC-related lives here. Pick your path.
 
 ## Events & talks { #events .section-title }
 
-Where ALDC has been shown, and where it's going next.
+Workshops, conferences and community sessions — upcoming and past. Two events
+coming up in April 2026.
 
-<div class="timeline" markdown="1">
-
-  <div class="timeline-item" markdown="1">
-    <div class="timeline-date">2025 · EMEA</div>
-    <div class="timeline-body" markdown="1">
-      <div class="timeline-kind">:material-microphone: &nbsp; Community Keynote</div>
-      <h3>ALDC: Spec-driven BC development with Copilot</h3>
-      <p>Keynote walkthrough: from requirement to shipped feature using agents,
-      skills and contracts. Live demo of the TDD loop.</p>
-      <a href="sessions/2025-EMEA-CommunityKeynote/readme.md">Session materials →</a>
-    </div>
-  </div>
-
-  <div class="timeline-item" markdown="1">
-    <div class="timeline-date">2025 · Web</div>
-    <div class="timeline-body" markdown="1">
-      <div class="timeline-kind">:material-book-open-variant: &nbsp; Talk + Deck</div>
-      <h3>GitHub Copilot — 10+1 practical tips for AL</h3>
-      <p>Practitioner-focused deck with tips and tricks, including the ALDC
-      workflow for complex features.</p>
-      <a href="sessions/Github Copilot-A practical approach to AL in 10 plus1 tips and tricks/README.md">Open materials →</a>
-    </div>
-  </div>
-
-  <div class="timeline-item timeline-item--upcoming" markdown="1">
-    <div class="timeline-date">27 Apr 2026</div>
-    <div class="timeline-body" markdown="1">
-      <div class="timeline-kind">:material-tools: &nbsp; Workshop técnico</div>
-      <h3>Desarrollo asistido por IA para Business Central</h3>
-      <p>Sesión práctica sobre cómo aplicar agentes y skills al ciclo real
-      de desarrollo AL en BC. Workshop hands-on con casos reales.</p>
-      <a href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=Sr_QIymUv06it7s3VKRAJXq8JnPVlyFMjFwTfYxrWf1UQ0FQUFExNkZKQldBTVBZWVYwMFVaQzdSMi4u&route=shorturl">Registro →</a>
-    </div>
-  </div>
-
-  <div class="timeline-item timeline-item--upcoming" markdown="1">
-    <div class="timeline-date">29 Apr 2026 · 16:30–19:30</div>
-    <div class="timeline-body" markdown="1">
-      <div class="timeline-kind">:fontawesome-brands-github: &nbsp; GitHub Copilot Dev Days</div>
-      <h3>GitHub Copilot Dev Days · Valencia</h3>
-      <p>Evento presencial de Copilot Dev Days en Valencia. Charla sobre
-      ALDC y desarrollo spec-driven de extensiones Business Central con IA.</p>
-      <a href="https://luma.com/59b4iu6v">Apúntate en Luma →</a>
-    </div>
-  </div>
-
-  <div class="timeline-item timeline-item--upcoming" markdown="1">
-    <div class="timeline-date">Coming up</div>
-    <div class="timeline-body" markdown="1">
-      <div class="timeline-kind">:material-calendar-star: &nbsp; Your event?</div>
-      <h3>Want to invite ALDC to your event?</h3>
-      <p>I love talking about this at meetups, user groups and conferences
-      — in Spanish or English.</p>
-      <a href="https://www.linkedin.com/in/javiarmesto">Reach out on LinkedIn →</a>
-    </div>
-  </div>
-
-</div>
+[:material-calendar-month: &nbsp; See all events](events.md){ .md-button .md-button--primary }
+[:material-calendar-plus: &nbsp; Invite ALDC to your event](https://www.linkedin.com/in/javiarmesto){ .md-button }
 
 ---
 
