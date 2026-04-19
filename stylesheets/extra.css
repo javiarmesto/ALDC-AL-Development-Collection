@@ -669,3 +669,28 @@
   .collab-card { padding: 1.5rem; padding-top: 3rem; }
   .collab-num { font-size: 2rem; }
 }
+
+/* ── Agent technical cards ── */
+.agent-card {
+  background: var(--aldc-gradient-soft);
+  border-left: 4px solid var(--md-primary-fg-color);
+  border-radius: var(--aldc-radius);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.agent-card table {
+  margin: 0 !important;
+}
+.agent-card th {
+  display: none;
+}
+.agent-card td {
+  padding: 0.25rem 0.75rem 0.25rem 0 !important;
+  border: none !important;
+  font-size: 0.9rem;
+}
+.agent-card td:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+}
