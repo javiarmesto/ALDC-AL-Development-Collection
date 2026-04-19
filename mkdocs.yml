@@ -30,6 +30,9 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   
+  logo: assets/images/logo.png
+  favicon: assets/images/favicon.png
+  
   font:
     text: Space Grotesk
     code: JetBrains Mono
@@ -102,7 +105,9 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      base_path: ['.', 'docs']
+      check_paths: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

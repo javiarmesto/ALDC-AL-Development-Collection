@@ -1,0 +1,538 @@
+# Prompt: Create a MkDocs Documentation Site (ALDC Style)
+
+> **Use this prompt with GitHub Copilot or Claude Code** to scaffold a documentation site with the same visual design as the ALDC collection site.
+
+---
+
+## The Prompt
+
+Copy everything below the line and paste it into your AI assistant, replacing the `{{PLACEHOLDERS}}` with your values.
+
+---
+
+```
+I need you to create a complete MkDocs documentation site for my project. Use Material for MkDocs with a modern, professional design. Here are my project details:
+
+## Project Info
+
+- **Project name**: {{PROJECT_NAME}}
+- **Description**: {{SHORT_DESCRIPTION}}
+- **Author**: {{AUTHOR_NAME}}
+- **GitHub repo**: {{GITHUB_REPO_URL}}
+- **Site URL**: {{GITHUB_PAGES_URL}}  (e.g. https://username.github.io/repo-name/)
+- **LinkedIn**: {{LINKEDIN_URL}}  (optional, remove if not needed)
+- **License**: {{LICENSE}}  (e.g. MIT)
+
+## Color Scheme
+
+Use this as the primary palette (deep purple + deep orange accent). You can change the hex values:
+- Primary: #5E35B1 (deep purple)
+- Primary light: #7E57C2
+- Primary dark: #4527A0
+- Accent: #FF6D00 (deep orange)
+- Accent light: #FFAB40
+- Success: #00C853
+- Gradient: 135deg from primary through primary-light to accent
+
+## Sections I Need
+
+{{LIST_YOUR_SECTIONS}}
+
+Example:
+- Home (hero landing page with gradient background, grid dot pattern, CTA buttons, pill badges)
+- Getting Started
+- API Reference
+- Configuration
+- Examples
+- Contributing (include from root CONTRIBUTING.md using pymdownx.snippets)
+- Changelog (include from root CHANGELOG.md using pymdownx.snippets)
+
+## Technical Card Pages
+
+For any section that has multiple items (like components, modules, APIs, etc.), create
+**executive-style technical card pages** — NOT raw includes. Each card should have:
+
+1. A Material icon in the H1 title (e.g. `:material-compass-outline:`)
+2. A metadata card inside a `<div class="agent-card">` with a borderless table showing key properties
+3. A horizontal rule separator
+4. Purpose section (1-2 paragraphs)
+5. Key rules/features table
+6. Code example or pattern (if applicable)
+7. A warning admonition for anti-patterns (if applicable)
+8. Source link at bottom
+
+Example card structure:
+
+```markdown
+# :material-icon-name: Title
+
+<div class="agent-card" markdown>
+
+| | |
+|---|---|
+| **Property 1** | `value` |
+| **Property 2** | value |
+| **Property 3** | value |
+
+</div>
+
+---
+
+## Purpose
+
+Description of what this does.
+
+## Key rules
+
+| Rule | Description |
+|---|---|
+| **Rule 1** | What it enforces |
+| **Rule 2** | What it enforces |
+
+## Pattern example
+
+\```language
+// code example
+\```
+
+!!! warning "Avoid"
+    Anti-pattern description.
+
+---
+
+<small>Source: [`path/to/file`](https://github.com/...)</small>
+```
+
+## Design Components to Include
+
+### 1. Hero Section (homepage)
+- Full-width hero with radial gradient background and grid dot pattern overlay
+- Eyebrow text (small pill above title)
+- Large bold title with gradient text on key words (`<strong>`)
+- Tagline paragraph
+- CTA button row (primary + secondary + outline)
+- Pill badges row showing key stats
+
+### 2. Section Titles
+- H2 with class `.section-title` — gets a vertical gradient bar on the left
+
+### 3. Two-Column Layout
+- `.two-col` grid: text on left, visual (mermaid diagram or image) on right
+- Responsive: stacks on mobile
+
+### 4. Grid Cards
+- Use Material's built-in `.grid.cards` with hover lift effect and shadow
+
+### 5. Resource Grid
+- `.resource-grid` with `.resource-card` — dense cards with:
+  - Gradient top-bar that animates on hover (scaleX)
+  - Kicker label (small uppercase pill)
+  - Title + description
+  - Arrow icon that fades in on hover
+
+### 6. Timeline (for events/releases)
+- `.timeline` with vertical gradient line and dot markers
+- `.timeline-item` cards that slide right on hover
+- `.timeline-item--upcoming` gets a pulsing dot
+
+### 7. Collaboration Grid
+- `.collab-grid` with `.collab-card` — numbered cards (01, 02, 03, 04)
+- Large gradient number in top-right corner
+- Gradient top border that increases opacity on hover
+
+### 8. Footer CTA
+- `.footer-cta` with radial gradient background and grid pattern
+- Gradient text title
+- CTA buttons
+
+### 9. Technical Cards (agent-card)
+- `.agent-card` — soft gradient background, left border accent, borderless table
+- Used for metadata blocks in detail pages
+
+## Files to Generate
+
+### 1. `mkdocs.yml`
+Full config with:
+- Material theme (light/dark toggle, deep purple + deep orange)
+- Logo and favicon paths: `assets/images/logo.png`, `assets/images/favicon.png`
+- Font: Space Grotesk (text) + JetBrains Mono (code)
+- Features: instant navigation, tabs, sections, expand, search, code copy, annotations
+- Social links (GitHub, LinkedIn)
+- Extensions: admonition, attr_list, md_in_html, tables, toc, pymdownx.* (emoji, highlight, snippets, superfences with mermaid, tabbed, tasklist)
+- Plugins: search, git-revision-date-localized (timeago), minify, tags
+- Complete `nav` structure
+
+### 2. `docs/stylesheets/extra.css`
+Complete stylesheet with ALL these components:
+- CSS custom properties (`:root` and `[data-md-color-scheme="slate"]`)
+- Hero styles (background, eyebrow, title with gradient text, tagline, buttons, pills)
+- Section title with gradient bar
+- Two-column grid
+- Grid card hover effects
+- Resource grid with animated gradient top-bar
+- Timeline with gradient line and pulse animation
+- Collaboration grid with numbered cards
+- Footer CTA band
+- Agent-card / technical card styles
+- Admonition border customization
+- Responsive breakpoints
+
+### 3. `docs/index.md`
+Homepage with all components wired up using HTML+Markdown:
+- Hero section
+- "What is {{PROJECT_NAME}}" two-col section
+- "Why it matters" grid cards
+- Quick start tabbed section
+- Resources grid (link to all sections)
+- Events/timeline or roadmap
+- "How to collaborate" numbered cards
+- Footer CTA
+
+### 4. Section pages
+One `.md` file per nav entry. For sections with sub-items, create executive-style
+technical cards (the `agent-card` pattern described above).
+
+### 5. `docs/CONTRIBUTING.md` and `docs/CHANGELOG.md`
+Use pymdownx.snippets to include from root:
+```markdown
+--8<-- "CONTRIBUTING.md"
+```
+```markdown
+--8<-- "CHANGELOG.md"
+```
+
+### 6. `requirements.txt`
+```
+mkdocs>=1.6
+mkdocs-material>=9.5
+mkdocs-minify-plugin>=0.8
+mkdocs-git-revision-date-localized-plugin>=1.2
+```
+
+## Build & Deploy Commands
+
+After generating all files:
+```bash
+pip install -r requirements.txt
+python -m mkdocs build          # verify build
+python -m mkdocs serve          # local preview at localhost:8000
+python -m mkdocs gh-deploy --force  # deploy to GitHub Pages
+```
+
+## Important Notes
+
+- All doc pages that reference root files should use `--8<-- "FILE.md"` snippet syntax, NOT raw relative paths like `../FILE.md`
+- Every section detail page should be a self-contained executive card, NOT a raw file include
+- Use Material icons (`:material-icon-name:`) for visual hierarchy
+- Include `!!! warning "Avoid"` admonitions for anti-patterns where applicable
+- Ensure dark mode works (test `[data-md-color-scheme="slate"]` overrides)
+- Mermaid diagrams must use valid syntax for mermaid v11+
+- The `.agent-card` CSS hides `<th>` elements so the metadata table looks clean
+```
+
+---
+
+## CSS Reference (complete `extra.css`)
+
+Below is the full CSS used in the ALDC site. Copy it as your starting point and adjust colors via the `:root` variables:
+
+```css
+:root {
+  --md-primary-fg-color: #5E35B1;
+  --md-primary-fg-color--light: #7E57C2;
+  --md-primary-fg-color--dark: #4527A0;
+  --aldc-accent: #FF6D00;
+  --aldc-accent-light: #FFAB40;
+  --aldc-success: #00C853;
+  --aldc-gradient: linear-gradient(135deg, #5E35B1 0%, #7E57C2 40%, #FF6D00 100%);
+  --aldc-gradient-soft: linear-gradient(135deg, rgba(94,53,177,0.12), rgba(255,109,0,0.08));
+  --aldc-radius: 0.8rem;
+  --aldc-shadow-hover: 0 12px 32px rgba(94, 53, 177, 0.18);
+}
+
+[data-md-color-scheme="slate"] {
+  --aldc-gradient-soft: linear-gradient(135deg, rgba(126,87,194,0.15), rgba(255,109,0,0.12));
+}
+
+/* Typography */
+.md-typeset h1 { font-weight: 800; letter-spacing: -0.02em; }
+.md-typeset h2 { letter-spacing: -0.01em; }
+.md-typeset code { background-color: var(--md-code-bg-color); border-radius: 0.2rem; padding: 0.1rem 0.3rem; }
+
+/* Admonitions */
+.md-typeset .admonition { border-left: 0.4rem solid; border-radius: 0.3rem; padding: 0.8rem 1.2rem; }
+.md-typeset .admonition.note    { border-color: #448aff; }
+.md-typeset .admonition.tip     { border-color: #00b0ff; }
+.md-typeset .admonition.warning { border-color: #ff9100; }
+.md-typeset .admonition.danger  { border-color: #ff5252; }
+
+/* Hide H1 (hero owns the title) */
+.md-typeset h1:first-of-type {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative; padding: 5rem 1.5rem 4rem;
+  margin: -1.5rem -0.8rem 3rem; text-align: center;
+  border-radius: 1.25rem; overflow: hidden; isolation: isolate;
+  background:
+    radial-gradient(60% 80% at 15% 15%, rgba(94,53,177,0.22), transparent 60%),
+    radial-gradient(50% 70% at 85% 80%, rgba(255,109,0,0.20), transparent 60%),
+    radial-gradient(40% 60% at 50% 50%, rgba(126,87,194,0.10), transparent 70%),
+    var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(94,53,177,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94,53,177,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+  pointer-events: none;
+}
+[data-md-color-scheme="slate"] .hero::before {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+}
+.hero-eyebrow {
+  display: inline-block; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--md-primary-fg-color);
+  background: rgba(94,53,177,0.1); border: 1px solid rgba(94,53,177,0.25); border-radius: 2rem;
+}
+[data-md-color-scheme="slate"] .hero-eyebrow {
+  color: var(--md-primary-fg-color--light);
+  background: rgba(126,87,194,0.18); border-color: rgba(126,87,194,0.4);
+}
+.hero .hero-title {
+  font-size: 3.2rem; line-height: 1.08; font-weight: 900;
+  margin: 0 auto 1.25rem; max-width: 22ch; letter-spacing: -0.03em;
+}
+.hero .hero-title strong {
+  background: var(--aldc-gradient);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent; font-weight: 900;
+}
+.hero .hero-tagline {
+  font-size: 1.15rem; color: var(--md-default-fg-color--light);
+  max-width: 58ch; margin: 0 auto 2.25rem; line-height: 1.6;
+}
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+.hero .md-button { font-weight: 700; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.hero .md-button:hover { transform: translateY(-2px); }
+.hero .md-button--primary:hover { box-shadow: 0 10px 25px rgba(94,53,177,0.35); }
+.hero-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 2.5rem; }
+.hero-pills .pill {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600;
+  color: var(--md-default-fg-color--light); background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest); border-radius: 2rem;
+}
+.hero-pills .pill b { font-weight: 800; color: var(--md-primary-fg-color); font-size: 0.9rem; }
+.hero-pills .pill--accent { color: white; background: var(--aldc-gradient); border: none; }
+.hero-pills .pill--accent b { color: white; }
+
+/* ── Section titles ── */
+.md-typeset h2.section-title {
+  font-size: 2rem; font-weight: 800; margin-top: 4rem; margin-bottom: 1.75rem;
+  position: relative; padding-left: 1rem; letter-spacing: -0.02em;
+}
+.md-typeset h2.section-title::before {
+  content: ""; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+  width: 0.3rem; border-radius: 0.3rem; background: var(--aldc-gradient);
+}
+.section-lead {
+  max-width: 60ch; margin: -0.35rem 0 1.5rem; font-size: 1.02rem;
+  line-height: 1.7; color: var(--md-default-fg-color--light);
+}
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0 0; }
+.cta-row .md-button { margin: 0; }
+
+/* ── Page intro panel ── */
+.page-intro, .note-panel {
+  padding: 1.2rem 1.35rem; border-radius: var(--aldc-radius);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+.page-intro { margin: 1.5rem 0 2rem; background: var(--aldc-gradient-soft); }
+.page-intro p, .note-panel p { margin: 0 !important; color: var(--md-default-fg-color--light); line-height: 1.65; }
+.page-intro strong, .note-panel strong { color: var(--md-default-fg-color); }
+.note-panel { margin-top: 1.25rem; background: rgba(94,53,177,0.06); }
+[data-md-color-scheme="slate"] .note-panel { background: rgba(126,87,194,0.12); }
+
+/* ── Two-column layout ── */
+.two-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: start; margin: 2rem 0 3rem; }
+.two-col-text { font-size: 1.02rem; line-height: 1.7; }
+.two-col-text p:first-child { font-size: 1.2rem; font-weight: 500; color: var(--md-default-fg-color); }
+.two-col-visual {
+  padding: 1.25rem; border-radius: var(--aldc-radius);
+  background: var(--aldc-gradient-soft); border: 1px solid var(--md-default-fg-color--lightest);
+}
+.two-col-visual .mermaid { margin: 0 !important; background: transparent !important; }
+@media (max-width: 60em) { .two-col { grid-template-columns: 1fr; gap: 1.5rem; } }
+
+/* ── Grid cards (Material built-in, nicer hover) ── */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > :not(ul) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  border-radius: var(--aldc-radius);
+}
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > :not(ul):hover {
+  transform: translateY(-4px); box-shadow: var(--aldc-shadow-hover);
+  border-color: var(--md-primary-fg-color--light);
+}
+
+/* ── Resource grid ── */
+.resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1rem; margin: 2rem 0 3rem; }
+.resource-card {
+  position: relative; display: block; padding: 1.5rem; border-radius: var(--aldc-radius);
+  background: var(--md-default-bg-color); border: 1px solid var(--md-default-fg-color--lightest);
+  text-decoration: none !important; color: inherit !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; overflow: hidden;
+}
+.resource-card::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+  background: var(--aldc-gradient); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+}
+.resource-card:hover { transform: translateY(-4px); border-color: var(--md-primary-fg-color--light); box-shadow: var(--aldc-shadow-hover); }
+.resource-card:hover::before { transform: scaleX(1); }
+.resource-card .resource-kicker {
+  display: inline-flex; margin-bottom: 0.9rem; padding: 0.3rem 0.6rem; border-radius: 999px;
+  background: var(--aldc-gradient-soft); color: var(--md-primary-fg-color);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.resource-card h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 0.4rem !important; color: var(--md-default-fg-color); }
+.resource-card p { font-size: 0.87rem; color: var(--md-default-fg-color--light); line-height: 1.55; margin: 0 !important; }
+.resource-card .resource-arrow {
+  position: absolute; right: 1.25rem; bottom: 1.25rem; font-size: 1.2rem;
+  color: var(--md-primary-fg-color); opacity: 0; transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.resource-card:hover .resource-arrow { opacity: 1; transform: translateX(0); }
+
+/* ── Timeline ── */
+.timeline { position: relative; margin: 2rem 0 3rem; padding-left: 2rem; }
+.timeline::before {
+  content: ""; position: absolute; left: 0.5rem; top: 0.5rem; bottom: 0.5rem;
+  width: 2px; background: linear-gradient(180deg, var(--md-primary-fg-color) 0%, var(--aldc-accent) 100%); border-radius: 2px;
+}
+.timeline-item {
+  position: relative; padding: 1.5rem 1.5rem 1.5rem 2rem; margin-bottom: 1.25rem;
+  border-radius: var(--aldc-radius); background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest); transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.timeline-item::before {
+  content: ""; position: absolute; left: -2.05rem; top: 2rem; width: 1rem; height: 1rem;
+  background: var(--md-default-bg-color); border: 3px solid var(--md-primary-fg-color);
+  border-radius: 50%; box-shadow: 0 0 0 4px var(--md-default-bg-color);
+}
+.timeline-item:hover { transform: translateX(4px); border-color: var(--md-primary-fg-color--light); }
+.timeline-item--upcoming::before { border-color: var(--aldc-accent); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--md-default-bg-color), 0 0 0 4px rgba(255,109,0,0); }
+  50%      { box-shadow: 0 0 0 4px var(--md-default-bg-color), 0 0 0 8px rgba(255,109,0,0.3); }
+}
+.timeline-date {
+  display: inline-block; padding: 0.2rem 0.65rem; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--md-primary-fg-color);
+  background: rgba(94,53,177,0.1); border-radius: 1rem; margin-bottom: 0.75rem;
+}
+.timeline-item--upcoming .timeline-date { color: var(--aldc-accent); background: rgba(255,109,0,0.12); }
+.timeline-kind { font-size: 0.85rem; font-weight: 600; color: var(--md-default-fg-color--light); margin-bottom: 0.3rem; display: flex; align-items: center; }
+.timeline-body h3 { font-size: 1.15rem; font-weight: 700; margin: 0.2rem 0 0.5rem !important; }
+.timeline-body p { color: var(--md-default-fg-color--light); line-height: 1.55; margin: 0 0 0.75rem !important; }
+.timeline-body a { font-weight: 600; color: var(--md-primary-fg-color); }
+
+/* ── Collab grid ── */
+.collab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.25rem; margin: 2rem 0 3rem; }
+.collab-card {
+  position: relative; padding: 1.75rem; padding-top: 3.5rem; border-radius: var(--aldc-radius);
+  background: var(--md-default-bg-color); border: 1px solid var(--md-default-fg-color--lightest);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; overflow: hidden;
+}
+.collab-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--aldc-gradient); opacity: 0.5; transition: opacity 0.3s ease;
+}
+.collab-card:hover { transform: translateY(-3px); border-color: var(--md-primary-fg-color--light); box-shadow: var(--aldc-shadow-hover); }
+.collab-card:hover::before { opacity: 1; }
+.collab-num {
+  position: absolute; top: 1rem; right: 1.25rem; font-size: 2.5rem; font-weight: 900;
+  line-height: 1; letter-spacing: -0.05em; background: var(--aldc-gradient);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent; opacity: 0.35; transition: opacity 0.2s ease;
+}
+.collab-card:hover .collab-num { opacity: 1; }
+.collab-card h3 { font-size: 1.15rem; font-weight: 700; margin: 0 0 0.65rem !important; }
+.collab-card p { font-size: 0.92rem; color: var(--md-default-fg-color--light); line-height: 1.6; margin: 0 0 1rem !important; }
+.collab-card a { display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 600; color: var(--md-primary-fg-color); text-decoration: none; transition: gap 0.2s ease; }
+.collab-card a:hover { gap: 0.5rem; }
+
+/* ── Footer CTA ── */
+.footer-cta {
+  position: relative; text-align: center; padding: 4rem 1.5rem;
+  margin: 4rem -0.8rem 1.5rem; border-radius: 1.25rem; overflow: hidden; isolation: isolate;
+  background:
+    radial-gradient(60% 80% at 20% 80%, rgba(94,53,177,0.18), transparent 60%),
+    radial-gradient(50% 70% at 80% 20%, rgba(255,109,0,0.15), transparent 60%),
+    var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+.footer-cta::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(94,53,177,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94,53,177,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black, transparent 75%);
+}
+.footer-cta .footer-cta-title {
+  font-size: 2rem; font-weight: 800; margin-bottom: 2rem !important; letter-spacing: -0.02em;
+  background: var(--aldc-gradient); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.footer-cta .md-button { font-weight: 700; }
+
+/* ── Technical cards (agent-card) ── */
+.agent-card {
+  background: var(--aldc-gradient-soft);
+  border-left: 4px solid var(--md-primary-fg-color);
+  border-radius: var(--aldc-radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+}
+.agent-card table { margin: 0 !important; }
+.agent-card th { display: none; }
+.agent-card td { padding: 0.25rem 0.75rem 0.25rem 0 !important; border: none !important; font-size: 0.9rem; }
+.agent-card td:first-child { white-space: nowrap; font-weight: 600; color: var(--md-primary-fg-color); }
+
+/* ── Responsive ── */
+@media (max-width: 48em) {
+  .hero .hero-title { font-size: 2rem; }
+  .hero { padding: 3rem 1rem 2.5rem; }
+  .resource-grid { grid-template-columns: 1fr; }
+  .timeline { padding-left: 1.5rem; }
+  .timeline-item { padding: 1.25rem 1rem 1.25rem 1.25rem; }
+  .collab-card { padding: 1.5rem; padding-top: 3rem; }
+  .collab-num { font-size: 2rem; }
+}
+```
+
+---
+
+## Checklist After Generation
+
+- [ ] Replace all `{{PLACEHOLDERS}}` with your values
+- [ ] Add `docs/assets/images/logo.png` and `docs/assets/images/favicon.png`
+- [ ] Create `CONTRIBUTING.md` and `CHANGELOG.md` at repo root
+- [ ] Run `pip install -r requirements.txt`
+- [ ] Run `python -m mkdocs serve` to preview locally
+- [ ] Verify dark mode toggle works
+- [ ] Verify Mermaid diagrams render
+- [ ] Deploy with `python -m mkdocs gh-deploy --force`
+- [ ] Enable GitHub Pages on the `gh-pages` branch in repo Settings
