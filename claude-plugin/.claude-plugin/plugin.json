@@ -42,10 +42,14 @@
   },
   "userConfig": {
     "bcSandboxUrl": {
+      "type": "string",
+      "title": "BC Sandbox URL",
       "description": "URL of your Business Central sandbox environment (e.g., https://businesscentral.dynamics.com/your-tenant)",
       "sensitive": false
     },
     "publisherName": {
+      "type": "string",
+      "title": "Publisher Name",
       "description": "Your extension publisher name for app.json",
       "sensitive": false
     }
