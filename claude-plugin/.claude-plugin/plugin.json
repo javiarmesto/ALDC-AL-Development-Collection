@@ -23,7 +23,6 @@
     "API",
     "debugging"
   ],
-  "hooks": "./hooks/hooks.json",
   "mcpServers": {
     "al-symbols-mcp": {
       "type": "stdio",
