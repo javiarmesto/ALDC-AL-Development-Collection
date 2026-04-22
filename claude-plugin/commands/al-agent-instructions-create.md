@@ -1,11 +1,9 @@
 ---
-name: al-agent-instructions-create
 description: >
   Generate optimized natural language instructions for Business Central agents
   (Designer or SDK). Follows Responsibilities-Guidelines-Instructions framework.
   Use when writing agent instructions or creating InstructionsV1.txt.
-allowed-tools: Read Grep Glob Write Edit
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit
 ---
 
 # Workflow: Generate Agent Instructions

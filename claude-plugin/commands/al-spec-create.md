@@ -1,12 +1,10 @@
 ---
-name: al-spec-create
 description: >
   Create a detailed technical specification (.spec.md) that serves as an implementable
   blueprint for Business Central features. Use when you need to create a spec, write
   a specification, or detail a requirement. Reads architecture.md if exists.
   Outputs to .github/plans/{req_name}/.
-allowed-tools: Read Grep Glob Write Edit Bash WebSearch
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch
 ---
 
 # AL Technical Specification Workflow

@@ -1,5 +1,5 @@
 ---
-name: AL Architecture & Design Specialist
+name: al-architect
 description: >
   AL Architecture and Design assistant for Business Central extensions.
   Focuses on solution architecture, design patterns, and strategic technical
@@ -10,7 +10,6 @@ tools: Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch
 model: sonnet
 color: blue
 maxTurns: 50
----
 ---
 
 # AL Architect Mode - Architecture & Design Assistant

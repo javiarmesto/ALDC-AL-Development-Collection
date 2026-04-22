@@ -1,11 +1,9 @@
 ---
-name: al-memory-create
 description: >
   Generate or update memory.md file tracking decisions, changes, and learnings
   throughout project development for continuity across sessions. Use when you need
   to create or update memory, track decisions, or maintain session continuity.
-allowed-tools: Read Grep Glob Write Edit
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit
 ---
 
 # AL Memory File Generator

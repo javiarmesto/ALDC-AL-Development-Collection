@@ -1,5 +1,5 @@
 ---
-name: AL Development Conductor
+name: al-conductor
 description: >
   Orchestrates Planning, Implementation, Review, and Commit cycle for AL Development.
   Enforces TDD and quality gates for Business Central extensions. Use when you need

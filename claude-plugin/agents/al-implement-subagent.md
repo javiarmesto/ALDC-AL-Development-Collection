@@ -1,5 +1,5 @@
 ---
-name: AL Implementation Subagent
+name: al-implement-subagent
 description: >
   Internal TDD implementation subagent. Only invoked by al-conductor via Task tool.
   Executes RED-GREEN-REFACTOR cycle: writes tests FIRST, then minimal code to pass,

@@ -1,11 +1,9 @@
 ---
-name: al-pr-prepare
 description: >
   Prepare a clean, documented pull request draft for AL features or fixes with
   summary, testing notes, and checklist. Use when preparing a PR, creating a
   pull request, or documenting changes for review.
-allowed-tools: Read Grep Glob Write Edit Bash
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 # AL Pull Request Preparation

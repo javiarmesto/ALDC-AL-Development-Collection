@@ -1,7 +1,6 @@
 ---
 name: skill-agent-task-patterns
 description: "Agent SDK task integration patterns for Business Central. Triggers on: Agent Task Builder, Agent Task Message Builder, Public API, AssignTask, ExternalId, agent session detection, BindSubscription, TryFunction agent task, multi-turn agent conversation, agent attachment, or task lifecycle management."
-argument-hint: "Describe the task integration pattern you need (Public API, page action, business event, multi-turn, etc.)"
 ---
 
 # BC Agent Task Integration Patterns

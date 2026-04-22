@@ -6,15 +6,31 @@ AI-Native Development toolkit for Microsoft Dynamics 365 Business Central.
 
 ### From Plugin Marketplace (recommended)
 
+Add the marketplace, then install the plugin:
+
 ```
-/plugin install aldc
+/plugin marketplace add javiarmesto/ALDC-AL-Development-Collection
+/plugin install aldc@aldc-marketplace
 ```
 
-### Local Development
+### Local Development / Testing
 
-```bash
-claude --plugin-dir ./claude-plugin
+From the cloned repo, register this directory as a local marketplace and install:
+
 ```
+/plugin marketplace add ./claude-plugin
+/plugin install aldc@aldc-marketplace
+```
+
+Verify registration:
+
+```
+/plugin
+/agents
+/
+```
+
+You should see 5 user-facing agents (`al-architect`, `al-conductor`, `al-developer`, `al-presales`, `al-agent-builder`) and 10 slash commands prefixed with `/aldc:`.
 
 ## First-Time Setup
 
@@ -51,7 +67,9 @@ Full TDD cycle?             -> aldc:al-conductor
 Project estimation?         -> aldc:al-presales
 ```
 
-## Workflows (Skills)
+## Workflows (Slash Commands)
+
+Invoked explicitly from the chat input. Implemented as plugin slash commands under `commands/`.
 
 | Workflow | Command | Purpose |
 |----------|---------|---------|
@@ -61,6 +79,10 @@ Project estimation?         -> aldc:al-presales
 | Memory Create | `/aldc:al-memory-create` | Generate session continuity memory |
 | Context Create | `/aldc:al-context-create` | Generate project context for AI |
 | Initialize | `/aldc:al-initialize` | Full environment and workspace setup |
+| Agent Create | `/aldc:al-agent-create` | Create a coded BC agent (Agent SDK) |
+| Agent Task | `/aldc:al-agent-task` | Generate agent task integration code |
+| Agent Test | `/aldc:al-agent-test` | Generate test codeunits for agents |
+| Agent Instructions | `/aldc:al-agent-instructions-create` | Generate agent NL instructions |
 
 ## Knowledge Skills
 
@@ -93,6 +115,23 @@ Loaded automatically by agents when needed:
 - **al-symbols-mcp** — AL symbol resolution and navigation
 - **context7** — Library documentation lookup
 - **microsoft-docs** — Microsoft Learn documentation search
+
+## Plugin Structure
+
+```
+claude-plugin/
+├── .claude-plugin/
+│   ├── plugin.json        # Plugin manifest (name, version, MCP servers, hooks ref)
+│   └── marketplace.json   # Marketplace entry (for local / remote distribution)
+├── agents/                # 5 user-facing agents + 3 internal subagents (TDD)
+├── commands/              # 10 slash commands (/aldc:*)
+├── skills/                # 15 knowledge skills (auto-loaded by agents)
+├── rules-templates/       # AL coding rules copied by /aldc:al-initialize
+├── hooks/hooks.json       # PostToolUse + Stop reminders
+├── .mcp.json              # MCP server config (al-symbols, context7, microsoft-docs)
+├── CLAUDE.md              # Plugin-level guidance loaded by Claude Code
+└── README.md              # This file
+```
 
 ## Requirements
 

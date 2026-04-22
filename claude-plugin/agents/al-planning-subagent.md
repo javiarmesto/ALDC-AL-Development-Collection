@@ -1,5 +1,5 @@
 ---
-name: AL Planning Subagent
+name: al-planning-subagent
 description: >
   Internal AL-aware research and context gathering subagent for Business Central
   development. Only invoked by al-conductor via Task tool. Returns structured

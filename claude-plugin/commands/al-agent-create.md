@@ -1,11 +1,9 @@
 ---
-name: al-agent-create
 description: >
   End-to-end workflow to create a coded Business Central agent using the Agent SDK.
   Follows the official Agent Template project structure. Generates all required
   objects with correct interface signatures. Use when creating a new BC agent.
-allowed-tools: Read Grep Glob Write Edit Bash
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 # Workflow: Create Coded Agent (Agent SDK)

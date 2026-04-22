@@ -1,10 +1,8 @@
 ---
-name: al-build
 description: >
   Build, package, and deploy AL extensions to Business Central environments.
   Use when you need to build, compile, package, publish, or deploy an AL extension.
-allowed-tools: Read Grep Glob Write Edit Bash
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 # Build and Deploy AL Extension

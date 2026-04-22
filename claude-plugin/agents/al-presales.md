@@ -1,5 +1,5 @@
 ---
-name: AL Pre-Sales & Project Estimation Specialist
+name: al-presales
 description: >
   Technical PreSales Agent for AL/Business Central projects. Specializes in
   project planning, cost estimation (time and budget), feasibility analysis,

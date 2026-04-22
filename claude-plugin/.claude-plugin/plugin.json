@@ -26,14 +26,16 @@
   "hooks": "./hooks/hooks.json",
   "mcpServers": {
     "al-symbols-mcp": {
+      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@nicholasglazer/al-symbols-mcp"]
     },
     "context7": {
-      "command": "npx",
-      "args": ["-y", "@anthropic-ai/context7-mcp"]
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
     },
     "microsoft-docs": {
+      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@nicholasglazer/microsoft-docs-mcp"]
     }

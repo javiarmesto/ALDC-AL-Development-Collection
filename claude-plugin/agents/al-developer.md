@@ -1,5 +1,5 @@
 ---
-name: AL Implementation Specialist
+name: al-developer
 description: >
   Tactical implementation specialist for Business Central extensions.
   Focuses on code execution with full access to build/edit/test tools.

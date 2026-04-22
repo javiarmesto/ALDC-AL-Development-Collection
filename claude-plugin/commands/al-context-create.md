@@ -1,11 +1,9 @@
 ---
-name: al-context-create
 description: >
   Generate or update context.md file documenting project structure, architecture,
   and key patterns for AI assistants and developers. Use when you need to create
   project context documentation or update the context file.
-allowed-tools: Read Grep Glob Write Edit Bash
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 # AL Context File Generator
