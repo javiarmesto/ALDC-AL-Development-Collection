@@ -330,7 +330,7 @@ page {ID} "{Prefix} {Entity} API"
 
 ### Quality
 - [ ] Unit tests cover all main scenarios (Given/When/Then defined above)
-- [ ] Code review passed by @AL Code Review Subagent
+- [ ] Code review passed by @al-review-subagent
 - [ ] Translation keys defined for all new Captions
 
 ---
@@ -377,8 +377,8 @@ page {ID} "{Prefix} {Entity} API"
 
 | Complexity | Handoff to | Purpose |
 |-----------|-----------|---------|
-| MEDIUM / HIGH | `agent `al-conductor`` | TDD-orchestrated implementation (planning → implementation → review) |
-| LOW | `agent `al-developer`` | Direct implementation using this spec as blueprint |
+| MEDIUM / HIGH | `agent al-conductor` | TDD-orchestrated implementation (planning → implementation → review) |
+| LOW | `agent al-developer` | Direct implementation using this spec as blueprint |
 
 ## Success Criteria
 

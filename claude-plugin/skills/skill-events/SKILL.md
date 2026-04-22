@@ -243,7 +243,7 @@ codeunit 50102 "Customer Validation Handler"
 
 ## Constraints
 
-- This skill covers **event discovery, design, and implementation patterns** — it does NOT duplicate the passive rules in `al-events.instructions.md` (auto-applied to all `.al` files)
+- This skill covers **event discovery, design, and implementation patterns** — it does NOT duplicate the passive rules in `al-events.md` (auto-applied to all `.al` files)
 - Do NOT create publishers without an `OnBefore` + `OnAfter` pair at minimum
 - Do NOT use `Commit` inside event subscribers unless absolutely required
 - Do NOT set `IsHandled = true` without clear documentation of why default logic is skipped
