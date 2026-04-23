@@ -1,11 +1,9 @@
 ---
-name: al-agent-task
 description: >
   Generate AL code for Business Central Agent SDK task integration. Applies patterns
   from skill-agent-task-patterns to generate production-ready codeunits, page
   extensions, and event subscribers. Use when implementing agent task integrations.
-allowed-tools: Read Grep Glob Write Edit Bash
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 # Workflow: Generate Agent Task Integration Code

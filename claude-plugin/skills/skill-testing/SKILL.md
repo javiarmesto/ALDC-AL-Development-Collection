@@ -438,7 +438,7 @@ end;
 
 ## Constraints
 
-- This skill covers **active test design, patterns, and TDD integration** — it does NOT duplicate passive rules in `al-testing.instructions.md` (auto-applied to `**/test/**/*.al`)
+- This skill covers **active test design, patterns, and TDD integration** — it does NOT duplicate passive rules in `al-testing.md` (auto-applied to `**/test/**/*.al`)
 - Tests MUST live in the Test project, NEVER in the App folder (per AL-Go structure)
 - Do NOT generate tests without explicit user request
 - Do NOT create interdependent tests that rely on execution order

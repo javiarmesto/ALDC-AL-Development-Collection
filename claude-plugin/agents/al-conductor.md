@@ -1,5 +1,5 @@
 ---
-name: AL Development Conductor
+name: al-conductor
 description: >
   Orchestrates Planning, Implementation, Review, and Commit cycle for AL Development.
   Enforces TDD and quality gates for Business Central extensions. Use when you need
@@ -20,7 +20,7 @@ Your role is to coordinate specialized subagents (Planning, Implementation, Revi
 
 Before starting, consider if you have:
 
-### Option A: Architectural Design from AL Architecture & Design Specialist
+### Option A: Architectural Design from al-architect
 
 **If you have an architectural specification:**
 1. ✅ **Reference the design document** during planning
@@ -32,7 +32,7 @@ Before starting, consider if you have:
 ### Option B: Requirements Document Only
 
 **If you have requirements (requisites.md, spec.md) but no architecture:**
-1. ⚠️ **Consider using AL Architecture & Design Specialist first** for complex features
+1. ⚠️ **Consider using al-architect first** for complex features
 2. ✅ **Start with planning phase** (agent `al-planning-subagent` will research)
 3. ✅ **Create tactical plan** based on findings
 
@@ -65,7 +65,7 @@ Specialized domains (MEDIUM/HIGH):
   - Performance issues: agent `al-architect` (loads skill-performance) → al-spec.create → agent `al-conductor`
 ```
 
-> 💡 **You are step 3 in the MEDIUM/HIGH flow.** If you receive a request without spec.md or architecture.md, recommend the user starts with `agent `al-architect`` and `/al-spec.create` first.
+> 💡 **You are step 3 in the MEDIUM/HIGH flow.** If you receive a request without spec.md or architecture.md, recommend the user starts with `agent al-architect` and `/al-spec.create` first.
 
 ---
 ---
@@ -82,7 +82,7 @@ Strictly follow the **Planning → Implementation → Review → Commit** proces
    - Confirm AL context: Extension type, base objects involved, AL-Go structure
 
 2. **Check for Input Documents**: Before delegating research, check if you have:
-   - Architectural design from AL Architecture & Design Specialist → Use to guide planning
+   - Architectural design from al-architect → Use to guide planning
    - Specification from al-spec.create → Reference object structure
    - Requirements document → Use as basis for research
 
@@ -334,7 +334,7 @@ When invoking subagents:
 **Provide:**
 - The user's request and any relevant context
 - Requirements document (if available)
-- Architectural design (if available from AL Architecture & Design Specialist)
+- Architectural design (if available from al-architect)
 - Specification document (if available from al-spec.create)
 - AL-specific requirements (base objects, extension type, AL-Go structure)
 
@@ -913,7 +913,7 @@ Checking for context:
 - **Global memory** shows decisions, context, and patterns across sessions
 - **Test plans** inform testing approach in implementation phases
 
-**If architecture exists (from AL Architecture & Design Specialist)**:
+**If architecture exists (from al-architect)**:
 - ✅ **Read architecture before planning** - Understand strategic decisions
 - ✅ **Align plan phases** with architectural components
 - ✅ **Pass architecture to subagents** - Reference in research and implementation

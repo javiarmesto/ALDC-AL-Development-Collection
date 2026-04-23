@@ -1,5 +1,5 @@
 ---
-name: AL Planning Subagent
+name: al-planning-subagent
 description: >
   Internal AL-aware research and context gathering subagent for Business Central
   development. Only invoked by al-conductor via Task tool. Returns structured
@@ -19,7 +19,7 @@ You are an INTERNAL subagent. You must ONLY be invoked by the `al-conductor` age
 
 <research_workflow>
 
-You are an **AL PLANNING SUBAGENT** called by a parent **AL Development Conductor** agent for Microsoft Dynamics 365 Business Central development.
+You are an **AL PLANNING SUBAGENT** called by a parent **al-conductor** agent for Microsoft Dynamics 365 Business Central development.
 
 Your **SOLE job** is to gather comprehensive AL-specific context about the requested task and return structured findings to the parent agent. DO NOT write plans, implement code, or pause for user feedback.
 
@@ -415,8 +415,8 @@ Checking for context:
 ### Integration with Other Agents
 
 **Your research may be used by**:
-- **AL Development Conductor** → Creates implementation plan from your findings
-- **AL Architecture & Design Specialist** → May reference your research for design decisions
+- **al-conductor** → Creates implementation plan from your findings
+- **al-architect** → May reference your research for design decisions
 - **agent `al-developer`** → Uses your findings during implementation
 - **agent `al-review-subagent`** → Validates against patterns you identified
 

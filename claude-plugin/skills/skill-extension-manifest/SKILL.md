@@ -1,3 +1,11 @@
+---
+name: skill-extension-manifest
+description: >
+  Generates a handoff manifest at the end of the ALDC pipeline, enabling CIRCE
+  and/or DELFOS to consume the extension's published surface without sharing a
+  workspace. Activates after the Conductor pipeline completes successfully.
+---
+
 # Skill: Extension Manifest Generator
 
 > Generates a handoff manifest at the end of the ALDC pipeline, enabling CIRCE and/or DELFOS to consume the extension's published surface without sharing a workspace.

@@ -1,12 +1,10 @@
 ---
-name: al-spec-create
 description: >
   Create a detailed technical specification (.spec.md) that serves as an implementable
   blueprint for Business Central features. Use when you need to create a spec, write
   a specification, or detail a requirement. Reads architecture.md if exists.
   Outputs to .github/plans/{req_name}/.
-allowed-tools: Read Grep Glob Write Edit Bash WebSearch
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch
 ---
 
 # AL Technical Specification Workflow
@@ -332,7 +330,7 @@ page {ID} "{Prefix} {Entity} API"
 
 ### Quality
 - [ ] Unit tests cover all main scenarios (Given/When/Then defined above)
-- [ ] Code review passed by @AL Code Review Subagent
+- [ ] Code review passed by @al-review-subagent
 - [ ] Translation keys defined for all new Captions
 
 ---
@@ -379,8 +377,8 @@ page {ID} "{Prefix} {Entity} API"
 
 | Complexity | Handoff to | Purpose |
 |-----------|-----------|---------|
-| MEDIUM / HIGH | `agent `al-conductor`` | TDD-orchestrated implementation (planning → implementation → review) |
-| LOW | `agent `al-developer`` | Direct implementation using this spec as blueprint |
+| MEDIUM / HIGH | `agent al-conductor` | TDD-orchestrated implementation (planning → implementation → review) |
+| LOW | `agent al-developer` | Direct implementation using this spec as blueprint |
 
 ## Success Criteria
 

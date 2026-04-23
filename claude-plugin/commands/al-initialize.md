@@ -1,11 +1,9 @@
 ---
-name: al-initialize
 description: >
   Initialize AL development environment and workspace for Business Central.
   Use when setting up a new project, initializing the workspace, or configuring
   the development environment.
-allowed-tools: Read Grep Glob Write Edit Bash WebSearch
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch
 ---
 
 # AL Environment Initialization

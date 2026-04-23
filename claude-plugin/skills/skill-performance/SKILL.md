@@ -330,7 +330,7 @@ For significant optimizations, create a triage report at `.github/plans/perf-tri
 
 ## Constraints
 
-- This skill covers **analysis and fix patterns** — it does NOT duplicate the passive rules in `al-performance.instructions.md` (auto-applied to all `.al` files)
+- This skill covers **analysis and fix patterns** — it does NOT duplicate the passive rules in `al-performance.md` (auto-applied to all `.al` files)
 - Do **NOT** modify source code automatically during triage — generate report and get approval first
 - Do **NOT** clear profile codelenses without human confirmation
 - Do **NOT** save triage report without human gate review

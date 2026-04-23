@@ -1,11 +1,9 @@
 ---
-name: al-agent-test
 description: >
   Generate comprehensive test codeunits for Business Central Agent SDK integrations.
   Covers 6 categories with correct interface signatures. Use when creating tests
   for BC agents or agent SDK code.
-allowed-tools: Read Grep Glob Write Edit Bash
-disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 # Workflow: Test Agent SDK Integration

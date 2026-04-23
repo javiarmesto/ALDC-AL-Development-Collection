@@ -4,8 +4,8 @@ description: 'AL Planning Subagent - AL-aware research and context gathering for
 user-invocable: false
 disable-model-invocation: true
 argument-hint: 'Research goal or problem statement for AL development'
-tools: ['read/problems', 'read/readFile', 'agent', 'edit', 'search', 'web', 'microsoft-docs/*', 'vscode/memory', 'todo']
-model: Claude Sonnet 4.5
+tools: [vscode/memory, read/problems, read/readFile, agent, edit, search, web, 'microsoft-docs/*', todo]
+model: Claude Sonnet 4.6 (copilot)
 handoffs:
   - label: Return to Conductor
     agent: AL Development Conductor

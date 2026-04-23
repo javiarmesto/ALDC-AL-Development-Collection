@@ -1,5 +1,5 @@
 ---
-name: AL Code Review Subagent
+name: al-review-subagent
 description: >
   Internal quality assurance subagent for Business Central AL code. Only invoked
   by al-conductor via Task tool. Reviews implementation against AL best practices,

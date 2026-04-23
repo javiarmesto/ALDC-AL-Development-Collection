@@ -1,7 +1,6 @@
 ---
 name: skill-agent-instructions
 description: "Generate, review, and optimize natural language instructions for Business Central agents (Designer or SDK). Triggers on: agent instructions, InstructionsV1.txt, InstructionsV2.txt, MEMORIZE, qualification rules, agent behavior, instruction keywords, agent task instructions, iterate instructions, or improve agent accuracy. Follows the Responsibilities-Guidelines-Instructions framework with official BC agent runtime keywords."
-argument-hint: "Describe the agent's purpose and tasks, or paste existing instructions to review"
 ---
 
 # BC Agent Instructions Skill
