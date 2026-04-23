@@ -2,8 +2,8 @@
 name: AL Implementation Specialist
 description: 'AL Developer - Tactical implementation specialist for Business Central extensions. Focuses on code execution with full access to build/edit/test tools. Implements features following specifications without architectural decisions.'
 argument-hint: 'Implementation task, bug fix, or feature to code (e.g., "Add email validation field to Customer table")'
-tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'github/*', 'microsoft-docs/*', 'upstash/context7/*', 'vscode/memory', 'todo']
-model: Claude Sonnet 4.5
+tools: [vscode, execute, read, agent, edit, search, web, 'github/*', 'github/*', 'github/*', 'microsoft-docs/*', 'upstash/context7/*', 'al-symbols-mcp/*', ms-dynamics-smb.al/al_build, ms-dynamics-smb.al/al_debug, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_publish, ms-dynamics-smb.al/al_setbreakpoint, ms-dynamics-smb.al/al_snapshotdebugging, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_get_diagnostics, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol, todo]
+model: Claude Sonnet 4.6 (copilot)
 handoffs:
   - label: Request Architecture Design
     agent: AL Architecture & Design Specialist

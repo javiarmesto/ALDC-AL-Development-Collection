@@ -3,8 +3,8 @@ name: AL Implementation Subagent
 description: 'TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via runSubagent.'
 user-invocable: false
 disable-model-invocation: true
-tools: [read/readFile, read/problems, edit/createFile, edit/editFiles, edit/createDirectory, search/codebase, search/fileSearch, search/textSearch, execute/runInTerminal, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch]
-model: Claude Sonnet 4.5
+tools: [execute/runInTerminal, read/problems, read/readFile, edit/createDirectory, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, 'microsoft-docs/*', 'microsoftdocs/mcp/*', ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol]
+model: Claude Sonnet 4.6 (copilot)
 ---
 
 # AL Implementation Subagent — TDD-Only Implementation

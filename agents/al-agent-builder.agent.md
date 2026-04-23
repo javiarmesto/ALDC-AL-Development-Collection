@@ -1,8 +1,9 @@
 ---
 name: "AL Agent Builder"
-tools: ["read", "agent", "edit/editFiles", "search/codebase", "vscode/memory", "todo"]
+tools: [vscode/memory, vscode/askQuestions, read, agent, edit/editFiles, search/codebase, 'microsoftdocs/mcp/*', 'upstash/context7/*', ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol, todo]
 description: "Agent Toolkit Builder — specialist in designing and coding Business Central agents using the AI Development Toolkit and Agent SDK. Follows the official Agent Template project structure. Handles both Designer (no-code) and SDK (pro-code) paths."
 user-invocable: true
+model: Claude Opus 4.7 (copilot)
 ---
 
 # Agent: AL Agent Builder

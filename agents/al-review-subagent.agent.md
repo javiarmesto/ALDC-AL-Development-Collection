@@ -4,8 +4,8 @@ description: 'AL Code Review Subagent - Quality assurance for Business Central A
 user-invocable: false
 disable-model-invocation: true
 argument-hint: 'Phase implementation to review with acceptance criteria and AL validation requirements'
-tools: ['search', 'search/usages', 'read/problems', 'search/changes', 'execute/testFailure']
-model: Claude Sonnet 4.5
+tools: [read/problems, read/readFile, search, 'al-symbols-mcp/*', ms-dynamics-smb.al/al_debug, ms-dynamics-smb.al/al_setbreakpoint, ms-dynamics-smb.al/al_snapshotdebugging, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_get_diagnostics, ms-dynamics-smb.al/al_symbolrelations]
+model: Claude Sonnet 4.6 (copilot)
 handoffs:
   - label: Return to Conductor
     agent: AL Development Conductor

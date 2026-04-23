@@ -1,6 +1,6 @@
 ---
 agent: agent
-tools: ["codebase", "editFiles", "runTerminal"]
+tools: [edit/editFiles, search/codebase, 'al-symbols-mcp/*', ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol]
 description: "End-to-end workflow to create a coded Business Central agent using the Agent SDK. Follows the official Agent Template project structure. Generates all required objects with correct interface signatures."
 ---
 
