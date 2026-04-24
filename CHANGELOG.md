@@ -1,5 +1,14 @@
 # ALDC Core Changelog
 
+## [3.2.3] - 2026-04-24
+
+### Updated
+- Agents updated with improved model references and refined LLM prompting strategies
+- Prompts revised for clarity and better GitHub Copilot alignment
+- Tools and workflows enhanced with latest framework improvements
+- New `skill-manifest` skill: Extension Manifest Generator for BC extensions
+- Claude plugin updated: commands, rules, and skills aligned with framework v3.2.3
+
 ## [3.2.0] - 2026-03-06
 
 ### Fixed
