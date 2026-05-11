@@ -8,6 +8,12 @@ hide:
 
 <div class="hero">
 
+<a class="hero-banner" href="https://javiarmesto.github.io/aldc-workshop/en/" target="_blank" rel="noopener">
+  <span class="hero-banner__badge">NEW</span>
+  <span class="hero-banner__text">Public ALDC Workshop is live — hands-on, free, online</span>
+  <span class="hero-banner__arrow">→</span>
+</a>
+
 <div class="hero-eyebrow">AL Development Collection · Spec-driven AI for Business Central</div>
 
 <h2 class="hero-title">Ship Business Central extensions with AI agents that follow your process.</h2>
