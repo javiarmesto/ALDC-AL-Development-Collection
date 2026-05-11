@@ -6,11 +6,11 @@
 >
 > **Now available for both GitHub Copilot and Claude Code.**
 
-[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-purple.svg)](docs/framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-3.2.0-blue)](CHANGELOG.md)
-[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-orange.svg)](claude-plugin/)
-[![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-purple)](https://danielmeppiel.github.io/awesome-ai-native/)
-[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-7a9e00.svg?style=flat-square&labelColor=232529)](docs/framework/ALDC-Core-Spec-v1.1.md)
+[![Version](https://img.shields.io/badge/version-3.2.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-ff631f.svg?style=flat-square&labelColor=232529)](claude-plugin/)
+[![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-7a9e00?style=flat-square&labelColor=232529)](https://danielmeppiel.github.io/awesome-ai-native/)
+[![License](https://img.shields.io/badge/license-MIT-7a9e00?style=flat-square&labelColor=232529)](./LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/AL-Development-Collection-for-GitHub-Copilot)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
 [![GitHub Stars](https://img.shields.io/github/stars/javiarmesto/AL-Development-Collection-for-GitHub-Copilot)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/stargazers)
 

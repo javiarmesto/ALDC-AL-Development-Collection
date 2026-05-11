@@ -101,11 +101,23 @@ flowchart TD
     COND --> DONE[Delivery]
     DEV --> DONE_LOW[Delivery]
 
-    style ARCH fill:#9C27B0,color:#fff
-    style DEV fill:#2196F3,color:#fff
-    style COND fill:#FF9800,color:#fff
-    style COND_A fill:#FF9800,color:#fff
-    style COND_B fill:#FF9800,color:#fff
+    style REQ fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style CLASSIFY fill:#ebffb1,color:#232529,stroke:#ade900
+    style DECOMPOSE fill:#ebffb1,color:#232529,stroke:#ade900
+    style ARCH fill:#ebffb1,color:#232529,stroke:#ade900
+    style DEV fill:#7a9e00,color:#fff
+    style COND fill:#d8723c,color:#fff
+    style COND_A fill:#d8723c,color:#fff
+    style COND_B fill:#d8723c,color:#fff
+    style SPEC_LOW fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style SPEC_A fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style SPEC_B fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style SPEC_SINGLE fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style ARCH_DOC fill:#faf9f7,color:#232529,stroke:#cfcfcf
+    style DONE fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style DONE_A fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style DONE_B fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style DONE_LOW fill:#ffffff,color:#232529,stroke:#cfcfcf
 ```
 
 ---
@@ -155,9 +167,9 @@ flowchart TD
         FINAL_HITL -->|Approved| PLAN_COMPLETE
     end
 
-    style RED fill:#f44336,color:#fff
-    style GREEN fill:#4CAF50,color:#fff
-    style REFACTOR fill:#2196F3,color:#fff
+    style RED fill:#ff631f,color:#fff
+    style GREEN fill:#7a9e00,color:#fff
+    style REFACTOR fill:#7a9e00,color:#fff
 ```
 
 ---
@@ -195,10 +207,10 @@ graph TB
     COND -->|produces| DONE
     ALL_AGENTS["All Agents"] -->|read/update| MEMORY
 
-    style MEMORY fill:#FF9800,color:#fff
-    style ARCH_A fill:#9C27B0,color:#fff
-    style SPEC_A fill:#2196F3,color:#fff
-    style TP_A fill:#2196F3,color:#fff
+    style MEMORY fill:#d8723c,color:#fff
+    style ARCH_A fill:#ebffb1,color:#232529,stroke:#ade900
+    style SPEC_A fill:#7a9e00,color:#fff
+    style TP_A fill:#7a9e00,color:#fff
 ```
 
 ---

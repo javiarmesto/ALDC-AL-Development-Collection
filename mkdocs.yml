@@ -13,28 +13,16 @@ theme:
   name: material
   language: en
   palette:
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: deep purple
-      accent: deep orange
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    # Dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: deep purple
-      accent: deep orange
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-  
+    # Single light palette — Base44 Softly Lit Gradient Canvas
+    - scheme: default
+      primary: custom
+      accent: custom
+
   logo: assets/images/logo.png
   favicon: assets/images/favicon.png
-  
+
   font:
-    text: Space Grotesk
+    text: Inter
     code: JetBrains Mono
   
   features:

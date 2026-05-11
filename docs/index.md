@@ -59,13 +59,13 @@ flowchart TD
     I --> V[Review<br/><small>vs spec</small>]
     V --> M([Merged])
 
-    style R fill:#5E35B1,color:#fff,stroke:none
-    style M fill:#00C853,color:#fff,stroke:none
-    style S fill:#7E57C2,color:#fff,stroke:none
-    style A fill:#7E57C2,color:#fff,stroke:none
-    style T fill:#FF6D00,color:#fff,stroke:none
-    style I fill:#FF6D00,color:#fff,stroke:none
-    style V fill:#FF6D00,color:#fff,stroke:none
+    style R fill:#ebffb1,color:#232529,stroke:#ade900
+    style M fill:#7a9e00,color:#fff,stroke:none
+    style S fill:#ebffb1,color:#232529,stroke:#ade900
+    style A fill:#ebffb1,color:#232529,stroke:#ade900
+    style T fill:#d8723c,color:#fff,stroke:none
+    style I fill:#d8723c,color:#fff,stroke:none
+    style V fill:#d8723c,color:#fff,stroke:none
 ```
 
 </div>

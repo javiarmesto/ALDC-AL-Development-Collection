@@ -17,9 +17,9 @@ graph TB
     Layer3 --> Modular["Modular Loading (applyTo patterns)"]
     Layer3 --> AGENTSMD["AGENTS.md Standard (Universal portability)"]
     
-    style Layer1 fill:#9C27B0
-    style Layer2 fill:#2196F3
-    style Layer3 fill:#4CAF50
+    style Layer1 fill:#ebffb1,color:#232529,stroke:#ade900
+    style Layer2 fill:#7a9e00,color:#fff,stroke:none
+    style Layer3 fill:#d8723c,color:#fff,stroke:none
 ```
 
 ## Layer 1: Markdown Prompt Engineering

@@ -54,12 +54,12 @@ graph TD
     HighCopilot --> HighCond2["Use al-conductor mode"]
     HighStd --> HighCond3["Use al-conductor mode"]
     
-    style Gate fill:#FF6B6B,stroke:#C92A2A,stroke-width:4px,color:#fff
-    style Low fill:#51CF66,stroke:#2F9E44,color:#fff
-    style Med fill:#FFD43B,stroke:#F59F00,color:#000
-    style High fill:#FF8787,stroke:#C92A2A,color:#fff
-    style Analyze fill:#E3FAFC,stroke:#0CA678
-    style Present fill:#FFF4E6,stroke:#FD7E14
+    style Gate fill:#ff631f,stroke:#d8723c,stroke-width:4px,color:#fff
+    style Low fill:#7a9e00,stroke:#7a9e00,color:#fff
+    style Med fill:#ebffb1,stroke:#d8723c,color:#000
+    style High fill:#ff631f,stroke:#d8723c,color:#fff
+    style Analyze fill:#E3FAFC,stroke:#7a9e00
+    style Present fill:#FFF4E6,stroke:#d8723c
 ```
 
 ### 🚦 Validation Gate Protocol
