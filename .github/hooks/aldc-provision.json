@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/aldc-provision.sh",
+        "timeoutSec": 60
+      }
+    ]
+  }
+}
