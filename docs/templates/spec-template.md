@@ -3,50 +3,50 @@
 
 # Spec: {req_name}
 
-## Contexto
-- Problema/objetivo:
-- Usuarios/escenario:
-- Motivación:
+## Context
+- Problem/objective:
+- Users/scenario:
+- Motivation:
 
-## Alcance
+## Scope
 - In scope:
 - Out of scope:
 
-## Requisitos normalizados
+## Normalized requirements
 - R1:
 - R2:
 
-## Criterios de aceptación
-### Funcionales
+## Acceptance criteria
+### Functional
 - AC-F1:
 - AC-F2:
 
-### Técnicos
+### Technical
 - AC-T1:
 - AC-T2:
 
-### Calidad
-- AC-Q1: build sin errores
-- AC-Q2: tests según {req_name}.test-plan.md
+### Quality
+- AC-Q1: build without errors
+- AC-Q2: tests as per {req_name}.test-plan.md
 
-## Restricciones
-- Extensión-only (no modificar objetos base)
-- Eventos / API-first (si aplica)
-- Localización/seguridad/performance (si aplica)
+## Constraints
+- Extension-only (do not modify base objects)
+- Events / API-first (if applicable)
+- Localization/security/performance (if applicable)
 
-## Especificación técnica (MUST para MEDIUM/HIGH)
-### Objetos AL previstos
-| Tipo | ID | Nombre | Propósito | Ubicación |
+## Technical specification (MUST for MEDIUM/HIGH)
+### Planned AL objects
+| Type | ID | Name | Purpose | Location |
 |---|---:|---|---|---|
 | TableExtension | TBD |  |  |  |
 | Codeunit | TBD |  |  |  |
 | PageExtension | TBD |  |  |  |
 
-### Integraciones y puntos de extensión
-- Eventos a consumir:
-- Eventos a publicar:
-- APIs (si aplica):
+### Integrations and extension points
+- Events to consume:
+- Events to publish:
+- APIs (if applicable):
 
-### Estrategia de tests
-- Referencia: `{req_name}.test-plan.md`
-- Escenarios mínimos:
+### Test strategy
+- Reference: `{req_name}.test-plan.md`
+- Minimum scenarios:

@@ -5,30 +5,30 @@
 
 > **Skills applied**: {list skills loaded during design, e.g. skill-api, skill-events — or "None (general architecture patterns only)"}
 
-## Resumen de arquitectura
-- Patrón principal:
-- Por qué este patrón:
+## Architecture Summary
+- Main pattern:
+- Why this pattern:
 
-## Diseño AL
-### Objetos y responsabilidades
-| Objeto | Tipo | Responsabilidad |
+## AL Design
+### Objects and responsibilities
+| Object | Type | Responsibility |
 |---|---|---|
 |  |  |  |
 
-### Modelo de eventos
+### Event model
 - Subscribers:
-- Publishers (si aplica):
-- Integración con Base App:
+- Publishers (if applicable):
+- Base App integration:
 
-## Seguridad y permisos
-- Consideraciones:
-- PermissionSets (si aplica):
+## Security and permissions
+- Considerations:
+- PermissionSets (if applicable):
 
-## Rendimiento
-- Tablas grandes / hotspots:
-- SetLoadFields / filtros tempranos:
+## Performance
+- Large tables / hotspots:
+- SetLoadFields / early filters:
 
-## Decisiones y trade-offs
-- Decisión:
-- Alternativas:
+## Decisions and trade-offs
+- Decision:
+- Alternatives:
 - Rationale:

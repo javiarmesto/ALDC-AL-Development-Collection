@@ -3,22 +3,22 @@
 
 # Test Plan: {req_name}
 
-## Alcance de tests
+## Test scope
 - Unit tests:
 - Integration tests:
-- No-regression:
+- Non-regression:
 
-## Matriz de escenarios mínimos
-| ID | Given | When | Then | Tipo |
+## Minimum scenario matrix
+| ID | Given | When | Then | Type |
 |---|---|---|---|---|
 | T1 |  |  |  | Unit |
 | T2 |  |  |  | Integration |
 
-## Datos y setup
-- Datos base:
-- Helpers/librerías:
+## Data and setup
+- Base data:
+- Helpers/libraries:
 
-## Gates de calidad
-- Sin errores de compilación
-- Tests pasan
-- Review completada
+## Quality gates
+- No compilation errors
+- Tests pass
+- Review completed

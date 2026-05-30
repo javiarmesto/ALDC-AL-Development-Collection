@@ -3,20 +3,20 @@
 
 # Delivery Notes: {req_name}
 
-## Qué se entrega
-- Funcionalidad:
-- Objetos AL afectados:
-- Tests añadidos:
+## What is delivered
+- Functionality:
+- Affected AL objects:
+- Tests added:
 
-## Cómo usar
-- Pasos:
-- Configuración:
+## How to use
+- Steps:
+- Configuration:
 
-## Limitaciones conocidas
+## Known limitations
 - L1:
 - L2:
 
-## Validación
+## Validation
 - Build:
 - Tests:
 - Review:
@@ -27,7 +27,7 @@
 | {skill-name} | {phases} | {patterns} |
 *(Consolidated from plan-complete.md. List only skills actually applied. Remove table if none.)*
 
-## Enlaces internos
+## Internal links
 - {req_name}.spec.md
 - {req_name}.architecture.md
 - {req_name}.test-plan.md
