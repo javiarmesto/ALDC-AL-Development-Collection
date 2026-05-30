@@ -5,10 +5,10 @@ description: "AL Code structure, formatting, and folder organization guidelines 
 
 # AL Code Style — Micro Rules
 
-Reglas duras de estilo. Profundidad y ejemplos en `skill-pages` y demás skills de dominio.
+Hard style rules. Depth and examples in `skill-pages` and other domain skills.
 
-1. **Indentación**: 2 espacios. Sin tabuladores. Sin mezcla.
-2. **PascalCase** para variables, procedures y nombres de objeto AL.
-3. **Organización por feature**, no por tipo de objeto: `src/<Feature>/<SubFeature>/...`. Compartido en `Common/` o `Shared/`. Nunca carpetas `Tables/`, `Pages/`, `Codeunits/`.
-4. **Procedures focalizadas**: una procedure hace una cosa. Si supera ~40 líneas o mezcla validación + cálculo + persistencia, divídela.
-5. **Comentarios solo cuando el porqué no es obvio**. XML doc (`/// <summary>`) es obligatoria solo en procedures `public` de codeunits expuestos como API.
+1. **Indentation**: 2 spaces. No tabs. No mixing.
+2. **PascalCase** for variables, procedures and AL object names.
+3. **Feature-based organization**, not by object type: `src/<Feature>/<SubFeature>/...`. Shared code in `Common/` or `Shared/`. Never `Tables/`, `Pages/`, `Codeunits/` folders.
+4. **Focused procedures**: one procedure does one thing. If it exceeds ~40 lines or mixes validation + calculation + persistence, split it.
+5. **Comments only when the why is not obvious**. XML doc (`/// <summary>`) is mandatory only on `public` procedures of codeunits exposed as APIs.
