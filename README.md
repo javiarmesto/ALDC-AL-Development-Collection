@@ -7,7 +7,7 @@
 > **Now available for both GitHub Copilot and Claude Code.**
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-7a9e00.svg?style=flat-square&labelColor=232529)](docs/framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-3.2.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-ff631f.svg?style=flat-square&labelColor=232529)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-7a9e00?style=flat-square&labelColor=232529)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-7a9e00?style=flat-square&labelColor=232529)](./LICENSE)
@@ -326,21 +326,19 @@ AL-Development-Collection-for-GitHub-Copilot/
 
 ---
 
-## What's New in v3.2.0 (ALDC Core v1.1)
+## What's New in v4.0.0
 
-- **Skills-based architecture**: 11 composable skills that agents load on demand — api, copilot, debug, performance, events, permissions, testing, migrate, pages, translate, estimation
-- **Simplified agent model**: 4 public agents (@AL Architecture & Design Specialist, @AL Implementation Specialist, @AL Development Conductor, @AL Pre-Sales & Project Estimation Specialist) + 3 internal subagents for TDD orchestration
-- **Contracts per requirement**: spec, architecture, and test-plan per requirement in `.github/plans/{req_name}/`
-- **Global memory**: cross-session `memory.md` for project-wide decisions
-- **HITL gates**: mandatory stops at plan approval, each TDD phase, and completion
-- **BC Agent Builder** (optional): @AL Agent Builder agent, 3 skills, 4 workflows for Business Central Agent SDK development
+- **Token efficiency**: agents, instructions, skills, prompts, and templates condensed for lower token footprint — behavior and orchestration preserved
+- **`packages/foundation/`**: new package layout for framework primitives alongside the existing root layout
+- **Architecture Decision Records** (`docs/decisions/`): ADR-0001, ADR-0002, ADR-0003 documenting restructure decisions
+- **New prompt**: `al-agent.build-instructions` for building agent instruction files
+- **English-only content**: all instruction files and templates standardized to English
+- **`skill-agent-task-patterns`** updated with usage examples
 
-### Breaking Changes from v2.x
+### Breaking Changes from v3.x
 
-- Agent count: 11 → 4 public + 3 internal subagents
-- Agent invocation: `Use al-architect mode` → `@AL Architecture & Design Specialist`
-- Plans directory: flat `.github/plans/` → per-requirement `.github/plans/{req_name}/`
-- Specialized agents (al-debugger, al-tester, al-api, al-copilot) absorbed into composable skills
+- Primitives also available under `packages/foundation/` — root layout preserved but content is condensed
+- Agent, instruction, and skill wording changed (token-optimized); behavior unchanged
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.
 

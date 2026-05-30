@@ -1,5 +1,28 @@
 # ALDC Core Changelog
 
+## [4.0.0] - 2026-05-30
+
+### Token Efficiency & Foundation Restructure
+
+**Breaking Changes:**
+
+- Primitives reorganized into a `packages/foundation/` structure (agents, instructions, prompts, skills) alongside the existing root layout
+- Agent, instruction, and skill content condensed to reduce token consumption — wording and structure changed, behavior preserved
+
+**Added:**
+
+- `packages/foundation/` package layout for framework primitives
+- Architecture Decision Records (`docs/decisions/`): ADR-0001 (Phase 1 restructure), ADR-0002 (distribution lifecycle), ADR-0003 (package structure)
+- `al-agent.build-instructions` prompt
+- `skill-manifest` SKILL entry and `skill-agent-task-patterns` usage examples
+
+**Changed:**
+
+- Agents, instructions, and skills optimized for lower token footprint while preserving behavior and orchestration
+- Documentation templates (spec, architecture, delivery, technical-spec, test-plan) condensed for token efficiency
+- Prompts revised for conciseness and clearer GitHub Copilot alignment
+- All instruction files and templates translated to English
+
 ## [3.2.3] - 2026-04-24
 
 ### Updated
