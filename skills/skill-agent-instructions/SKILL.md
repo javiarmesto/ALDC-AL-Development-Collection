@@ -1,56 +1,56 @@
 ---
 name: skill-agent-instructions
-description: "Generate, review, and optimize natural language instructions for Business Central agents (Designer or SDK). Triggers on: agent instructions, InstructionsV1.txt, InstructionsV2.txt, MEMORIZE, qualification rules, agent behavior, instruction keywords, agent task instructions, iterate instructions, or improve agent accuracy. Follows the Responsibilities-Guidelines-Instructions framework with official BC agent runtime keywords."
+description: "Generate, review, and optimize natural language instructions for Business Central agents (Designer or SDK). Triggers on: agent instructions, InstructionsV1.txt, InstructionsV2.txt, MEMORIZE, qualification rules, agent behavior, instruction keywords, agent task instructions, iterate instructions, or improve agent accuracy. Single source of truth for the Responsibilities-Guidelines-Instructions framework and runtime keywords."
 argument-hint: "Describe the agent's purpose and tasks, or paste existing instructions to review"
 ---
 
 # BC Agent Instructions Skill
 
-Generate production-quality natural language instructions that guide Business Central agents. These instructions define what the agent does, how it behaves, and what steps it follows in the BC UI.
+Single source of truth for writing the natural-language instructions that guide Business Central agents. These instructions tell the agent runtime how to navigate the UI, read/set fields, invoke actions, and communicate with users.
 
-## Context: What Are Agent Instructions?
+For SDK architecture and how instructions are loaded see `skill-agent-toolkit`. For task-creation patterns (Public API, attachments, multi-turn) see `skill-agent-task-patterns`.
 
-Agent instructions are natural language text stored in `.resources/Instructions/InstructionsV1.txt` (SDK agents) or pasted into the Agent Designer wizard (no-code agents). The BC agent runtime interprets these instructions to navigate pages, read/set fields, invoke actions, and communicate with users.
+## Storage modes
 
-**Key facts**:
-- Instructions are the PRIMARY lever for controlling agent behavior
-- The agent runtime has specific tools: field setting, lookups, action invocation, page navigation, email composition
-- Instructions must use specific keywords to activate these runtime tools effectively
-- Only English is fully supported — safeguards are optimized for English
-- Shorter, well-structured instructions often outperform verbose ones
+| Mode         | Storage                                    | Loaded by                                          |
+| ------------ | ------------------------------------------ | -------------------------------------------------- |
+| **SDK**      | `.resources/Instructions/InstructionsV1.txt` | `NavApp.GetResourceAsText()` → `SecretText` → `Agent.SetInstructions()` |
+| **Designer** | Paste into Agent Designer wizard text field | Runtime reads directly from configuration          |
 
 **References**:
 - [Write effective instructions](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/ai-development-toolkit-instructions)
 - [Instruction keywords](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/ai-development-toolkit-instruction-keywords)
 - [Best practices](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/ai-development-toolkit-best-practices)
 
-## Storage Modes
+## Key facts about the runtime
 
-| Mode         | Storage                                    | Loaded By                                          |
-| ------------ | ------------------------------------------ | -------------------------------------------------- |
-| **SDK**      | `.resources/Instructions/InstructionsV1.txt` | `NavApp.GetResourceAsText()` → `SecretText` → `Agent.SetInstructions()` |
-| **Designer** | Paste into Agent Designer wizard text field | Runtime reads directly from configuration          |
+- Instructions are the PRIMARY lever for controlling agent behavior
+- The runtime has specific tools: field setting, lookups, action invocation, page navigation, email composition
+- Instructions must use specific keywords to activate these tools effectively
+- Only English is fully supported — safeguards are optimized for English
+- Shorter, well-structured instructions often outperform verbose ones
+- The agent retains action history but NOT page state — use **MEMORIZE**
 
 ## Framework: Responsibilities → Guidelines → Instructions
 
-Every instruction file follows this three-part structure:
+Every instruction file follows this three-part structure.
 
 ### 1. RESPONSIBILITY (one line)
 
-A single sentence defining the agent's accountability. This anchors all behavior.
+A single sentence defining the agent's accountability. Anchors all behavior.
 
 ```
 **RESPONSIBILITY**: {What the agent is accountable for — one sentence}
 ```
 
-**Rules**:
+Rules:
 - One sentence only — no paragraphs
 - State the business outcome, not technical implementation
-- Include the key domain nouns (e.g., "leads", "sales orders", "credit checks")
+- Include the key domain nouns ("leads", "sales orders", "credit checks")
 
 ### 2. GUIDELINES (cross-task rules)
 
-Rules that apply across ALL tasks. These constrain the agent's behavior globally.
+Rules that apply across all tasks.
 
 ```
 **GUIDELINES**:
@@ -59,9 +59,9 @@ Rules that apply across ALL tasks. These constrain the agent's behavior globally
 - ALWAYS {safety/review gate}
 ```
 
-**Rules**:
-- Use **ALWAYS** (bold) for mandatory behaviors
-- Use **DO NOT** (bold) for prohibited actions
+Rules:
+- **ALWAYS** (bold) for mandatory behaviors
+- **DO NOT** (bold) for prohibited actions
 - Gate ALL critical actions (posting, sending, releasing, deleting) with user intervention
 - Include data access boundaries (read-only vs. read-write)
 - Include reply/output keywords the agent should use for structured responses
@@ -69,7 +69,7 @@ Rules that apply across ALL tasks. These constrain the agent's behavior globally
 
 ### 3. INSTRUCTIONS (step-by-step per task)
 
-Ordered steps for each specific task, using runtime keywords.
+Ordered steps for each task, using runtime keywords.
 
 ```
 **INSTRUCTIONS**:
@@ -84,23 +84,21 @@ Ordered steps for each specific task, using runtime keywords.
 3. {Next action}
 ```
 
-**Rules**:
+Rules:
 - One `## Task:` section per distinct workflow
 - Numbered steps with lettered sub-steps
-- Use official keywords (see below) to activate runtime tools
+- Use official keywords (table below) to activate runtime tools
 - Place **MEMORIZE** BEFORE the value is needed in later steps
 - Include error handling at the end of each task
 - Provide example formats for memorized data
 
-## Official Instruction Keywords
+## Official runtime keywords
 
-These keywords trigger specific tools in the BC agent runtime:
-
-| Keyword                       | Runtime Tool           | Usage                                                                 |
+| Keyword                       | Runtime tool           | Usage                                                                 |
 | ----------------------------- | ---------------------- | --------------------------------------------------------------------- |
 | `Navigate to "{Page Name}"`   | Page navigation        | Opens a page. Name MUST match the agent's profile pages exactly.      |
 | `Search for {value} in "{Field}"` | List filtering     | Filters a list page by a field value.                                 |
-| `Set field "{Field}" to {value}` | Field setter        | Sets a field to a value. Field name must match the page exactly.      |
+| `Set field "{Field}" to {value}` | Field setter        | Sets a field. Field name must match the page exactly.                 |
 | `Use lookup`                  | Lookup trigger         | Opens a lookup on the current field.                                  |
 | `Invoke action "{Action}"`    | Action invocation      | Triggers a page action. Name must match the action caption exactly.   |
 | `Read "{Field}"`              | Value retrieval        | Reads a field's current value for decision-making.                    |
@@ -111,69 +109,22 @@ These keywords trigger specific tools in the BC agent runtime:
 | `Request a review`            | Review gate            | Asks user to review work before the agent continues.                  |
 | `Ask for assistance`          | Help request           | Agent seeks help when stuck or encounters an error.                   |
 
-### Critical keyword rules:
-- Page names, field names, and action names MUST match exactly what the agent sees in its profile
+**Critical keyword rules**:
+- Page, field, and action names MUST match exactly what the agent sees in its profile
 - **MEMORIZE** must include an example format: `**Memorize**: "Customer: ACME Corp | Credit: 50,000"`
 - **Reply** keywords should include structured output patterns for programmatic parsing
-- The agent does NOT have access to "Tell Me" — all navigation must be via explicit page names or role center links
+- The agent does NOT have access to "Tell Me" — all navigation must be via explicit page names
 
-## Agent History & State
+## Step-by-step creation workflow
 
-The agent retains:
-- Every action performed in the current session
-- Every search run on list pages, with results
+1. **Gather inputs**: agent purpose (1 sentence), pages in scope, fields to read/write, actions to invoke, decision criteria, output format, safety gates
+2. **Draft RESPONSIBILITY**: one sentence with domain + outcome
+3. **Draft GUIDELINES**: 3-7 rules — at least one ALWAYS, one DO NOT, one safety gate
+4. **Draft INSTRUCTIONS per task**: navigate → read+MEMORIZE → branch → execute → Reply
+5. **Validate** with the checklist below
+6. **Test and iterate**: deploy → observe timeline → refine. Simpler instructions often perform better.
 
-The agent does NOT retain:
-- Full state of every page visited
-- Values from previous pages unless explicitly **Memorized**
-
-This is why **MEMORIZE** is critical — without it, the agent loses context when navigating between pages.
-
-## Step-by-Step Creation Workflow
-
-### Step 1: Gather inputs
-
-Before writing instructions, collect:
-
-1. **Agent purpose**: One-sentence business goal
-2. **Pages in scope**: Which pages does the agent's profile include?
-3. **Fields to read/write**: Exact field names from those pages
-4. **Actions to invoke**: Exact action captions available on those pages
-5. **Decision criteria**: Business rules for branching (if/then)
-6. **Output format**: How should the agent report results?
-7. **Safety gates**: Which actions need user intervention?
-
-### Step 2: Draft the RESPONSIBILITY
-
-Write one sentence capturing the agent's accountability. Include the business domain and outcome.
-
-### Step 3: Draft GUIDELINES
-
-Write 3-7 rules:
-- At least one **ALWAYS** rule for mandatory behavior
-- At least one **DO NOT** rule for prohibited actions
-- At least one safety gate for critical actions
-- Data access boundary (read-only lookups vs. field modifications)
-
-### Step 4: Draft INSTRUCTIONS per task
-
-For each task:
-1. Start with navigation: how does the agent reach the data?
-2. Read and MEMORIZE context before making decisions
-3. Apply business logic with explicit if/then branches
-4. Execute actions using proper keywords
-5. Report results with structured Reply format
-6. Handle errors with fallback Reply messages
-
-### Step 5: Validate
-
-Run through the [Validation Checklist](#validation-checklist) below.
-
-### Step 6: Test and iterate
-
-Deploy the instructions → observe agent behavior via timeline → refine. Follow the "less is more" principle: simpler instructions often perform better than verbose ones.
-
-## Validation Checklist
+## Validation checklist
 
 - [ ] Page names match agent profile and page customizations exactly
 - [ ] Field names match the fields visible on the agent's pages exactly
@@ -190,25 +141,25 @@ Deploy the instructions → observe agent behavior via timeline → refine. Foll
 - [ ] Guidelines count is 3-7 (not too few, not too many)
 - [ ] Each task has numbered steps with lettered sub-steps
 
-## Anti-Patterns
+## Anti-patterns
 
-| Anti-Pattern                          | Problem                                           | Fix                                                    |
+| Anti-pattern                          | Problem                                           | Fix                                                    |
 | ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------ |
 | No MEMORIZE before cross-page use     | Agent loses field values when navigating away      | Add MEMORIZE immediately after reading the value        |
 | Vague field names ("the amount")      | Agent cannot resolve which field to set            | Use exact field name: `Set field "Estimated Budget"`    |
 | Missing error handling                | Agent halts or produces confusing output           | Add error Reply for each failure scenario               |
-| Too many guidelines (>7)             | Agent behavior becomes inconsistent                | Consolidate into fewer, broader rules                   |
-| Referencing pages not in profile     | Agent cannot navigate there                        | Verify all pages are in the agent's profile             |
-| No user intervention on critical ops | Agent posts/sends/releases without human check     | Add `Request user intervention` or `Request a review`   |
-| Contradictory guidelines             | Unpredictable behavior on each run                 | Remove contradictions, prioritize by specificity        |
-| Hard-coded environment values        | Instructions break in different environments       | Use generic references, let setup tables hold specifics |
-| Referencing specific tools by name   | Tool renames cause regressions                     | Describe WHAT to do, not WHICH tool to use              |
+| Too many guidelines (>7)              | Agent behavior becomes inconsistent                | Consolidate into fewer, broader rules                   |
+| Referencing pages not in profile      | Agent cannot navigate there                        | Verify all pages are in the agent's profile             |
+| No user intervention on critical ops  | Agent posts/sends/releases without human check     | Add `Request user intervention` or `Request a review`   |
+| Contradictory guidelines              | Unpredictable behavior on each run                 | Remove contradictions, prioritize by specificity        |
+| Hard-coded environment values         | Instructions break across environments             | Use generic references, let setup tables hold specifics |
+| Referencing specific tools by name    | Tool renames cause regressions                     | Describe WHAT to do, not WHICH tool to use              |
 
-## Advanced Concepts
+## Advanced concepts
 
 ### Page-specific dynamic instructions
 
-For SDK agents, `IAgentTaskExecution.GetAgentTaskPageContext` can inject dynamic context per page:
+For SDK agents, `IAgentTaskExecution.GetAgentTaskPageContext` injects dynamic context per page using Liquid-style conditionals:
 
 ```
 Consider the following fields:
@@ -221,7 +172,7 @@ Field "Business Data" — standard business field
 
 ### Multi-task instructions
 
-When an agent handles multiple tasks, create separate `## Task:` sections. The agent selects the appropriate task based on the input message content. Use distinct keywords in the Reply to help programmatic routing:
+When an agent handles multiple tasks, create separate `## Task:` sections. The agent selects the task based on input message content. Use distinct keywords in the Reply for programmatic routing:
 
 ```
 ## Task: Qualify Lead
@@ -231,7 +182,7 @@ When an agent handles multiple tasks, create separate `## Task:` sections. The a
 ...Reply: "re-evaluation complete | ..."
 ```
 
-### Agent-to-agent handoff instructions
+### Agent-to-agent handoff
 
 When one agent creates tasks for another:
 - Verify the target agent is configured (check setup fields)
@@ -241,6 +192,6 @@ When one agent creates tasks for another:
 
 ## Examples
 
-See the `examples/` directory for complete instruction files:
-- [Simple instructions](./examples/agent-simple-instructions.txt) — minimal single-task agent
-- [Advanced instructions](./examples/agent-advanced-instructions.txt) — multi-task with handoff, error handling, and structured replies
+- [Simple instructions](./examples/agent-simple-instructions.txt) — minimal single-task agent (credit check)
+- [Advanced instructions](./examples/agent-advanced-instructions.txt) — multi-task with handoff, error handling, structured replies (lead qualifier)
+- [Keywords reference](./references/agent-keywords-reference.md) — quick lookup for every runtime keyword

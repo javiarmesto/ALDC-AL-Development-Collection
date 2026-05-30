@@ -3,7 +3,7 @@ name: AL Implementation Subagent
 description: 'TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via runSubagent.'
 user-invocable: false
 disable-model-invocation: true
-tools: [execute/runInTerminal, read/problems, read/readFile, edit/createDirectory, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, 'microsoft-docs/*', 'microsoftdocs/mcp/*', ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol]
+tools: [execute/runInTerminal, read/problems, read/readFile, 'al-symbols-mcp/*', edit/createDirectory, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, 'microsoftdocs/mcp/*', 'microsoft-learn/*', ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol]
 model: Claude Sonnet 4.6 (copilot)
 ---
 
@@ -78,117 +78,9 @@ Before writing any test code:
 
 ## AL Development Capabilities
 
-### Object Creation Patterns
+### Object & Pattern Reference
 
-**Enum:**
-```al
-enum <id> "<prefix> <Name>"
-{
-    Extensible = true;
-
-    value(0; "Value1")
-    {
-        Caption = 'Value1';
-    }
-    value(1; "Value2")
-    {
-        Caption = 'Value2';
-    }
-}
-```
-
-**TableExtension:**
-```al
-tableextension <id> "<prefix> <Name>" extends <BaseTable>
-{
-    fields
-    {
-        field(<id>; "<prefix> Field"; Type)
-        {
-            Caption = 'Field Caption';
-            DataClassification = CustomerContent;
-        }
-    }
-}
-```
-
-**Codeunit:**
-- Procedures with `Access = Public` for external use
-- `TryFunction` for operations that may fail
-- Event subscribers: `[EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostSalesDoc', '', false, false)]`
-- Event publishers: `[IntegrationEvent(false, false)] local procedure OnAfterMyEvent(...)`
-- Event subscriber parameters MUST match publisher signature exactly
-
-**Page (API):**
-```al
-page <id> "<prefix> <Name>"
-{
-    PageType = API;
-    APIPublisher = '<publisher>';
-    APIGroup = '<group>';
-    APIVersion = 'v2.0';
-    EntityName = '<entityName>';
-    EntitySetName = '<entitySetName>';
-    SourceTable = <Table>;
-    ODataKeyFields = SystemId;
-    DelayedInsert = true;
-    Editable = false;
-}
-```
-
-**Page (Card/List):** Layouts, actions, promoted actions
-
-**PermissionSet:**
-```al
-permissionset <id> "<prefix>-NAME"
-{
-    Assignable = true;
-    Permissions =
-        table <Table> = X,
-        codeunit <Codeunit> = X;
-}
-```
-
-**Test Codeunit:**
-```al
-codeunit <id> "<prefix> <Name> Tests"
-{
-    Subtype = Test;
-    [TestPermissions(TestPermissions::Disabled)]
-
-    [Test]
-    procedure TestSomething()
-    begin
-        // [GIVEN] ...
-        // [WHEN] ...
-        // [THEN] ...
-    end;
-}
-```
-
-### Naming Conventions
-
-- **Objects**: PascalCase with 3-char prefix + space (e.g., `"CIE Customer Ext."`)
-- **Fields**: PascalCase with prefix (e.g., `"CIE Customer Segment"`)
-- **API fields**: camelCase (e.g., `customerSegment`, `totalSalesLCY`)
-- **Files**: PrefixObjectName.ObjectType.al (e.g., `CIECustomerExt.TableExt.al`)
-- **Test files**: PrefixObjectNameTests.Codeunit.al
-- **Max 26 characters** for object/field names
-
-### Performance Patterns
-
-- `SetLoadFields` before `FindSet`/`FindFirst`
-- `SetRange`/`SetFilter` before Find operations
-- `CalcFields` for FlowFields (not auto-calculated in code)
-- `CalcSums` instead of loop accumulation
-- Temp tables for in-memory processing
-- Avoid DB calls inside `repeat..until` loops
-
-### Error Handling
-
-- `Error()` with labels for user-facing messages
-- `TryFunction` for operations that may fail
-- `GuiAllowed` check before `Message`/`Confirm`
+For object-creation patterns, naming, performance and error-handling rules, **rely on the active framework**: the matching micro-instructions in `.github/instructions/al-*` auto-load when you edit `.al` files, and the relevant skill (`skill-events`, `skill-pages`, `skill-permissions`, `skill-performance`, `skill-api`, `skill-copilot`) provides full examples and patterns. Do not invent or duplicate those rules in your responses; load the skill and follow it.
 
 ### Test Patterns (Given/When/Then)
 

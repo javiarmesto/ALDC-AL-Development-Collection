@@ -1,136 +1,151 @@
 ---
 agent: agent
 tools: [edit/editFiles, search/codebase, 'al-symbols-mcp/*', ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol]
-description: "End-to-end workflow to create a coded Business Central agent using the Agent SDK. Follows the official Agent Template project structure. Generates all required objects with correct interface signatures."
+description: "End-to-end workflow to create a coded Business Central agent using the Agent SDK. Orchestrates the 7 phases following the official Agent Template structure. Generates all required objects by applying patterns from skill-agent-toolkit, skill-agent-task-patterns and skill-agent-instructions."
 ---
 
 # Workflow: Create Coded Agent (Agent SDK)
 
-You are an expert AL developer. This workflow creates a complete production-ready agent following the official BC Agent Template.
+End-to-end orchestration to produce a production-ready agent. This prompt does not contain SDK knowledge — it applies patterns from the loaded skills:
 
-## Human Validation Gates
+- `skill-agent-toolkit` → registration, 3 interfaces, Setup Codeunit, ConfigurationDialog, project structure
+- `skill-agent-task-patterns` → Patterns A–H for task integration (Phase 6)
+- `skill-agent-instructions` → Responsibilities-Guidelines-Instructions framework (Phase 7)
 
-🛑 **STOP** markers require human approval before proceeding.
+## Human validation gates
 
-## Phase 1: Agent Specification
+🛑 markers require human approval before proceeding to the next phase.
 
-### Step 1.1 — Gather Requirements
+## Phase 1 — Agent specification
 
-Ask the developer for:
+### 1.1 Gather requirements
 
-1. **Agent Purpose**: What business process does this agent automate?
-2. **Creation Rules**: Single instance? Multi-instance? Always?
-3. **Trigger Type**: Manual (Page Action) / EventSubscriber / Email / Mixed?
-4. **Data Scope**: Tables and pages the agent needs access to
-5. **Setup Properties**: Any agent-specific configuration beyond standard?
-6. **Message Processing**: Input validation? Output post-processing?
-7. **User Intervention Suggestions**: What help options when agent gets stuck?
-8. **Summary KPIs**: What metrics to show on hover card?
-9. **Annotations**: What preconditions to validate? (licensing, config completeness)
+Ask the developer:
 
-### Step 1.2 — Generate Agent Spec
+1. **Agent purpose** — business process being automated
+2. **Creation rules** — single instance? multi? always?
+3. **Trigger type** — manual (page action) / EventSubscriber / email / mixed?
+4. **Data scope** — tables and pages the agent needs access to
+5. **Setup properties** — any agent-specific configuration beyond standard?
+6. **Message processing** — input validation? output post-processing?
+7. **User intervention suggestions** — what help options when stuck?
+8. **Summary KPIs** — what metrics on hover card?
+9. **Annotations** — what preconditions to validate (licensing, config completeness)?
+
+### 1.2 Generate Agent Spec
 
 ```markdown
 # Agent Specification: {Agent Name}
 
 ## Identity
-- **Name**: {Name}
-- **Initials**: {3-4 chars}
-- **Object ID Range**: {52100-52199}
+- Name: {Name}
+- Initials: {3-4 chars}
+- Object ID Range: {e.g. 52100-52199}
 
 ## Project Structure
-app/
-├── .resources/Instructions/InstructionsV1.txt
-├── Example/{Agent}CustomerCardExt.PageExt.al + PublicAPI + Impl
-├── Integration/{Agent}CopilotCapability.EnumExt.al + Install + Upgrade
-└── Setup/{Agent}Setup.Codeunit/Page/Table + KPI + Metadata + Permissions + Profile + TaskExecution
+See skill-agent-toolkit project structure section.
 
 ## Creation Rules
-- **Instance Model**: {Single / Multi / Always}
+- Instance Model: {Single / Multi / Always}
 
 ## Interfaces
 ### IAgentFactory
-- **Setup Page**: Page {ID} "{Agent} Setup" (ConfigurationDialog)
-- **Default Profile**: {Profile ID}
-- **Default Permissions**: {PermissionSet ID}
+- Setup Page: Page {ID} "{Agent} Setup" (ConfigurationDialog)
+- Default Profile: {Profile ID}
+- Default Permissions: {PermissionSet ID}
 
 ### IAgentMetadata
-- **Annotations**: {precondition checks}
-- **Summary KPIs**: {metrics for hover card}
-- **Custom Message Page**: {Yes/No}
+- Annotations: {precondition checks}
+- Summary KPIs: {metrics for hover card}
+- Custom Message Page: {Yes/No}
 
 ### IAgentTaskExecution
-- **Input Validation**: {what to check}
-- **Output Post-Processing**: {signatures, formatting}
-- **User Intervention Suggestions**: {list}
-- **Page Context**: {any page-specific context}
+- Input Validation: {what to check}
+- Output Post-Processing: {signatures, formatting}
+- User Intervention Suggestions: {list}
+- Page Context: {page-specific context}
 
 ## Task Integration
-- **Triggers**: {events or page actions}
-- **External ID Pattern**: {format}
+- Triggers: {events or page actions}
+- ExternalId Pattern: {format}
+- Patterns Applied: {A / B / C / D / E / F / G / H}
 ```
 
 🛑 **STOP — Review spec before proceeding.**
 
-## Phase 2: Registration + Integration
+## Phase 2 — Registration + Integration
+
+Apply: `skill-agent-toolkit` → "Registration — 4 required objects".
 
 Generate:
+
 1. **Copilot Capability EnumExt** — unique value ID
-2. **Metadata Provider EnumExt** — links 3 interface implementations
-3. **Install Codeunit** — `OnInstallAppPerDatabase`, Unregister+Register, re-install instructions
-4. **Upgrade Codeunit** — `OnUpgradePerDatabase`, instruction updates with UpgradeTag
+2. **Metadata Provider EnumExt** — links the 3 interface implementations
+3. **Install Codeunit** — `OnInstallAppPerDatabase`, Unregister+Register, re-install instructions for existing setup records
+4. **Upgrade Codeunit** — `OnUpgradePerDatabase`, instruction updates with `UpgradeTag`
 
 🛑 **STOP — Verify enum IDs are unique.**
 
-## Phase 3: Setup Infrastructure
+## Phase 3 — Setup Infrastructure
+
+Apply: `skill-agent-toolkit` → "Setup Codeunit" and "ConfigurationDialog page".
 
 Generate:
-1. **Setup Table** — PK = `"User Security ID": Guid`, custom fields, `DataPerCompany = false`
-2. **Setup Codeunit** — GetInitials, GetSetupPageId, GetSummaryPageId, GetInstructions (SecretText), GetDefaultProfile, GetDefaultAccessControls, InitializeSetupRecord, SaveSetupRecord, SaveCustomProperties
-3. **ConfigurationDialog Page** — SourceTableTemporary, AgentSetupPart first, AzureOpenAI check, system actions
+
+1. **Setup Table** — PK = `"User Security ID": Guid`, `DataPerCompany = false`, custom fields
+2. **Setup Codeunit** — `GetInitials`, `GetSetupPageId`, `GetSummaryPageId`, `GetInstructions (SecretText)`, `GetDefaultProfile`, `GetDefaultAccessControls`, `InitializeSetupRecord`, `SaveSetupRecord`, `SaveCustomProperties`
+3. **ConfigurationDialog Page** — invariants from the skill (SourceTableTemporary, AgentSetupPart first, AzureOpenAI check, system actions)
 
 🛑 **STOP — Review setup infrastructure.**
 
-## Phase 4: Interface Implementations
+## Phase 4 — Interface implementations
 
-Generate:
-1. **IAgentFactory** — delegates to Setup Codeunit. Methods: `GetDefaultInitials`, `GetFirstTimeSetupPageId`, `ShowCanCreateAgent`, `GetCopilotCapability`, `GetDefaultProfile`, `GetDefaultAccessControls`
-2. **IAgentMetadata** — delegates to Setup Codeunit. Methods: `GetInitials`, `GetSetupPageId`, `GetSummaryPageId`, `GetAgentTaskMessagePageId`, `GetAgentAnnotations`
-3. **IAgentTaskExecution** — Methods: `AnalyzeAgentTaskMessage` (uses `AgentMessage.GetText/UpdateText`), `GetAgentTaskUserInterventionSuggestions`, `GetAgentTaskPageContext`
+Apply: `skill-agent-toolkit` → "The 3 core interfaces".
+
+Generate the 3 codeunits delegating to Setup Codeunit. `IAgentTaskExecution.AnalyzeAgentTaskMessage` uses `AgentMessage.GetText()` / `UpdateText()` — never raw record fields.
 
 🛑 **STOP — Review interface implementations.**
 
-## Phase 5: Profile + Permissions + KPI
+## Phase 5 — Profile + Permissions + KPI
 
 Generate:
-1. **Profile** — with RoleCenter reference
-2. **RoleCenter Page** — PageType = RoleCenter, relevant navigation actions
-3. **PageCustomizations** — customize pages for agent's view
-4. **PermissionSet** — includes D365 BASIC + domain permissions
-5. **KPI Table** — PK = User Security ID, custom KPI fields
-6. **KPI Page** — PageType = CardPart, cuegroup with metrics
+
+1. **Profile** with RoleCenter reference
+2. **RoleCenter Page** (`PageType = RoleCenter`) with navigation actions
+3. **PageCustomizations** to tailor pages for the agent's view
+4. **PermissionSet** including D365 BASIC + domain permissions
+5. **KPI Table** (PK = User Security ID, custom KPI fields)
+6. **KPI Page** (`PageType = CardPart`, cuegroup with metrics)
 
 🛑 **STOP — Review profile and permissions.**
 
-## Phase 6: Task Integration + Public API
+## Phase 6 — Task Integration + Public API
+
+Apply: `skill-agent-task-patterns` → relevant patterns (A always, plus B/C/D/E/H depending on spec). **Verify each method against the API Availability Matrix** before generating code.
 
 Generate:
-1. **Public API Codeunit** (Access = Public) — AssignTask overloads, Deactivate, IsActive
-2. **Public API Impl Codeunit** (Access = Internal) — uses Agent Task Builder
-3. **Page Extension** — example integration (button that calls Public API)
-4. **Agent Session Events** — SingleInstance + BindSubscription pattern (if needed)
+
+1. **Public API codeunit** (`Access = Public`) — Pattern A, with the standard overloads
+2. **Public API Impl codeunit** (`Access = Internal`) — uses Agent Task Builder
+3. **Page Extension** — example integration (Pattern B)
+4. **EventSubscriber codeunit** — if Pattern C applies (TryFunction + telemetry)
+5. **Agent Session Events** — if Pattern H applies (SingleInstance + BindSubscription)
 
 🛑 **STOP — Review task integration.**
 
-## Phase 7: Instructions + Tests
+## Phase 7 — Instructions + Tests
+
+Apply: `skill-agent-instructions` → RGI framework + keywords.
+Apply: `al-agent.test` prompt for the test codeunit.
 
 Generate:
-1. **InstructionsV1.txt** — Responsibilities → Guidelines → Instructions with keywords
-2. **Test Codeunit** — 6 categories: Registration, Factory, Metadata, TaskExecution, TaskIntegration, AgentSession
+
+1. **InstructionsV1.txt** — Responsibilities → Guidelines → Instructions, English, environment-agnostic
+2. **Test Codeunit** — 6 categories (run `al-agent.test`)
 
 🛑 **STOP — Review instructions and tests.**
 
-## Deliverables Checklist
+## Deliverables checklist
 
 - [ ] `{Agent}CopilotCapability.EnumExt.al`
 - [ ] `{Agent}MetadataProvider.EnumExt.al`
@@ -150,3 +165,12 @@ Generate:
 - [ ] `.resources/Instructions/InstructionsV1.txt`
 - [ ] Test codeunit (6 categories)
 - [ ] Agent specification document
+
+## Skills Evidencing
+
+End the workflow declaring:
+
+```
+**Skills loaded**: skill-agent-toolkit, skill-agent-task-patterns, skill-agent-instructions
+**Patterns applied**: {list each pattern with the file where it was applied}
+```
