@@ -5,10 +5,10 @@ description: "AL Error handling patterns, debugging techniques, and troubleshoot
 
 # AL Error Handling — Micro Rules
 
-Reglas duras de gestión de errores en codeunits. Profundidad, patrones y ejemplos en `skill-debug` y skills relacionadas.
+Hard error handling rules for codeunits. Depth, patterns and examples in `skill-debug` and related skills.
 
-1. **TryFunction obligatoria** cuando la operación puede fallar por causa externa (servicios HTTP, parsing, llamadas a otra app) o necesita rollback. Recupera el texto con `GetLastErrorText()`.
-2. **Toda cadena de error/warning/mensaje al usuario va en un `Label`** con `Comment` para traductores. Nada de literales `Error('...')` o `Message('...')` en línea.
-3. **Labels técnicos** (telemetría, claves, identificadores no traducibles): `Locked = true`.
-4. **Telemetría custom** (`Session.LogMessage`) **solo si el usuario la pide explícitamente**. No la añadas por iniciativa propia.
-5. **Nunca silencies un error**. Un `if not TryX() then exit;` sin loggear ni propagar es bug.
+1. **TryFunction mandatory** when the operation can fail due to external causes (HTTP services, parsing, calls to another app) or needs rollback. Retrieve the text with `GetLastErrorText()`.
+2. **Every error/warning/user message string goes in a `Label`** with `Comment` for translators. No inline `Error('...')` or `Message('...')` literals.
+3. **Technical labels** (telemetry, keys, non-translatable identifiers): `Locked = true`.
+4. **Custom telemetry** (`Session.LogMessage`) **only if the user explicitly requests it**. Do not add it on your own initiative.
+5. **Never silence an error**. An `if not TryX() then exit;` without logging or propagating is a bug.

@@ -5,39 +5,39 @@ description: "AL Agent Toolkit / BC Agents Pack — non-negotiable rules for cod
 
 # AL Agent Toolkit — Always-On Rules
 
-Reglas que se aplican siempre que se edite código AL relacionado con el AI Development Toolkit o Agent SDK. Solo reglas. El conocimiento detallado (arquitectura, firmas de interfaces, patterns) vive en skills.
+Rules that apply whenever AL code related to the AI Development Toolkit or Agent SDK is edited. Rules only. Detailed knowledge (architecture, interface signatures, patterns) lives in skills.
 
 ## Knowledge sources
 
-Para contenido detallado, carga el skill correspondiente:
+For detailed content, load the corresponding skill:
 
-| Skill                          | Cuándo                                                                   |
+| Skill                          | When                                                                     |
 | ------------------------------ | ------------------------------------------------------------------------ |
-| `skill-agent-toolkit`          | Arquitectura SDK, 3 interfaces, Setup Codeunit, ConfigurationDialog, Install/Upgrade, project structure |
-| `skill-agent-task-patterns`    | Public API, Agent Task Builder, attachments, multi-turn, session detection, API availability por runtime |
-| `skill-agent-instructions`     | Redactar `InstructionsV1.txt` (framework RGI + keywords)                 |
+| `skill-agent-toolkit`          | SDK architecture, 3 interfaces, Setup Codeunit, ConfigurationDialog, Install/Upgrade, project structure |
+| `skill-agent-task-patterns`    | Public API, Agent Task Builder, attachments, multi-turn, session detection, API availability per runtime |
+| `skill-agent-instructions`     | Authoring `InstructionsV1.txt` (RGI framework + keywords)                |
 
 ## Non-negotiable rules
 
-1. **Public API es el entry point estándar** — toda creación de tasks pasa por un codeunit `Access = Public`; el resto de patterns (page action, event subscriber, multi-turn) llama por aquí.
-2. **TryFunction obligatorio en event-driven task creation** — nunca se bloquea un posting/release/approval por un fallo del agente.
-3. **Filtrar antes de crear** — la condición de negocio se evalúa ANTES del `Create()` del task builder, nunca dentro.
-4. **Telemetría en cada fallo** — `Session.LogMessage` con categoría y `GetLastErrorText()`. Sin excepción.
-5. **ExternalId con convención `{PREFIX}-{No.}`** — `SO-1001`, `LEAD-001`, `INV-103456`, `EMAIL-{threadId}`. Nunca GUID, nunca número correlativo.
-6. **Mensaje del task contiene TODO el contexto** — el agente solo sabe lo que se le pasa por el mensaje + adjuntos.
-7. **Agent Task Message Builder** se usa para attachments y para controlar sanitización; nunca se manipulan campos del builder por reflexión.
-8. **Instrucciones en inglés** — los safeguards del runtime están optimizados para inglés.
+1. **Public API is the standard entry point** — all task creation goes through a codeunit with `Access = Public`; all other patterns (page action, event subscriber, multi-turn) call through here.
+2. **TryFunction mandatory for event-driven task creation** — a posting/release/approval must never be blocked by an agent failure.
+3. **Filter before creating** — the business condition is evaluated BEFORE the task builder's `Create()`, never inside it.
+4. **Telemetry on every failure** — `Session.LogMessage` with category and `GetLastErrorText()`. No exceptions.
+5. **ExternalId with convention `{PREFIX}-{No.}`** — `SO-1001`, `LEAD-001`, `INV-103456`, `EMAIL-{threadId}`. Never a GUID, never a sequential number.
+6. **Task message contains ALL the context** — the agent only knows what is passed via the message + attachments.
+7. **Agent Task Message Builder** is used for attachments and sanitization control; builder fields are never manipulated via reflection.
+8. **Instructions in English** — the runtime safeguards are optimized for English.
 
 ## Naming conventions
 
-| Objeto                       | Patrón                                                      |
+| Object                       | Pattern                                                     |
 | ---------------------------- | ----------------------------------------------------------- |
 | Copilot Capability EnumExt   | `"{Agent} Copilot Capability"` extends `"Copilot Capability"` |
 | Metadata Provider EnumExt    | `"{Agent} Metadata Provider"` extends `"Agent Metadata Provider"` |
 | Factory codeunit             | `{Agent}Factory` implements `IAgentFactory`                 |
 | Metadata codeunit            | `{Agent}Metadata` implements `IAgentMetadata`               |
 | Task Execution codeunit      | `{Agent}TaskExecution` implements `IAgentTaskExecution`     |
-| Setup codeunit               | `"{Agent} Setup"` — lógica centralizada                     |
+| Setup codeunit               | `"{Agent} Setup"` — centralized logic                       |
 | Install codeunit             | `"{Agent} Install"` (Subtype = Install)                     |
 | Upgrade codeunit             | `"{Agent} Upgrade"` (Subtype = Upgrade)                     |
 | Public API codeunit          | `"{Agent} Public API"` (Access = Public) + Impl internal    |
@@ -45,21 +45,21 @@ Para contenido detallado, carga el skill correspondiente:
 | KPI table / page             | `"{Agent} KPI"` / CardPart                                  |
 | Setup page                   | `"{Agent} Setup"` (PageType = ConfigurationDialog)          |
 | Profile / RoleCenter         | `"{Agent} Profile"` / `"{Agent} Role Center"`               |
-| PermissionSet                | `"{Agent}"` (Assignable, incluye D365 BASIC)                |
+| PermissionSet                | `"{Agent}"` (Assignable, includes D365 BASIC)               |
 
-## ConfigurationDialog page — invariantes
+## ConfigurationDialog page — invariants
 
-`PageType = ConfigurationDialog` exige:
+`PageType = ConfigurationDialog` requires:
 
 - `SourceTableTemporary = true`
 - `Extensible = false`
 - `InherentEntitlements = X` + `InherentPermissions = X`
-- Primer elemento del layout: `part(AgentSetupPart; "Agent Setup Part")`
-- `OnOpenPage` comprueba `AzureOpenAI.IsEnabled(<capability>)`
-- `OnQueryClosePage` delega en el Setup Codeunit
-- System actions: `OK` (gated por `IsUpdated`) + `Cancel`, sin custom triggers
+- First layout element: `part(AgentSetupPart; "Agent Setup Part")`
+- `OnOpenPage` checks `AzureOpenAI.IsEnabled(<capability>)`
+- `OnQueryClosePage` delegates to the Setup Codeunit
+- System actions: `OK` (gated by `IsUpdated`) + `Cancel`, no custom triggers
 
-## Project structure (referencia)
+## Project structure (reference)
 
 ```
 app/
@@ -75,4 +75,4 @@ app/
     └── TaskExecution/
 ```
 
-Detalle de cada carpeta y ejemplos completos en `skill-agent-toolkit`.
+Details on each folder and complete examples in `skill-agent-toolkit`.

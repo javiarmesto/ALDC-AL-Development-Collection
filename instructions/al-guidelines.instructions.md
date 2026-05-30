@@ -5,9 +5,9 @@ description: "AL Core principles — transversal rules for Microsoft Dynamics 36
 
 # AL Core Principles
 
-Principios transversales del framework. Las reglas concretas de estilo, naming, performance, errores, eventos y testing viven en sus propias micro-instructions.
+Transversal framework principles. Concrete rules for style, naming, performance, errors, events and testing live in their own micro-instructions.
 
-1. **Modelo event-driven**. Nunca modificar objetos base de Business Central; extender vía event subscribers o table/page extensions.
-2. **Foco en la App por defecto**. Implementación principal en `App/`; los tests **solo se generan si el usuario los pide explícitamente**.
-3. **Separación AL-Go App/Test**. El proyecto `Test/` depende de `App/`; nunca al revés. No mezclar lógica de aplicación con tests.
-4. **Naming es infraestructura**. El patrón `<ObjectName>.<ObjectType>.al` no es estético: los globs estrechos de otras instructions dependen de él. Un fichero mal nombrado queda sin sus reglas.
+1. **Event-driven model**. Never modify Business Central base objects; extend via event subscribers or table/page extensions.
+2. **App focus by default**. Main implementation in `App/`; tests **are only generated if the user explicitly requests them**.
+3. **AL-Go App/Test separation**. The `Test/` project depends on `App/`; never the other way around. Do not mix application logic with tests.
+4. **Naming is infrastructure**. The pattern `<ObjectName>.<ObjectType>.al` is not aesthetic: the narrow globs in other instructions depend on it. A misnamed file silently misses its rules.
