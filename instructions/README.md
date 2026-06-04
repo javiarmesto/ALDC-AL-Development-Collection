@@ -52,7 +52,7 @@ A comprehensive guide for creating high-quality GitHub Copilot skills for Busine
 ## How GitHub Copilot Uses This File
 
 When creating or working with Copilot skills, GitHub Copilot:
-1. Reads the skill-creation-guide from `.github/instructions/` 
+1. Reads the skill-creation-guide from `instructions/` 
 2. Applies the documented patterns and structures when helping you create new skills
 3. Ensures generated skills follow AL and Business Central best practices
 4. Provides guidance on proper YAML frontmatter, workflow steps, and error handling
@@ -191,7 +191,7 @@ Before finalizing an instruction file, verify:
 
 ## Integration with Skills
 
-These instruction files complement the GitHub Copilot skills in `.github/skills/`:
+These instruction files complement the GitHub Copilot skills in `skills/`:
 
 ### Instructions vs Skills
 
@@ -273,7 +273,7 @@ Managing the AL-Copilot-Skills extension:
 
 If Copilot doesn't apply the guide's patterns:
 
-1. **Check file location**: Must be in `.github/instructions/`
+1. **Check file location**: Must be in `instructions/`
 2. **Verify file name**: Must be `skill-creation-guide.instructions.md`
 3. **Restart VS Code**: Copilot reloads instructions on restart
 4. **Be explicit**: Say \"following the skill-creation-guide\" in your request
@@ -292,7 +292,7 @@ Simply ask: `@workspace Can you review the skill-creation-guide and suggest impr
 
 ### Getting Help
 
-- **For skill structure questions**: Refer to existing skills in `.github/skills/`
+- **For skill structure questions**: Refer to existing skills in `skills/`
 - **For AL patterns**: Check Microsoft Learn BC documentation
 - **For contribution help**: Open discussion on GitHub repository
 - **For guide improvements**: Submit PR with suggested changes
@@ -303,7 +303,7 @@ Simply ask: `@workspace Can you review the skill-creation-guide and suggest impr
 - **Copilot Customization**: [Copilot Extensibility](https://code.visualstudio.com/docs/copilot/copilot-customization)
 - **Agent Customization Guide**: Available via `@workspace /help agent-customization`
 - **AL Language Documentation**: [Microsoft Learn - AL Development](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-dev-overview)
-- **Existing Skills**: Browse `.github/skills/` for examples of well-structured skills
+- **Existing Skills**: Browse `skills/` for examples of well-structured skills
 - **Skill Creation Guide**: The actual instruction file with comprehensive templates and patterns
 
 ---

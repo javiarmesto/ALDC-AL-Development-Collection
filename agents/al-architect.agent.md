@@ -211,7 +211,7 @@ For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer`
 
 ## Domain Skills
 
-This agent works with the following skills from `.github/skills/`. Copilot loads them automatically when relevant:
+This agent works with the following skills from `skills/`. Copilot loads them automatically when relevant:
 
 - **skill-api** — designing API pages, OData endpoints, integration strategy
 - **skill-events** — designing event-driven architecture, publishers/subscribers
@@ -223,7 +223,7 @@ To explicitly invoke a skill, use: `/skill-api`, `/skill-events`, etc.
 
 ## Skills Evidencing
 
-The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `.github/docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream.
+The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream.
 
 <stopping_rules>
 ## Stopping Rules
@@ -280,7 +280,7 @@ Order: Spec A → Spec B (sequential)
 
 ## Architecture Document Structure
 
-When you write `{req_name}.architecture.md`, **read and fill `.github/docs/templates/architecture-template.md`**. The template is immutable and is the single source of truth for: required sections (14 for MEDIUM/HIGH), document header (Date, Complexity, Author, Status), the `> Skills applied:` traceability line, and the Status lifecycle (`Proposed` → `Approved` → `Implemented` → `Superseded`).
+When you write `{req_name}.architecture.md`, **read and fill `docs/templates/architecture-template.md`**. The template is immutable and is the single source of truth for: required sections (14 for MEDIUM/HIGH), document header (Date, Complexity, Author, Status), the `> Skills applied:` traceability line, and the Status lifecycle (`Proposed` → `Approved` → `Implemented` → `Superseded`).
 
 Do not invent the structure inline. The Conductor and the Review Subagent rely on the template's section names being consistent across requirements.
 
