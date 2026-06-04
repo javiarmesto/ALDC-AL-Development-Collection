@@ -50,6 +50,10 @@ contracts:
 
 copilotEntrypoint: ".github/copilot-instructions.md"
 copilotSource: "instructions/copilot-instructions.md"
+# "trimmed": the always-on entrypoint is an intentional lean subset of the source
+# (the ~31% trim). The validator then checks it is non-empty and smaller than the
+# source instead of requiring byte-identity. Use "mirror" to require byte-identity.
+copilotEntrypointMode: "trimmed"
 
 required:
   agents:

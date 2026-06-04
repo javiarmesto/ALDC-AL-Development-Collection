@@ -253,8 +253,16 @@ if (alFiles.length === 0) {
 }
 
 // ─── 8. Copilot entrypoint coherence ─────────────────────────────
+// Two modes (cfg.copilotEntrypointMode, default "mirror"):
+//   "mirror"  — the entrypoint must be byte-identical to its source (install.js
+//               copies source -> entrypoint; any drift is a stale copy).
+//   "trimmed" — the entrypoint is an intentional lean subset of the source (the
+//               ~31% always-on trim): we no longer require byte-identity, only
+//               that it exists, is non-empty, and is genuinely smaller than the
+//               source (a larger/equal "trim" means it went stale, not lean).
 const entrypoint = cfg.copilotEntrypoint;
 const source = cfg.copilotSource;
+const entrypointMode = cfg.copilotEntrypointMode || "mirror";
 
 if (entrypoint && !fileExists(entrypoint)) {
   issue("copilotEntrypointCoherence", `Copilot entrypoint not found: ${entrypoint}`);
@@ -263,7 +271,16 @@ if (entrypoint && !fileExists(entrypoint)) {
   if (fileExists(entrypoint) && fileExists(sourcePath)) {
     const ep = readFile(entrypoint).trim();
     const src = readFile(sourcePath).trim();
-    if (ep !== src) {
+    if (entrypointMode === "trimmed") {
+      if (ep.length === 0) {
+        issue("copilotEntrypointCoherence", `Copilot entrypoint is empty: ${entrypoint}`);
+      } else if (ep.length >= src.length) {
+        issue("copilotEntrypointCoherence",
+          `Copilot entrypoint is declared "trimmed" but is not smaller than its source (${entrypoint} ≥ ${sourcePath}) — likely stale, not a trim`);
+      } else {
+        info(`Copilot entrypoint is an intentional trim (${ep.length} vs ${src.length} source chars)`);
+      }
+    } else if (ep !== src) {
       issue("copilotEntrypointCoherence",
         `Copilot entrypoint drift detected: ${entrypoint} differs from ${sourcePath}`);
     } else {
