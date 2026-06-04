@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Agent ID** | `al-conductor` |
-| **Model** | Claude Haiku 4.5 |
+| **Model** | Claude Sonnet 4.6 |
 | **Type** | User-facing · Orchestrator |
 | **Invocation** | `@AL Development Conductor` |
 
@@ -15,7 +15,7 @@
 
 ## Purpose
 
-Orchestrates the full **Planning → Implementation → Review → Commit** cycle for Business Central AL extensions. Coordinates three specialized subagents to deliver high-quality code following Test-Driven Development.
+Orchestrates the full **Planning → Implementation → Review → Commit** cycle for Business Central AL extensions. Coordinates three specialized subagents to deliver high-quality code following Test-Driven Development. Builds the **BCQuality task-context** once (it already holds `app.json` and the phase's changed objects) and passes it inline to the Review Subagent, plus curated context excerpts — so subagents don't re-derive what the Conductor already knows.
 
 ## When to use
 
@@ -38,9 +38,9 @@ graph LR
 
 | Subagent | Role | Model |
 |---|---|---|
-| **AL Planning Subagent** | Research codebase, gather context, identify objects | Claude Sonnet 4.5 |
-| **AL Implementation Subagent** | RED → GREEN → REFACTOR TDD cycle | Claude Sonnet 4.5 |
-| **AL Code Review Subagent** | Quality assurance, pattern validation, verdict | Claude Sonnet 4.5 |
+| **AL Planning Subagent** | Research codebase, gather context, identify objects | Claude Sonnet 4.6 |
+| **AL Implementation Subagent** | RED → GREEN → REFACTOR TDD cycle | Claude Sonnet 4.6 |
+| **AL Code Review Subagent** | Quality assurance, pattern validation, verdict | Claude Sonnet 4.6 |
 
 ## Input options
 

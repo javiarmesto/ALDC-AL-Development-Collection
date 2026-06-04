@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Agent ID** | `al-presales` |
-| **Model** | Claude Sonnet 4.5 |
+| **Model** | Claude Sonnet 4.6 |
 | **Type** | User-facing · Estimation |
 | **Invocation** | `@AL Pre-Sales & Project Estimation Specialist` |
 

@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Agent ID** | `al-implement-subagent` |
-| **Model** | Claude Sonnet 4.5 |
+| **Model** | Claude Sonnet 4.6 |
 | **Type** | Internal · TDD executor |
 | **Invoked by** | AL Development Conductor |
 | **User-invocable** | No |

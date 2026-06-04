@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Agent ID** | `al-review-subagent` |
-| **Model** | Claude Sonnet 4.5 |
+| **Model** | Claude Sonnet 4.6 |
 | **Type** | Internal · Quality assurance |
 | **Invoked by** | AL Development Conductor |
 | **User-invocable** | No |
@@ -16,7 +16,7 @@
 
 ## Purpose
 
-Quality assurance gate for Business Central AL code. Reviews each implementation phase against AL best practices, test coverage, BC patterns, and the original requirements. Returns a verdict to the Conductor.
+Quality assurance gate for Business Central AL code. Reviews each implementation phase against the **A–G** checklist, test coverage, BC patterns, and the original requirements, and emits a structured **Review-Report (JSON)** that the Conductor renders. When the external **BCQuality** knowledge layer is mounted, **Step 0** consults it for citable findings; when it is absent (the default until installed), the review falls back to the full A–G native checklist + auto-applied instructions + skills — recorded as `not-applicable`, and it **never blocks**.
 
 ## Review checklist
 

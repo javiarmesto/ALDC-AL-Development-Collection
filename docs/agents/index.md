@@ -64,11 +64,22 @@ I need to build a sales forecasting system...
 
 | Mode | Role | Model | Purpose |
 |------|------|-------|---------|
-| **AL Planning Subagent** | AL-aware Research Specialist | Sonnet 4.5 | Analyzes codebase, gathers context for planning |
-| **AL Implementation Subagent** | TDD Implementation Executor | Haiku 4.5 | Executes RED→GREEN→REFACTOR cycle |
-| **AL Code Review Subagent** | Quality Assurance Validator | Sonnet 4.5 | Reviews code against AL best practices |
+| **AL Planning Subagent** | AL-aware Research Specialist | Sonnet 4.6 | Analyzes codebase, gathers context for planning |
+| **AL Implementation Subagent** | TDD Implementation Executor | Sonnet 4.6 | Executes RED→GREEN→REFACTOR cycle |
+| **AL Code Review Subagent** | Quality Assurance Validator | Sonnet 4.6 | Reviews code against AL best practices |
 
 > 💡 **Note**: Subagents are automatically invoked by `al-conductor` via `runSubagent` tool. You don't invoke them directly.
+
+### 🔎 On-demand Specialists (user-invocable)
+
+Invoked directly when you start from a **symptom** or want an **independent audit** — outside the TDD loop.
+
+| Mode | Role | Model | Best For |
+|------|------|-------|----------|
+| **AL Triage** | Reactive Diagnosis Specialist | Claude Sonnet 4.6 | Reproduce → localize → root-cause an existing bug/regression/incident; recommends the minimal fix (read-only on code) |
+| **Dredd** | Independent AL Auditor | Claude Sonnet 4.6 | On-demand static audit against BCQuality + native checks; advisory verdict written to `.github/audits/` (read-only on code) |
+
+> 💡 Both are read-only on AL code and hand fixes to `@AL Developer`. Triage is the *dynamic* counterpart (reproduce & trace); Dredd is the *static* one (judge the artifact).
 
 ### 🔧 Specialized Consultants (Complexity-Agnostic)
 
@@ -421,7 +432,7 @@ Run `npm run validate` to verify:
 **Framework Compliance**: These agents implement **AI Native-Instructions Architecture** - Layer 2 (Agent Primitives) with clear Tool Boundaries (MCP model), auto-loading Instructions (Layer 1), and strategic Context Engineering (Layer 3).
 
 **Version**: 2.8.0
-**Total Agents**: 10 (6 strategic + 4 orchestra subagents)
-**Last Updated**: 2026-02-06
+**Total Agents**: core set (4 public + 3 orchestra subagents) + on-demand specialists (al-triage, dredd) + al-agent-builder
+**Last Updated**: 2026-06-04
 
 **Usage Philosophy**: Agents are **strategic consultants**, not **code executors**. They analyze, design, and recommend. For execution, they delegate to **Agentic Workflows**.
