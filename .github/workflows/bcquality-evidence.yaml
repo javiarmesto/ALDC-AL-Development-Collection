@@ -1,0 +1,46 @@
+name: BCQuality Evidence
+
+# Falsifiable evidence that the agents' BCQuality usage is real:
+#  - the pinned SHA agrees across aldc.yaml and both install scripts, and
+#  - every citation in a persisted findings-report resolves to a real file in the
+#    BCQuality clone at that pinned SHA.
+# BCQuality is consumed from OUTSIDE the AL project (multi-root), so CI clones it
+# at the pin rather than checking out an in-repo submodule.
+# A hallucinated citation or a drifted pin fails this check.
+
+on:
+  pull_request:
+    paths:
+      - '.github/plans/**'
+      - '.github/audits/**'
+      - 'aldc.yaml'
+      - 'tools/bcquality/**'
+      - '.github/workflows/bcquality-evidence.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Clone BCQuality at the pinned SHA
+        run: |
+          set -euo pipefail
+          PIN=$(grep -oE 'pinnedCommit:[[:space:]]*"?[0-9a-f]{40}"?' aldc.yaml | grep -oE '[0-9a-f]{40}')
+          URL=$(grep -E '^\s*url:' aldc.yaml | grep bcquality | head -1 | sed -E 's/.*"(.*)".*/\1/')
+          echo "Cloning $URL @ $PIN"
+          git clone --filter=blob:none "$URL" "$RUNNER_TEMP/bcquality"
+          git -C "$RUNNER_TEMP/bcquality" checkout --quiet "$PIN"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Validate BCQuality evidence
+        run: python3 tools/bcquality/validate_evidence.py --bcquality-root "$RUNNER_TEMP/bcquality"
