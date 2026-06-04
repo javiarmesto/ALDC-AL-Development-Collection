@@ -57,7 +57,8 @@ required:
     - "agents/al-conductor.agent.md"
     - "agents/al-developer.agent.md"
     - "agents/al-presales.agent.md"
-  
+    - "agents/dredd.agent.md"
+
   subagents:
     - "agents/al-planning-subagent.agent.md"
     - "agents/al-review-subagent.agent.md"
