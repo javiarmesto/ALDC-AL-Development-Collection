@@ -29,6 +29,14 @@ You are an **AL CODE REVIEW SUBAGENT** called by a parent **agent `al-conductor`
 
 ## Review Workflow
 
+### 0. Consult BCQuality (external citable knowledge — probe, don't assume)
+
+BCQuality is a curated, citable BC knowledge base consumed from an **external** clone (multi-root, per `aldc.yaml`). It is a citation/audit layer — it does **not** replace the A–G checklist or the auto-applied instructions; it adds findings backed by a knowledge file.
+
+Resolve the home from `aldc.yaml → external.bcquality.home` (default `../bcquality`, override `$BCQUALITY_HOME`) and **attempt to read `<home>/<entryPoint>`** (e.g. `../bcquality/skills/entry.md`) **before** deciding. The external root lives outside the project and won't surface unless you read its path explicitly — a successful read **is** the mounted signal: consult BCQuality scoped to this phase's changed objects and **cite each finding to its knowledge file** in the review. If the probe **fails** (entry point absent — the default until installed), record BCQuality as `not-applicable`, note `"BCQuality unavailable — reviewed via ALDC skills + auto-applied instructions"`, and review against the **full A–G** checklist below. A missing knowledge layer **never** blocks the review.
+
+> The Conductor builds the BCQuality task-context (it already holds `app.json` + the phase's changed objects) and passes it inline — consume that rather than re-deriving it.
+
 ### 1. Analyze Changes
 
 Review the AL code changes using available tools:
@@ -577,12 +585,7 @@ Use this checklist during review:
 - Recommendations (even when approving)
 </stopping_rules>
 
-If performance is a concern, use:
-```
-#ms-dynamics-smb.al/al_generate_cpu_profile
-```
-
-Analyze:
+If performance is a concern, request a CPU profile (a VS Code AL command / human step — not an agent tool on this surface) and analyze:
 - AL code hotspots
 - Database queries (FindSet patterns)
 - Loop iterations
