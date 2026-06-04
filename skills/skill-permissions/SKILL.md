@@ -22,7 +22,7 @@ This skill should be loaded when:
 
 ### Pattern 1: AL Permission Set Object (Preferred)
 
-Generate with `al_generate_permissionset_for_extension_objects`, then refine:
+Generate with the VS Code permission-set generation command (not an agent tool), then refine:
 
 ```al
 permissionset 50100 "Contoso Sales"
@@ -140,7 +140,7 @@ permissionsetextension 50101 "Contoso D365 Read Ext" extends "D365 READ"
 
 ### Pattern 4: XML Permission Set (Legacy Format)
 
-Generate with `al_generate_permissionset_for_extension_objects_as_xml` when:
+Generate the XML format via the VS Code permission-set command (not an agent tool) when:
 - Targeting older BC versions (< BC 20)
 - Import via BC admin UI is required
 - Customer tooling only supports XML format
@@ -232,7 +232,7 @@ Justify each permission and confirm the principle of least privilege is respecte
 
 ### Step 3: Generate and Refine
 
-1. Run `al_generate_permissionset_for_extension_objects` for the initial full set
+1. Generate the initial full set via the VS Code permission-set command (not an agent tool)
 2. Split into role-based layers (Pattern 2)
 3. Create `permissionsetextension` for standard BC roles if needed (Pattern 3)
 4. Add indirect permissions to codeunits (Pattern 5)

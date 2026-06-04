@@ -35,8 +35,8 @@ Before writing any test code:
 
 ### Step 1: Read Phase Requirements
 - Read the phase number, objective, and AL objects to create/modify from the Conductor's instructions
-- Read the referenced `.github/plans/{req_name}/{req_name}.spec.md` and `.github/plans/{req_name}/{req_name}.architecture.md`
-- Understand the test expectations from `.github/plans/{req_name}/{req_name}.test-plan.md`
+- The Conductor passes **phase-relevant excerpts** of the spec, the architecture decisions, and the test expectations inline — treat these as authoritative for this phase
+- Read the full `.github/plans/{req_name}/{req_name}.spec.md`, `.architecture.md`, or `.test-plan.md` **only if** a detail referenced in the excerpt is missing (the Conductor includes the paths for this) — do not re-read them wholesale by default
 
 ### Step 2: Create TEST Files FIRST (RED State)
 - Create test codeunit(s) in the test project directory

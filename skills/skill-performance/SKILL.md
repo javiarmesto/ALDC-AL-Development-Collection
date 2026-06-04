@@ -260,7 +260,7 @@ Severity assessment:
 
 Generate CPU profile for runtime bottleneck identification:
 ```
-al_generate_cpu_profile_file
+Capture a CPU profile in VS Code (VS Code command — not an agent tool)
 ```
 
 Analyze profile for:
@@ -273,7 +273,7 @@ Compare before/after optimizations by re-profiling after each fix.
 
 ⚠️ **Human Gate — cleanup**: Before clearing codelenses, confirm all findings are documented:
 ```
-al_clear_profile_codelenses   ← only after approval
+Clear profile codelenses in VS Code  ← VS Code command (not an agent tool), only after approval
 ```
 
 ### Step 3: Fix
