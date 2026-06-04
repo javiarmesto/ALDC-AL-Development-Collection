@@ -189,7 +189,70 @@ for (const i of instructions) {
   }
 }
 
-// ─── 7. Copilot entrypoint coherence ─────────────────────────────
+// ─── 7. AL file naming convention ────────────────────────────────
+// Verifies every *.al file in the project follows <ObjectName>.<ObjectType>.al.
+// The narrow globs of type-specific instructions (al-performance, al-events,
+// al-error-handling) depend on this pattern — a misnamed file silently loses
+// its instructions.
+const AL_OBJECT_TYPES = new Set([
+  "Table", "TableExt",
+  "Page", "PageExt", "PageCustomization",
+  "Codeunit",
+  "Report", "ReportExt",
+  "Query",
+  "XmlPort",
+  "Enum", "EnumExt",
+  "Interface",
+  "ControlAddIn",
+  "Profile",
+  "PermissionSet", "PermissionSetExt",
+  "Entitlement",
+  "DotNet"
+]);
+
+function walkAlFiles(dir, acc) {
+  if (!fileExists(dir)) return acc;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name.startsWith(".") || entry.name === "node_modules") continue;
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkAlFiles(full, acc);
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith(".al")) {
+      acc.push(full);
+    }
+  }
+  return acc;
+}
+
+const alFiles = walkAlFiles(".", []);
+const malformed = [];
+for (const f of alFiles) {
+  const base = path.basename(f);
+  // Expected: <Name>.<Type>.al where <Type> is in AL_OBJECT_TYPES
+  const parts = base.split(".");
+  if (parts.length < 3 || parts[parts.length - 1].toLowerCase() !== "al") {
+    malformed.push(f);
+    continue;
+  }
+  const type = parts[parts.length - 2];
+  if (!AL_OBJECT_TYPES.has(type)) {
+    malformed.push(f);
+  }
+}
+
+if (alFiles.length === 0) {
+  info("AL naming: no .al files found in project (skipping check)");
+} else if (malformed.length === 0) {
+  info(`AL naming: all ${alFiles.length} .al files follow <Name>.<Type>.al`);
+} else {
+  for (const f of malformed) {
+    issue("malformedAlFileName",
+      `AL file does not follow <ObjectName>.<ObjectType>.al pattern: ${f}`);
+  }
+  info(`AL naming: ${alFiles.length - malformed.length}/${alFiles.length} files compliant`);
+}
+
+// ─── 8. Copilot entrypoint coherence ─────────────────────────────
 const entrypoint = cfg.copilotEntrypoint;
 const source = cfg.copilotSource;
 

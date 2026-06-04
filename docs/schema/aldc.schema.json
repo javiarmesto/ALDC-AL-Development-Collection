@@ -69,7 +69,8 @@
             "missingSkills": { "enum": ["warn", "error"] },
             "copilotEntrypointCoherence": { "enum": ["warn", "error"] },
             "incompleteRequirementSets": { "enum": ["warn", "error"] },
-            "missingRecommendedSkills": { "enum": ["warn", "error"] }
+            "missingRecommendedSkills": { "enum": ["warn", "error"] },
+            "malformedAlFileName": { "enum": ["warn", "error"] }
           }
         }
       }

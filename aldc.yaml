@@ -105,3 +105,4 @@ validation:
     copilotEntrypointCoherence: "warn"
     incompleteRequirementSets: "warn"
     missingRecommendedSkills: "warn"
+    malformedAlFileName: "warn"
