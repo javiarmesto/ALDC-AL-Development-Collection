@@ -412,7 +412,7 @@ actions
 ### Step 5: Build and Test
 
 1. Build: `al_build`
-2. Publish: `al_incremental_publish`
+2. Publish: `al_publish` (incremental)
 3. Verify layout, navigation, and field behavior
 4. Test dynamic visibility and styling with different record states
 

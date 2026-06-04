@@ -27,11 +27,11 @@ Select the right tool before starting:
 
 | Issue Type | Strategy | Tool |
 |---|---|---|
-| Consistent runtime error | Standard debugger | `al_debug_without_publish` |
-| Already deployed code | Debug without publish | `al_debug_without_publish` |
-| Rapid dev cycle | Incremental publish | `al_incremental_publish` |
-| Intermittent / hard-to-reproduce | Snapshot debugging | `al_initalize_snapshot_debugging` |
-| Slow performance | CPU profiling | `al_generate_cpu_profile_file` |
+| Consistent runtime error | Standard debugger | `al_debug` |
+| Already deployed code | Debug without publish | `al_debug` |
+| Rapid dev cycle | Incremental publish | `al_publish` (incremental) |
+| Intermittent / hard-to-reproduce | Snapshot debugging | `al_snapshotdebugging` |
+| Slow performance | CPU profiling | VS Code command (not an agent tool) |
 | Auth / symbols / build | Configuration troubleshoot | See Workflow Step 2b |
 | Copilot AI feature | Agent session debug | `launch.json` with `clientType: Agent` |
 
@@ -94,11 +94,11 @@ Before initializing:
 2. Security review for sensitive information
 3. Obtain explicit user approval
 
-Commands:
-  al_initalize_snapshot_debugging   ← start capture session
+Commands (one tool — `al_snapshotdebugging` — covers initialize / finish / view):
+  al_snapshotdebugging (initialize)   ← start capture session
   [reproduce scenario 10-20 times]
-  al_finish_snapshot_debugging      ← end capture
-  al_snapshots                      ← view and compare
+  al_snapshotdebugging (finish)       ← end capture
+  al_snapshotdebugging (view)         ← view and compare
 
 Compare snapshots between success and failure cases:
 - Variable values at failure point
@@ -143,16 +143,16 @@ Gather issue information:
 **Authentication failures** (401/403, cannot download symbols):
 ```
 ⚠️ HUMAN GATE: Clearing credentials disconnects active sessions.
-Confirm impact and obtain approval before:
-  al_clear_credentials_cache
+Confirm impact and obtain approval before clearing the credentials cache
+(a VS Code command, not an agent tool).
 Then re-authenticate and verify launch.json authentication method.
 ```
 
 **Missing symbols** (unresolved references, red squiggles):
 ```
-al_download_symbols      ← first attempt
-al_download_source       ← if symbols persist
-al_build                 ← verify compilation
+al_downloadsymbols                      ← first attempt
+al_downloadsymbols (globalSourcesOnly)  ← if no BC server connection is available
+al_build                                ← verify compilation
 ```
 Check `app.json` dependencies version alignment.
 
@@ -161,7 +161,7 @@ Check `app.json` dependencies version alignment.
 - `AL0185` — Object ID conflict: check ID range in `app.json`, no duplicates
 - `AL0118` — Field length mismatch: align extension field length with base table
 
-**Publishing failures**: check environment connectivity, extension version increment, dependency resolution via `al_get_package_dependencies`.
+**Publishing failures**: check environment connectivity, extension version increment, dependency resolution via `al_packages`.
 
 ### Step 3: Diagnose Root Cause
 

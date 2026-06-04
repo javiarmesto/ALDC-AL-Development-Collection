@@ -35,8 +35,8 @@ Before writing any test code:
 
 ### Step 1: Read Phase Requirements
 - Read the phase number, objective, and AL objects to create/modify from the Conductor's instructions
-- Read the referenced `.github/plans/{req_name}/{req_name}.spec.md` and `.github/plans/{req_name}/{req_name}.architecture.md`
-- Understand the test expectations from `.github/plans/{req_name}/{req_name}.test-plan.md`
+- The Conductor passes **phase-relevant excerpts** of the spec, the architecture decisions, and the test expectations inline — treat these as authoritative for this phase
+- Read the full `.github/plans/{req_name}/{req_name}.spec.md`, `.architecture.md`, or `.test-plan.md` **only if** a detail referenced in the excerpt is missing (the Conductor includes the paths for this) — do not re-read them wholesale by default
 
 ### Step 2: Create TEST Files FIRST (RED State)
 - Create test codeunit(s) in the test project directory
@@ -80,7 +80,7 @@ Before writing any test code:
 
 ### Object & Pattern Reference
 
-For object-creation patterns, naming, performance and error-handling rules, **rely on the active framework**: the matching micro-instructions in `.github/instructions/al-*` auto-load when you edit `.al` files, and the relevant skill (`skill-events`, `skill-pages`, `skill-permissions`, `skill-performance`, `skill-api`, `skill-copilot`) provides full examples and patterns. Do not invent or duplicate those rules in your responses; load the skill and follow it.
+For object-creation patterns, naming, performance and error-handling rules, **rely on the active framework**: the matching micro-instructions in `instructions/al-*` auto-load when you edit `.al` files, and the relevant skill (`skill-events`, `skill-pages`, `skill-permissions`, `skill-performance`, `skill-api`, `skill-copilot`) provides full examples and patterns. Do not invent or duplicate those rules in your responses; load the skill and follow it.
 
 ### Test Patterns (Given/When/Then)
 
@@ -132,7 +132,7 @@ end;
 
 ## Domain Skills
 
-This agent works with the following skills from .github/skills/.
+This agent works with the following skills from skills/.
 Copilot loads them automatically when relevant to the task:
 
 - **skill-api** — When creating API pages, OData endpoints, HttpClient integrations
