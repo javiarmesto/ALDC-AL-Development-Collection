@@ -1,5 +1,25 @@
 # ALDC Core Changelog
 
+## [Unreleased]
+
+### Upstreamed from ALDC-Forge
+
+**Added:**
+
+- BCQuality external citable-knowledge layer: `external.bcquality` manifest block, `tools/bcquality/` (install + evidence validator), `bcquality-evidence` CI workflow, and the BCQuality task-context template.
+- On-demand agents `al-triage` (reactive diagnosis) and `dredd` (independent static auditor), registered in the collection manifest and documented in the agent docs.
+- `skill-contribution-assistant`.
+- `aldc-validate`: AL file-naming rule (`malformedAlFileName`) and trim-aware copilot-entrypoint coherence (`copilotEntrypointMode`).
+
+**Changed:**
+
+- `install.js` now ships the **trimmed** (~31% lighter) always-on entrypoint to consuming projects; the full reference remains at `instructions/copilot-instructions.md`.
+- Review subagent emits a structured Review-Report JSON with a BCQuality Step 0 and an A–G native fallback when BCQuality is absent (never blocks); the conductor builds and passes the BCQuality task-context inline.
+- Phantom-tool cleanup across `al-developer` / `al-architect` / skills (build/publish/profiling are VS Code commands, not agent tools).
+- Normalized in-prose framework path references to the canonical top-level layout.
+
+> Version bump deferred to release.
+
 ## [4.0.0] - 2026-05-30
 
 ### Token Efficiency & Foundation Restructure

@@ -294,8 +294,11 @@ async function install(opts) {
     }
   } else { totalSkipped++; }
 
-  // 4. Copy copilot-instructions.md entrypoint to .github/
-  const copilotSrc = path.join(packageDir, 'instructions', 'copilot-instructions.md');
+  // 4. Copy the always-on entrypoint to .github/.
+  //    Ship the TRIMMED entrypoint (.github/copilot-instructions.md, ~31% leaner)
+  //    as the user's always-on context; the full reference stays available at
+  //    instructions/copilot-instructions.md.
+  const copilotSrc = path.join(packageDir, '.github', 'copilot-instructions.md');
   const copilotDst = path.join(projectDir, '.github', 'copilot-instructions.md');
   if (copyFile(copilotSrc, copilotDst, opts.force)) {
     totalCopied++;
