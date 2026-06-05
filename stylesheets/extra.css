@@ -323,10 +323,12 @@ body,
   border-radius: 1.25rem;
   overflow: hidden;
   isolation: isolate;
+  /* 4.1.0 sunset-forward variant — orange leads, lime supports */
   background:
-    radial-gradient(60% 80% at 15% 15%, rgba(229, 255, 148, 0.50), transparent 60%),
-    radial-gradient(50% 70% at 85% 80%, rgba(255, 174, 83, 0.35), transparent 60%),
-    radial-gradient(40% 60% at 50% 50%, rgba(213, 223, 224, 0.20), transparent 70%),
+    radial-gradient(65% 82% at 12% 12%, rgba(255, 174, 83, 0.42), transparent 60%),
+    radial-gradient(55% 72% at 88% 84%, rgba(255, 99, 31, 0.22), transparent 60%),
+    radial-gradient(46% 62% at 58% 34%, rgba(229, 255, 148, 0.30), transparent 62%),
+    radial-gradient(40% 60% at 50% 50%, rgba(213, 223, 224, 0.18), transparent 70%),
     var(--b44-surface);
   border: 1px solid var(--b44-divider);
   box-shadow: var(--b44-shadow-md);
@@ -497,6 +499,14 @@ body,
 }
 .hero-pills .pill--accent b { color: var(--b44-lime-deep); }
 
+/* Release accent — marks the current version in sunset, distinct from the lime accents */
+.hero-pills .pill--version {
+  color: var(--b44-ink);
+  background: linear-gradient(135deg, rgba(255, 174, 83, 0.28), rgba(255, 99, 31, 0.20));
+  border: 1px solid var(--b44-sunset);
+}
+.hero-pills .pill--version b { color: var(--b44-sunset); }
+
 /* =========================================================
    Section titles with gradient bar
    ========================================================= */
@@ -520,6 +530,12 @@ body,
   width: 0.3rem;
   border-radius: 0.3rem;
   background: linear-gradient(180deg, var(--b44-lime) 0%, var(--b44-sunset) 100%);
+}
+
+/* Release section — sunset-forward bar to flag the "What's new in 4.1.0" band */
+.md-typeset h2#whats-new.section-title::before,
+.md-typeset h2#novedades.section-title::before {
+  background: linear-gradient(180deg, var(--b44-sunset) 0%, var(--b44-blazing) 100%);
 }
 
 .section-lead {
