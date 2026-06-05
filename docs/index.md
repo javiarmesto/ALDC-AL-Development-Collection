@@ -14,7 +14,7 @@ hide:
   <span class="hero-banner__arrow">→</span>
 </a>
 
-<div class="hero-eyebrow">AL Development Collection · Spec-driven AI for Business Central</div>
+<div class="hero-eyebrow">AL Development Collection · Spec-driven AI for Business Central · <a href="index-es/">Español</a></div>
 
 <h2 class="hero-title">Ship Business Central extensions with AI agents that follow your process.</h2>
 
@@ -27,13 +27,53 @@ hide:
 </div>
 
 <div class="hero-pills">
-  <span class="pill"><b>4</b> agents</span>
+  <span class="pill"><b>4</b> public + <b>2</b> on-demand agents</span>
   <span class="pill"><b>11</b> skills</span>
   <span class="pill"><b>6</b> workflows</span>
-  <span class="pill pill--accent">MIT</span>
+  <span class="pill pill--accent">BCQuality-ready</span>
   <span class="pill pill--accent">Copilot + Claude Code</span>
+  <span class="pill">v4.1.0 · MIT</span>
 </div>
 
+</div>
+
+---
+
+## What's new in 4.1.0 { #whats-new .section-title }
+
+<div class="grid cards" markdown="1">
+
+-   :material-flash-outline: &nbsp; **Lower token / AIC cost per interaction**
+
+    ---
+
+    A **~31% lighter** always-on entrypoint, narrow per-object instruction globs, and
+    curated context passed to subagents. Same capabilities — fewer tokens on every request.
+
+-   :material-book-search-outline: &nbsp; **Cited reviews & audits with BCQuality**
+
+    ---
+
+    Optional external knowledge base (configurable, defaults to upstream
+    [microsoft/BCQuality](bcquality/)). Agents cite findings to real files, with a
+    graceful native fallback when it's absent. Never blocks.
+
+</div>
+
+<div class="two-col">
+<div class="two-col-text" markdown="1">
+
+**Install once, from the Command Palette.** Run `AL Collection: Install Toolkit to Workspace`
+and ALDC drops the agents, skills, instructions and config into your project — then start
+with `@AL Architecture & Design Specialist` or `@AL Development Conductor`.
+
+Also new: on-demand **`@AL Triage`** (reactive diagnosis) and **`@Dredd`** (independent
+auditor) — read-only on your code.
+
+</div>
+<div class="two-col-visual">
+  <img src="assets/images/aldcinstalltoolkit.gif" alt="Installing the ALDC toolkit from the VS Code Command Palette" loading="lazy">
+</div>
 </div>
 
 ---
@@ -129,6 +169,40 @@ flowchart TD
 
 ---
 
+## Cited reviews & audits with BCQuality { #bcquality .section-title }
+
+<div class="two-col">
+<div class="two-col-text" markdown="1">
+
+BCQuality is an **optional** layer that turns the review/audit agents into **citing**
+reviewers — every finding points to a real Business Central knowledge file, not just an
+opinion.
+
+-   **Configurable source.** Defaults to the canonical upstream [microsoft/BCQuality](https://github.com/microsoft/BCQuality); point it at your own fork in `aldc.yaml`.
+-   **Consumed externally.** A sibling clone via multi-root workspace — never compiled, never pollutes your app.
+-   **Hooks in via `entry.md`.** Agents read the meta-skill and run whatever it dispatches.
+-   **Never blocks.** Absent by default → graceful native A–G fallback.
+
+[Read the BCQuality guide :material-arrow-right:](bcquality/){ .md-button }
+
+</div>
+<div class="two-col-visual" markdown="1">
+
+```text
+# from your AL project root — opt in when you want cited reviews
+bash tools/bcquality/install.sh      # or: pwsh tools/bcquality/install.ps1
+#   → clones microsoft/BCQuality to ../bcquality (configurable)
+
+# then open aldc.code-workspace and run:
+@Dredd                               # independent audit
+@AL Development Conductor            # review phases cite BCQuality
+```
+
+</div>
+</div>
+
+---
+
 ## Quick start { .section-title }
 
 === ":fontawesome-brands-github: GitHub Copilot (VS Code)"
@@ -191,7 +265,7 @@ Everything ALDC-related lives here. Pick your path.
   <a class="resource-card" href="agents/">
     <span class="resource-kicker">Roles</span>
     <h3>Agents</h3>
-    <p>Architect, Developer, Conductor, Pre-Sales. What each one does and when.</p>
+    <p>Architect, Developer, Conductor, Pre-Sales — plus on-demand Triage &amp; Dredd. What each one does and when.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -327,7 +401,7 @@ Four ways to make ALDC better. No contribution is too small.
 
 <div class="status-footer" markdown="1">
 
-`✓ ALDC Core v1.1 COMPLIANT` &nbsp;·&nbsp; `v3.2.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Made by [Javier Armesto](https://www.linkedin.com/in/javiarmesto)
+`✓ ALDC Core v1.1 COMPLIANT` &nbsp;·&nbsp; `v4.1.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Made by [Javier Armesto](https://www.linkedin.com/in/javiarmesto)
 Reference model: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)
 
 </div>

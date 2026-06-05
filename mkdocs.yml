@@ -120,6 +120,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Inicio (ES): index-es.md
   - Events: events.md
   - Getting Started:
     - Overview: getting-started.md
