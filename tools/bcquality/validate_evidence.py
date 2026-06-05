@@ -33,16 +33,6 @@ import sys
 
 SHA_RE = re.compile(r'pinnedCommit:\s*"?([0-9a-f]{40})"?')
 
-# Hardcoded pin assignment in the install scripts (bash + PowerShell):
-#   BCQUALITY_PIN="<sha>"   /   $BcqualityPin = '<sha>'
-INSTALL_PIN_RE = re.compile(r'(?:BCQUALITY_PIN|BcqualityPin)\s*=\s*["\']?([0-9a-f]{40})')
-
-# Files that hardcode the pin and must match aldc.yaml's canonical value.
-INSTALL_PIN_FILES = (
-    "tools/bcquality/install.sh",
-    "tools/bcquality/install.ps1",
-)
-
 
 def repo_root() -> str:
     return subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
@@ -68,16 +58,6 @@ def home_from_aldc(root: str) -> str | None:
         with open(path, encoding="utf-8") as fh:
             m = HOME_RE.search(fh.read())
         return m.group(1).strip() if m else None
-    except OSError:
-        return None
-
-
-def install_pin(root: str, rel_path: str) -> str | None:
-    path = os.path.join(root, rel_path)
-    try:
-        with open(path, encoding="utf-8") as fh:
-            m = INSTALL_PIN_RE.search(fh.read())
-        return m.group(1) if m else None
     except OSError:
         return None
 
@@ -116,20 +96,16 @@ def main() -> int:
     errors: list[str] = []
     notes: list[str] = []
 
-    # --- Check 1: pinned-SHA consistency (aldc.yaml <-> both install scripts) -
+    # --- Check 1: pin policy (the pin is OPTIONAL) ---
+    # The install scripts read url/ref/pinnedCommit from aldc.yaml (single source of
+    # truth), so there is no hardcoded pin to cross-check. When a pin is set it gives
+    # reproducible, evidence-validated runs; when empty, BCQuality tracks the configured
+    # branch/tag and pin coherence is simply skipped.
     pinned = pinned_sha_from_aldc(root)
-    if not pinned:
-        errors.append("aldc.yaml: external.bcquality.pinnedCommit missing or not a 40-hex SHA.")
-
-    # Install scripts hardcode the pin; assert they match aldc.yaml (canonical).
-    for rel in INSTALL_PIN_FILES:
-        script_pin = install_pin(root, rel)
-        if script_pin is None:
-            errors.append(f"{rel}: BCQuality pin assignment not found or not a 40-hex SHA.")
-        elif pinned and script_pin != pinned:
-            errors.append(f"SHA mismatch: aldc.yaml={pinned} but {rel}={script_pin}.")
-        elif pinned:
-            notes.append(f"pinned SHA consistent: {rel} == aldc.yaml")
+    if pinned:
+        notes.append(f"BCQuality pinned to {pinned} (aldc.yaml).")
+    else:
+        notes.append("BCQuality not pinned (aldc.yaml tracks a branch/tag) - pin coherence skipped.")
 
     # --- Resolve the external BCQuality clone (multi-root; no in-repo submodule) ---
     bcq_root = args.bcquality_root or os.environ.get("BCQUALITY_HOME") or home_from_aldc(root)

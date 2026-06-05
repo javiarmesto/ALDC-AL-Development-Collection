@@ -28,14 +28,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Clone BCQuality at the pinned SHA
+      - name: Clone BCQuality (url/ref/pin from aldc.yaml)
         run: |
           set -euo pipefail
-          PIN=$(grep -oE 'pinnedCommit:[[:space:]]*"?[0-9a-f]{40}"?' aldc.yaml | grep -oE '[0-9a-f]{40}')
-          URL=$(grep -E '^\s*url:' aldc.yaml | grep bcquality | head -1 | sed -E 's/.*"(.*)".*/\1/')
-          echo "Cloning $URL @ $PIN"
+          URL=$(grep -E '^\s*url:'  aldc.yaml | head -1 | sed -E 's/.*url:[[:space:]]*"?([^"#]+)"?.*/\1/'  | tr -d '[:space:]')
+          REF=$(grep -E '^\s*ref:'  aldc.yaml | head -1 | sed -E 's/.*ref:[[:space:]]*"?([^"#]+)"?.*/\1/'  | tr -d '[:space:]')
+          PIN=$(grep -oE 'pinnedCommit:[[:space:]]*"?[0-9a-f]{40}"?' aldc.yaml | grep -oE '[0-9a-f]{40}' || true)
+          TARGET="${PIN:-${REF:-main}}"
+          echo "Cloning $URL @ $TARGET"
           git clone --filter=blob:none "$URL" "$RUNNER_TEMP/bcquality"
-          git -C "$RUNNER_TEMP/bcquality" checkout --quiet "$PIN"
+          git -C "$RUNNER_TEMP/bcquality" checkout --quiet "$TARGET"
 
       - name: Set up Python
         uses: actions/setup-python@v5

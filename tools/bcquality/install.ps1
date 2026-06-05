@@ -1,14 +1,18 @@
 <#
 .SYNOPSIS
-    Set up the BCQuality knowledge base for an ALDC test repo (Windows/PowerShell).
+    Set up the BCQuality knowledge base for an ALDC workspace (Windows/PowerShell).
 
 .DESCRIPTION
     PowerShell-native equivalent of install.sh. BCQuality is consumed from OUTSIDE
-    the AL project (Option B / multi-root): this clones it to a sibling folder so
-    its example .al files never enter your extension's compilation, then you open
+    the AL project (multi-root): this clones it to a sibling folder so its example
+    .al files never enter your extension's compilation, then you open
     `aldc.code-workspace` to get it as a second workspace root the agents can read.
 
-    Run from the ROOT of the repo/folder you want to run the review/audit test on:
+    The source is CONFIGURABLE via aldc.yaml (external.bcquality): `url`, `ref` and
+    optional `pinnedCommit`. Defaults to the canonical upstream (microsoft/BCQuality);
+    point `url` at your own fork to use it instead.
+
+    Run from the ROOT of the repo/folder you run the review/audit on:
 
         powershell -ExecutionPolicy Bypass -File tools\bcquality\install.ps1
 
@@ -22,9 +26,30 @@ param()
 # $LASTEXITCODE explicitly.
 $ErrorActionPreference = 'Continue'
 
-# --- Pin: keep in sync with aldc.yaml (external.bcquality.pinnedCommit) ---
-$BcqualityUrl = 'https://github.com/javiarmesto/bcquality.git'
-$BcqualityPin = '07efef6bc719f32c7dded1b2e00d1d12080a2830'
+$AldcFile = 'aldc.yaml'
+
+# --- Defaults (used when aldc.yaml is absent or a key is unset) ---
+$BcqualityUrl = 'https://github.com/microsoft/BCQuality.git'
+$BcqualityRef = 'main'
+$BcqualityPin = ''
+
+# Read a scalar key from aldc.yaml (single source of truth). First match wins.
+function Read-Aldc($key) {
+    if (-not (Test-Path $AldcFile)) { return '' }
+    $line = Select-String -Path $AldcFile -Pattern ("^\s*" + $key + ":") | Select-Object -First 1
+    if (-not $line) { return '' }
+    $m = [regex]::Match($line.Line, ($key + ':\s*"?([^"#]*)"?'))
+    if ($m.Success) { return $m.Groups[1].Value.Trim() }
+    return ''
+}
+if (Test-Path $AldcFile) {
+    $u = Read-Aldc 'url';          if ($u) { $BcqualityUrl = $u }
+    $r = Read-Aldc 'ref';          if ($r) { $BcqualityRef = $r }
+    $p = Read-Aldc 'pinnedCommit'; if ($p) { $BcqualityPin = $p }
+}
+
+# What to check out: the pin if set, otherwise the tracking ref (branch/tag).
+$Target = if ($BcqualityPin) { $BcqualityPin } else { $BcqualityRef }
 
 # External knowledge-base location. Default: sibling of this repo, matching the
 # `../bcquality` root in aldc.code-workspace. MUST stay OUTSIDE the AL project.
@@ -38,8 +63,8 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Die 'git is required but was not found on PATH.'
 }
 
-if (-not (Test-Path 'aldc.yaml') -and -not (Test-Path '.github')) {
-    Warn 'No aldc.yaml or .github\ here - make sure you run this from the ROOT of your test repo.'
+if (-not (Test-Path $AldcFile) -and -not (Test-Path '.github')) {
+    Warn 'No aldc.yaml or .github\ here - make sure you run this from the ROOT of your repo.'
 }
 
 # Guard: never let the knowledge base land inside the AL project.
@@ -48,17 +73,17 @@ if (-not ($BcqualityHome -match '^([A-Za-z]:[\\/]|/|\.\.[\\/])')) {
 }
 
 if (Test-Path (Join-Path $BcqualityHome '.git')) {
-    Say "$BcqualityHome exists; fetching and pinning to $BcqualityPin"
-    git -C $BcqualityHome fetch origin
-    git -C $BcqualityHome checkout --quiet $BcqualityPin
-    if ($LASTEXITCODE -ne 0) { Die "Could not checkout $BcqualityPin inside $BcqualityHome." }
+    Say "$BcqualityHome exists; fetching and checking out $Target"
+    git -C $BcqualityHome fetch origin --tags --prune
+    git -C $BcqualityHome checkout --quiet $Target
+    if ($LASTEXITCODE -ne 0) { Die "Could not checkout '$Target' inside $BcqualityHome." }
 }
 else {
-    Say "Cloning BCQuality into $BcqualityHome (outside the AL project)"
+    Say "Cloning BCQuality ($BcqualityUrl) into $BcqualityHome (outside the AL project)"
     git clone $BcqualityUrl $BcqualityHome
     if ($LASTEXITCODE -ne 0) { Die 'git clone failed.' }
-    git -C $BcqualityHome checkout --quiet $BcqualityPin
-    if ($LASTEXITCODE -ne 0) { Die "Could not checkout $BcqualityPin inside $BcqualityHome." }
+    git -C $BcqualityHome checkout --quiet $Target
+    if ($LASTEXITCODE -ne 0) { Die "Could not checkout '$Target' inside $BcqualityHome." }
 }
 
 $entry = Join-Path $BcqualityHome 'skills\entry.md'
@@ -66,15 +91,13 @@ if (-not (Test-Path $entry)) {
     Die "Finished, but $entry is missing - the agents won't find the contract."
 }
 
-$actualPin = (git -C $BcqualityHome rev-parse HEAD).Trim()
-Say "BCQuality ready at $BcqualityHome (HEAD = $actualPin)"
+$actual = (git -C $BcqualityHome rev-parse HEAD).Trim()
+Say "BCQuality ready at $BcqualityHome (HEAD = $actual)"
 
-if (Test-Path 'aldc.yaml') {
-    if (Select-String -Path 'aldc.yaml' -SimpleMatch -Pattern $BcqualityPin -Quiet) {
-        Say 'aldc.yaml pin matches.'
-    } else {
-        Warn "aldc.yaml does not mention $BcqualityPin - align the pin to keep the evidence validator happy."
-    }
+if ($BcqualityPin) {
+    Say "Pinned to $BcqualityPin (aldc.yaml)."
+} else {
+    Warn "No pinnedCommit in aldc.yaml - tracking '$BcqualityRef'. Set external.bcquality.pinnedCommit to a 40-hex SHA for reproducible, evidence-validated runs."
 }
 
 Say "Done. Open 'aldc.code-workspace' in VS Code - BCQuality appears as a second"

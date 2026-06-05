@@ -74,7 +74,7 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 **BCQuality (optional)** — External, citable BC knowledge layer for reviews & audits
 
-- A pinned fork consumed externally (multi-root); agents cite findings to real knowledge files, with a graceful native fallback when it is absent. See [`docs/bcquality.md`](docs/bcquality.md).
+- An externally-consumed BC knowledge base (multi-root) — defaults to the canonical upstream [`microsoft/BCQuality`](https://github.com/microsoft/BCQuality), configurable to your own fork. Agents cite findings to real knowledge files, with a graceful native fallback when it is absent. See [`docs/bcquality.md`](docs/bcquality.md).
 
 **11 Composable Skills** — Domain knowledge loaded on demand
 
@@ -364,7 +364,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 
 ## Using BCQuality (optional)
 
-BCQuality is an optional, externally-consumed BC knowledge layer for cited reviews and audits. It is a pinned fork ([github.com/javiarmesto/bcquality](https://github.com/javiarmesto/bcquality)) consumed via multi-root workspace — **not a submodule, never compiled**. When absent, agents fall back gracefully to the native A–G checklist and are never blocked.
+BCQuality is an optional, externally-consumed BC knowledge layer for cited reviews and audits. The source is configurable in `aldc.yaml` and defaults to the canonical upstream [microsoft/BCQuality](https://github.com/microsoft/BCQuality) (point it at your own fork if you keep one); it is consumed via a multi-root workspace — **not a submodule, never compiled**. When absent, agents fall back gracefully to the native A–G checklist and are never blocked.
 
 **Quick start (3 steps):**
 

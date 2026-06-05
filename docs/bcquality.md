@@ -9,31 +9,38 @@ reviews.
 
 ## How the integration works
 
-- **It is a fork, consumed externally — not a submodule.** ALDC pins a fork of
-  BCQuality (`https://github.com/javiarmesto/bcquality.git`) at a known commit and
-  clones it **outside** your AL project (a sibling folder, default `../bcquality`).
-  Because that clone has no `app.json`, the AL compiler never builds it, so its
-  example `.al` files can't pollute your extension's error list.
+- **Consumed externally — not a submodule.** ALDC clones BCQuality **outside** your
+  AL project (a sibling folder, default `../bcquality`). Because that clone has no
+  `app.json`, the AL compiler never builds it, so its example `.al` files can't
+  pollute your extension's error list.
+- **The source is configurable; the default is the canonical upstream.** Out of the
+  box `aldc.yaml → external.bcquality.url` points at **[`microsoft/BCQuality`](https://github.com/microsoft/BCQuality)**
+  (the source of truth). Point `url` at **your own fork** if you maintain one. By
+  default it tracks the `ref` branch (`main`); set `pinnedCommit` to a 40-hex SHA for
+  reproducible, evidence-validated runs.
 - **ALDC "hooks in" by calling the meta-skill `entry.md`.** The agents do **not**
   hardcode which BCQuality skills to run. They read the entry point
   (`<home>/skills/entry.md`, per `aldc.yaml`) and **execute whatever its `dispatch[]`
-  returns** — Entry owns the routing. As the fork's coverage grows, ALDC picks it up
+  returns** — Entry owns the routing. As BCQuality's coverage grows, ALDC picks it up
   with no change on this side.
-- **Configuration lives in `aldc.yaml → external.bcquality`**: the fork `url`, the
-  `pinnedCommit`, the `home` (clone location), the `entryPoint` (`skills/entry.md`),
-  the multi-root `workspace`, and the absent-path `fallback` policy.
+- **Configuration lives in `aldc.yaml → external.bcquality`**: `url`, `ref`,
+  optional `pinnedCommit`, `home` (clone location), `entryPoint` (`skills/entry.md`),
+  the multi-root `workspace`, and the absent-path `fallback` policy. The install
+  scripts read `url`/`ref`/`pinnedCommit` from here — it is the single source of truth.
 
 ## Install (only if you want BCQuality-backed reviews)
 
 From your **AL project root**:
 
-1. **Clone the pinned fork.**
+1. **Clone the knowledge base.**
    - macOS / Linux / Git Bash / WSL: `bash tools/bcquality/install.sh`
    - Windows (PowerShell): `pwsh -File tools/bcquality/install.ps1`
 
-   This clones `javiarmesto/bcquality` to `../bcquality` at the pinned commit
-   (override the location with `$BCQUALITY_HOME`). The scripts are idempotent and
-   verify `skills/entry.md` exists.
+   This reads `url` / `ref` / `pinnedCommit` from `aldc.yaml` and clones BCQuality to
+   `../bcquality` (default upstream `microsoft/BCQuality`; override the location with
+   `$BCQUALITY_HOME`). The scripts are idempotent and verify `skills/entry.md` exists.
+   To use your own fork or a fixed version, edit `external.bcquality` in `aldc.yaml`
+   before running.
 
 2. **Open the multi-root workspace.** Open `aldc.code-workspace` in VS Code. It adds
    two roots — your extension (compiled) and `../bcquality` (knowledge, *not*
@@ -49,14 +56,15 @@ From your **AL project root**:
 
 ## Pin & evidence
 
-The fork is **pinned** to one commit, asserted in three places that must agree:
-`external.bcquality.pinnedCommit` in `aldc.yaml` and the hardcoded pin in both
-install scripts. `tools/bcquality/validate_evidence.py` (run by the
-`bcquality-evidence` CI workflow) checks that coherence **and** that every citation
-in a persisted review/audit report resolves to a real file **inside** the pinned
-clone — a drifted pin or a hallucinated citation fails the build.
+`aldc.yaml → external.bcquality` is the **single source of truth** for `url`, `ref`
+and the optional `pinnedCommit`; the install scripts and the `bcquality-evidence` CI
+workflow read it from there (nothing is hardcoded). Pinning is **optional**: set
+`pinnedCommit` to a 40-hex SHA for reproducible runs, or leave it empty to track the
+`ref` branch. Either way, `tools/bcquality/validate_evidence.py` checks that every
+citation in a persisted review/audit report resolves to a real file **inside** the
+clone — a hallucinated citation fails the build.
 
-To bump the BCQuality version, update the pin in all three places together.
+To change the source or version, edit `url` / `ref` / `pinnedCommit` in `aldc.yaml`.
 
 ## Notes
 

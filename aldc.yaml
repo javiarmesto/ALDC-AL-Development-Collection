@@ -12,8 +12,13 @@ toolkitRoot: "."
 external:
   bcquality:
     mode: "external-multiroot"            # consumed from OUTSIDE the AL project (see aldc.code-workspace)
-    url: "https://github.com/javiarmesto/bcquality.git"
-    pinnedCommit: "07efef6bc719f32c7dded1b2e00d1d12080a2830"
+    # Source of the knowledge base. Configurable: defaults to the canonical upstream
+    # (microsoft/BCQuality). Override `url` to point at your own fork. The install
+    # scripts read `url` / `ref` / `pinnedCommit` from here — this file is the single
+    # source of truth.
+    url: "https://github.com/microsoft/BCQuality.git"
+    ref: "main"                           # branch/tag to track when pinnedCommit is empty
+    pinnedCommit: ""                       # optional: set a 40-hex SHA for reproducible, pinned evidence
     home: "../bcquality"                  # external clone location (override: $BCQUALITY_HOME); 2nd workspace root
     entryPoint: "skills/entry.md"         # relative to `home`
     workspace: "aldc.code-workspace"      # multi-root workspace (this repo root + ../bcquality); see docs/bcquality.md

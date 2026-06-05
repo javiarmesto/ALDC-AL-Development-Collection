@@ -81,7 +81,7 @@ Project estimation?        → @AL Pre-Sales & Project Estimation Specialist
 
 ## External Knowledge: BCQuality
 
-[BCQuality](https://github.com/javiarmesto/bcquality) — a curated, citable knowledge base of Business Central guidance (atomic knowledge files + review skills), pinned as a fork — is consumed from **outside the AL project**: a pinned clone added as a second VS Code workspace root (multi-root via `aldc.code-workspace`), so its example `.al` files never enter your extension's compilation. See [`docs/bcquality.md`](../docs/bcquality.md) for install + usage.
+[BCQuality](https://github.com/microsoft/BCQuality) — a curated, citable knowledge base of Business Central guidance (atomic knowledge files + review skills) — is consumed from **outside the AL project**: a clone added as a second VS Code workspace root (multi-root via `aldc.code-workspace`), so its example `.al` files never enter your extension's compilation. Source/version is configurable in `aldc.yaml → external.bcquality` (defaults to upstream; point it at your own fork). See [`docs/bcquality.md`](../docs/bcquality.md) for install + usage.
 
 BCQuality is a **citation/audit layer, not a replacement** for the 7 auto-applied instructions or the 11 skills. The **AL Code Review Subagent** consults it (its "Step 0") before the A-G checklist: it routes via the BCQuality entry point (`<home>/skills/entry.md`, per `aldc.yaml`), runs the dispatched review skills, and folds the resulting findings — each backed by a knowledge-file citation — into the review report. A BCQuality `blocker`/`major` raises the review verdict like a native CRITICAL/MAJOR.
 
