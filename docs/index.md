@@ -47,7 +47,7 @@ hide:
 
     ---
 
-    A **~31% lighter** always-on entrypoint, narrow per-object instruction globs, and
+    A **31% lighter** always-on entrypoint, narrow per-object instruction globs, and
     curated context passed to subagents. Same capabilities — fewer tokens on every request.
 
 -   :material-book-search-outline: &nbsp; **Cited reviews & audits with BCQuality**

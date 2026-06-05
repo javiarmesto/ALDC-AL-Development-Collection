@@ -47,7 +47,7 @@ hide:
 
     ---
 
-    Entrypoint always-on **~31% más ligero**, globs de instrucciones estrechos por tipo de
+    Entrypoint always-on **31% más ligero**, globs de instrucciones estrechos por tipo de
     objeto, y contexto curado pasado a los subagentes. Las mismas capacidades — menos tokens en cada petición.
 
 -   :material-book-search-outline: &nbsp; **Reviews y auditorías citadas con BCQuality**
