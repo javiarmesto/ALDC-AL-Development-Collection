@@ -7,6 +7,35 @@ core:
 
 toolkitRoot: "."
 
+# External citable knowledge base, consumed by al-review-subagent (Step 0) as an
+# audit/citation layer. Does NOT replace instructions or skills.
+external:
+  bcquality:
+    mode: "external-multiroot"            # consumed from OUTSIDE the AL project (see aldc.code-workspace)
+    url: "https://github.com/javiarmesto/bcquality.git"
+    pinnedCommit: "07efef6bc719f32c7dded1b2e00d1d12080a2830"
+    home: "../bcquality"                  # external clone location (override: $BCQUALITY_HOME); 2nd workspace root
+    entryPoint: "skills/entry.md"         # relative to `home`
+    workspace: "aldc.code-workspace"      # multi-root workspace (this repo root + ../bcquality); see docs/bcquality.md
+    consumedBy: "agents/al-review-subagent.agent.md"
+    # Policy when BCQuality is ABSENT (the default until install.sh clones it).
+    # The .github/hooks/bcquality-precondition hook reads this and injects the
+    # directive (hook ported later as Preview); the agents' prose precondition is
+    # the backstop (#49/#54).
+    fallback:
+      mode: "skills-mode"        # review natively via instructions + skills
+      residual: "A-G"            # expand the native checklist from A/C/F/G to full A-G
+      outcome: "not-applicable"  # the bcquality.outcome the agents record
+      neverBlock: true           # a missing layer never fails/aborts the review
+    pilotSkills:
+      - "microsoft/skills/review/al-performance-review.md"
+      - "microsoft/skills/review/al-security-review.md"
+      - "microsoft/skills/review/al-style-review.md"
+    evidence:
+      persistedReportGlob: ".github/plans/**/*-bcquality-phase-*.json"
+      validator: "tools/bcquality/validate_evidence.py"
+      ciWorkflow: ".github/workflows/bcquality-evidence.yaml"
+
 plans:
   root: ".github/plans"
 
@@ -21,6 +50,10 @@ contracts:
 
 copilotEntrypoint: ".github/copilot-instructions.md"
 copilotSource: "instructions/copilot-instructions.md"
+# "trimmed": the always-on entrypoint is an intentional lean subset of the source
+# (the ~31% trim). The validator then checks it is non-empty and smaller than the
+# source instead of requiring byte-identity. Use "mirror" to require byte-identity.
+copilotEntrypointMode: "trimmed"
 
 required:
   agents:
@@ -28,7 +61,8 @@ required:
     - "agents/al-conductor.agent.md"
     - "agents/al-developer.agent.md"
     - "agents/al-presales.agent.md"
-  
+    - "agents/dredd.agent.md"
+
   subagents:
     - "agents/al-planning-subagent.agent.md"
     - "agents/al-review-subagent.agent.md"
@@ -105,3 +139,4 @@ validation:
     copilotEntrypointCoherence: "warn"
     incompleteRequirementSets: "warn"
     missingRecommendedSkills: "warn"
+    malformedAlFileName: "warn"

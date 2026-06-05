@@ -36,6 +36,7 @@
     },
     "copilotEntrypoint": { "type": "string" },
     "copilotSource": { "type": "string" },
+    "copilotEntrypointMode": { "enum": ["mirror", "trimmed"] },
     "required": {
       "type": "object",
       "required": ["agents", "subagents", "workflows", "skills", "instructions", "templates"],
@@ -69,7 +70,8 @@
             "missingSkills": { "enum": ["warn", "error"] },
             "copilotEntrypointCoherence": { "enum": ["warn", "error"] },
             "incompleteRequirementSets": { "enum": ["warn", "error"] },
-            "missingRecommendedSkills": { "enum": ["warn", "error"] }
+            "missingRecommendedSkills": { "enum": ["warn", "error"] },
+            "malformedAlFileName": { "enum": ["warn", "error"] }
           }
         }
       }

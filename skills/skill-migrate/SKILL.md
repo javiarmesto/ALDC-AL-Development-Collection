@@ -255,8 +255,8 @@ Document and prepare rollback before executing migration:
 ### Step 1: Pre-Migration Assessment
 
 1. **Backup**: Ensure source control is up to date (`git status` clean)
-2. **Download current symbols**: `al_download_source`
-3. **Document dependencies**: `al_get_package_dependencies` — list all with current versions
+2. **Download current symbols**: `al_downloadsymbols`
+3. **Document dependencies**: `al_packages` — list loaded packages with current versions
 4. **Review release notes**: Check BC target version breaking changes
 5. **Create migration plan** in `.github/plans/{project}-migration.md`
 
@@ -280,9 +280,8 @@ For each fix, verify with incremental build.
 
 ### Step 4: Regenerate and Validate
 
-1. Generate manifest: `al_generate_manifest`
-2. Full build: `al_build` — zero errors, zero new warnings
-3. Create package: `al_full_package`
+1. Update the manifest (`app.json`) — no agent tool; edit directly (or via the VS Code command)
+2. Full build: `al_build` — zero errors, zero new warnings; `al_build` also produces the `.app` package
 4. Run existing tests to verify no regressions
 
 ### Step 5: Post-Migration

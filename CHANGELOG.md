@@ -1,5 +1,21 @@
 # ALDC Core Changelog
 
+## [4.1.0] - 2026-06-05
+
+### Added
+
+- **BCQuality** — optional external, citable BC knowledge layer for reviews & audits: a pinned fork consumed externally (multi-root), `external.bcquality` configuration, install scripts, a multi-root `aldc.code-workspace`, evidence validation (pin coherence + citation resolvability) wired into CI, and an install/usage guide (`docs/bcquality.md`).
+- **On-demand agents** — `@AL Triage` (reactive diagnosis) and `@Dredd` (independent static auditor), read-only on code; registered in the collection and documented.
+- **`skill-contribution-assistant`** — guided contribution workflow.
+- **`aldc-validate`** — AL file-naming rule and a trim-aware entrypoint coherence mode.
+
+### Changed
+
+- Consuming projects now receive the **trimmed always-on entrypoint** (~31% lighter) on install.
+- **Review** emits a structured JSON report with a BCQuality step and a full native fallback when BCQuality is absent (never blocks); the **Conductor** passes the BCQuality task-context inline.
+- **Claude Code plugin** refreshed: new agents, BCQuality consultation, and a SessionStart precondition hook.
+- Restored the **full `architecture` and `spec` templates** (the section-complete versions used in testing); v4.0.0 had condensed them to stubs.
+
 ## [4.0.0] - 2026-05-30
 
 ### Token Efficiency & Foundation Restructure

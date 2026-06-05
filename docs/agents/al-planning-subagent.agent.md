@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Agent ID** | `al-planning-subagent` |
-| **Model** | Claude Sonnet 4.5 |
+| **Model** | Claude Sonnet 4.6 |
 | **Type** | Internal · Research |
 | **Invoked by** | AL Development Conductor |
 | **User-invocable** | No |

@@ -1,7 +1,7 @@
 {
   "name": "aldc",
-  "version": "3.2.0",
-  "description": "AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. 4 agents + 11 skills + 6 workflows for extension-only development with TDD, event-driven architecture, and HITL gates.",
+  "version": "4.1.0",
+  "description": "AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents (architect, developer, conductor, pre-sales, agent-builder, triage, dredd) + TDD subagents, skills, and workflows for extension-only development with TDD, BCQuality-cited review/audit, event-driven architecture, and HITL gates.",
   "author": {
     "name": "javiarmesto",
     "url": "https://github.com/javiarmesto"

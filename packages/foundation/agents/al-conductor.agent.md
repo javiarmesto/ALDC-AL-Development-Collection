@@ -145,12 +145,13 @@ For each phase in the plan, execute this 4-step cycle:
 
 Invoke **AL Implementation Subagent** (💻) via `#runSubagent` with:
 - Phase number and objective
+- **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the spec section for this phase's objects, the architecture decisions it must honor, and the test-plan tests scoped to it — not bare file references. Include the file paths as the escape hatch.
 - AL objects to create/modify (TableExtension, Codeunit, Page, etc.)
 - Event subscribers/publishers needed
 - Test requirements following AL-Go structure (`test/` project)
 - AL-specific patterns (SetLoadFields, error handling, naming ≤26 chars)
 - Explicit TDD instruction: tests first (failing), minimal code, tests pass, lint/format
-- Domain skills to load from `.github/skills/` based on phase domain
+- Domain skills to load from `skills/` based on phase domain
 - Instruction: work autonomously, only ask user on critical implementation decisions
 - **NOT** to proceed to next phase or write completion files (you handle this)
 - **RETURN** structured summary: objects created, tests created, build status, issues, skills loaded
@@ -163,6 +164,8 @@ Review subagent MUST run after EVERY phase, even with 0 build errors. **Build su
 
 Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
 - Phase objective and acceptance criteria
+- **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.github/plans/` files only if a detail is missing.
+- **The BCQuality task-context inline.** You already read `app.json` and you know this phase's changed objects authoritatively — so build the task-context per `docs/templates/bcquality-task-context.md` (OMIT unknown dimensions; pilot from `aldc.yaml`) and pass it. The review subagent consumes it instead of re-deriving `bc-version`/`application-area` itself — same round-trip saving as the excerpts above.
 - Modified/created files
 - AL validation requirements:
   - Event-driven patterns (no base modifications)
@@ -175,16 +178,26 @@ Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
 
 Review validates: spec compliance, architecture compliance, naming conventions, test coverage, performance patterns, extension-only compliance.
 
-Subagent returns: `Status` (APPROVED / NEEDS_REVISION / FAILED), Summary, Issues, Recommendations.
+The subagent returns a **single artifact**: the `### Review-Report (JSON)` (al-review-subagent Step 4). It is the source of truth — you **gate** on it, **render** the human-facing review from it, and **persist** it. The subagent no longer emits a markdown review or a separate BCQuality block.
 
-Analyze feedback:
-- **APPROVED** → proceed to commit (2C)
-- **NEEDS_REVISION** → return to 2A with specific revision requirements
-- **FAILED** → stop and consult user
+**Gate on the JSON (defense in depth — Q4):**
+1. Parse the `### Review-Report (JSON)` block; read `summary.counts` and `review.verdict`.
+2. **Recompute the baseline** yourself from `summary.counts` (do not just trust the reported verdict):
+   - any `blocker` → **NEEDS_REVISION** (or **FAILED** if `review.notes` flags it fundamental/unfixable)
+   - else any `major` → **NEEDS_REVISION**
+   - else any `minor` → **APPROVED_WITH_RECOMMENDATIONS**
+   - else → **APPROVED**
+3. Compare your baseline against `review.verdict`. If they match, use it. If they diverge, accept the reviewer's verdict **only** when `review.notes` carries an explicit override reason; otherwise take your (stricter) baseline and record the discrepancy in the phase-complete file.
+4. If the `### Review-Report (JSON)` block is missing or unparseable, treat the phase as **FAILED** and consult the user — there is no markdown fallback now that the JSON is the subagent's only output.
+
+Act on the resulting verdict:
+- **APPROVED / APPROVED_WITH_RECOMMENDATIONS** → proceed to commit (2C).
+- **NEEDS_REVISION** → return to 2A. Build the revision task from `findings[]` where `actionable: true` (this **includes `minor`** — Q1), authoring it for the implement-subagent from each finding's `message`, `location`, `fix-hint`, and `references`. The implementer's contract is unchanged — you still author the task; you now author it from the structured findings instead of re-parsed prose.
+- **FAILED** → stop and consult user.
 
 #### 2C. Phase Completion & Commit
 
-1. **Present checkpoint** to user:
+1. **Render the light checkpoint** for the user from the Review-Report JSON (verdict + counts + the top actionable findings — short, for the HITL gate):
    ```
    🚦 CONDUCTOR CHECKPOINT
    Phase {N}/{Total} complete: {Phase Name}
@@ -195,12 +208,19 @@ Analyze feedback:
      • Tests: {X}/{X} passing ✅
      • Files: {List}
 
-   ✅ Review: {APPROVED / APPROVED with recommendations}
+   ✅ Review: {verdict} — {blocker}/{major}/{minor} findings ({N} actionable)
 
    💾 Ready to commit?
    ```
 
-2. **Write Phase Completion File**: Create `.github/plans/<task-name>/<task-name>-phase-<N>-complete.md` following `<phase_complete_style_guide>`.
+2. **Write Phase Completion File**: Create `.github/plans/<task-name>/<task-name>-phase-<N>-complete.md` following `<phase_complete_style_guide>`. **Render the full review** into it from the Review-Report JSON, using `docs/templates/code-review-template.md` as the render template: `review.verdict`→Status; `findings[]`→Issues applying the severity naming (`blocker`→CRITICAL, `major`→MAJOR, `minor`→MINOR, `info`→recommendation) with `location` + `references`; `findings[source=bcquality]`→External Knowledge Findings; `review.skills-compliance`→Skills Compliance Check.
+
+   **Persistence (two artifacts)**:
+   - **Canonical** — write the whole Review-Report JSON verbatim to `.github/plans/<task-name>/<task-name>-review-phase-<N>.json`. This is the source of truth and what gating/audit rely on.
+   - **Derived BCQuality view** — extract the BCQuality leaf reports from `sub-results[]` and write them verbatim to `.github/plans/<task-name>/<task-name>-bcquality-phase-<N>.json`. This is a **projection** (not authored separately, so it cannot drift) kept for didactic/traceability purposes — a clean, standalone artifact showing BCQuality ran. Omit only when BCQuality was not consulted (`bcquality.outcome` = `not-applicable`).
+   - The `bcquality-evidence` CI workflow validates citations in **both** against the BCQuality clone at the pinned SHA.
+
+   **Didactic BCQuality callout (educational)**: in the rendered review, make the BCQuality consultation explicit — *"🔎 BCQuality consulted (SHA `<sha>`) → entry.md dispatched [skills-run] → N findings with citations"* — and fill the **BCQuality Evidence** block in the phase-complete file. When `bcquality.outcome` is `not-applicable` (layer absent or disabled), render instead *"🔎 BCQuality not consulted (unavailable) → reviewed via ALDC native checks + instructions"*. The point is that a reader can *see* BCQuality was called and what it returned, in readable form, without opening the JSON.
 
 3. **Generate Git Commit Message** following `<git_commit_style_guide>` in plain text code block for easy copying.
 
@@ -338,6 +358,13 @@ File name: `.github/plans/<plan-name>/<plan-name>-phase-<N>-complete.md` (kebab-
 
 (Remove this table entirely if no domain skills were loaded in this phase.)
 
+**BCQuality Evidence:** (omit only if BCQuality was not consulted this phase)
+- Submodule SHA: {e.g. f562fba}
+- Skills run: {al-performance-review, al-security-review, al-style-review}
+- Outcome: {completed | no-knowledge | not-applicable | partial | failed}
+- Findings: {N} (blocker/major/minor/info) — citations: {N}
+- Raw report: `.github/plans/<plan>/<plan>-bcquality-phase-<N>.json`
+
 **Review Status:** {APPROVED / APPROVED with minor recommendations / NEEDS_REVISION}
 
 **Git Commit Message:**
@@ -400,12 +427,21 @@ File name: `.github/plans/<plan-name>/<plan-name>-complete.md` (kebab-case).
 
 (List only skills actually applied. Remove rows for skills not loaded.)
 
+**BCQuality Evidence Roll-up:** (omit if BCQuality was not consulted in any phase)
+
+| Phase | Skills run | Outcome | Findings (b/M/m/i) | Citations | Raw report |
+|-------|-----------|---------|--------------------|-----------|------------|
+| 2 | al-performance-review, al-security-review | completed | 0/1/1/0 | 2 | `<plan>-bcquality-phase-2.json` |
+
+- Submodule SHA (all phases): {e.g. f562fba}
+- Citations validated by `bcquality-evidence` CI: ✅ / ❌
+
 **Recommendations for Next Steps:**
 - {Optional suggestion 1}
 - {Optional suggestion 2}
 ```
 
-> The three style guides above are the **single source of truth** at runtime. The files under `.github/docs/templates/` (plan-template.md, phase-complete-template.md, plan-complete-template.md) are kept as a human reference but the conductor must NOT read them during orchestration — the format is already inline here.
+> The three style guides above are the **single source of truth** at runtime. The files under `docs/templates/` (plan-template.md, phase-complete-template.md, plan-complete-template.md) are kept as a human reference but the conductor must NOT read them during orchestration — the format is already inline here.
 
 ### <git_commit_style_guide>
 
@@ -454,7 +490,7 @@ DO NOT proceed past these points without explicit user confirmation.
 
 ## Domain Skills
 
-This agent works with skills from `.github/skills/`. Copilot loads them automatically when relevant:
+This agent works with skills from `skills/`. Copilot loads them automatically when relevant:
 
 - **skill-testing** — orchestrating TDD cycles when test strategy is needed
 
@@ -476,7 +512,7 @@ Include **"Skills Applied in This Phase"** table consolidating implement-subagen
 ```
 
 ### In plan-complete.md (final summary)
-Include **"Skills Utilization Summary"** aggregating all phases (see `.github/docs/templates/plan-complete-template.md`).
+Include **"Skills Utilization Summary"** aggregating all phases (see `docs/templates/plan-complete-template.md`).
 
 ### Validation responsibility
 Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "Skills Compliance Check". If a skill was loaded but review found patterns not applied → flag as issue before committing.
@@ -611,7 +647,17 @@ ALWAYS check for existing context in `.github/plans/`:
 
 ### Passing Context to Subagents
 
-When delegating, provide context references to architecture, spec, and session files. Reference these documents when instructing subagents on research focus, implementation requirements, and review validation criteria.
+You have already read memory.md, architecture.md, spec.md, and test-plan.md (§"Context Files to Read Before Orchestration"). Subagents start with a **fresh context** and do **not** share yours — so do not merely point them at the files and let them re-read everything. That spends a full re-read of spec + architecture + test-plan + memory (and the same skill files) on **every** phase invocation.
+
+Instead, **pass phase-relevant excerpts inline** in the `#runSubagent` instruction:
+- **Spec excerpt** — only the section(s) covering this phase's objects (object IDs, field types, procedure signatures), not the whole spec.
+- **Architecture decisions** — only the decisions/constraints this phase must honor (e.g. "use CalcSums, not a FlowField"; "publish IntegrationEvent X"), not the full document.
+- **Test-plan excerpt** — only the tests scoped to this phase.
+- **Memory** — only the cross-session decisions that bear on this phase.
+
+Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.github/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `read_file` round-trips per subagent invocation.
+
+> Scope: this governs the per-phase implement/review invocations. The same principle now covers the **BCQuality task-context** — you build it (per `docs/templates/bcquality-task-context.md`) and pass it inline, since you already hold `app.json` and the phase's changed objects. The review subagent still reads the external BCQuality clone itself (the knowledge files), but no longer re-derives the task-context.
 
 ### Documentation Creation During Orchestration
 

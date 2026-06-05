@@ -25,7 +25,7 @@ This skill should be loaded when:
 Before writing any subscriber, discover which events are raised during the business process:
 
 ```
-1. al_open_Event_Recorder            ← open the recorder in VS Code
+1. Open the Event Recorder in VS Code  ← VS Code command (not an agent tool)
 2. Start recording
 3. Execute the business process in BC (e.g., post a sales order)
 4. Stop recording
@@ -167,7 +167,7 @@ end;
 
 ### Step 1: Discover Events
 
-1. Open Event Recorder: `al_open_Event_Recorder`
+1. Open the Event Recorder in VS Code (a VS Code command, not an agent tool)
 2. Execute the target business process in BC
 3. Review recorded events — filter by relevant object
 4. Use `al_get_object_definition` to inspect publisher signatures
@@ -189,7 +189,7 @@ For **creating new integration events** in your codeunit:
 
 ### Step 3: Implement
 
-Use `al_insert_event` to scaffold subscriber/publisher structures, then fill the body:
+Use the **AL: Insert Event Subscriber** VS Code command (not an agent tool) to scaffold subscriber/publisher structures, then fill the body:
 
 ```al
 // Subscriber handler codeunit
@@ -213,7 +213,7 @@ codeunit 50102 "Customer Validation Handler"
 
 1. Build: `al_build` — check for compilation errors (signature mismatches)
 2. Set breakpoint inside subscriber
-3. Debug: `al_debug_without_publish`
+3. Debug: `al_debug`
 4. Execute the business process — confirm subscriber fires
 5. If subscriber does NOT fire, check:
    - Signature mismatch (most common cause)

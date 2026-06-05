@@ -247,6 +247,7 @@ Build success ≠ review approval. NEVER skip review.
 1. Use `#Task tool` to invoke the **agent `al-review-subagent`** with:
    - The phase objective and acceptance criteria
    - Files that were modified/created
+   - **The BCQuality task-context, built inline.** You already hold `app.json` and this phase's changed objects, so build the task-context (per the BCQuality task-context template; OMIT unknown dimensions; pilot skills from `aldc.yaml`) and pass it — the review subagent consumes it instead of re-deriving `bc-version`/`application-area`. It still reads the external BCQuality clone itself for the knowledge files.
    - AL-specific validation requirements:
      - Event-driven patterns (no base modifications)
      - Naming conventions (26-char limit)

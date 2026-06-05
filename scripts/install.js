@@ -294,13 +294,37 @@ async function install(opts) {
     }
   } else { totalSkipped++; }
 
-  // 4. Copy copilot-instructions.md entrypoint to .github/
-  const copilotSrc = path.join(packageDir, 'instructions', 'copilot-instructions.md');
+  // 4. Copy the always-on entrypoint to .github/.
+  //    Ship the TRIMMED entrypoint (.github/copilot-instructions.md, ~31% leaner)
+  //    as the user's always-on context; the full reference stays available at
+  //    instructions/copilot-instructions.md.
+  const copilotSrc = path.join(packageDir, '.github', 'copilot-instructions.md');
   const copilotDst = path.join(projectDir, '.github', 'copilot-instructions.md');
   if (copyFile(copilotSrc, copilotDst, opts.force)) {
     totalCopied++;
   } else {
     totalSkipped++;
+  }
+
+  // 4b. Copy the BCQuality tooling to the PROJECT ROOT (optional layer).
+  //     tools/bcquality/ + aldc.code-workspace are referenced by aldc.yaml and the
+  //     docs relative to the project root (the validator reads aldc.yaml from there).
+  //     The scripts only sit here until the user opts in by running install.sh; the
+  //     external knowledge base is NOT cloned by this installer. See docs/bcquality.md.
+  header('Installing BCQuality tooling (optional)');
+  const bcqSrc = path.join(packageDir, 'tools', 'bcquality');
+  if (fs.existsSync(bcqSrc)) {
+    const r = copyDir(bcqSrc, path.join(projectDir, 'tools', 'bcquality'), opts.force);
+    totalCopied += r.copied;
+    totalSkipped += r.skipped;
+    if (copyFile(
+      path.join(packageDir, 'aldc.code-workspace'),
+      path.join(projectDir, 'aldc.code-workspace'),
+      opts.force
+    )) { totalCopied++; } else { totalSkipped++; }
+    ok('BCQuality install scripts + aldc.code-workspace (run tools/bcquality/install.sh to opt in)');
+  } else {
+    log('  tools/bcquality/ not found (optional)', C.dim);
   }
 
   // 5. Create .github/plans/ and memory.md from template

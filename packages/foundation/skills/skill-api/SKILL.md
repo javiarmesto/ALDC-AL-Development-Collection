@@ -425,6 +425,29 @@ begin
 end;
 ```
 
+## XML Documentation for Public Procedures
+
+Any `public` procedure that other modules call carries XML doc comments. This covers API pages (above), and equally the **library codeunits** invoked by API logic or by other codeunits — anything outside the unit's own boundary.
+
+```al
+/// <summary>
+/// Evaluates whether the customer qualifies as VIP based on sales volume
+/// and persists the result on Customer."VIP Customer".
+/// </summary>
+/// <param name="CustomerNo">The customer number to evaluate. Exits silently if blank or not found.</param>
+procedure EvaluateCustomer(CustomerNo: Code[20])
+begin
+    // ...
+end;
+```
+
+- `<summary>` (required) — what the procedure does and why a caller would invoke it.
+- `<param name="...">` (required for each non-trivial parameter) — what value to pass and constraints.
+- `<returns>` (required when there is a return value) — what the value means.
+- `local` and `internal` procedures: doc is optional.
+
+This surface is what IntelliSense presents to consumers and what AL's missing-documentation diagnostics flag.
+
 ## Workflow
 
 ### Step 1: Design API Contract

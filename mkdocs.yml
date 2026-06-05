@@ -127,6 +127,7 @@ nav:
     - Inicio Rápido (ES): quick-start-es.md
     - Reproducible Example: reproducible-example.md
   - Collection Guide: al-development.md
+  - BCQuality (reviews/audits): bcquality.md
   - Instructions:
     - Overview: instructions/index.md
     - Guidelines: instructions/al-guidelines.instructions.md
@@ -159,6 +160,9 @@ nav:
       - Planning Subagent: agents/al-planning-subagent.agent.md
       - Implement Subagent: agents/al-implement-subagent.agent.md
       - Review Subagent: agents/al-review-subagent.agent.md
+    - On-demand Specialists:
+      - Triage (Diagnosis): agents/al-triage.agent.md
+      - Dredd (Audit): agents/dredd.agent.md
   - Workflows:
     - Complete Development Flow: workflows/complete-development-flow.md
   - Contributing: CONTRIBUTING.md

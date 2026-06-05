@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Agent ID** | `al-developer` |
-| **Model** | Claude Sonnet 4.5 |
+| **Model** | Claude Sonnet 4.6 |
 | **Type** | User-facing · Tactical |
 | **Invocation** | `@AL Implementation Specialist` |
 

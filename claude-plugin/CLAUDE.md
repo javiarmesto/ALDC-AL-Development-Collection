@@ -21,6 +21,8 @@ Route user requests to the appropriate agent:
 | TDD orchestration | `aldc:al-conductor` | Plan -> implement -> review -> commit cycle |
 | Estimate, size, propose | `aldc:al-presales` | PERT estimation, SWOT analysis, cost breakdown |
 | Build BC agents | `aldc:al-agent-builder` | AI Development Toolkit agent creation |
+| Diagnose a bug / incident (existing code) | `aldc:al-triage` | Reproduce -> localize -> root-cause -> minimal-fix recommendation (read-only on code) |
+| Independent code audit | `aldc:dredd` | On-demand static audit vs BCQuality + native checks; advisory verdict (read-only on code) |
 
 ## Complexity Routing
 

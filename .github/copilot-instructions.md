@@ -1,10 +1,10 @@
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
-
 # GitHub Copilot Instructions for AL Development
+
+<!-- Workspace-specific custom instructions for Copilot. Reference: https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
 ## Overview
 
-This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.1** skills-based architecture: **4 agents + 11 skills + 6 workflows + 9 instructions**.
+This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.1** skills-based architecture: **4 agents + 11 skills + 6 workflows + 7 instructions**.
 
 ## Core Principles
 
@@ -14,6 +14,7 @@ These principles apply to ALL work in this repository:
 - **Human-in-the-Loop (HITL)** — All critical decisions require user confirmation before proceeding.
 - **TDD / spec-driven** — Features follow the flow: `spec.create → architecture → test-plan → implementation → review`.
 - **Least privilege** — Generate only the minimum permissions required. Use XLIFF for all user-facing strings.
+- **Output language: English** — All persisted artifacts under `.github/plans/**` (architecture.md, spec.md, plan.md, phase-N-complete.md, plan-complete.md, test-plan.md, delivery.md, review reports, Dredd audit reports, BCQuality findings JSON) MUST be written in English regardless of the chat conversation language. Inline chat responses MAY follow the user's language; persisted artifacts stay in English.
 
 ## Agent Routing
 
@@ -25,6 +26,7 @@ Choose the right agent for your task:
 | Implementing, coding, debugging, fixing? | `@AL Implementation Specialist` | Tactical implementation with full AL MCP tools |
 | Building a feature with TDD orchestration (plan → implement → review → commit)? | `@AL Development Conductor` | Orchestrates planning, implementation, and review subagents |
 | Estimating a project, sizing, proposals? | `@AL Pre-Sales & Project Estimation Specialist` | PERT estimation, SWOT analysis, cost breakdown |
+| Auditing code independently against BCQuality (changes vs main, or all)? | `@Dredd` | Independent read-only auditor; advisory verdict with citations |
 
 ### Quick routing guide
 
@@ -77,6 +79,14 @@ Project estimation?        → @AL Pre-Sales & Project Estimation Specialist
 | `skill-testing` | TDD, test strategy, AL Test Toolkit | al-architect, al-conductor |
 | `skill-estimation` | PERT estimation, complexity scoring, SWOT | al-presales |
 
+## External Knowledge: BCQuality
+
+[BCQuality](https://github.com/javiarmesto/bcquality) — a curated, citable knowledge base of Business Central guidance (atomic knowledge files + review skills), pinned as a fork — is consumed from **outside the AL project**: a pinned clone added as a second VS Code workspace root (multi-root via `aldc.code-workspace`), so its example `.al` files never enter your extension's compilation. See [`docs/bcquality.md`](../docs/bcquality.md) for install + usage.
+
+BCQuality is a **citation/audit layer, not a replacement** for the 7 auto-applied instructions or the 11 skills. The **AL Code Review Subagent** consults it (its "Step 0") before the A-G checklist: it routes via the BCQuality entry point (`<home>/skills/entry.md`, per `aldc.yaml`), runs the dispatched review skills, and folds the resulting findings — each backed by a knowledge-file citation — into the review report. A BCQuality `blocker`/`major` raises the review verdict like a native CRITICAL/MAJOR.
+
+> **Pilot scope**: only `al-performance-review`, `al-security-review`, and `al-style-review` are enabled. Run `bash tools/bcquality/install.sh` to clone BCQuality (to `../bcquality`), then open `aldc.code-workspace`.
+
 ## Skills Evidencing
 
 Agents MUST declare which skills they loaded and which patterns they applied:
@@ -84,27 +94,35 @@ Agents MUST declare which skills they loaded and which patterns they applied:
 - **al-architect** → `> **Skills applied**: skill-api, skill-events` at top of architecture.md
 - **al-developer** → `> **Skills loaded**: skill-debug (root cause analysis)` at start of response
 - **AL Implementation Subagent** → `### Skills Loaded` section in Phase Summary returned to Conductor
-- **AL Code Review Subagent** → `Skills Compliance Check` checklist verifying patterns were applied
-- **al-conductor** → `Skills Applied in This Phase` table in phase-complete.md; `Skills Utilization Summary` in plan-complete.md
+- **AL Code Review Subagent** → returns a single `### Review-Report (JSON)` (its only output; read-only, cannot persist) carrying findings, verdict, and `review.skills-compliance`
+- **al-conductor** → gates on the JSON, **renders** the human review from it (light checkpoint + full `code-review-template.md` in phase-complete.md), and persists the BCQuality leaf reports (from the JSON `sub-results`) to `.github/plans/<plan>/<plan>-bcquality-phase-<N>.json`; fills `Skills Applied`/`Skills Utilization` + the `BCQuality Evidence` block (phase) and roll-up (plan)
 
 This traceability chain ensures every skill application is auditable end-to-end.
 
+### BCQuality evidence: declarative vs falsifiable
+
+The chain above is **declarative** — an agent could in principle claim a BCQuality consultation it did not perform. Two mechanisms make it **falsifiable**:
+
+1. **Persisted findings-report** — the raw JSON on disk (`*-bcquality-phase-<N>.json`) carries each finding's `references[].path` (the cited knowledge file) and the pinned BCQuality SHA.
+2. **CI validation** — the `bcquality-evidence` workflow runs `tools/bcquality/validate_evidence.py`, which (a) asserts the pin agrees across `aldc.yaml` and both install scripts, and (b) verifies **every** citation resolves to a real file in the BCQuality clone (cloned at the pin via `--bcquality-root`). A hallucinated citation or a drifted pin fails the check.
+
 ## Auto-Applied Instructions
 
-These instruction files activate automatically based on file type — no invocation needed:
+Each instruction loads automatically when the file you're editing matches its `applyTo` glob. There is no semantic activation — only glob matching. The framework ships **7 instructions** (1 transversal + 6 domain). Narrow globs are deliberate: editing a Table or Page no longer drags codeunit-only rules into the prompt.
 
-### Always active on `*.al` files
+| File | `applyTo` | What it enforces |
+|------|-----------|------------------|
+| `al-guidelines.instructions.md`         | `**/*.al`                              | Core principles (event-driven, App focus, Test separation, naming as infrastructure) |
+| `al-code-style.instructions.md`         | `**/*.al`                              | 2-space indent, PascalCase, feature-based folders |
+| `al-naming-conventions.instructions.md` | `**/*.al`                              | 26-char object name limit, `<ObjectName>.<ObjectType>.al` file pattern, `I`/`Impl` for interfaces |
+| `al-performance.instructions.md`        | `**/*.Codeunit.al`, `**/*.Query.al`    | SetRange/SetLoadFields before Find, CalcSums, no DB-calls in loops |
+| `al-error-handling.instructions.md`     | `**/*.Codeunit.al`                     | TryFunctions, mandatory `Label`, telemetry only when explicitly requested |
+| `al-events.instructions.md`             | `**/*.Codeunit.al`                     | Never modify base objects, subscribers `local` with exact signature, no `Commit` in subscribers |
+| `al-testing.instructions.md`            | `**/test/**/*.al`                      | Tests only when asked, Given/When/Then, standard libraries |
 
-- **al-guidelines.instructions.md** — Master hub referencing all guidelines
-- **al-code-style.instructions.md** — 2-space indentation, PascalCase, feature-based folders
-- **al-naming-conventions.instructions.md** — File naming, object names (max 26 chars + prefix), variables
-- **al-performance.instructions.md** — Early filtering, SetLoadFields, temporary tables
+> `copilot-instructions.md` and `instructions/index.md` are **not** instructions in this sense — they have no `applyTo`. `copilot-instructions.md` is the always-on entrypoint; `index.md` is documentation.
 
-### Context-activated
-
-- **al-error-handling.instructions.md** — TryFunctions, error labels, telemetry (activates when handling errors)
-- **al-events.instructions.md** — Event subscriber patterns, handler suffix (activates when working with events)
-- **al-testing.instructions.md** — AL-Go structure, Given/When/Then, test libraries (activates on test files)
+> **Naming is infrastructure**: a file that doesn't follow `<ObjectName>.<ObjectType>.al` won't match the type-specific globs and will silently miss its instructions. `aldc-validate` checks the convention.
 
 ## Plans
 
@@ -152,184 +170,21 @@ When a user provides requirements, assess complexity to route correctly:
 
 Present the assessment and wait for user confirmation before proceeding.
 
-## Code Generation Examples
+## Further Reference
 
-### Table with Validation
+Human-facing reference material — examples, workspace layout, links, troubleshooting — lives in [`docs/copilot-reference.md`](../docs/copilot-reference.md) to keep this entrypoint lean (it is injected on every request). It covers:
 
-```al
-// Ask Copilot: "Create a table for customer addresses with validation"
-table 50100 "Customer Address"
-{
-    DataClassification = CustomerContent;
-
-    fields
-    {
-        field(1; "Customer No."; Code[20])
-        {
-            TableRelation = Customer."No.";
-            NotBlank = true;
-        }
-        field(2; "Address Line 1"; Text[100])
-        {
-            Caption = 'Address Line 1';
-        }
-        field(3; "City"; Text[50])
-        {
-            Caption = 'City';
-        }
-        field(4; "Post Code"; Code[20])
-        {
-            Caption = 'Post Code';
-        }
-    }
-
-    keys
-    {
-        key(PK; "Customer No.")
-        {
-            Clustered = true;
-        }
-    }
-}
-```
-
-**Auto-applied**: al-code-style, al-naming-conventions, al-performance
-
-### Event Subscriber
-
-```al
-// Ask: "Create event subscriber for customer validation"
-[EventSubscriber(ObjectType::Table, Database::Customer, 'OnBeforeValidateEvent', 'Email', false, false)]
-local procedure ValidateCustomerEmail(var Rec: Record Customer)
-begin
-    if Rec.Email <> '' then
-        if not Rec.Email.Contains('@') then
-            Error('Email must contain @');
-end;
-```
-
-**Auto-applied**: al-events.instructions.md, al-error-handling.instructions.md
-
-## Best Practices for Copilot Interaction
-
-### 1. Start with Context
-
-- **Good**: "I'm building a customer approval workflow that needs to send notifications"
-- **Avoid**: "Create a workflow"
-
-### 2. Use the Right Tool
-
-- **Strategic questions** → Use agents (`@AL Architecture & Design Specialist`, `@AL Implementation Specialist`, etc.)
-- **Tactical tasks** → Use workflows (`@workspace use al-build`)
-- **Normal coding** → Let auto-applied instructions work in background
-
-### 3. Trust the Auto-Instructions
-
-The instruction files work automatically:
-- You don't need to ask for proper naming (al-naming-conventions handles it)
-- You don't need to request performance optimization (al-performance suggests it)
-- Error handling patterns apply automatically (al-error-handling activates)
-
-### 4. Review Generated Code
-
-Always review Copilot suggestions:
-- Verify compliance with project guidelines
-- Test in sandbox environment
-- Check security implications
-- Validate performance impact
-
-## Workspace Structure
-
-```
-ALDC-Core/
-├── instructions/
-│   ├── copilot-instructions.md            # This file
-│   ├── al-guidelines.instructions.md      # Master hub (*.al, *.json)
-│   ├── al-code-style.instructions.md      # Code formatting (*.al)
-│   ├── al-naming-conventions.instructions.md
-│   ├── al-performance.instructions.md
-│   ├── al-error-handling.instructions.md
-│   ├── al-events.instructions.md
-│   └── al-testing.instructions.md         # Testing (test files)
-├── agents/
-│   ├── al-architect.agent.md              # Architecture & design
-│   ├── al-developer.agent.md              # Tactical implementation
-│   ├── al-conductor.agent.md              # TDD orchestrator
-│   ├── al-presales.agent.md               # Estimation & planning
-│   ├── AL Planning Subagent.agent.md      # Research (internal, user-invocable: false)
-│   ├── AL Implementation Subagent.agent.md     # TDD implementation (internal)
-│   └── AL Code Review Subagent.agent.md        # Code review (internal)
-├── skills/                                # Composable knowledge modules (11)
-│   ├── skill-api/SKILL.md
-│   ├── skill-copilot/SKILL.md
-│   ├── skill-debug/SKILL.md
-│   ├── skill-events/SKILL.md
-│   ├── skill-estimation/SKILL.md
-│   ├── skill-migrate/SKILL.md
-│   ├── skill-pages/SKILL.md
-│   ├── skill-performance/SKILL.md
-│   ├── skill-permissions/SKILL.md
-│   ├── skill-testing/SKILL.md
-│   └── skill-translate/SKILL.md
-├── prompts/                               # Workflows (6)
-│   ├── al-spec.create.prompt.md
-│   ├── al-build.prompt.md
-│   ├── al-pr-prepare.prompt.md
-│   ├── al-memory.create.prompt.md
-│   ├── al-context.create.prompt.md
-│   └── al-initialize.prompt.md
-├── docs/
-│   ├── framework/
-│   │   └── ALDC-Core-Spec-v1.1.md         # Normative specification
-│   └── templates/                         # Immutable templates
-├── .github/plans/                         # Requirement sets & memory
-├── src/                                   # Your AL code
-└── app.json
-```
-
-## BC Agents Pack (Extension)
-
-For agent development with AI Development Toolkit:
-- @AL Agent Builder — standalone agent builder (7-phase workflow)
-- skill-agent-task-patterns — 8 SDK integration patterns
-- skill-agent-instructions — instruction authoring framework
-- al-agent.create / al-agent.task / al-agent.instructions / al-agent.test — workflows
-
-Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Development Conductor
-(architect loads skill-agent-task-patterns for design decisions)
-
-## Reference Documentation
-
-### Microsoft Documentation
-
-- [AL Language Reference](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-reference-overview)
-- [Business Central Development](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/)
-- [VS Code Copilot Guide](https://code.visualstudio.com/docs/copilot)
-
-### This Project's Documentation
-
-- [ALDC Core Spec v1.1](../docs/framework/ALDC-Core-Spec-v1.1.md) — Normative specification
-- [Instructions Index](index.md) — Guide to all instruction files
-- [AL Guidelines](al-guidelines.instructions.md) — Master guidelines
-
-## Troubleshooting Copilot
-
-### No Suggestions Appearing
-
-1. Check Copilot extension is enabled (View → Extensions)
-2. Verify file type is `.al`
-3. Try reloading VS Code window
-
-### Suggestions Don't Follow Guidelines
-
-1. Ensure instruction files are in correct locations
-2. Check file glob patterns in instruction frontmatter
-3. Reference specific guidelines: "Follow al-code-style patterns"
+- **Code Generation Examples** — table + event-subscriber snippets with the auto-applied instructions each triggers
+- **Best Practices for Copilot Interaction** — how to prompt, when to use agents vs workflows
+- **Workspace Structure** — full directory tree of the ALDC framework
+- **BC Agents Pack (Extension)** — AI Development Toolkit agents/skills/workflows
+- **Reference Documentation** — Microsoft + project doc links
+- **Troubleshooting Copilot**
 
 ---
 
 **Framework**: ALDC Core v1.1 (Skills-Based Architecture)
 **Version**: 1.1.0
-**Last Updated**: 2026-03-01
+**Last Updated**: 2026-05-31
 **Workspace**: AL Development for Business Central
-**Primitives**: 4 agents + 3 subagents + 11 skills + 6 workflows + 7 instructions
+**Primitives**: 4 agents + 3 subagents + 11 skills + 6 workflows + 7 instructions (1 transversal + 6 domain)
