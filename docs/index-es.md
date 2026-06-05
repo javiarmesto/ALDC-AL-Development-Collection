@@ -8,9 +8,9 @@ hide:
 
 <div class="hero">
 
-<a class="hero-banner" href="https://javiarmesto.github.io/aldc-workshop/en/" target="_blank" rel="noopener">
+<a class="hero-banner" href="#novedades">
   <span class="hero-banner__badge">NUEVO</span>
-  <span class="hero-banner__text">El Workshop público de ALDC ya está disponible — práctico, gratuito, online</span>
+  <span class="hero-banner__text">ALDC 4.1.0 — entrypoint 31% más ligero + reviews citadas con BCQuality</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 
@@ -25,6 +25,8 @@ hide:
   <a class="md-button" href="../al-development/">Abre la guía de la colección</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
+
+<p class="hero-subnote">Gratuito y práctico: <a href="https://javiarmesto.github.io/aldc-workshop/en/" target="_blank" rel="noopener">Workshop público de ALDC →</a></p>
 
 <div class="hero-pills">
   <span class="pill"><b>4</b> públicos + <b>2</b> bajo demanda</span>

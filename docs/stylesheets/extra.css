@@ -464,6 +464,20 @@ body,
 }
 .hero .md-button:hover { transform: translateY(-2px); }
 
+/* Demoted workshop link — small, muted, sits below the primary CTAs */
+.hero-subnote {
+  margin: 1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--b44-stone);
+}
+.hero-subnote a {
+  font-weight: 700;
+  color: var(--b44-sunset);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.hero-subnote a:hover { border-bottom-color: var(--b44-sunset); }
+
 .hero-pills {
   display: flex;
   flex-wrap: wrap;
