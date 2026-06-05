@@ -32,7 +32,7 @@ hide:
   <span class="pill"><b>6</b> workflows</span>
   <span class="pill pill--accent">BCQuality-ready</span>
   <span class="pill pill--accent">Copilot + Claude Code</span>
-  <span class="pill">v4.1.0 · MIT</span>
+  <span class="pill pill--version"><b>v4.1.0</b> · MIT</span>
 </div>
 
 </div>
