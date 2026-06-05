@@ -1,24 +1,19 @@
 # ALDC Core Changelog
 
-## [Unreleased]
+## [4.1.0] - 2026-06-05
 
-### Upstreamed from ALDC-Forge
+### Added
 
-**Added:**
+- **BCQuality** — optional external, citable BC knowledge layer for reviews & audits: a pinned fork consumed externally (multi-root), `external.bcquality` configuration, install scripts, a multi-root `aldc.code-workspace`, evidence validation (pin coherence + citation resolvability) wired into CI, and an install/usage guide (`docs/bcquality.md`).
+- **On-demand agents** — `@AL Triage` (reactive diagnosis) and `@Dredd` (independent static auditor), read-only on code; registered in the collection and documented.
+- **`skill-contribution-assistant`** — guided contribution workflow.
+- **`aldc-validate`** — AL file-naming rule and a trim-aware entrypoint coherence mode.
 
-- BCQuality external citable-knowledge layer: `external.bcquality` manifest block, `tools/bcquality/` (install + evidence validator), `bcquality-evidence` CI workflow, and the BCQuality task-context template.
-- On-demand agents `al-triage` (reactive diagnosis) and `dredd` (independent static auditor), registered in the collection manifest and documented in the agent docs.
-- `skill-contribution-assistant`.
-- `aldc-validate`: AL file-naming rule (`malformedAlFileName`) and trim-aware copilot-entrypoint coherence (`copilotEntrypointMode`).
+### Changed
 
-**Changed:**
-
-- `install.js` now ships the **trimmed** (~31% lighter) always-on entrypoint to consuming projects; the full reference remains at `instructions/copilot-instructions.md`.
-- Review subagent emits a structured Review-Report JSON with a BCQuality Step 0 and an A–G native fallback when BCQuality is absent (never blocks); the conductor builds and passes the BCQuality task-context inline.
-- Phantom-tool cleanup across `al-developer` / `al-architect` / skills (build/publish/profiling are VS Code commands, not agent tools).
-- Normalized in-prose framework path references to the canonical top-level layout.
-
-> Version bump deferred to release.
+- Consuming projects now receive the **trimmed always-on entrypoint** (~31% lighter) on install.
+- **Review** emits a structured JSON report with a BCQuality step and a full native fallback when BCQuality is absent (never blocks); the **Conductor** passes the BCQuality task-context inline.
+- **Claude Code plugin** refreshed: new agents, BCQuality consultation, and a SessionStart precondition hook.
 
 ## [4.0.0] - 2026-05-30
 

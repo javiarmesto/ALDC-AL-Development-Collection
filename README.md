@@ -7,7 +7,7 @@
 > **Now available for both GitHub Copilot and Claude Code.**
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-7a9e00.svg?style=flat-square&labelColor=232529)](docs/framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-4.0.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.1.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-ff631f.svg?style=flat-square&labelColor=232529)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-7a9e00?style=flat-square&labelColor=232529)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-7a9e00?style=flat-square&labelColor=232529)](./LICENSE)
@@ -41,10 +41,20 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 - `AL Implementation Subagent` — TDD-only implementation (tests FIRST, code SECOND)
 - `AL Code Review Subagent` — Code review against spec + architecture
 
+**2 On-demand Specialists** — User-invocable, outside the TDD loop (read-only on code)
+
+- `@AL Triage` — Reactive diagnosis: reproduce → root-cause → minimal-fix recommendation
+- `@Dredd` — Independent auditor: BCQuality-cited static audit with an advisory verdict
+
+**BCQuality (optional)** — External, citable BC knowledge layer for reviews & audits
+
+- A pinned fork consumed externally (multi-root); agents cite findings to real knowledge files, with a graceful native fallback when it is absent. See [`docs/bcquality.md`](docs/bcquality.md).
+
 **11 Composable Skills** — Domain knowledge loaded on demand
 
 - Required: api, copilot, debug, performance, events, permissions, testing
 - Recommended: migrate, pages, translate, estimation
+- Plus `skill-contribution-assistant` — guided workflow for contributing back to ALDC
 
 **6 Workflows** — Automated processes
 
@@ -323,6 +333,19 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── CHANGELOG.md                          # Version history
 └── README.md                             # This file
 ```
+
+---
+
+## What's New in v4.1.0
+
+- **BCQuality citable-knowledge layer (optional)** — review/audit agents back their findings with a pinned, externally-consumed BC knowledge base; evidence (pin coherence + citation resolvability) is validated in CI. Graceful native fallback when absent — never blocks.
+- **Two on-demand agents** — `@AL Triage` (reactive diagnosis) and `@Dredd` (independent static auditor), read-only on code.
+- **Leaner always-on context** — consuming projects now receive the trimmed Copilot entrypoint (~31% lighter).
+- **New skill** — `skill-contribution-assistant` for guided contributions.
+- **Validation** — AL file-naming rule + trim-aware entrypoint coherence in `aldc-validate`.
+- **Claude Code plugin** refreshed with the new agents, BCQuality consultation, and a SessionStart precondition hook.
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ---
 
