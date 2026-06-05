@@ -127,6 +127,7 @@ nav:
     - Inicio Rápido (ES): quick-start-es.md
     - Reproducible Example: reproducible-example.md
   - Collection Guide: al-development.md
+  - BCQuality (reviews/audits): bcquality.md
   - Instructions:
     - Overview: instructions/index.md
     - Guidelines: instructions/al-guidelines.instructions.md

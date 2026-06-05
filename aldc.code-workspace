@@ -1,0 +1,25 @@
+{
+  // Multi-root workspace for ALDC.
+  //
+  // Root 1 is your AL extension (compiled). Root 2 is the BCQuality knowledge
+  // base, cloned OUTSIDE the AL project by tools/bcquality/install.sh (default
+  // sibling path ../bcquality, override with $BCQUALITY_HOME). Because root 2 has
+  // no app.json, the AL compiler never builds it — its example .al files cannot
+  // pollute your extension's error list. The agents read it from this second root.
+  //
+  // If root 2 shows as missing, run: bash tools/bcquality/install.sh
+  // See docs/bcquality.md for the full install + usage guide.
+  "folders": [
+    {
+      "name": "ALDC (extension)",
+      "path": "."
+    },
+    {
+      "name": "BCQuality (knowledge — not compiled)",
+      "path": "../bcquality"
+    }
+  ],
+  "settings": {
+    "git.detectSubmodules": false
+  }
+}
