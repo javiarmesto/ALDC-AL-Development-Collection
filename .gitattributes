@@ -1,0 +1,23 @@
+# ── Line endings ─────────────────────────────────────────────────────────────
+# BCQuality install scripts must stay LF to run after a Windows checkout.
+tools/bcquality/*.sh              text eol=lf
+claude-plugin/tools/bcquality/*.sh text eol=lf
+
+# ── GitHub Linguist — identify this repository as AL ─────────────────────────
+# ALDC is a framework *for* Microsoft Dynamics 365 Business Central (AL); it ships
+# no .al source of its own (it is Markdown contracts + JS/Python/Shell tooling), so
+# by default GitHub labels it by that tooling. The functional/technical contracts
+# the framework produces are AL specifications, so we count the templates as AL and
+# keep build tooling, package mirrors and the docs site out of the language stats.
+docs/templates/*.md   linguist-language=AL
+docs/templates/*.md   linguist-detectable=true
+
+# Keep these out of the language statistics so AL is the identified language.
+packages/**           linguist-generated
+claude-plugin/**      linguist-generated
+scripts/**            linguist-vendored
+tools/**              linguist-vendored
+**/*.js               linguist-vendored
+**/*.py               linguist-vendored
+**/*.sh               linguist-vendored
+**/*.ps1              linguist-vendored
