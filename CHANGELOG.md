@@ -14,6 +14,7 @@
 - Consuming projects now receive the **trimmed always-on entrypoint** (~31% lighter) on install.
 - **Review** emits a structured JSON report with a BCQuality step and a full native fallback when BCQuality is absent (never blocks); the **Conductor** passes the BCQuality task-context inline.
 - **Claude Code plugin** refreshed: new agents, BCQuality consultation, and a SessionStart precondition hook.
+- Restored the **full `architecture` and `spec` templates** (the section-complete versions used in testing); v4.0.0 had condensed them to stubs.
 
 ## [4.0.0] - 2026-05-30
 
