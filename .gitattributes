@@ -1,0 +1,3 @@
+# Keep BCQuality install scripts as LF so they stay runnable after a Windows checkout.
+tools/bcquality/*.sh text eol=lf
+claude-plugin/tools/bcquality/*.sh text eol=lf

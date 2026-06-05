@@ -172,7 +172,17 @@ def main() -> int:
         cites = collect_citations(report)
         total_cites += len(cites)
         for c in cites:
-            if populated and not os.path.isfile(os.path.join(bcq_abs, c)):
+            if not populated:
+                continue
+            # A citation must resolve to a file INSIDE the BCQuality clone. Reject
+            # absolute paths and any ".." traversal that would escape the clone —
+            # otherwise a crafted report could cite an arbitrary on-disk file and pass.
+            base = os.path.normpath(bcq_abs)
+            target = os.path.normpath(os.path.join(base, c))
+            inside = target == base or target.startswith(base + os.sep)
+            if os.path.isabs(c) or not inside:
+                errors.append(f"{rel}: citation escapes the BCQuality clone (absolute path or '..' traversal): {c}")
+            elif not os.path.isfile(target):
                 errors.append(f"{rel}: citation does not resolve in BCQuality clone: {c}")
         notes.append(f"{rel}: outcome={report.get('outcome', '?')}, {len(cites)} citation(s).")
 

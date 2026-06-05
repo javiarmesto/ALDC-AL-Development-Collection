@@ -172,7 +172,7 @@ Present the assessment and wait for user confirmation before proceeding.
 
 ## Further Reference
 
-Human-facing reference material — examples, workspace layout, links, troubleshooting — lives in [`docs/copilot-reference.md`](docs/copilot-reference.md) to keep this entrypoint lean (it is injected on every request). It covers:
+Human-facing reference material — examples, workspace layout, links, troubleshooting — lives in [`docs/copilot-reference.md`](../docs/copilot-reference.md) to keep this entrypoint lean (it is injected on every request). It covers:
 
 - **Code Generation Examples** — table + event-subscriber snippets with the auto-applied instructions each triggers
 - **Best Practices for Copilot Interaction** — how to prompt, when to use agents vs workflows

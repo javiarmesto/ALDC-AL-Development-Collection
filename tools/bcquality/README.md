@@ -14,7 +14,7 @@ to native checks only and the BCQuality citation layer is silent.
 
 | Script | Shell | Notes |
 |---|---|---|
-| `install.sh` | bash | Linux, macOS, Git Bash, WSL. `.gitattributes` pins `*.sh` to `eol=lf` so it stays runnable after a Windows clone. |
+| `install.sh` | bash | Linux, macOS, Git Bash, WSL. The repo's root `.gitattributes` pins `tools/bcquality/*.sh` to `eol=lf` so it stays runnable after a Windows clone. |
 | `install.ps1` | PowerShell | Native Windows alternative. Same pin, same clone logic, same `entry.md` verification. |
 
 Both scripts are idempotent and handle two situations:
@@ -66,7 +66,7 @@ Flags (defaults shown):
 
 - `--plans-dir .github/plans`
 - `--audits-dir .github/audits`
-- `--submodule .bcquality`
+- `--bcquality-root ../bcquality` (or set `$BCQUALITY_HOME` / `external.bcquality.home`)
 
 Useful for catching a bad citation before you push.
 
