@@ -61,14 +61,11 @@ hide:
 </div>
 
 <div class="two-col">
-<div class="two-col-text" markdown="1">
+<div class="two-col-text">
 
-**Install once, from the Command Palette.** Run `AL Collection: Install Toolkit to Workspace`
-and ALDC drops the agents, skills, instructions and config into your project — then start
-with `@AL Architecture & Design Specialist` or `@AL Development Conductor`.
+<p><strong>Install once, from the Command Palette.</strong> Run <code>AL Collection: Install Toolkit to Workspace</code> and ALDC drops the agents, skills, instructions and config into your project — then start with <code>@AL Architecture &amp; Design Specialist</code> or <code>@AL Development Conductor</code>.</p>
 
-Also new: on-demand **`@AL Triage`** (reactive diagnosis) and **`@Dredd`** (independent
-auditor) — read-only on your code.
+<p>Also new: on-demand <strong><code>@AL Triage</code></strong> (reactive diagnosis) and <strong><code>@Dredd</code></strong> (independent auditor) — read-only on your code.</p>
 
 </div>
 <div class="two-col-visual">
@@ -172,18 +169,18 @@ flowchart TD
 ## Cited reviews & audits with BCQuality { #bcquality .section-title }
 
 <div class="two-col">
-<div class="two-col-text" markdown="1">
+<div class="two-col-text">
 
-BCQuality is an **optional** layer that turns the review/audit agents into **citing**
-reviewers — every finding points to a real Business Central knowledge file, not just an
-opinion.
+<p>BCQuality is an <strong>optional</strong> layer that turns the review/audit agents into <strong>citing</strong> reviewers — every finding points to a real Business Central knowledge file, not just an opinion.</p>
 
--   **Configurable source.** Defaults to the canonical upstream [microsoft/BCQuality](https://github.com/microsoft/BCQuality); point it at your own fork in `aldc.yaml`.
--   **Consumed externally.** A sibling clone via multi-root workspace — never compiled, never pollutes your app.
--   **Hooks in via `entry.md`.** Agents read the meta-skill and run whatever it dispatches.
--   **Never blocks.** Absent by default → graceful native A–G fallback.
+<ul>
+  <li><strong>Configurable source.</strong> Defaults to the canonical upstream <a href="https://github.com/microsoft/BCQuality">microsoft/BCQuality</a>; point it at your own fork in <code>aldc.yaml</code>.</li>
+  <li><strong>Consumed externally.</strong> A sibling clone via multi-root workspace — never compiled, never pollutes your app.</li>
+  <li><strong>Hooks in via <code>entry.md</code>.</strong> Agents read the meta-skill and run whatever it dispatches.</li>
+  <li><strong>Never blocks.</strong> Absent by default → graceful native A–G fallback.</li>
+</ul>
 
-[Read the BCQuality guide :material-arrow-right:](bcquality/){ .md-button }
+<a class="md-button" href="bcquality/">Read the BCQuality guide →</a>
 
 </div>
 <div class="two-col-visual" markdown="1">
