@@ -138,6 +138,45 @@ function copyDir(src, dst, force = false, depth = 0) {
   return { copied, skipped };
 }
 
+// Framework folders that end up UNDER the target dir after install. The agent
+// read tools resolve paths relative to the repo ROOT, so a bare reference like
+// `skills/...` in a primitive's prose points at <root>/skills (which does not
+// exist when the toolkit was installed into .github/). Re-point those bare,
+// root-relative references at the target dir so they resolve in the consumer.
+// External paths (../bcquality/...), already-prefixed paths and markdown link
+// targets are deliberately left untouched.
+const RUNTIME_FOLDERS = ['skills', 'instructions', 'prompts', 'agents', 'docs'];
+
+// Only files an agent reads at runtime carry these path references. Skip the
+// always-on entrypoint, the index and READMEs: their `skills/` / `docs/` tokens
+// are illustrative (directory trees, prose) or intentionally relative links.
+function isRuntimePrimitive(name) {
+  if (name === 'copilot-instructions.md' || name === 'index.md' || name === 'README.md') return false;
+  return name.endsWith('.agent.md') || name.endsWith('.prompt.md') ||
+         name.endsWith('.instructions.md') || name === 'SKILL.md';
+}
+
+function rewriteRuntimePaths(dir, relTarget) {
+  //  (?<![\w./-]) : not preceded by a word/path char -> skips ../bcquality/skills,
+  //                 <home>/skills, skill-agent-instructions/, and .github/skills (no double-prefix)
+  //  (?<!\]\()    : not a markdown link target like ](skills/...)
+  const re = new RegExp(`(?<![\\w./-])(?<!\\]\\()(${RUNTIME_FOLDERS.join('|')})/`, 'g');
+  let files = 0, refs = 0;
+  const walk = (d) => {
+    for (const item of fs.readdirSync(d)) {
+      const p = path.join(d, item);
+      if (fs.statSync(p).isDirectory()) { walk(p); continue; }
+      if (!isRuntimePrimitive(item)) continue;
+      const before = fs.readFileSync(p, 'utf8');
+      let n = 0;
+      const after = before.replace(re, (_m, folder) => { n++; return `${relTarget}/${folder}/`; });
+      if (n > 0) { fs.writeFileSync(p, after, 'utf8'); files++; refs += n; }
+    }
+  };
+  walk(dir);
+  return { files, refs };
+}
+
 /**
  * Copy a single file. Returns true if copied.
  */
@@ -275,6 +314,17 @@ async function install(opts) {
     log('  collections/ not found (optional)', C.dim);
   }
 
+  // 2b. Normalize root-relative framework paths in the copied runtime primitives
+  //     to the target dir (e.g. `skills/` -> `.github/skills/`). Only needed when
+  //     installing into a subdir; a root install (relTarget ".") is already correct.
+  const relTarget = path.relative(projectDir, targetDir).replace(/\\/g, '/') || '.';
+  if (relTarget !== '.') {
+    header('Normalizing runtime paths');
+    const r = rewriteRuntimePaths(targetDir, relTarget);
+    if (r.files) ok(`Re-pointed ${r.refs} path ref(s) in ${r.files} file(s) to "${relTarget}/"`);
+    else log('  no bare framework paths to rewrite', C.dim);
+  }
+
   // 3. Copy aldc.yaml to project root and update toolkitRoot
   header('Installing Configuration');
   const aldcYamlDst = path.join(projectDir, 'aldc.yaml');
@@ -285,7 +335,7 @@ async function install(opts) {
   )) {
     totalCopied++;
     // Update toolkitRoot to match the target directory relative to project root
-    const relTarget = path.relative(projectDir, targetDir).replace(/\\/g, '/') || '.';
+    // (relTarget computed above in step 2b)
     if (relTarget !== '.') {
       let yamlContent = fs.readFileSync(aldcYamlDst, 'utf8');
       yamlContent = yamlContent.replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: "${relTarget}"`);
