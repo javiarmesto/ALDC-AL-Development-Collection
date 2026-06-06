@@ -160,7 +160,8 @@ function rewriteRuntimePaths(dir, relTarget) {
   //  (?<![\w./-]) : not preceded by a word/path char -> skips ../bcquality/skills,
   //                 <home>/skills, skill-agent-instructions/, and .github/skills (no double-prefix)
   //  (?<!\]\()    : not a markdown link target like ](skills/...)
-  const re = new RegExp(`(?<![\\w./-])(?<!\\]\\()(${RUNTIME_FOLDERS.join('|')})/`, 'g');
+  //  capture the first path component after the folder so we can verify it resolves.
+  const re = new RegExp(`(?<![\\w./-])(?<!\\]\\()(${RUNTIME_FOLDERS.join('|')})/([A-Za-z0-9._*<>{}-]*)`, 'g');
   let files = 0, refs = 0;
   const walk = (d) => {
     for (const item of fs.readdirSync(d)) {
@@ -169,7 +170,17 @@ function rewriteRuntimePaths(dir, relTarget) {
       if (!isRuntimePrimitive(item)) continue;
       const before = fs.readFileSync(p, 'utf8');
       let n = 0;
-      const after = before.replace(re, (_m, folder) => { n++; return `${relTarget}/${folder}/`; });
+      const after = before.replace(re, (m, folder, first) => {
+        // Determinism guard: only re-point when the result provably resolves
+        // under the toolkit. A glob/placeholder (skills/<name>/, instructions/al-*)
+        // can't be checked, but its folder is real, so prefix it. A concrete first
+        // component that does NOT exist (e.g. the external BCQuality `skills/read.md`)
+        // is left untouched — we never invent a path the agent can't open.
+        const isGlobOrBare = first === '' || /[*<>{}]/.test(first);
+        if (!isGlobOrBare && !fs.existsSync(path.join(dir, folder, first))) return m;
+        n++;
+        return `${relTarget}/${m}`;
+      });
       if (n > 0) { fs.writeFileSync(p, after, 'utf8'); files++; refs += n; }
     }
   };
