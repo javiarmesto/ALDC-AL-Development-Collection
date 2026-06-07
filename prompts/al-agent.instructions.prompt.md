@@ -69,7 +69,7 @@ Deploy → observe timeline → refine. Apply the "less is more" principle.
 
 ## Reference
 
-For the framework details, keyword tables, anti-patterns, and complete examples, consult `skill-agent-instructions` and `skill-agent-instructions/examples/`.
+For the framework details, keyword tables, anti-patterns, and complete examples, consult `skill-agent-instructions` and `.github/skills/skill-agent-instructions/examples/`.
 
 ## Skills Evidencing
 
