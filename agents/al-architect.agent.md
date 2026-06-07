@@ -1,7 +1,7 @@
 ---
 name: AL Architecture & Design Specialist
 description: 'AL Architecture and Design assistant for Business Central extensions. Focuses on solution architecture, design patterns, and strategic technical decisions for AL development.'
-tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/memory, vscode/newWorkspace, vscode/runCommand, vscode/switchAgent, vscode/vscodeAPI, vscode/extensions, vscode/askQuestions, execute/getTerminalOutput, read/getNotebookSummary, read/problems, read/readFile, read/readNotebookCellOutput, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, web/fetch, browser/openBrowserPage, browser/readPage, browser/screenshotPage, browser/navigatePage, browser/clickElement, browser/dragElement, browser/hoverElement, browser/typeInPage, browser/runPlaywrightCode, browser/handleDialog, al-symbols-mcp/al_find_references, al-symbols-mcp/al_get_object_definition, al-symbols-mcp/al_get_object_summary, al-symbols-mcp/al_packages, al-symbols-mcp/al_search_object_members, al-symbols-mcp/al_search_objects, github/add_comment_to_pending_review, github/add_issue_comment, github/assign_copilot_to_issue, github/create_branch, github/create_or_update_file, github/create_pull_request, github/create_repository, github/delete_file, github/fork_repository, github/get_commit, github/get_file_contents, github/get_label, github/get_latest_release, github/get_me, github/get_release_by_tag, github/get_tag, github/get_team_members, github/get_teams, github/issue_read, github/issue_write, github/list_branches, github/list_commits, github/list_issue_types, github/list_issues, github/list_pull_requests, github/list_releases, github/list_tags, github/merge_pull_request, github/pull_request_read, github/pull_request_review_write, github/push_files, github/request_copilot_review, github/search_code, github/search_issues, github/search_pull_requests, github/search_repositories, github/search_users, github/sub_issue_write, github/update_pull_request, github/update_pull_request_branch, io.github.upstash/context7/get-library-docs, io.github.upstash/context7/resolve-library-id, markitdown/convert_to_markdown, microsoft-docs/microsoft_code_sample_search, microsoft-docs/microsoft_docs_fetch, microsoft-docs/microsoft_docs_search, upstash/context7/query-docs, upstash/context7/resolve-library-id, vscode.mermaid-chat-features/renderMermaidDiagram, ms-vscode.vscode-websearchforcopilot/websearch, todo]
+tools: [vscode/memory, vscode/runCommand, vscode/switchAgent, vscode/extensions, vscode/askQuestions, vscode/toolSearch, execute/getTerminalOutput, read/readFile, read/problems, read/skill, edit, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, 'al-symbols-mcp/*', 'io.github.upstash/context7/*', 'microsoft-docs/*', vscode.mermaid-chat-features/renderMermaidDiagram, todo]
 model: Claude Sonnet 4.6 (copilot)
 argument-hint: 'Feature or system to design architecture for (e.g., "customer loyalty points system", "API integration with external CRM")'
 handoffs:
@@ -127,11 +127,10 @@ Workflow: al-architect (DESIGN) → al-spec.create (DETAIL) → @al-conductor (I
 
 ## AL-Specific Analysis Tools
 
-- **Dependency Analysis**: `al_get_package_dependencies` for extension dependencies and platform requirements
-- **Source Exploration**: `al_download_source` for existing AL implementations
+- **Dependency & Symbol Analysis**: `al-symbols-mcp/*` (`al_packages`, `al_search_objects`, `al_get_object_definition`) for extension dependencies and AL object relationships
 - **Codebase Understanding**: `codebase`, `search`, `usages` for AL object relationships
 - **Problem Detection**: `problems` for architectural issues and anti-patterns
-- **Repository Context**: `githubRepo` for development history and team patterns
+- **Diagrams**: `renderMermaidDiagram` for information-flow and data-model diagrams
 
 ## Architectural Focus Areas
 
@@ -148,7 +147,7 @@ Workflow: al-architect (DESIGN) → al-spec.create (DETAIL) → @al-conductor (I
 If a requirements document is provided (requisites.md, spec.md, etc.):
 1. Read thoroughly, identify business objectives, list functional/non-functional requirements, note constraints.
 2. **Ask clarifying questions** about: business rules, user personas, performance requirements, integration points, security requirements, compliance.
-3. **Analyze existing codebase** via `#search`, `#usages`, `al_download_source`. Identify reusable components.
+3. **Analyze existing codebase** via `#search`, `#usages`, `al-symbols-mcp/*` (`al_search_objects`, `al_get_object_definition`). Identify reusable components.
 
 ### Step 2: Design Solution Architecture
 
