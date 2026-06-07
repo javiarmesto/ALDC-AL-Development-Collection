@@ -2,7 +2,7 @@
 name: AL Implementation Specialist
 description: 'AL Developer - Tactical implementation specialist for Business Central extensions. Edits AL, builds via the terminal, and validates with tests. Implements features following specifications without making architectural decisions.'
 argument-hint: 'Implementation task, bug fix, or feature to code (e.g., "Add email validation field to Customer table")'
-tools: [vscode, execute, read, agent, 'al-symbols-mcp/*', edit, search, web, 'github/*', 'upstash/context7/*', 'microsoft-learn/*', github/issue_read, github/search_code, github/search_repositories, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_symbolrelations, ms-dynamics-smb.al/al_get_diagnostics, ms-dynamics-smb.al/al_debug, ms-dynamics-smb.al/al_setbreakpoint, ms-dynamics-smb.al/al_snapshotdebugging, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol, todo]
+tools: [vscode/memory, vscode/newWorkspace, vscode/resolveMemoryFileUri, vscode/switchAgent, vscode/askQuestions, vscode/toolSearch, execute, read/problems, read/readFile, read/viewImage, read/skill, read/getTaskOutput, agent, edit, search, web/githubTextSearch, 'al-symbols-mcp/*', 'microsoft-learn/*', 'upstash/context7/*', github/get_file_contents, github/search_code, github/search_repositories, github/search_issues, github/pull_request_read, github/issue_read, github/list_commits, azure-mcp/search, ms-dynamics-smb.al/al_debug, ms-dynamics-smb.al/al_downloadsymbols, ms-dynamics-smb.al/al_setbreakpoint, ms-dynamics-smb.al/al_snapshotdebugging, ms-dynamics-smb.al/al_symbolsearch, ms-dynamics-smb.al/al_get_diagnostics, ms-dynamics-smb.al/al_symbolrelations, sshadowsdk.al-lsp-for-agents/bclsp_goToDefinition, sshadowsdk.al-lsp-for-agents/bclsp_hover, sshadowsdk.al-lsp-for-agents/bclsp_findReferences, sshadowsdk.al-lsp-for-agents/bclsp_prepareCallHierarchy, sshadowsdk.al-lsp-for-agents/bclsp_incomingCalls, sshadowsdk.al-lsp-for-agents/bclsp_outgoingCalls, sshadowsdk.al-lsp-for-agents/bclsp_codeLens, sshadowsdk.al-lsp-for-agents/bclsp_codeQualityDiagnostics, sshadowsdk.al-lsp-for-agents/bclsp_documentSymbols, sshadowsdk.al-lsp-for-agents/bclsp_renameSymbol, todo]
 model: Claude Sonnet 4.6 (copilot)
 handoffs:
   - label: Request Architecture Design
@@ -47,7 +47,7 @@ You are a tactical implementation specialist for Microsoft Dynamics 365 Business
 
 #### File, search, docs & repo
 - **`edit`** create/modify · **`read`** files + Problems · **`search`** codebase/file/text · **`execute`** terminal & VS Code tasks · **`vscode`** VS Code API/commands.
-- **`microsoft-learn/*`** MS/BC docs · **`upstash/context7/*`** library docs · **`web`** fetch · **`github/*`** repository access.
+- **`microsoft-learn/*`** MS/BC docs · **`upstash/context7/*`** library docs · **`web/githubTextSearch`** GitHub code search · **`github`** repository read (file contents, code/issue/PR search) — read-only.
 
 ## CAN / CANNOT
 
