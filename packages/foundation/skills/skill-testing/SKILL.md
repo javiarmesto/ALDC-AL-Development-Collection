@@ -350,7 +350,7 @@ Coverage targets:
 
 ### Step 2: Create Test Plan Document
 
-Create `.github/plans/{req_name}.test-plan.md` using `docs/templates/test-plan-template.md`:
+Create `.github/plans/{req_name}.test-plan.md` using `.github/docs/templates/test-plan-template.md`:
 - List every scenario as Given/When/Then with a test method name
 - Group by unit / integration / UI / edge case
 - Define library codeunits needed

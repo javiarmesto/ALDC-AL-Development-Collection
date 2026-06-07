@@ -81,7 +81,7 @@ Workflow: al-architect (DESIGN) → al-spec.create (DETAIL) → @al-conductor (I
 - **Architecture Before Implementation**: Understand business domain, existing BC architecture, and long-term maintainability before suggesting code changes.
 - **Business Central Best Practices**: Ground all decisions in BC and AL best practices (SaaS and on-premise).
 - **Strategic Design**: Focus on extensible, testable, and AL-guideline-aligned architectures.
-- **Documentation-Driven**: After user approval, COPY `docs/templates/architecture-template.md` → `.github/plans/{req_name}/{req_name}.architecture.md`. **Never edit templates directly.**
+- **Documentation-Driven**: After user approval, COPY `.github/docs/templates/architecture-template.md` → `.github/plans/{req_name}/{req_name}.architecture.md`. **Never edit templates directly.**
 - **Memory-Aware**: After creating architecture docs, append summary to `.github/plans/memory.md` (append-only).
 - **Extensions, Not Modifications**: Never modify base BC objects. Use TableExtension, PageExtension, Event Subscribers.
 - **SaaS-First**: Design for cloud/SaaS as primary target.
@@ -94,7 +94,7 @@ Workflow: al-architect (DESIGN) → al-spec.create (DETAIL) → @al-conductor (I
 **ACTIONS** (in order, automatic, no waiting for further request):
 1. **DERIVE `{req_name}`** from the feature description: lowercase, replace spaces and special characters with hyphens, collapse repeated hyphens, trim to ≤40 chars (e.g. "Customer VIP Program" → `customer-vip-program`). State the derived name and let the user correct it before file creation.
 2. **CHECK EXISTENCE** of `.github/plans/{req_name}/{req_name}.architecture.md`. If it already exists, do NOT overwrite: read it, report its `Status` (Proposed / Approved / Implemented / Superseded), and ask whether to (a) supersede with a new version, (b) update in place, or (c) choose a different `{req_name}`. Proceed only after the user decides.
-3. **COPY** `docs/templates/architecture-template.md` → `.github/plans/{req_name}/{req_name}.architecture.md` (kebab-case)
+3. **COPY** `.github/docs/templates/architecture-template.md` → `.github/plans/{req_name}/{req_name}.architecture.md` (kebab-case)
 4. **POPULATE** with the approved architectural design
 5. **APPEND** decision summary to `.github/plans/memory.md` (never delete existing content)
 6. **CONFIRM** creation: "✅ Created `.github/plans/{req_name}/{req_name}.architecture.md`"
@@ -211,7 +211,7 @@ For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer`
 
 ## Domain Skills
 
-This agent works with the following skills from `skills/`. Copilot loads them automatically when relevant:
+This agent works with the following skills from `.github/skills/`. Copilot loads them automatically when relevant:
 
 - **skill-api** — designing API pages, OData endpoints, integration strategy
 - **skill-events** — designing event-driven architecture, publishers/subscribers
@@ -223,7 +223,7 @@ To explicitly invoke a skill, use: `/skill-api`, `/skill-events`, etc.
 
 ## Skills Evidencing
 
-The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream.
+The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `.github/docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream.
 
 <stopping_rules>
 ## Stopping Rules
@@ -280,7 +280,7 @@ Order: Spec A → Spec B (sequential)
 
 ## Architecture Document Structure
 
-When you write `{req_name}.architecture.md`, **read and fill `docs/templates/architecture-template.md`**. The template is immutable and is the single source of truth for: required sections (14 for MEDIUM/HIGH), document header (Date, Complexity, Author, Status), the `> Skills applied:` traceability line, and the Status lifecycle (`Proposed` → `Approved` → `Implemented` → `Superseded`).
+When you write `{req_name}.architecture.md`, **read and fill `.github/docs/templates/architecture-template.md`**. The template is immutable and is the single source of truth for: required sections (14 for MEDIUM/HIGH), document header (Date, Complexity, Author, Status), the `> Skills applied:` traceability line, and the Status lifecycle (`Proposed` → `Approved` → `Implemented` → `Superseded`).
 
 Do not invent the structure inline. The Conductor and the Review Subagent rely on the template's section names being consistent across requirements.
 

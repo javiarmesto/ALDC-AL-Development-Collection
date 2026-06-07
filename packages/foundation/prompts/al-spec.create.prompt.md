@@ -340,7 +340,7 @@ page {ID} "{Prefix} {Entity} API"
 - **Naming**: respect the prefix and naming conventions found in `memory.md` and existing `/src` objects (≤26-char object names, PascalCase).
 - **Architecture alignment**: if `{req_name}.architecture.md` exists, every object and event in this spec must trace back to a decision in that document. Do not introduce objects that are not justified by the architecture.
 
-> The structure above is the single source of truth. Do not read `docs/templates/spec-template.md` to obtain the layout — that file is a human reference; the prompt already encodes the contract.
+> The structure above is the single source of truth. Do not read `.github/docs/templates/spec-template.md` to obtain the layout — that file is a human reference; the prompt already encodes the contract.
 
 ## Next Steps
 

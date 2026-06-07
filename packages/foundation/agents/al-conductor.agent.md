@@ -151,7 +151,7 @@ Invoke **AL Implementation Subagent** (💻) via `#runSubagent` with:
 - Test requirements following AL-Go structure (`test/` project)
 - AL-specific patterns (SetLoadFields, error handling, naming ≤26 chars)
 - Explicit TDD instruction: tests first (failing), minimal code, tests pass, lint/format
-- Domain skills to load from `skills/` based on phase domain
+- Domain skills to load from `.github/skills/` based on phase domain
 - Instruction: work autonomously, only ask user on critical implementation decisions
 - **NOT** to proceed to next phase or write completion files (you handle this)
 - **RETURN** structured summary: objects created, tests created, build status, issues, skills loaded
@@ -165,7 +165,7 @@ Review subagent MUST run after EVERY phase, even with 0 build errors. **Build su
 Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
 - Phase objective and acceptance criteria
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.github/plans/` files only if a detail is missing.
-- **The BCQuality task-context inline.** You already read `app.json` and you know this phase's changed objects authoritatively — so build the task-context per `docs/templates/bcquality-task-context.md` (OMIT unknown dimensions; pilot from `aldc.yaml`) and pass it. The review subagent consumes it instead of re-deriving `bc-version`/`application-area` itself — same round-trip saving as the excerpts above.
+- **The BCQuality task-context inline.** You already read `app.json` and you know this phase's changed objects authoritatively — so build the task-context per `.github/docs/templates/bcquality-task-context.md` (OMIT unknown dimensions; pilot from `aldc.yaml`) and pass it. The review subagent consumes it instead of re-deriving `bc-version`/`application-area` itself — same round-trip saving as the excerpts above.
 - Modified/created files
 - AL validation requirements:
   - Event-driven patterns (no base modifications)
@@ -213,7 +213,7 @@ Act on the resulting verdict:
    💾 Ready to commit?
    ```
 
-2. **Write Phase Completion File**: Create `.github/plans/<task-name>/<task-name>-phase-<N>-complete.md` following `<phase_complete_style_guide>`. **Render the full review** into it from the Review-Report JSON, using `docs/templates/code-review-template.md` as the render template: `review.verdict`→Status; `findings[]`→Issues applying the severity naming (`blocker`→CRITICAL, `major`→MAJOR, `minor`→MINOR, `info`→recommendation) with `location` + `references`; `findings[source=bcquality]`→External Knowledge Findings; `review.skills-compliance`→Skills Compliance Check.
+2. **Write Phase Completion File**: Create `.github/plans/<task-name>/<task-name>-phase-<N>-complete.md` following `<phase_complete_style_guide>`. **Render the full review** into it from the Review-Report JSON, using `.github/docs/templates/code-review-template.md` as the render template: `review.verdict`→Status; `findings[]`→Issues applying the severity naming (`blocker`→CRITICAL, `major`→MAJOR, `minor`→MINOR, `info`→recommendation) with `location` + `references`; `findings[source=bcquality]`→External Knowledge Findings; `review.skills-compliance`→Skills Compliance Check.
 
    **Persistence (two artifacts)**:
    - **Canonical** — write the whole Review-Report JSON verbatim to `.github/plans/<task-name>/<task-name>-review-phase-<N>.json`. This is the source of truth and what gating/audit rely on.
@@ -441,7 +441,7 @@ File name: `.github/plans/<plan-name>/<plan-name>-complete.md` (kebab-case).
 - {Optional suggestion 2}
 ```
 
-> The three style guides above are the **single source of truth** at runtime. The files under `docs/templates/` (plan-template.md, phase-complete-template.md, plan-complete-template.md) are kept as a human reference but the conductor must NOT read them during orchestration — the format is already inline here.
+> The three style guides above are the **single source of truth** at runtime. The files under `.github/docs/templates/` (plan-template.md, phase-complete-template.md, plan-complete-template.md) are kept as a human reference but the conductor must NOT read them during orchestration — the format is already inline here.
 
 ### <git_commit_style_guide>
 
@@ -490,7 +490,7 @@ DO NOT proceed past these points without explicit user confirmation.
 
 ## Domain Skills
 
-This agent works with skills from `skills/`. Copilot loads them automatically when relevant:
+This agent works with skills from `.github/skills/`. Copilot loads them automatically when relevant:
 
 - **skill-testing** — orchestrating TDD cycles when test strategy is needed
 
@@ -512,7 +512,7 @@ Include **"Skills Applied in This Phase"** table consolidating implement-subagen
 ```
 
 ### In plan-complete.md (final summary)
-Include **"Skills Utilization Summary"** aggregating all phases (see `docs/templates/plan-complete-template.md`).
+Include **"Skills Utilization Summary"** aggregating all phases (see `.github/docs/templates/plan-complete-template.md`).
 
 ### Validation responsibility
 Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "Skills Compliance Check". If a skill was loaded but review found patterns not applied → flag as issue before committing.
@@ -657,7 +657,7 @@ Instead, **pass phase-relevant excerpts inline** in the `#runSubagent` instructi
 
 Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.github/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `read_file` round-trips per subagent invocation.
 
-> Scope: this governs the per-phase implement/review invocations. The same principle now covers the **BCQuality task-context** — you build it (per `docs/templates/bcquality-task-context.md`) and pass it inline, since you already hold `app.json` and the phase's changed objects. The review subagent still reads the external BCQuality clone itself (the knowledge files), but no longer re-derives the task-context.
+> Scope: this governs the per-phase implement/review invocations. The same principle now covers the **BCQuality task-context** — you build it (per `.github/docs/templates/bcquality-task-context.md`) and pass it inline, since you already hold `app.json` and the phase's changed objects. The review subagent still reads the external BCQuality clone itself (the knowledge files), but no longer re-derives the task-context.
 
 ### Documentation Creation During Orchestration
 

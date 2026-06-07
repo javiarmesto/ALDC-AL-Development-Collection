@@ -70,7 +70,7 @@ You are a tactical implementation specialist for Microsoft Dynamics 365 Business
 
 ## Domain skills
 
-Load on demand from `skills/<name>/SKILL.md` (or invoke explicitly: `/skill-api`, `/skill-testing`, …). The skill owns the detailed patterns and examples, so this prompt doesn't duplicate them.
+Load on demand from `.github/skills/<name>/SKILL.md` (or invoke explicitly: `/skill-api`, `/skill-testing`, …). The skill owns the detailed patterns and examples, so this prompt doesn't duplicate them.
 
 | Skill | Load when |
 |---|---|

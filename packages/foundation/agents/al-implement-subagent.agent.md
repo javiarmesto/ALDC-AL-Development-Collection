@@ -80,7 +80,7 @@ Before writing any test code:
 
 ### Object & Pattern Reference
 
-For object-creation patterns, naming, performance and error-handling rules, **rely on the active framework**: the matching micro-instructions in `instructions/al-*` auto-load when you edit `.al` files, and the relevant skill (`skill-events`, `skill-pages`, `skill-permissions`, `skill-performance`, `skill-api`, `skill-copilot`) provides full examples and patterns. Do not invent or duplicate those rules in your responses; load the skill and follow it.
+For object-creation patterns, naming, performance and error-handling rules, **rely on the active framework**: the matching micro-instructions in `.github/instructions/al-*` auto-load when you edit `.al` files, and the relevant skill (`skill-events`, `skill-pages`, `skill-permissions`, `skill-performance`, `skill-api`, `skill-copilot`) provides full examples and patterns. Do not invent or duplicate those rules in your responses; load the skill and follow it.
 
 ### Test Patterns (Given/When/Then)
 
@@ -132,7 +132,7 @@ end;
 
 ## Domain Skills
 
-This agent works with the following skills from skills/.
+This agent works with the following skills from .github/skills/.
 Copilot loads them automatically when relevant to the task:
 
 - **skill-api** — When creating API pages, OData endpoints, HttpClient integrations

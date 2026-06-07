@@ -75,11 +75,11 @@ If answers are incomplete, ask focused follow-up questions until scope is clear.
 
 Create and maintain this structure:
 
-- `skills/<skill-name>/SKILL.md`
-- `skills/<skill-name>/AUTHORS.md`
-- `skills/<skill-name>/CHANGELOG.md`
-- `skills/<skill-name>/references/` (optional, preferred for long content)
-- `skills/<skill-name>/scripts/` (optional, only when deterministic automation helps)
+- `.github/skills/<skill-name>/SKILL.md`
+- `.github/skills/<skill-name>/AUTHORS.md`
+- `.github/skills/<skill-name>/CHANGELOG.md`
+- `.github/skills/<skill-name>/references/` (optional, preferred for long content)
+- `.github/skills/<skill-name>/scripts/` (optional, only when deterministic automation helps)
 
 ### Step 3: Author SKILL.md
 

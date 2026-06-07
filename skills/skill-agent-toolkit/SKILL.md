@@ -13,7 +13,7 @@ Manual del Agent SDK: arquitectura, registro, las 3 interfaces, Setup Codeunit, 
 
 | Path                      | Use when              | Result                                                     |
 | ------------------------- | --------------------- | ---------------------------------------------------------- |
-| **Designer (No-Code)**    | Prototyping, testing  | Agent via wizard with instructions/profile/permissions     |
+| **Designer (No-Code)**    | Prototyping, testing  | Agent via wizard with .github/instructions/profile/permissions     |
 | **SDK (Pro-Code)**        | Production, extensions| Coded agent via AL interfaces, shipped in .app             |
 
 Both share the same runtime: an agent is a BC user that interacts with the UI via a logical UI API.

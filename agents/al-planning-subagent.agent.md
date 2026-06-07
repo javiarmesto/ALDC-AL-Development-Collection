@@ -80,7 +80,7 @@ Provide structured summary with AL-specific sections.
 
 ## Return Format
 
-When you complete your research, return findings by reading and filling `docs/templates/planning-findings-template.md`. Do not invent the format inline; the template is the single source of truth.
+When you complete your research, return findings by reading and filling `.github/docs/templates/planning-findings-template.md`. Do not invent the format inline; the template is the single source of truth.
 
 ## Research Guidelines
 
