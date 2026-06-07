@@ -196,7 +196,7 @@ end;
 
 **Common MIME types**: `application/pdf`, `image/png`, `image/jpeg`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` (Excel xlsx), `text/csv`.
 
-For the canonical end-to-end example combining attachment + business condition + telemetry + lead handoff, see `examples/lead-handoff-with-attachment.al`.
+When you need a canonical end-to-end example combining attachment + business condition + telemetry + lead handoff, load `examples/lead-handoff-with-attachment.md`.
 
 ### Pattern E — Multi-turn conversation
 
@@ -374,5 +374,7 @@ end;
 
 ## Examples
 
-- `examples/lead-handoff-with-attachment.al` — end-to-end attachment + business condition + telemetry + handoff
-- `examples/session-events-binding.al` — Pattern H complete with companion Events codeunit
+Load an example only when you need its concrete template:
+
+- When implementing an end-to-end attachment + business condition + telemetry + handoff flow, load `examples/lead-handoff-with-attachment.md`.
+- When wiring Pattern H with a companion Events codeunit, load `examples/session-events-binding.md`.

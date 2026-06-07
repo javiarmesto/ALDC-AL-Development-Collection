@@ -15,7 +15,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
-
+aldc_audit* 
 # Test outputs
 test-results/
 coverage/
@@ -24,6 +24,7 @@ coverage/
 *.tmp
 *.bak
 *~
+PUSH.md
 
 # AL specific
 .alpackages/
@@ -79,3 +80,8 @@ NEXT-STEPS.md
 # Claude Code local files
 CLAUDE.local.md
 .claude/settings.local.json
+# Audit reports (local only)
+aldc_audit*.md
+aldc_audit*.json
+PUSH.md
+PUSH.ps1

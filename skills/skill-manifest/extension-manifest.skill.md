@@ -1,3 +1,8 @@
+---
+name: skill-manifest
+description: "Generates a handoff manifest at the end of the ALDC pipeline so CIRCE and DELFOS can consume the extension's published surface without sharing a workspace. Use when the Conductor pipeline has completed successfully (extension compiles, all tests pass, all HITL gates cleared) and you need to emit the extension manifest from al-spec.md and the compiled .al objects."
+---
+
 # Skill: Extension Manifest Generator
 
 > Generates a handoff manifest at the end of the ALDC pipeline, enabling CIRCE and/or DELFOS to consume the extension's published surface without sharing a workspace.
@@ -177,7 +182,4 @@ Examples: `lead-tracking-manifest.md`, `vibeleads-manifest.md`, `frontier-incide
 ## Reference URLs
 
 - [BC MCP Server Configuration](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/configure-mcp-server)
-- [Create Agent in Copilot Studio](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/create-agent-in-copilot-studio)
-- [BC API Page Documentation](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-api-pagetype)
-- [Power BI Star Schema Guidance](https://learn.microsoft.com/en-us/power-bi/guidance/star-schema)
-- DELFOS bc-data-source-mapping skill: internal reference within the DELFOS framework
+- [Create Agent in Copilot Studio](https://learn.m

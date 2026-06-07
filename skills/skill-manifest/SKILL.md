@@ -1,3 +1,8 @@
+---
+name: skill-manifest
+description: "Generates a handoff manifest at the end of the ALDC pipeline so CIRCE and DELFOS can consume the extension's published surface without sharing a workspace. Use when the Conductor pipeline has completed successfully (extension compiles, all tests pass, all HITL gates cleared) and you need to emit the extension manifest from al-spec.md and the compiled .al objects."
+---
+
 # Skill: Extension Manifest Generator
 
 > Generates a handoff manifest at the end of the ALDC pipeline, enabling CIRCE and/or DELFOS to consume the extension's published surface without sharing a workspace.

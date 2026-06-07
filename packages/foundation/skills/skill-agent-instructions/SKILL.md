@@ -192,6 +192,8 @@ When one agent creates tasks for another:
 
 ## Examples
 
-- [Simple instructions](./examples/agent-simple-instructions.txt) — minimal single-task agent (credit check)
-- [Advanced instructions](./examples/agent-advanced-instructions.txt) — multi-task with handoff, error handling, structured replies (lead qualifier)
-- [Keywords reference](./references/agent-keywords-reference.md) — quick lookup for every runtime keyword
+Load an example only when you need a concrete template:
+
+- When writing a minimal single-task agent, see [Simple instructions](./examples/agent-simple-instructions.txt) (credit check).
+- When building a multi-task agent with handoff and error handling, see [Advanced instructions](./examples/agent-advanced-instructions.txt) (lead qualifier).
+- If you need to look up a runtime keyword, see [Keywords reference](./references/agent-keywords-reference.md).
