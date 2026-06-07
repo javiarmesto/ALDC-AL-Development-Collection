@@ -57,24 +57,28 @@ Specialized domains (MEDIUM/HIGH):
 
 ## Visual Progress Format (used throughout)
 
-All phases use this standard visual format. When a subagent is running:
+Render progress **lightweight** — do not redraw heavy ASCII boxes; they cost tokens
+on every phase. Default to this two-line format per phase:
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎭 AL CONDUCTOR ORCHESTRATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-┌─ Phase {N}/{Total}: {Phase Name} ─────────────────────┐
-│ {icon} {Subagent Name}                      [RUNNING] │
-│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ...%      │
-│ Status: {Current action}                              │
-└────────────────────────────────────────────────────────┘
+**🧙 Phase {N}/{Total} · {Phase Name}**
+{icon} {Subagent} · `[RUNNING]` — {Current action}
 ```
 
-Icons: 🔍 Planning, 💻 Implementation, ✅ Review, 🎭 Conductor, 🚦 Checkpoint, 💡 Recommendation.
+On completion, swap `[RUNNING]` → `[COMPLETE]` and replace the action with a one-line
+deliverables summary.
+
+At **checkpoints / milestones** (HITL pauses, phase gates) you may use the richer card:
+
+```
+**🧙 AL Conductor — Phase {N}/{Total}: {Phase Name}**
+> {icon} **{Subagent}** `[RUNNING]`
+> `▰▰▰▰▱▱▱▱▱▱` {N}/{Total} · {Current action}
+```
+
+Icons: 🔍 Planning, 💻 Implementation, ✅ Review, 🧙 Conductor, 🚦 Checkpoint, 💡 Recommendation.
 Status flags: `[RUNNING]`, `[COMPLETE]`, `[WAITING]`, `[FAILED]`.
-
-After completion, swap `[RUNNING]` for `[COMPLETE]`, show `100%` and add deliverables summary.
+Progress is by **phase** (N/Total), a real value — never invent per-task percentages.
 
 ---
 
@@ -611,7 +615,7 @@ Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "
 
 **Request**: "Add email validation to Customer table"
 
-1. 🎭 Conductor activates → invokes 🔍 al-planning-subagent
+1. 🧙 Conductor activates → invokes 🔍 al-planning-subagent
 2. Planning returns findings (Table 18, `OnBeforeValidateEvent` available, AL-Go validated)
 3. Conductor drafts plan (3 phases: Test Setup → Implement Validation → Integration)
 4. Presents open questions (empty emails allowed? case-sensitive? .NET Regex vs custom?)
