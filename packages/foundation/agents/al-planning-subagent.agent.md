@@ -4,7 +4,7 @@ description: 'AL Planning Subagent - AL-aware research and context gathering for
 user-invocable: false
 disable-model-invocation: true
 argument-hint: 'Research goal or problem statement for AL development'
-tools: [vscode/memory, vscode/askQuestions, read/problems, read/readFile, agent, 'al-symbols-mcp/*', edit, search, web, 'microsoft-learn/*', azure-mcp/search, todo]
+tools: [vscode/memory, vscode/resolveMemoryFileUri, vscode/askQuestions, read/problems, read/readFile, read/skill, search, web/githubTextSearch, 'al-symbols-mcp/*', 'microsoft-learn/*', todo]
 model: Claude Sonnet 4.6 (copilot)
 handoffs:
   - label: Return to Conductor
