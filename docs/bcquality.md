@@ -23,10 +23,16 @@ reviews.
   (`<home>/skills/entry.md`, per `aldc.yaml`) and **execute whatever its `dispatch[]`
   returns** — Entry owns the routing. As BCQuality's coverage grows, ALDC picks it up
   with no change on this side.
-- **Configuration lives in `aldc.yaml → external.bcquality`**: `url`, `ref`,
-  optional `pinnedCommit`, `home` (clone location), `entryPoint` (`skills/entry.md`),
-  the multi-root `workspace`, and the absent-path `fallback` policy. The install
-  scripts read `url`/`ref`/`pinnedCommit` from here — it is the single source of truth.
+- **Configuration lives in `aldc.yaml → external.bcquality`**: `enabled`
+  (`auto` | `true` | `false`), `url`, `ref`, optional `pinnedCommit`, `home` (clone
+  location), `entryPoint` (`skills/entry.md`), the multi-root `workspace`, and the
+  absent-path `fallback` policy. The install scripts read `url`/`ref`/`pinnedCommit`
+  from here — it is the single source of truth.
+- **The `enabled` switch is resolved ONCE by `al-conductor`** and propagated to the
+  subagents (recorded in the plan doc): `auto` probes to detect, `true` expects it
+  (probe + warn if absent), `false` disables it entirely (native A–G, **no probe**).
+  Subagents consume that decision and do not re-probe — except `@dredd`/`@al-triage`
+  run standalone, so they read `enabled` and probe themselves.
 
 ## Install (only if you want BCQuality-backed reviews)
 

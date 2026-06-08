@@ -12,6 +12,12 @@ toolkitRoot: "."
 external:
   bcquality:
     mode: "external-multiroot"            # consumed from OUTSIDE the AL project (see aldc.code-workspace)
+    # Master switch resolved ONCE by al-conductor and propagated to the subagents
+    # (it is recorded in the plan doc; subagents consume the decision, they don't re-probe):
+    #   auto  (default) — probe <home>/<entryPoint> to detect; mounted -> consult, absent -> native A-G
+    #   true            — BCQuality is expected; probe to confirm mount, warn + native fallback if absent
+    #   false           — disabled: never probe, always native A-G (the explicit off switch)
+    enabled: "auto"
     # Source of the knowledge base. Configurable: defaults to the canonical upstream
     # (microsoft/BCQuality). Override `url` to point at your own fork. The install
     # scripts read `url` / `ref` / `pinnedCommit` from here — this file is the single
@@ -22,7 +28,7 @@ external:
     home: "../bcquality"                  # external clone location (override: $BCQUALITY_HOME); 2nd workspace root
     entryPoint: "skills/entry.md"         # relative to `home`
     workspace: "aldc.code-workspace"      # multi-root workspace (this repo root + ../bcquality); see docs/bcquality.md
-    consumedBy: "agents/al-review-subagent.agent.md"
+    consumedBy: ["agents/al-review-subagent.agent.md", "agents/dredd.agent.md", "agents/al-triage.agent.md"]
     # Policy when BCQuality is ABSENT (the default until install.sh clones it).
     # The .github/hooks/bcquality-precondition hook reads this and injects the
     # directive (hook ported later as Preview); the agents' prose precondition is

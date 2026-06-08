@@ -90,7 +90,13 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
 2. **Check for Input Documents**: architecture.md, spec.md, requirements doc — use whatever's available to guide planning.
 
-3. **Delegate Research**: Use `#runSubagent` to invoke **AL Planning Subagent** (icon 🔍). Instruct it to:
+   > **Resolve the BCQuality decision ONCE (here — not in each subagent).** Read `aldc.yaml → external.bcquality.enabled`:
+   > - `false` → **off**: `bcquality = { decision: "disabled", mounted: false }`. **Do not probe.**
+   > - `auto` / `true` → probe `<home>/<entryPoint>` **once** (e.g. `read_file ../bcquality/skills/entry.md`): a successful read → `{ decision: "active", mounted: true, sha: <pinnedCommit or resolved> }`; absent → `{ decision: "not-applicable", mounted: false }` (for `true`, also note the expected-but-absent in the plan — never block).
+   >
+   > This decision is **authoritative for the whole run**: you (a) **record it in the plan / phase-complete doc** and (b) **pass it inline** to every subagent (planning, implement, review) with the task-context. Subagents **consume** it — they do **not** re-probe (they self-probe only if invoked standalone, outside your orchestration). Surface one line: `🟢 BCQuality · active — <sha>` / `⚪ BCQuality · disabled — native A–G` / `⚪ BCQuality · not mounted — native A–G`.
+
+3. **Delegate Research**: Use `#runSubagent` to invoke **AL Planning Subagent** (icon 🔍). **Pass the resolved BCQuality decision** so it records it in its findings (evidenced). Instruct it to:
    - Analyze AL codebase structure and dependencies
    - Identify relevant AL objects (Tables, Pages, Codeunits, etc.)
    - Understand event architecture and extension patterns
@@ -117,6 +123,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
    - Planning findings summary (from al-planning-subagent)
    - Approved plan (phases, AL objects, estimated effort)
    - Requirement set status: spec ✅, architecture ✅/N/A, test-plan ✅
+   - **BCQuality decision**: `active (sha <…>)` | `not-applicable` | `disabled` — resolved once per `aldc.yaml → external.bcquality.enabled` (this is what the review subagent consumes; it does not re-probe)
    - Open questions resolved (and how)
    - User approval timestamp
 
@@ -169,7 +176,7 @@ Review subagent MUST run after EVERY phase, even with 0 build errors. **Build su
 Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
 - Phase objective and acceptance criteria
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.github/plans/` files only if a detail is missing.
-- **The BCQuality task-context inline.** You already read `app.json` and you know this phase's changed objects authoritatively — so build the task-context per `.github/docs/templates/bcquality-task-context.md` (OMIT unknown dimensions; pilot from `aldc.yaml`) and pass it. The review subagent consumes it instead of re-deriving `bc-version`/`application-area` itself — same round-trip saving as the excerpts above.
+- **The BCQuality decision + task-context inline.** Pass the **BCQuality decision** you resolved in Phase 1 (`disabled` | `not-applicable` | `active` + `mounted` + `sha`) so the review subagent **consumes it and does not re-probe**. Only when `active` do you also build the task-context per `.github/docs/templates/bcquality-task-context.md` (OMIT unknown dimensions; pilot from `aldc.yaml`) and pass it — you already read `app.json` and know this phase's changed objects, so the subagent consumes it instead of re-deriving `bc-version`/`application-area`. When `disabled`/`not-applicable`, skip the task-context and tell the subagent to review natively (full A–G).
 - Modified/created files
 - AL validation requirements:
   - Event-driven patterns (no base modifications)
