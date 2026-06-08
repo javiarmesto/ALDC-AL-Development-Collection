@@ -90,9 +90,9 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
 2. **Check for Input Documents**: architecture.md, spec.md, requirements doc — use whatever's available to guide planning.
 
-   > **Resolve the BCQuality decision ONCE (here — not in each subagent).** Read `aldc.yaml → external.bcquality.enabled`:
+   > **Resolve the BCQuality decision ONCE (here — not in each subagent).** Read `aldc.yaml → external.bcquality.enabled` (**absent field ⇒ `auto`**):
    > - `false` → **off**: `bcquality = { decision: "disabled", mounted: false }`. **Do not probe.**
-   > - `auto` / `true` → probe `<home>/<entryPoint>` **once** (e.g. `read_file ../bcquality/skills/entry.md`): a successful read → `{ decision: "active", mounted: true, sha: <pinnedCommit or resolved> }`; absent → `{ decision: "not-applicable", mounted: false }` (for `true`, also note the expected-but-absent in the plan — never block).
+   > - `auto` / `true` → probe `<home>/<entryPoint>` **once** (e.g. `read_file ../bcquality/skills/entry.md`): a successful read → `{ decision: "active", mounted: true, sha: <pinnedCommit or resolved> }`; absent — **a probe that errors or returns empty counts as absent** → `{ decision: "not-applicable", mounted: false }`; do **not** retry the read (for `true`, note the expected-but-absent in the plan — never block).
    >
    > This decision is **authoritative for the whole run**: you (a) **record it in the plan / phase-complete doc** and (b) **pass it inline** to every subagent (planning, implement, review) with the task-context. Subagents **consume** it — they do **not** re-probe (they self-probe only if invoked standalone, outside your orchestration). Surface one line: `🟢 BCQuality · active — <sha>` / `⚪ BCQuality · disabled — native A–G` / `⚪ BCQuality · not mounted — native A–G`.
 
