@@ -34,6 +34,8 @@ Load **`skill-debug`** first — it owns the method (debugging strategy, data-fl
 6. **Diagnose.** Write `.github/plans/<issue-kebab-case>-diagnosis.md` using **skill-debug's Step 4 template**, plus two fields it under-specifies: **Blast radius** (from step 4) and **Citations** (BCQuality `file:line` from step 5, when present). Recommend a **minimal permanent fix** at the root cause; add a **short-term mitigation/hotfix** only when the permanent fix is risky or slow to ship.
 7. **HITL gate + handoff.** PAUSE and present the diagnosis + proposed fix. On approval, hand the fix to **`@al-developer`** (simple) or **`@al-conductor`** (multi-phase refactor). You do not edit code.
 
+> **Don't re-read a file already in context.** This loop revisits the same artifacts across steps — the suspect `.al`, the changed-vs-`main` diff, `aldc.yaml`, and `<home>/entry.md` get touched at localize, root-cause, blast-radius, and diagnose. Read each **once** and reuse it; never `read_file` the same path twice within a diagnosis. (Same discipline the review/audit agents apply — symbol *discovery* is still your job here; re-*reading* what you already hold is the waste.)
+
 ## Three inversions vs the greenfield (conductor) loop
 
 - **Reproduce-first, not design-first** — no fix without a reproduction or evidence-backed root cause.
