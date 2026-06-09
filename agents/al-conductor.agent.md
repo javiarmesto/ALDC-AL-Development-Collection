@@ -165,7 +165,7 @@ Invoke **AL Implementation Subagent** (💻) via `#runSubagent` with:
 - Domain skills to load from `.github/skills/` based on phase domain
 - Instruction: work autonomously, only ask user on critical implementation decisions
 - **NOT** to proceed to next phase or write completion files (you handle this)
-- **RETURN** structured summary: objects created, tests created, build status, issues, skills loaded
+- **RETURN** structured summary: objects created, **event subscribers (exact base object + event name + signature)**, tests created, build status, issues, skills loaded
 
 **⛔ TDD ENFORCEMENT**: If subagent returns code without tests, REJECT the phase result and re-invoke with explicit TDD instruction. **Zero tests = phase FAILED.**
 
@@ -178,6 +178,7 @@ Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.github/plans/` files only if a detail is missing.
 - **The BCQuality decision + task-context inline.** Pass the **BCQuality decision** you resolved in Phase 1 (`disabled` | `not-applicable` | `active` + `mounted` + `sha`) so the review subagent **consumes it and does not re-probe**. Only when `active` do you also build the task-context per `.github/docs/templates/bcquality-task-context.md` (OMIT unknown dimensions; pilot from `aldc.yaml`) and pass it — you already read `app.json` and know this phase's changed objects, so the subagent consumes it instead of re-deriving `bc-version`/`application-area`. When `disabled`/`not-applicable`, skip the task-context and tell the subagent to review natively (full A–G).
 - Modified/created files
+- **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events by `al_symbolsearch` (a measured token sink — trial-and-error symbol searches). Tell it to symbol-search only to spot-confirm a signature it cannot resolve from the list.
 - AL validation requirements:
   - Event-driven patterns (no base modifications)
   - Naming conventions (26-char limit, PascalCase)
@@ -667,6 +668,8 @@ Instead, **pass phase-relevant excerpts inline** in the `#runSubagent` instructi
 - **Memory** — only the cross-session decisions that bear on this phase.
 
 Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.github/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `read_file` round-trips per subagent invocation.
+
+> **Don't re-read what's already in context (yours or theirs).** Within a single invocation, a file read once must be **reused, not re-read** — measured runs show the same source `.al`/`spec`/`memory` read 5–7× in one review, each re-injecting the file into the growing context. Instruct subagents: *"if you already read a path this invocation, reuse it; do not `read_file` it again."*
 
 > Scope: this governs the per-phase implement/review invocations. The same principle now covers the **BCQuality task-context** — you build it (per `.github/docs/templates/bcquality-task-context.md`) and pass it inline, since you already hold `app.json` and the phase's changed objects. The review subagent still reads the external BCQuality clone itself (the knowledge files), but no longer re-derives the task-context.
 

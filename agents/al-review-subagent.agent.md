@@ -51,6 +51,9 @@ BCQuality is a curated, citable BC knowledge base consumed from the external BCQ
 
 Use `#changes`, `#usages`, `#problems`, `#search`, `#testFailure` to establish: object types touched, events added, tests added, `app/` vs `test/` placement, and compilation status.
 
+> **Consume the event-subscriber list — don't re-discover events.** The Conductor passes the implement-subagent's list of subscribers (each with its **exact base object + event name + signature**). **Validate against that list.** Use `al_symbolsearch` / `al-symbols-mcp/*` **only** to spot-confirm a single signature you genuinely cannot resolve from the list — **not** to enumerate or guess base events. (Measured: blind trial-and-error symbol searches, with name-variant duplicates, were a top token sink in review.)
+> **Don't re-read a file already in context.** If you read a source `.al`, an excerpt, the BCQuality skill, or `memory.md` earlier in this invocation, reuse it — never `read_file` the same path twice.
+
 ### Step 2 — Verify against the checklist
 
 > **Governing principle — BCQuality first.** BCQuality is the primary review authority. Use the native checks (and ALDC skill criteria) **only for what BCQuality's current coverage does not reach**. As BCQuality coverage grows (more enabled leaf skills, the `/custom/` layer), the native residual shrinks. Today the residual is the four native checks below.

@@ -124,7 +124,8 @@ end;
 - You **MUST NOT** interact with the user — return results to the Conductor
 - You **MUST NOT** modify base objects — extension-only
 - You **MUST** follow the spec and architecture documents provided by the Conductor
-- You **MUST** report back: objects created, tests created, test results, build status, any issues
+- You **MUST** report back: objects created, **event subscribers (exact base object + event name + signature)**, tests created, test results, build status, any issues
+- **Don't re-read a file already in context.** If you already read a spec/architecture excerpt, a source file, or a skill this invocation, reuse it — do not issue another `read_file` for the same path.
 
 </boundary_rules>
 
@@ -282,6 +283,12 @@ If no domain skills were required for this phase: "No domain skills required for
 
 ### Objects Created
 - {Type} {ID} "{Name}" — {purpose}
+
+### Event Subscribers
+*(For every `[EventSubscriber(...)]` you created, give the **exact** target so the
+reviewer validates against this list instead of re-discovering events by symbol
+search. Omit the section if no subscribers were added this phase.)*
+- `{LocalProcName}` → `ObjectType::Codeunit "{Base Object}"` event `{EventName}` — signature `{OnBefore/OnAfter…(params)}`; SkipOnMissingLicense/IsHandled: {y/n}
 
 ### Tests Created
 - {TestProcedure1} — {what it tests} — {PASS/FAIL}
