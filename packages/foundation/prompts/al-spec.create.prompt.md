@@ -47,6 +47,8 @@ Search for:
 - Existing event publishers relevant to this feature
 - Existing API pages or codeunits if integration is involved
 
+> **Verify every base-app event you subscribe to against symbols — this is the spec's job, not the planner's.** For each event the feature hooks into, confirm it **exists** in the current BC version via `al_symbolsearch` / `bclsp_documentSymbols` against `.alpackages/` (download symbols first if absent). Record the **verified** publisher object + exact event name in §5. If you cannot confirm an event exists, it does **not** enter the spec as fact — move it to §12 Open Questions. (A wrong or nonexistent event name passed downstream silently becomes a blind search burst in planning and a defect the reviewer must catch. Verify it once, here, at the cheapest point.)
+
 ---
 
 ## Step 2 — Generate Specification
@@ -164,6 +166,8 @@ begin
     // What this subscriber does
 end;
 ```
+
+> **The spec owns the *decision*; symbols own the *exact signature*.** Record the **verified** publisher object, the exact **event name**, and the **fields the subscriber consumes** (e.g. `SalesHeader."Sell-to Customer No."`). Do **not** transcribe the full parameter list verbatim — that is a version-specific platform fact the **implementer** resolves from symbols (`al_symbolsearch`) at code time. Copying it here creates a second source of truth that drifts on the next BC upgrade. The event name + publisher, however, MUST be symbol-verified (Step 1.3).
 
 ---
 
@@ -380,6 +384,7 @@ page {ID} "{Prefix} {Entity} API"
 - ✅ Spec file created at `.github/plans/${input:req_name}/${input:req_name}.spec.md`
 - ✅ Object IDs verified against `app.json` idRanges
 - ✅ Architecture document consulted (if exists)
-- ✅ All AL signatures are complete (no "TBD" in procedure signatures)
+- ✅ The feature's **own** procedure signatures are complete (no "TBD"); base-app event targets recorded as **verified publisher + event name + consumed fields** (exact param list resolved from symbols at code time, not transcribed)
+- ✅ Every subscribed base-app event was symbol-verified to exist (unverifiable ones moved to Open Questions)
 - ✅ Test scenarios defined in Given/When/Then format
 - ✅ Handoff section points to correct next agent per complexity
