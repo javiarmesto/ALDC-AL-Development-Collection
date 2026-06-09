@@ -103,7 +103,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
    - Check AL-Go structure (`app/` vs `test/` projects)
    - Return structured findings (NOT write plans)
 
-   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; do **not** task it to "research event signatures" — that re-opens the blind-search path the spec closed. The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
+   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
 
    Show progress using Visual Progress Format. After completion, summarize findings:
    ```
