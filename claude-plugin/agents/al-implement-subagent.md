@@ -36,8 +36,8 @@ Every phase MUST follow the RED → GREEN → REFACTOR cycle:
 
 Before writing any test code:
 - Read `test/app.json` (or the test project's `app.json`) for `idRanges` and `dependencies`
-- If **Library Assert** dependency is missing → add it and run `AL: Download Symbols`
-- If **Any** dependency is missing → add it and run `AL: Download Symbols`
+- If **Library Assert** dependency is missing → add it (symbols then need refreshing: VS Code `AL: Download Symbols` or a CI symbol-cache restore — a human/pipeline step)
+- If **Any** dependency is missing → add it (same symbol refresh as above)
 - Identify the available test ID range for new test codeunits
 
 **This step is MANDATORY before writing any test code.**
@@ -317,7 +317,7 @@ Before creating ANY test file, you MUST:
 }
 ```
 
-4. After adding dependencies, run `AL: Download Symbols`
+4. After adding dependencies, refresh symbols (VS Code `AL: Download Symbols` or a CI symbol-cache restore — a human/pipeline step), then recompile
 
 ### Correct Test Library References
 
@@ -420,15 +420,21 @@ If no domain skills were required for this phase: "No domain skills required for
 ## Tool Boundaries
 
 **CAN:**
-- Read files, search codebase, analyze code
+- Read files, search codebase (`Grep`/`Glob`), analyze code
+- Query AL symbols, definitions, and references via **al-symbols-mcp**
 - Create AL files (production and test)
 - Edit existing AL files
 - Create directories for AL-Go structure
-- Run terminal commands (build, test)
-- Download symbols, search symbols
+- Compile/package with `Bash: al compile` and read the output
+- Run `Bash` (git and other shell commands)
 - Load domain skills for specialized patterns
 
-**CANNOT:**
+**CANNOT (no tool here — hand the runtime step to a human / VS Code / CI):**
+- Run tests → VS Code `AL: Run Tests` or the CI test runner; you read the results
+- Download symbols → VS Code `AL: Download Symbols` or a CI symbol-cache restore
+- Publish/deploy or debug → VS Code / CI
+
+**CANNOT (out of role):**
 - Interact with the user directly
 - Make architectural decisions (follow the spec/architecture)
 - Proceed to the next phase (return to Conductor)

@@ -86,7 +86,7 @@ Strictly follow the **Planning → Implementation → Review → Commit** proces
    - Specification from al-spec.create → Reference object structure
    - Requirements document → Use as basis for research
 
-3. **Delegate Research**: Use `#Task tool` to invoke the **agent `al-planning-subagent`** for comprehensive context gathering.
+3. **Delegate Research**: Use the `Task` tool to invoke the **agent `al-planning-subagent`** for comprehensive context gathering.
 
 **Present to user:**
 
@@ -201,7 +201,7 @@ For each phase in the plan, execute this cycle with **visual progress tracking**
 └────────────────────────────────────────────────────────┘
 ```
 
-1. Use `#Task tool` to invoke the **al-implement-subagent** with:
+1. Use the `Task` tool to invoke the **al-implement-subagent** with:
    - The specific phase number and objective
    - AL objects to create/modify (TableExtension, Codeunit, etc.)
    - Event subscribers/publishers needed
@@ -244,7 +244,7 @@ Build success ≠ review approval. NEVER skip review.
 └────────────────────────────────────────────────────────┘
 ```
 
-1. Use `#Task tool` to invoke the **agent `al-review-subagent`** with:
+1. Use the `Task` tool to invoke the **agent `al-review-subagent`** with:
    - The phase objective and acceptance criteria
    - Files that were modified/created
    - **The BCQuality task-context, built inline.** You already hold `app.json` and this phase's changed objects, so build the task-context (per the BCQuality task-context template; OMIT unknown dimensions; pilot skills from `aldc.yaml`) and pass it — the review subagent consumes it instead of re-deriving `bc-version`/`application-area`. It still reads the external BCQuality clone itself for the knowledge files.
@@ -597,7 +597,7 @@ AL Context:
 - `[WAITING]` - Paused for user input
 - `[FAILED]` - Error occurred, user intervention needed
 
-Provide this status in your responses to keep the user informed. Use the `#todos` tool to track progress.
+Provide this status in your responses to keep the user informed. Use the `TodoWrite` tool to track progress.
 
 **CRITICAL PAUSE POINTS** - You must stop and wait for user input at:
 
@@ -616,7 +616,7 @@ Track your progress through the workflow:
 - **Next Action**: {What comes next}
 - **AL Context**: {Objects being worked on, test status}
 
-Provide this status in your responses to keep the user informed. Use the `#todos` tool to track progress.
+Provide this status in your responses to keep the user informed. Use the `TodoWrite` tool to track progress.
 
 ## AL-Specific Guidelines
 

@@ -26,33 +26,33 @@ This enables AI assistants to load complete project context quickly and make inf
 ### 1. Analyze Project Structure
 
 **Load project metadata:**
-```powershell
+```
 # Get app.json configuration
-@read_file app.json
+Read app.json
 
-# Understand dependencies
-@al_get_package_dependencies
+# Understand dependencies (app.json `dependencies` + al-symbols-mcp al_packages)
+al-symbols-mcp: al_packages
 
 # Map directory structure
-@list_dir src/
+Glob src/**
 ```
 
 **Identify key patterns:**
-```powershell
+```
 # Find all table extensions
-@search "tableextension" *.al
+Grep "tableextension" --glob *.al
 
 # Find all page extensions
-@search "pageextension" *.al
+Grep "pageextension" --glob *.al
 
 # Find event subscribers
-@search "EventSubscriber" *.al
+Grep "EventSubscriber" --glob *.al
 
 # Find published integration events
-@search "IntegrationEvent" *.al
+Grep "IntegrationEvent" --glob *.al
 
 # Find API pages
-@search "APIPublisher\|APIVersion" *.al
+Grep "APIPublisher|APIVersion" --glob *.al
 ```
 
 ### 2. Analyze Business Domain
@@ -289,18 +289,15 @@ src/
 
 ## 15. Useful Commands
 
-```powershell
+```
 # Build project
-al_build
+Bash: al compile
 
-# Download symbols
-al_downloadsymbols
+# Download symbols (VS Code AL: Download Symbols, or restore the symbol cache in CI)
 
-# Run tests
-@workspace /al-test
+# Run tests (VS Code AL: Run Tests, or the AL-Go/CI test runner)
 
-# Generate permissions
-al_generatepermissionset
+# Generate permissions (write the permissionset object as AL code)
 ```
 
 ## 16. References

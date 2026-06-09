@@ -42,11 +42,11 @@ Resolve the home from `aldc.yaml → external.bcquality.home` (default `../bcqua
 Review the AL code changes using available tools:
 
 **Use:**
-- `#changes` - See what was modified/created
-- `#usages` - Check how AL objects are referenced
-- `#problems` - Identify compilation or runtime issues
-- `#search` - Find related AL code and patterns
-- `#testFailure` - Check if any tests failed
+- `Bash: git diff` / `git status` - See what was modified/created
+- **al-symbols-mcp** `al_find_references` - Check how AL objects are referenced
+- `Bash: al compile` (read the output) - Identify compilation issues
+- `Grep`/`Glob` + **al-symbols-mcp** `al_search_objects` - Find related AL code and patterns
+- Read the test-run output passed by the Conductor - Check if any tests failed
 
 **Focus on:**
 - AL object types created (Table, TableExtension, Codeunit, Page, etc.)
@@ -515,7 +515,7 @@ Use this checklist during review:
 - ❌ Write vague feedback ("code quality issues" - be specific)
 - ❌ Ignore test failures
 - ❌ Skip AL-specific checks (event-driven, AL-Go structure)
-- ❌ Approve without verifying compilation (`#problems`)
+- ❌ Approve without verifying compilation (`al compile` output)
 
 **DO:**
 - ✅ Check for base object modifications (critical for BC)
@@ -531,18 +531,18 @@ Use this checklist during review:
 ## Tool Boundaries
 
 **CAN:**
-- Analyze code changes and diffs
-- Check compilation problems
-- Verify test results
-- Search for patterns and usages
-- Generate CPU profiles for performance
+- Analyze code changes and diffs (`Bash: git diff`)
+- Confirm compilation by reading `al compile` output
+- Verify test results from the run output the Conductor passes
+- Search for patterns and usages (`Grep`/`Glob` + **al-symbols-mcp**)
 - Review against architecture/spec
 
 **CANNOT:**
 - Modify implementation code (implementer's job)
-- Run builds (use problems tool instead)
 - Create new AL objects
 - Make implementation decisions
+- Run deploys/tests yourself (read the implementer's reported results instead)
+- Request a CPU profile as a tool (it's a VS Code / human step — ask for one if needed)
 - Approve without verification
 </tool_boundaries>
 
@@ -655,7 +655,7 @@ Checking for context:
 ```markdown
 1. agent `al-conductor` delegates review → You receive phase context + criteria
 2. Read .github/plans/ context → *.architecture.md, *.spec.md, *.test-plan.md, memory.md
-3. Analyze changes → Use #changes, #problems, #testFailure
+3. Analyze changes → `git diff`, `al compile` output, the passed test results
 4. Verify AL criteria → Event-driven, naming, structure, performance
 5. Classify issues → CRITICAL/MAJOR/MINOR severity
 6. Return verdict → APPROVED/NEEDS_REVISION/FAILED

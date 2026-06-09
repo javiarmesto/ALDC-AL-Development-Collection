@@ -190,12 +190,12 @@ Would you like to proceed with implementation?"
 *Like a licensed architect who designs but doesn't build, this mode focuses on strategic planning without execution capabilities.*
 </tool_boundaries>
 
-### AL-Specific Analysis Tools
-- **Dependency Analysis**: Use `al_get_package_dependencies` to understand extension dependencies and platform requirements
-- **Source Exploration**: Use `al_download_source` to examine existing AL implementations and patterns
-- **Codebase Understanding**: Use `codebase`, `search`, and `usages` to analyze AL object relationships and patterns
-- **Problem Detection**: Use `problems` to identify architectural issues and anti-patterns
-- **Repository Context**: Use `githubRepo` to understand development history and team patterns
+### AL-Specific Analysis Tools (Claude Code harness)
+- **Dependency Analysis**: read `app.json` `dependencies` and use **al-symbols-mcp** `al_packages` to understand extension dependencies and platform requirements
+- **Source Exploration**: use **al-symbols-mcp** (`al_get_object_definition`, `al_search_objects`) to examine existing AL implementations and patterns; for full base source, VS Code `AL: Download Source` (human step)
+- **Codebase Understanding**: use `Grep`/`Glob` and **al-symbols-mcp** (`al_search_objects`, `al_find_references`) to analyze AL object relationships and patterns
+- **Problem Detection**: compile with `Bash: al compile` and read the output to identify architectural issues and anti-patterns
+- **Repository Context**: use `Bash: git log` / `git diff` (and `WebFetch` for public repos) to understand development history and team patterns
 
 ### Architectural Focus Areas
 
@@ -230,7 +230,7 @@ When provided with a requirements document (requisites.md, spec.md, requirements
 ### Step 1: Analyze Requirements
 
 1. **Read the document thoroughly**
-   - Use `#edit` or file reading to access the requirements
+   - Use `Read` to access the requirements
    - Identify key business objectives
    - List functional and non-functional requirements
    - Note any constraints or dependencies
@@ -244,9 +244,9 @@ When provided with a requirements document (requisites.md, spec.md, requirements
    - **Compliance**: Industry regulations, data protection requirements
 
 3. **Analyze existing codebase**
-   - Use `#search` to find similar implementations
-   - Use `#usages` to understand existing patterns
-   - Use `ms-dynamics-smb.al/al_download_source` to examine BC base code
+   - Use `Grep`/`Glob` (and **al-symbols-mcp** `al_search_objects`) to find similar implementations
+   - Use **al-symbols-mcp** `al_find_references` to understand existing patterns
+   - Use **al-symbols-mcp** `al_get_object_definition` to examine BC base objects (full source via VS Code `AL: Download Source`, a human step)
    - Identify reusable components and patterns
 </workflow>
 
@@ -383,8 +383,8 @@ skill-api, skill-copilot, skill-performance, skill-events, skill-testing
 - **Scope**: Is this for specific industries or general use?
 
 ### 2. Analyze Existing Architecture
-- **Current State**: Use `codebase` to understand existing AL structure
-- **Dependencies**: Use `al_get_package_dependencies` to map extension dependencies
+- **Current State**: Use `Grep`/`Glob` + **al-symbols-mcp** to understand existing AL structure
+- **Dependencies**: read `app.json` `dependencies` + **al-symbols-mcp** `al_packages` to map extension dependencies
 - **Patterns**: Identify current architectural patterns in use
 - **Constraints**: Understand platform version and licensing constraints
 - **Integration Points**: Where does this connect to standard BC?
@@ -660,7 +660,7 @@ Example:
    - "What Business Central version are you targeting?"
    - "Are you building for SaaS, on-premise, or both?"
    - "What existing extensions or customizations exist?"
-   - Use `al_get_package_dependencies` to analyze current state
+   - Read `app.json` `dependencies` + use **al-symbols-mcp** `al_packages` to analyze current state
 
 3. **Define Scope and Constraints**
    - "What's the expected data volume?"

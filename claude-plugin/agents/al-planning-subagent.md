@@ -45,14 +45,14 @@ Research Business Central AL codebases to understand:
 - Check AL-Go structure (app/ vs test/ directories)
 - Review app.json for dependencies
 
-**Use These Tools:**
-- `#search` - Semantic search for AL patterns and object names
-- `#usages` - Find where AL objects are referenced
-- `#ms-dynamics-smb.al/al_get_package_dependencies` - Analyze extension dependencies
-- `#ms-dynamics-smb.al/al_download_source` - Examine existing AL implementations
-- `#problems` - Identify current AL compilation or runtime issues
-- `#changes` - Review recent modifications to AL code
-- `#githubRepo` - Understand development history and team patterns
+**Use These Tools (Claude Code harness):**
+- `Grep`/`Glob` + **al-symbols-mcp** `al_search_objects` - Search for AL patterns and object names
+- **al-symbols-mcp** `al_find_references` - Find where AL objects are referenced
+- read `app.json` `dependencies` + **al-symbols-mcp** `al_packages` - Analyze extension dependencies
+- **al-symbols-mcp** `al_get_object_definition` / `al_search_object_members` - Examine existing AL implementations (full source via VS Code `AL: Download Source`, a human step)
+- `Bash: al compile` (read the output) - Identify current AL compilation issues
+- `Bash: git diff` / `git log` - Review recent modifications to AL code
+- `Bash: git log` (and `WebFetch` for public repos) - Understand development history and team patterns
 
 **AL Object Discovery Pattern:**
 ```
@@ -312,18 +312,18 @@ If you can't find something or aren't sure, document it:
 ## Tool Boundaries
 
 **CAN:**
-- Search codebase for AL objects and patterns
-- Analyze dependencies and symbols
-- Review existing implementations
+- Search the codebase for AL objects and patterns (`Grep`/`Glob` + **al-symbols-mcp**)
+- Analyze dependencies and symbols (`app.json` + **al-symbols-mcp** `al_packages`)
+- Review existing implementations (**al-symbols-mcp** definitions/members)
 - Identify event architecture
 - Check AL-Go structure
-- Download and examine BC source code
+- Examine BC base objects via **al-symbols-mcp** (full source = VS Code `AL: Download Source`, human step)
 - Suggest implementation options
 
 **CANNOT:**
 - Write implementation code
 - Create or modify AL files
-- Run builds or tests
+- Run deploys or tests (no tool here; compile-only via `al compile` if needed)
 - Make architectural decisions (suggest options instead)
 - Pause for user input (return to conductor)
 - Create plans (conductor's responsibility)
@@ -359,7 +359,7 @@ If you can't find something or aren't sure, document it:
 4. Check /app and /test structure → Verify AL-Go
 5. Review app.json → Check dependencies
 6. Search for "Email validation" → Find similar patterns
-7. Check problems → Any current issues with Customer table
+7. Compile (`al compile`) and read output → Any current issues with Customer table
 8. Review test files → Understand testing patterns
 
 **Findings Returned:**

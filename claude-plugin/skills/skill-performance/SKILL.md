@@ -258,12 +258,9 @@ Severity assessment:
 
 ### Step 2: Profile (Runtime Measurement)
 
-Generate CPU profile for runtime bottleneck identification:
-```
-al_generate_cpu_profile_file
-```
+CPU profiling is a **VS Code AL command / human step** — there is no agent tool for it on this surface. Ask the human to capture a CPU profile (VS Code AL profiler) and share the result, then analyze it.
 
-Analyze profile for:
+Analyze the profile for:
 - **Hotspots** — procedures with highest cumulative execution time
 - **Frequency** — procedures called most often (especially in loops)
 - **DB operations** — expensive `FindSet` / `Get` calls
@@ -271,16 +268,13 @@ Analyze profile for:
 
 Compare before/after optimizations by re-profiling after each fix.
 
-⚠️ **Human Gate — cleanup**: Before clearing codelenses, confirm all findings are documented:
-```
-al_clear_profile_codelenses   ← only after approval
-```
+⚠️ **Human Gate — cleanup**: Before the human clears the profile codelenses in VS Code, confirm all findings are documented (clearing codelenses is a VS Code action, not an agent tool here).
 
 ### Step 3: Fix
 
 Apply fixes in priority order (critical first). For each fix:
 1. Apply targeted change (Pattern 1–5 above)
-2. Rebuild: `al_build`
+2. Rebuild: `Bash: al compile` (`al workspace compile` for a multi-project workspace)
 3. Re-profile to verify improvement
 
 Performance targets:

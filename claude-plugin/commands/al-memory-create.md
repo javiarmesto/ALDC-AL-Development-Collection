@@ -272,15 +272,15 @@ If `memory.md` doesn't exist, create with this template:
 ### 2. If Memory File Exists - Update It
 
 **Add new session entry:**
-```powershell
+```
 # Check for recent changes
-@changes
+Bash: git diff / git status
 
 # Check current problems
-@problems
+Bash: al compile   (read the compiler output)
 
-# Check TODOs
-@todos
+# Check open work
+the TodoWrite list
 ```
 
 **Update with:**

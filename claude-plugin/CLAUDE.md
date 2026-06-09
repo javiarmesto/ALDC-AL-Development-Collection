@@ -44,6 +44,33 @@ Present the complexity assessment and wait for user confirmation before proceedi
 - Generate only the minimum permissions required
 - Use XLIFF for all user-facing strings
 
+## Tooling — what this plugin actually has at runtime
+
+This plugin runs in the **Claude Code harness**, not VS Code. Agents have native tools (`Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch`) plus the MCP servers declared in `.claude-plugin/plugin.json`: **al-symbols-mcp** (read-only AL symbol queries), **context7** (library docs), **microsoft-docs** (Microsoft Learn). The VS Code AL extension commands (`AL: Package`, etc.) and Copilot chat context-variables (`#search`, `#problems`, …) **do not exist here** — agent prose must not invoke them as if they were tools.
+
+The AL toolchain is the **AL command-line tool (ALTool / `al`)**, installable as the [`Microsoft.Dynamics.BusinessCentral.Development.Tools`](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-al-tool) .NET tool. It **compiles and packages** — it does not publish, run tests, download symbols, or debug. Use this canonical mapping when writing agent/skill/command prose:
+
+| Need | In this harness |
+|------|-----------------|
+| Compile / build / package `.app` | `Bash: al compile` (single project) or `al workspace compile` (multi-project). Read compiler output for errors. |
+| Find objects / members / definitions | **al-symbols-mcp** (`al_search_objects`, `al_get_object_definition`, `al_get_object_summary`, `al_search_object_members`); `Grep`/`Glob` for text |
+| Find references / usages | **al-symbols-mcp** `al_find_references` |
+| Inspect dependencies | read `app.json` `dependencies` + **al-symbols-mcp** `al_packages` |
+| See what changed | `Bash: git diff` / `git status` |
+| Compiler errors / test failures | read the output of the `al compile` / test run (or a human-provided log) — there is no `#problems`/`#testFailure` tool |
+| Generate a permission set | write the `permissionset` object as AL code (Write/Edit) |
+| Edit / create files | `Edit` / `Write` |
+| Delegate to a subagent | the `Task` tool |
+| Track multi-step work | the `TodoWrite` tool |
+| Microsoft / BC docs | **microsoft-docs** MCP |
+| Library / framework docs | **context7** MCP |
+| **Publish / deploy** | **no CLI verb** — VS Code (`AL: Publish` / `…without Debugging` / RAD) or the AL-Go/CI pipeline. Agents generate code; a human or pipeline deploys. |
+| **Run tests** | **no ALTool verb** — VS Code `AL: Run Tests` or the AL-Go/CI test runner; agents read the results. |
+| **Download symbols** | **no ALTool verb** — VS Code `AL: Download Symbols`, or restore the symbol package cache in CI. |
+| **Debug / snapshot / CPU profile** | **VS Code only** (AL debugger, snapshot debugging, CPU profiler) — a human step, not an agent tool on this surface. |
+
+> Steer away from waste, don't ban tools: prefer **al-symbols-mcp** for symbol facts (it's grounded and cheaper than re-reading files), but `microsoft-docs`/`context7`/`WebSearch` remain fair game for conceptual gaps. Flag what you genuinely can't resolve rather than burning turns on trial-and-error tool bursts.
+
 ## Rules Injection
 
 Path-scoped AL coding rules are stored in `rules-templates/`. When a user runs `/aldc:al-initialize`, these rules are copied to the project's `.claude/rules/` directory for auto-application on matching file patterns.

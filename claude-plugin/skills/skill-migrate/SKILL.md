@@ -122,10 +122,10 @@ end;
 ```
 
 **Migration steps:**
-1. Build with `al_build` — signature mismatches produce `AL0482` errors
+1. Build with `Bash: al compile` — signature mismatches produce `AL0482` errors
 2. Use `al_get_object_definition` to inspect the new publisher signature
 3. Update parameter list to match exactly (name, type, order)
-4. Re-verify with `al_build`
+4. Re-verify with `Bash: al compile`
 
 ### Pattern 4: Obsolete Object Handling
 
@@ -255,8 +255,8 @@ Document and prepare rollback before executing migration:
 ### Step 1: Pre-Migration Assessment
 
 1. **Backup**: Ensure source control is up to date (`git status` clean)
-2. **Download current symbols**: `al_download_source`
-3. **Document dependencies**: `al_get_package_dependencies` — list all with current versions
+2. **Download current symbols**: VS Code `AL: Download Symbols` (or `AL: Download Source` for full base/app source) — a human step
+3. **Document dependencies**: read `app.json` `dependencies` plus **al-symbols-mcp** `al_packages` — list all with current versions
 4. **Review release notes**: Check BC target version breaking changes
 5. **Create migration plan** in `.github/plans/{project}-migration.md`
 
@@ -266,7 +266,7 @@ Document and prepare rollback before executing migration:
 
 1. Update `app.json` (Pattern 1) — platform, runtime, application, dependencies, features
 2. Download new symbols for target version
-3. Build: `al_build` — collect all errors
+3. Build: `Bash: al compile` — collect all errors
 
 ### Step 3: Fix Compilation Errors
 
@@ -280,10 +280,10 @@ For each fix, verify with incremental build.
 
 ### Step 4: Regenerate and Validate
 
-1. Generate manifest: `al_generate_manifest`
-2. Full build: `al_build` — zero errors, zero new warnings
-3. Create package: `al_full_package`
-4. Run existing tests to verify no regressions
+1. Update the manifest: edit `app.json` directly (it *is* the manifest)
+2. Full build: `Bash: al compile` — zero errors, zero new warnings (produces the `.app`)
+3. Bundle-with-dependencies packaging is an AL-Go/CI pipeline concern, not an ALTool verb
+4. Run existing tests (VS Code `AL: Run Tests` or CI) to verify no regressions
 
 ### Step 5: Post-Migration
 

@@ -133,14 +133,10 @@ Create or update `.vscode/settings.json` in the workspace root:
 ### Choose Project Type
 
 **For New Projects:**
-```
-al_new_project
-```
+Scaffold the project structure directly with `Write` (`app.json`, folders, `.vscode/` configs — see the structure below), or have the human run VS Code `AL: Go!` to generate a starter project.
 
 **For Existing Folders:**
-```
-al_go
-```
+Work in place — `Read` the existing `app.json` and lay out any missing folders with `Write`.
 
 ### Project Structure
 
@@ -171,19 +167,13 @@ ${input:ProjectName}/
 
 ### Download Symbols
 
-Download required symbols:
-```
-al_download_symbols
-```
+Download required symbols (no ALTool verb — a human/pipeline step): run VS Code `AL: Download Symbols`, or restore the symbol package cache in CI.
 
 Verify all base application dependencies are available.
 
-### Generate Manifest
+### Create the Manifest
 
-Create manifest file:
-```
-al_generate_manifest
-```
+`app.json` **is** the manifest — write it directly with `Write` (id, name, publisher, version, idRanges, dependencies, platform/application).
 
 **Human Review:** Validate manifest contents before proceeding.
 
@@ -369,7 +359,7 @@ end;
    - Check that warnings appear
 
 5. **Test Build**
-   - Run AL: Download Symbols
+   - Run VS Code `AL: Download Symbols` (a human step in VS Code)
    - Attempt to compile the project
    - Verify no configuration errors
 
@@ -378,15 +368,15 @@ end;
 ### Authentication Issues
 
 If authentication fails:
-- Use `al_clear_credentials_cache` to clear cached credentials
+- Clear cached credentials in VS Code (`AL: Clear credentials cache`) — a human step, not an agent tool here
 - Re-authenticate when prompted
 - Verify launch.json authentication method is correct
 
 ### Symbol Issues
 
 If symbols are missing:
-1. Download symbols: `al_download_symbols`
-2. If persistent, download source: `al_download_source`
+1. Download symbols: VS Code `AL: Download Symbols` (or restore the symbol cache in CI — a human/pipeline step)
+2. If persistent, download source: VS Code `AL: Download Source` (a human step; to inspect base/app symbols use **al-symbols-mcp** `al_get_object_definition` / `al_search_objects`)
 3. Verify app.json dependencies match BC version
 
 ### AI Suggestions Not Appearing
