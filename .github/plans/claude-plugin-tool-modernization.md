@@ -1,6 +1,6 @@
 # Study — claude-plugin tool-prose modernization (Copilot/VS Code → Claude Code)
 
-**Status:** OPEN study — no agent files changed yet. Blocked on one decision (AL CLI availability, §4).
+**Status:** RESOLVED & EXECUTED (branch `claude/plugin-prose-modernization-8ggmq5`). §4 decided; §5 done. See "Resolution" at the bottom.
 **Scope:** `claude-plugin/` only. The `.github/`/top-level (Copilot) distribution is unaffected.
 **Why:** The Claude Code plugin agents were authored referencing **Copilot context-variables** (`#changes`, `#problems`, …) and the **VS Code AL extension MCP** (`ms-dynamics-smb.al/al_build`, `al_publish`, …). Those tools **do not exist in the Claude Code harness**, so the prose is misleading there. This is pre-existing and orthogonal to the FORGE→ALDC upstream port — tracked separately here.
 
@@ -75,3 +75,19 @@ The bulk of `al-developer` (and parts of conductor/implement-subagent) assumes *
 ## 6. Out of scope
 - The top-level / `.github/` Copilot distribution (its `ms-dynamics-smb.al/*` references are correct *there*).
 - The FORGE→ALDC port itself (done in PR #51); this study is a follow-up modernization.
+
+---
+
+## Resolution (executed)
+
+**§4 decision — Option 1, *where the CLI reaches*.** The target environment ships the **AL command-line tool (ALTool / `al`)** + the AL LSP ([devenv-al-tool](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-al-tool)). Crucially, ALTool **only compiles/packages** — it has no publish, test, download-symbols, or debug verb. So the rewrite split:
+- **Compile/build/package** → `Bash: al compile` / `al workspace compile` (true Option 1).
+- **Symbol intelligence** → `al-symbols-mcp` (which is the LSP/MCP under the hood).
+- **Publish / run tests / download symbols / debug / snapshot / CPU profile** → no CLI verb → VS Code / AL-Go-CI human steps (Option 2 for these). Agents generate code and hand off the runtime step.
+
+**§5 executed** on branch `claude/plugin-prose-modernization-8ggmq5`, prose-only, `claude-plugin/` only (Copilot distribution untouched). Validator stayed `ALDC Core v1.1 COMPLIANT (0 warnings)`; plugin JSON re-validated:
+1. **Tool-prose modernization** — all 6 tool-heavy agents (developer, architect, conductor, planning, review, implement), 4 commands (build, context-create, initialize, memory-create), 10 skills; canonical "Tooling" mapping added to `claude-plugin/CLAUDE.md`. Bucket-A remapped; bucket-B per the §4 split; bucket-C diagnostics → read `al compile` / test output.
+2. **Sync — #66 token guards** (merged upstream) ported to conductor/implement/review/dredd.
+3. **Sync — #67 triage guard + #68 spec-as-truth** (still-open upstream) ported as INTENT to triage, al-spec-create §5, planner, implementer, conductor.
+
+**Follow-up (optional, not done — config, not prose):** plugin command `allowed-tools` frontmatter doesn't list MCP tools (`al-symbols-mcp`, `microsoft-docs`, `context7`) now referenced in prose. Not a hard block (referenced tools still resolve via the normal flow, matching the pre-existing al-context-create pattern), so left for a separate config change.
