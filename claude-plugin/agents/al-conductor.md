@@ -247,6 +247,7 @@ Build success ≠ review approval. NEVER skip review.
 1. Use the `Task` tool to invoke the **agent `al-review-subagent`** with:
    - The phase objective and acceptance criteria
    - Files that were modified/created
+   - **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events via **al-symbols-mcp** (a measured token sink — trial-and-error symbol searches). Tell it to query symbols only to spot-confirm a single signature it cannot resolve from the list.
    - **The BCQuality task-context, built inline.** You already hold `app.json` and this phase's changed objects, so build the task-context (per the BCQuality task-context template; OMIT unknown dimensions; pilot skills from `aldc.yaml`) and pass it — the review subagent consumes it instead of re-deriving `bc-version`/`application-area`. It still reads the external BCQuality clone itself for the knowledge files.
    - AL-specific validation requirements:
      - Event-driven patterns (no base modifications)
@@ -929,7 +930,17 @@ Checking for context:
 
 ### Passing Context to Subagents
 
-When delegating to subagents, **provide context references** to architecture, specifications, and session context files. Reference these documents when instructing subagents on research focus, implementation requirements, and review validation criteria.
+You have already read memory.md, architecture.md, spec.md, and test-plan.md (§"Context Files to Read Before Orchestration"). Subagents start with a **fresh context** and do **not** share yours — so do not merely point them at the files and let them re-read everything. That spends a full re-read of spec + architecture + test-plan + memory (and the same skill files) on **every** phase invocation.
+
+Instead, **pass phase-relevant excerpts inline** in the `Task` instruction:
+- **Spec excerpt** — only the section(s) covering this phase's objects (object IDs, field types, procedure signatures), not the whole spec.
+- **Architecture decisions** — only the decisions/constraints this phase must honor, not the full document.
+- **Test-plan excerpt** — only the tests scoped to this phase.
+- **Memory** — only the cross-session decisions that bear on this phase.
+
+Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.github/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works.
+
+> **Don't re-read what's already in context (yours or theirs).** Within a single invocation, a file read once must be **reused, not re-read** — measured runs show the same source `.al`/`spec`/`memory` read 5–7× in one review, each re-injecting the file into the growing context. Instruct subagents: *"if you already read a path this invocation, reuse it; do not `Read` it again."* The same principle covers the **BCQuality task-context** — you build it and pass it inline (you already hold `app.json` and the phase's changed objects); the review subagent still reads the external BCQuality clone itself for the knowledge files, but no longer re-derives the task-context.
 
 ### Documentation Creation During Orchestration
 

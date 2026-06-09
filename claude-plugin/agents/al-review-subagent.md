@@ -48,6 +48,10 @@ Review the AL code changes using available tools:
 - `Grep`/`Glob` + **al-symbols-mcp** `al_search_objects` - Find related AL code and patterns
 - Read the test-run output passed by the Conductor - Check if any tests failed
 
+> **Consume the event-subscriber list — don't re-discover events.** The Conductor passes the implement-subagent's list of subscribers (each with its **exact base object + event name + signature**). **Validate against that list.** Use **al-symbols-mcp** **only** to spot-confirm a single signature you genuinely cannot resolve from the list — **not** to enumerate or guess base events. (Measured: blind trial-and-error symbol searches, with name-variant duplicates, were a top token sink in review.)
+
+> **Don't re-read a file already in context.** If you read a source `.al`, an excerpt, the BCQuality skill, or `memory.md` earlier in this invocation, reuse it — never `Read` the same path twice.
+
 **Focus on:**
 - AL object types created (Table, TableExtension, Codeunit, Page, etc.)
 - Event subscribers/publishers added

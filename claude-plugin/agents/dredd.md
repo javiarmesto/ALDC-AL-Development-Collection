@@ -35,6 +35,8 @@ Resolve the external clone from `aldc.yaml → external.bcquality.home` (default
 ### Step 3 — Native residual (what BCQuality doesn't reach)
 Apply the native A–G checks (event-driven architecture, naming/structure, AL-Go separation, performance, error handling, test coverage, feature organization) against the auto-applied instructions + skills.
 
+> **Token discipline — load knowledge & symbols once, then reuse.** Read each BCQuality knowledge file **once** and reuse it across the batches that need it — never `Read` the same skill file twice. Resolve a base object's symbols **once** via **al-symbols-mcp** and reuse them across batches; don't re-query the same symbol per file. Don't re-read a source `.al` already in context this invocation. Re-walking a batch to apply a different check is a **reasoning** pass, not a reload.
+
 ### Step 4 — Verdict & persist
 Return an **advisory verdict** (PASS / CONCERNS / FAIL) with severity-tagged findings (CRITICAL / MAJOR / MINOR), each with `file:line`, problem, impact, and fix. **Persist** the audit report under `.github/audits/dredd-audit-<YYYY-MM-DD-HHMM>.md` (create the folder if absent) — the durable, checkable artifact; the `bcquality-evidence` CI workflow validates its citations against the BCQuality clone at the pinned SHA. Write **only** there.
 

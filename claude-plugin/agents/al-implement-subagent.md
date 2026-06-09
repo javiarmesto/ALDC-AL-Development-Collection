@@ -44,8 +44,8 @@ Before writing any test code:
 
 ### Step 1: Read Phase Requirements
 - Read the phase number, objective, and AL objects to create/modify from the Conductor's instructions
-- Read the referenced `.github/plans/{req_name}/{req_name}.spec.md` and `.github/plans/{req_name}/{req_name}.architecture.md`
-- Understand the test expectations from `.github/plans/{req_name}/{req_name}.test-plan.md`
+- The Conductor passes **phase-relevant excerpts** of the spec, the architecture decisions, and the test expectations inline — treat these as authoritative for this phase
+- Read the full `.github/plans/{req_name}/{req_name}.spec.md`, `.architecture.md`, or `.test-plan.md` **only if** a detail referenced in the excerpt is missing (the Conductor includes the paths for this) — do not re-read them wholesale by default
 
 ### Step 2: Create TEST Files FIRST (RED State)
 - Create test codeunit(s) in the test project directory
@@ -241,7 +241,8 @@ end;
 - You **MUST NOT** interact with the user — return results to the Conductor
 - You **MUST NOT** modify base objects — extension-only
 - You **MUST** follow the spec and architecture documents provided by the Conductor
-- You **MUST** report back: objects created, tests created, test results, build status, any issues
+- You **MUST** report back: objects created, **event subscribers (exact base object + event name + signature)**, tests created, test results, build status, any issues
+- **Don't re-read a file already in context.** If you already read a spec/architecture excerpt, a source file, or a skill this invocation, reuse it — do not issue another `Read` for the same path.
 
 </boundary_rules>
 
@@ -399,6 +400,12 @@ If no domain skills were required for this phase: "No domain skills required for
 
 ### Objects Created
 - {Type} {ID} "{Name}" — {purpose}
+
+### Event Subscribers
+*(For every `[EventSubscriber(...)]` you created, give the **exact** target so the
+reviewer validates against this list instead of re-discovering events by symbol
+search. Omit the section if no subscribers were added this phase.)*
+- `{LocalProcName}` → `ObjectType::Codeunit "{Base Object}"` event `{EventName}` — signature `{OnBefore/OnAfter…(params)}`; SkipOnMissingLicense/IsHandled: {y/n}
 
 ### Tests Created
 - {TestProcedure1} — {what it tests} — {PASS/FAIL}
