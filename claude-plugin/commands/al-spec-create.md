@@ -43,10 +43,10 @@ If it does not exist: proceed — spec will define structure from scratch (typic
 ### 1.3 Analyze codebase
 
 Search for:
-- Existing objects with similar patterns (`search`)
+- Existing objects with similar patterns (`Grep`/`Glob`; **al-symbols-mcp** `al_search_objects` for symbol-level)
 - Naming conventions in `/src`
 - Available object ID ranges in `app.json`
-- Existing event publishers relevant to this feature
+- Existing event publishers relevant to this feature — confirm they exist with **al-symbols-mcp** before the spec subscribes to them (§5)
 - Existing API pages or codeunits if integration is involved
 
 ---
@@ -172,6 +172,12 @@ begin
     // What this subscriber does
 end;
 ```
+
+> **Verify each base-app event EXISTS — the spec is the source of truth for *which* events, symbols own the *signature*.** Before listing a subscriber, confirm the publisher+event exists with **al-symbols-mcp** (`al_search_objects` → the publisher object, `al_search_object_members` → the event). Record the **verified** publisher object, event name, and the **fields the handler consumes** in the table below — **not** the full parameter list (symbols own that; it drifts on version upgrade, so duplicating it here rots the spec). If an event you expected does **not** resolve, do not invent it: record it as an **Open Question** (§12) rather than guessing a name. `microsoft-docs`/`context7`/web stay fair game for *conceptual* "is there an event around X?" gaps — but the existence/identity check is symbols-first.
+
+| Verified publisher (object) | Event name | Consumed fields | Purpose |
+|-----------------------------|-----------|-----------------|---------|
+| Codeunit "{Publisher}" | {EventName} | {Rec fields the handler reads/writes} | {why this subscription} |
 
 ---
 ---

@@ -933,7 +933,7 @@ Checking for context:
 You have already read memory.md, architecture.md, spec.md, and test-plan.md (§"Context Files to Read Before Orchestration"). Subagents start with a **fresh context** and do **not** share yours — so do not merely point them at the files and let them re-read everything. That spends a full re-read of spec + architecture + test-plan + memory (and the same skill files) on **every** phase invocation.
 
 Instead, **pass phase-relevant excerpts inline** in the `Task` instruction:
-- **Spec excerpt** — only the section(s) covering this phase's objects (object IDs, field types, procedure signatures), not the whole spec.
+- **Spec excerpt** — only the section(s) covering this phase's objects (object IDs, field types, procedure signatures) **plus the §5 verified integration points** (publisher + event + consumed fields) the phase touches, so subagents validate against them instead of re-hunting base events. Not the whole spec.
 - **Architecture decisions** — only the decisions/constraints this phase must honor, not the full document.
 - **Test-plan excerpt** — only the tests scoped to this phase.
 - **Memory** — only the cross-session decisions that bear on this phase.

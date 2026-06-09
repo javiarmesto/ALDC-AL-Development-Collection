@@ -126,7 +126,7 @@ tableextension <id> "<prefix> <Name>" extends <BaseTable>
 - `TryFunction` for operations that may fail
 - Event subscribers: `[EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostSalesDoc', '', false, false)]`
 - Event publishers: `[IntegrationEvent(false, false)] local procedure OnAfterMyEvent(...)`
-- Event subscriber parameters MUST match publisher signature exactly
+- Event subscriber parameters MUST match publisher signature exactly — **resolve the exact signature from symbols** (**al-symbols-mcp** `al_search_object_members` on the publisher), don't guess it. The spec's §5 names *which* event (source of truth); symbols own the *signature*. If you genuinely cannot resolve a signature from symbols, **surface it as an open question** in your Phase Summary rather than inventing parameters — flag it, don't fabricate.
 
 **Page (API):**
 ```al

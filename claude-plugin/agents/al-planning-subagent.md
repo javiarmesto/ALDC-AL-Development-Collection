@@ -100,6 +100,8 @@ Provide structured summary with AL-specific sections.
 - **Event publishers**: Any custom events we need to call?
 - **Event patterns**: OnBefore, OnAfter, OnValidate patterns
 
+> **When a spec exists, validate against it — don't trial-and-error hunt.** If `{req_name}.spec.md` lists verified integration points (§5: publisher + event + consumed fields), treat that as the source of truth for *which* events the feature uses, and confirm each against symbols with a **single targeted** **al-symbols-mcp** lookup — don't enumerate or guess base events by repeated name-variant searches (a measured token sink). Symbols-first for the existence/identity check; `microsoft-docs`/`context7`/web stay fair game for *conceptual* gaps. Anything you cannot resolve, **flag as an uncertainty** for the Conductor rather than burning turns guessing.
+
 Example findings:
 ```
 Event Architecture:
