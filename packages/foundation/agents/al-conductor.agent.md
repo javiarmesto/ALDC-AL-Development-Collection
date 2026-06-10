@@ -68,13 +68,17 @@ on every phase. Default to this two-line format per phase:
 On completion, swap `[RUNNING]` → `[COMPLETE]` and replace the action with a one-line
 deliverables summary.
 
-At **checkpoints / milestones** (HITL pauses, phase gates) you may use the richer card:
+At **checkpoints / milestones** (HITL pauses, phase gates) render the **Checkpoint card** — one skeleton, filled per gate, with a one-line **evidence** row that makes the ALDC core visible at a glance (BCQuality status · instructions · skills actually applied):
 
 ```
-**🧙 AL Conductor — Phase {N}/{Total}: {Phase Name}**
-> {icon} **{Subagent}** `[RUNNING]`
-> `▰▰▰▰▱▱▱▱▱▱` {N}/{Total} · {Current action}
+🚦 **Checkpoint — Phase {N}/{Total}: {Phase Name}**   `▰▰▰▰▱▱ {N}/{Total}`
+📦 {deliverables} · 🔌 {event subscribers} · 🧪 {tests X/X ✅ | n/a}
+🔎 {🟢 BCQuality <sha> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
+✅ {verdict} — {b}/{M}/{m}{ · ⚠️ {top actionable finding}}
+💾 {next-step question}   (or ⏸️ revise)
 ```
+
+Slots adapt per gate (planning vs phase completion); omit a row that has no content. Separators are ` · `. The `🔎` evidence row consumes the BCQuality one-liner + the subagent's symbolic skills line (`📐 instr ✓ · 🧠 skill-x·tag`) — it is how the user *sees* instructions/skills/BCQuality fired.
 
 Icons: 🔍 Planning, 💻 Implementation, ✅ Review, 🧙 Conductor, 🚦 Checkpoint, 💡 Recommendation.
 Status flags: `[RUNNING]`, `[COMPLETE]`, `[WAITING]`, `[FAILED]`.
@@ -131,15 +135,13 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
    > Phase 1 is the only phase without code review (no code yet), but it MUST have its phase-complete document like all other phases.
 
-9. **Show Planning Checkpoint**:
+9. **Show Planning Checkpoint** (the Checkpoint card, planning slots):
    ```
-   🚦 CONDUCTOR CHECKPOINT
-   Phase 1/{N} complete: Planning
-   📦 Deliverables:
-   • Plan: {N} phases defined
-   • Requirement set: spec ✅ architecture ✅ test-plan ✅
-   • Phase doc: {req_name}-phase-1-complete.md ✅
-   ✅ Plan APPROVED — proceeding to Phase 2
+   🚦 **Checkpoint — Phase 1/{Total}: Planning**   `▰▱▱▱▱ 1/{Total}`
+   📦 Plan: {N} phases · Requirement set: spec ✅ · architecture {✅|N/A} · test-plan ✅
+   🔎 {🟢 BCQuality active <sha> | ⚪ BCQuality disabled — native A–G}
+   📄 {req_name}-plan.md ✅ · {req_name}-phase-1-complete.md ✅
+   ✅ Plan ready → **approve & start Phase 2?**   (or ⏸️ revise)
    ```
 
    **🚨 HARD GATE — PHASE 1 ARTIFACTS PERSISTED**: Before showing the checkpoint above, you MUST have **written to disk** both files:
@@ -211,20 +213,13 @@ Act on the resulting verdict:
 
 #### 2C. Phase Completion & Commit
 
-1. **Render the light checkpoint** for the user from the Review-Report JSON (verdict + counts + the top actionable findings — short, for the HITL gate):
+1. **Render the Checkpoint card** for the user from the Review-Report JSON — completion slots, short, for the HITL gate. The `🔎` row consumes the BCQuality one-liner + the implementer's symbolic skills line; surface the top actionable finding inline so the user can decide without opening the JSON:
    ```
-   🚦 CONDUCTOR CHECKPOINT
-   Phase {N}/{Total} complete: {Phase Name}
-
-   📦 Deliverables:
-     • AL Objects: {List}
-     • Event Subscribers: {List}
-     • Tests: {X}/{X} passing ✅
-     • Files: {List}
-
-   ✅ Review: {verdict} — {blocker}/{major}/{minor} findings ({N} actionable)
-
-   💾 Ready to commit?
+   🚦 **Checkpoint — Phase {N}/{Total}: {Phase Name}**   `▰▰▰▰▱▱ {N}/{Total}`
+   📦 {AL objects} · 🔌 {event subscribers} · 🧪 {X/X ✅ | n/a}
+   🔎 {🟢 BCQuality <sha> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
+   ✅ {verdict} — {blocker}/{major}/{minor}{ · ⚠️ {top actionable finding}}
+   💾 Commit msg in {req_name}-phase-{N}-complete.md → **commit & {start Phase {N+1} | finalize}?**   (or ⏸️ revise)
    ```
 
 2. **Write Phase Completion File**: Create `.github/plans/<task-name>/<task-name>-phase-<N>-complete.md` following `<phase_complete_style_guide>`. **Render the full review** into it from the Review-Report JSON, using `.github/docs/templates/code-review-template.md` as the render template: `review.verdict`→Status; `findings[]`→Issues applying the severity naming (`blocker`→CRITICAL, `major`→MAJOR, `minor`→MINOR, `info`→recommendation) with `location` + `references`; `findings[source=bcquality]`→External Knowledge Findings; `review.skills-compliance`→Skills Compliance Check.
@@ -240,7 +235,7 @@ Act on the resulting verdict:
 
 4. **🚨 HARD GATE — PHASE COMMIT**:
    - You MUST have written the phase-complete.md file BEFORE presenting the checkpoint
-   - You MUST show "💾 Ready to commit?" and WAIT for user response
+   - You MUST show the Checkpoint card's `💾` commit gate (the **commit & next-step** question) and WAIT for user response
    - You MUST NOT invoke al-implement-subagent for next phase until user confirms
    - Proceeding without confirmation is a Core v1.1 violation
 
