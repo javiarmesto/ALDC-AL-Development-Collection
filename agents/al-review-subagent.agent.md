@@ -61,7 +61,7 @@ Use `#changes`, `#usages`, `#problems`, `#search`, `#testFailure` to establish: 
 >
 > **The native residual is dynamic.** With BCQuality present it is A/C/F/G. When BCQuality is **absent** (Step 0 precondition) or returns degraded for a domain, the residual expands to the **full A–G** — the ALDC skills + auto-applied `*.instructions.md` become the primary authority for the affected domains (see the Fallback bullet below for the domain→owner map).
 
-The framework already enforces these rules passively (auto-applied `*.instructions.md` + skills). Do **not** re-derive a rule's text — verify and flag, citing `file:line` for every non-pass (✅ Pass / ⚠️ Could improve / ❌ Fail). Split by who owns the check:
+The framework's rules reach you two ways here — **not** by passive auto-apply (it does not fire in subagent runtime). The **always-on instruction micro-rules** arrive **inline from the Conductor** (hard-rule baseline, in effect for the whole review). For domain **depth**, **load the skill yourself** (read its `SKILL.md`) **only for the residual you actually own** — i.e. domains BCQuality's active dispatch does **not** cover (§"native residual is dynamic"). Where a domain is owned by an enabled BCQuality leaf, do **not** load the ALDC skill — its knowledge is already loaded; defer to its finding. Do **not** re-derive a rule's text — verify and flag, citing `file:line` for every non-pass (✅ Pass / ⚠️ Could improve / ❌ Fail). Split by who owns the check:
 
 **Consume from BCQuality** — Step 0 already returns these *with citations* for the enabled domains. Take its findings; do not re-derive:
 - Performance · Naming & file-pattern · Error handling (Label+Comment, TryFunction) · Commit-in-subscribers · Security/secrets · permission least-privilege.
@@ -83,7 +83,7 @@ You no longer fill a markdown template — the **Conductor renders** the human-f
 - Keep each finding's native DO severity (`blocker | major | minor | info`). The CRITICAL/MAJOR/MINOR naming and the status criteria are the **Conductor's render concern** — not yours.
 - Derive `review.verdict` from the counts baseline (doc §5); use `review.notes` only for a justified override.
 
-**Skills Compliance** goes in `review.skills-compliance[]` — one entry per domain skill `{ skill, status: pass | fail | n-a, evidence }`. Verify the implementer applied the patterns it declared under "### Skills Loaded"; if a skill should have been loaded but wasn't, also emit a `major` finding. Where a row overlaps an enabled BCQuality domain (`skill-performance`↔performance, `skill-permissions`↔security), reference the BCQuality finding rather than re-deriving. What to check per skill:
+**Skills Compliance** goes in `review.skills-compliance[]` — **symbolic**, one entry per domain `{ domain, status }` where status is `✓` (verified native), `↗bcq` (covered by an active BCQuality leaf — deferred, not re-derived, ALDC skill not loaded), or `∅` (n-a). Drop the verbose `evidence` prose — a `file:line` finding already carries the proof. Verify the implementer applied the patterns its **symbolic line** declared (`🧠 skill-x·tag`); if a domain skill should have been applied but wasn't, emit a `major` finding. Check per domain **only for the `✓` residual** (a `↗bcq` domain is BCQuality's, not yours):
 
 | Skill | Verify | n-a when |
 |---|---|---|

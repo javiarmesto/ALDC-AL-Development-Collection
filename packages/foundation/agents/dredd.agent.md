@@ -54,7 +54,7 @@ What BCQuality's pilot does not reach — verify and flag, citing `file:line` an
 
 > **The residual is dynamic.** With BCQuality present it is A/C/F/G above. When BCQuality is **absent** (Step 2 precondition) or degraded for a domain, expand to the full **A–G**: add **B. Naming** (`al-naming-conventions`), **D. Performance** (`al-performance` + `skill-performance`), **E. Error handling** (`al-error-handling`), and the commit-in-subscriber / local part of **A** (`al-events`); permissions → `skill-permissions`. Secrets/security has no native check — flag what the instructions reach at `confidence ≤ medium` and note the thinner coverage.
 
-(Authoritative rule text lives in `.github/instructions/*` — don't copy it here.)
+(Authoritative rule text lives in `.github/instructions/*` — don't copy it here. You run **standalone**, with no Conductor to inject it and no `applyTo` auto-apply in this runtime: when a domain falls to the native residual, **read** its governing `instructions/al-*.instructions.md` — and `skill-performance` / `skill-permissions` where the residual names them — and judge against it. Don't rely on ambient enforcement; it doesn't fire here. A domain already owned by an active BCQuality leaf needs no such read — defer to its finding.)
 
 ### Step 4 — Build the Audit-Report JSON
 
