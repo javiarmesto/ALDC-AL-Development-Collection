@@ -210,7 +210,7 @@ For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer`
 
 ## Domain Skills
 
-This agent works with the following skills from `.github/skills/`. Copilot loads them automatically when relevant:
+This agent draws on these skills from `.github/skills/`. They are **not** auto-loaded — **load the `SKILL.md` on demand** (read it) when the design enters that domain:
 
 - **skill-api** — designing API pages, OData endpoints, integration strategy
 - **skill-events** — designing event-driven architecture, publishers/subscribers
@@ -218,7 +218,7 @@ This agent works with the following skills from `.github/skills/`. Copilot loads
 - **skill-copilot** — designing Copilot/AI feature architecture
 - **skill-pages** — designing page layouts, UX patterns, navigation
 
-To explicitly invoke a skill, use: `/skill-api`, `/skill-events`, etc.
+**Load = read the `SKILL.md`.** Naming a skill without reading it is not loading it.
 
 ## Skills Evidencing
 

@@ -504,11 +504,11 @@ DO NOT proceed past these points without explicit user confirmation.
 
 ## Domain Skills
 
-This agent works with skills from `.github/skills/`. Copilot loads them automatically when relevant:
+This agent draws on skills from `.github/skills/`. They are **not** auto-loaded — **load the `SKILL.md` on demand** (read it) when you need it:
 
 - **skill-testing** — orchestrating TDD cycles when test strategy is needed
 
-Explicit invocation: `/skill-testing`.
+(Per phase, the implement/review subagents load their own domain skills — you pass them as *hints*, see §"Passing Context to Subagents".)
 
 ## Skills Evidencing
 

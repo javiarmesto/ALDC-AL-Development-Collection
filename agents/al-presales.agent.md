@@ -827,12 +827,9 @@ await createFile('Technical_PreSales/customer-loyalty-system/00-executive-summar
 
 ## Domain Skills
 
-This agent works with the following skills from .github/skills/.
-Copilot loads them automatically when relevant to the task:
+This agent draws on the following skill from .github/skills/. It is **not** auto-loaded — **load the `SKILL.md` on demand** (read it) when estimating:
 
 - **skill-estimation** — When performing project estimation, complexity scoring, PERT, SWOT, cost breakdown
-
-To explicitly invoke a skill, use: /skill-estimation.
 
 ---
 
