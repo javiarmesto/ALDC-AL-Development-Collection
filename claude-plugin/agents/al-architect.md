@@ -252,8 +252,7 @@ When provided with a requirements document (requisites.md, spec.md, requirements
 
 ## Domain Skills
 
-This agent works with the following skills from .github/skills/.
-Copilot loads them automatically when relevant to the task:
+This agent draws on these skills from `.github/skills/`. They are **not** auto-loaded — **load the `SKILL.md` on demand** (`Read` it) when the design enters that domain:
 
 - **skill-api** — When designing API pages, OData endpoints, integration strategy
 - **skill-events** — When designing event-driven architecture, publishers/subscribers
@@ -261,7 +260,7 @@ Copilot loads them automatically when relevant to the task:
 - **skill-copilot** — When designing Copilot/AI feature architecture
 - **skill-pages** — When designing page layouts, UX patterns, navigation
 
-To explicitly invoke a skill, use: /skill-api, /skill-events, etc.
+**Load = read the `SKILL.md`.** Naming a skill without reading it is not loading it.
 
 ## Skills Evidencing
 

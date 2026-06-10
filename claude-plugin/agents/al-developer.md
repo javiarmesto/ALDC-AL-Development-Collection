@@ -515,8 +515,7 @@ I'll build and validate after each step."
 
 ## Domain Skills
 
-This agent works with the following skills from .github/skills/.
-Copilot loads them automatically when relevant to the task:
+This agent draws on these skills from `.github/skills/`. They are **not** auto-loaded — **load the `SKILL.md` on demand** (`Read` it) when the task enters that domain:
 
 - **skill-api** — When creating API pages, OData endpoints, HttpClient integrations
 - **skill-events** — When implementing event subscribers/publishers
@@ -527,7 +526,7 @@ Copilot loads them automatically when relevant to the task:
 - **skill-copilot** — When implementing Copilot/AI features
 - **skill-pages** — When creating or extending pages (Card, List, Document)
 
-To explicitly invoke a skill, use: /skill-api, /skill-testing, etc.
+**Load = read the `SKILL.md`.** Naming a skill without reading it is not loading it.
 
 ## Skills Evidencing
 

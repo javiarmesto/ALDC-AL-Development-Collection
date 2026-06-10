@@ -45,7 +45,7 @@ Write `diagnosis.md` under `.github/plans/` with:
 - **Read-only on AL code** — analyze / debug / search / navigate / build-to-reproduce; **never** edit AL source.
 - **Write scope** — only the diagnosis under `.github/plans/`. Nothing else.
 - **Reproduce-first** — no fix recommendation without reproduction or an evidence-backed root cause.
-- **Don't re-read what's already in context.** The reactive loop revisits the same suspect objects across localize → root-cause → diagnose. A source `.al`, the changed-vs-`main` diff, or a symbol you read once this invocation must be **reused, not re-`Read`** — re-walking it to apply a new hypothesis is a reasoning pass, not a reload. Resolve a base object's symbols once via **al-symbols-mcp** and reuse them; don't re-query the same symbol per step.
+- **Don't re-read a file already in context.** This loop revisits the same artifacts across steps — the suspect `.al`, the changed-vs-`main` diff, `aldc.yaml`, and `<home>/entry.md` get touched at localize, root-cause, blast-radius, and diagnose. Read each **once** and reuse it; never `Read` the same path twice within a diagnosis. (Same discipline the review/audit agents apply — symbol **discovery** is still your job here; re-**reading** what you already hold is the waste.)
 
 ## Handoffs
 

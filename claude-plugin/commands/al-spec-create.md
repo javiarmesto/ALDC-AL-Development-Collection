@@ -46,8 +46,19 @@ Search for:
 - Existing objects with similar patterns (`Grep`/`Glob`; **al-symbols-mcp** `al_search_objects` for symbol-level)
 - Naming conventions in `/src`
 - Available object ID ranges in `app.json`
-- Existing event publishers relevant to this feature — confirm they exist with **al-symbols-mcp** before the spec subscribes to them (§5)
+- Existing event publishers relevant to this feature
 - Existing API pages or codeunits if integration is involved
+
+> **Verify every base-app event you subscribe to against symbols — this is the spec's job, not the planner's.** For each event the feature hooks into, confirm it **exists** in the current BC version via **al-symbols-mcp** (`al_search_object_members` / `al_get_object_definition`; download symbols first if absent). Record the **verified** publisher object + exact event name in §5. If you cannot confirm an event exists, it does **not** enter the spec as fact — move it to §12 Open Questions. (A wrong or nonexistent event name passed downstream silently becomes a blind search burst in planning and a defect the reviewer must catch. Verify it once, here, at the cheapest point.)
+
+### 1.4 Ground the spec in the framework (token-light)
+
+This spec is the blueprint `aldc:al-conductor` and `aldc:al-developer` implement from — it must be a **reliable guide**, not proposed from memory. Ground it without bloating this (cheap) primitive:
+
+- **Instructions (always) — reference, don't recite.** The hard micro-rules under `rules-templates/` / the project's `.claude/rules/al-*` (naming ≤26 PascalCase, `DataClassification` on every field, extension-only, the performance/error-handling safety-net) govern every object you propose. They are tiny — honor them, and cite the governing one where a section depends on it.
+- **Skills (on demand — one per domain the spec actually designs).** `Read` the `SKILL.md` for a domain **only when the spec covers it**: §5 events → `skill-events`; §6 pages → `skill-pages`; §8 permissions → `skill-permissions`; §9 API → `skill-api`; AI/Copilot → `skill-copilot`; performance-critical logic → `skill-performance`; §7 tests → `skill-testing`. Do **not** load skills for domains the spec doesn't touch; for **LOW** complexity keep it minimal.
+
+This keeps the median cost low (most specs touch 1–2 domains) while making the spec a framework-grounded guide instead of a from-memory proposal.
 
 ---
 ---
@@ -391,6 +402,7 @@ page {ID} "{Prefix} {Entity} API"
 - ✅ Spec file created at `.github/plans/${input:req_name}/${input:req_name}.spec.md`
 - ✅ Object IDs verified against `app.json` idRanges
 - ✅ Architecture document consulted (if exists)
-- ✅ All AL signatures are complete (no "TBD" in procedure signatures)
+- ✅ The feature's **own** procedure signatures are complete (no "TBD"); base-app event targets recorded as **verified publisher + event name + consumed fields** (exact param list resolved from symbols at code time, not transcribed)
+- ✅ Every subscribed base-app event was symbol-verified to exist (unverifiable ones moved to Open Questions)
 - ✅ Test scenarios defined in Given/When/Then format
 - ✅ Handoff section points to correct next agent per complexity

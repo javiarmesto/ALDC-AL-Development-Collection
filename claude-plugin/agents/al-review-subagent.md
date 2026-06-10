@@ -61,6 +61,8 @@ Review the AL code changes using available tools:
 
 ### 2. Verify Implementation
 
+> **How the framework's rules reach you here — not by passive auto-apply (it does not fire in subagent runtime).** The **always-on instruction micro-rules** arrive **inline from the Conductor** (hard-rule baseline, in effect for the whole review). For domain **depth**, **load the skill yourself** — `Read` its `SKILL.md` — **only for the residual you actually own**: domains an active BCQuality leaf does **not** cover. Where a domain is owned by an enabled BCQuality leaf, do **not** load the ALDC skill — its knowledge is already loaded; defer to its finding (no double-load). Don't re-derive a rule's text — verify and flag, citing `file:line`.
+
 Check that the implementation meets **AL-specific criteria**:
 
 #### A. Event-Driven Architecture ✅
@@ -317,13 +319,13 @@ Return a **structured review** containing:
 - {Code quality enhancement - add XML docs, refactor duplicates}
 - {Test improvement - add edge cases, integration tests}
 
-**Skills Compliance Check:**
-*(Check each skill relevant to this phase. Mark N/A for skills not applicable to the phase under review.)*
-- [ ] **skill-api** — ODataKeyFields, APIPublisher, EntityName conventions applied | N/A
-- [ ] **skill-performance** — SetLoadFields, early CalcFields grouping, early filtering | N/A
-- [ ] **skill-events** — EventSubscriber attributes correct, IsHandled pattern used | N/A
-- [ ] **skill-permissions** — PermissionSet generated for all new objects | N/A
-- [ ] **skill-testing** — Given/When/Then structure, Library Assert, IsInitialized pattern | N/A
+**Skills Compliance Check (symbolic):**
+*(One entry per domain — `✓` verified native · `↗bcq` covered by an active BCQuality leaf (deferred) · `∅` n-a. Check per domain only for the `✓` residual.)*
+- **skill-api** {✓ | ↗bcq | ∅} — ODataKeyFields, APIPublisher, EntityName
+- **skill-performance** {✓ | ↗bcq | ∅} — SetLoadFields, early filtering, CalcSums
+- **skill-events** {✓ | ↗bcq | ∅} — EventSubscriber attributes, IsHandled
+- **skill-permissions** {✓ | ↗bcq | ∅} — PermissionSet covers new objects
+- **skill-testing** {✓ | ↗bcq | ∅} — Given/When/Then, Library Assert, IsInitialized
 
 **AL Best Practices Compliance:**
 - Event-Driven Architecture: {✅ Pass / ❌ Fail}
@@ -382,14 +384,16 @@ Return a **structured review** containing:
 
 Every review MUST include a **Skills Compliance Check** that verifies whether the implementer correctly applied domain skill patterns. This check appears in the Output Format and must be filled in every review.
 
+Emit it **symbolically** — one entry per domain `{ domain, status }` where status is `✓` (verified native), `↗bcq` (covered by an active BCQuality leaf — deferred, not re-derived, ALDC skill not loaded), or `∅` (n-a). A `file:line` finding already carries the proof, so drop verbose evidence prose.
+
 **How to evaluate:**
-1. Read the implementer's "### Skills Loaded" declaration in their Phase Summary
-2. For each skill they declared, verify the pattern was actually applied in code
-3. For skills NOT declared, check if they SHOULD have been loaded (flag as issue if missed)
-4. Mark skills that are genuinely not applicable to the phase as **N/A**
+1. Read the implementer's **symbolic skills line** (`🧠 skill-x·tag`) in their Phase Summary
+2. For each domain it declares, verify the pattern was actually applied in code
+3. For a domain NOT declared, check if it SHOULD have been (flag a **MAJOR** if missed)
+4. Check per domain **only for the `✓` residual** — a `↗bcq` domain is BCQuality's, not yours
 
 **Checklist items:**
-| Skill | What to verify | Mark N/A when |
+| Skill | What to verify | Mark ∅ (n-a) when |
 |-------|---------------|---------------|
 | skill-api | ODataKeyFields, APIPublisher, EntityName, DelayedInsert | Phase has no API pages |
 | skill-performance | SetLoadFields before Find*, early filtering, CalcSums over loops | Phase has no record operations |
@@ -397,7 +401,7 @@ Every review MUST include a **Skills Compliance Check** that verifies whether th
 | skill-permissions | PermissionSet covers all new objects | Phase creates no new objects |
 | skill-testing | Given/When/Then, Library Assert, IsInitialized, test isolation | Phase has no tests |
 
-**If a skill SHOULD have been loaded but wasn't**: flag as **MAJOR** issue — "Missing skill-performance: SetLoadFields not applied on Customer table."
+**If a domain skill SHOULD have been applied but wasn't**: flag as **MAJOR** issue — "Missing skill-performance: SetLoadFields not applied on Customer table."
 
 > **Note**: Skill references use folder names (e.g., `skill-api`). The full path is `.github/skills/skill-api/SKILL.md`.
 
