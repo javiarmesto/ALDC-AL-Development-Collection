@@ -87,7 +87,11 @@ The bulk of `al-developer` (and parts of conductor/implement-subagent) assumes *
 
 **§5 executed** on branch `claude/plugin-prose-modernization-8ggmq5`, prose-only, `claude-plugin/` only (Copilot distribution untouched). Validator stayed `ALDC Core v1.1 COMPLIANT (0 warnings)`; plugin JSON re-validated:
 1. **Tool-prose modernization** — all 6 tool-heavy agents (developer, architect, conductor, planning, review, implement), 4 commands (build, context-create, initialize, memory-create), 10 skills; canonical "Tooling" mapping added to `claude-plugin/CLAUDE.md`. Bucket-A remapped; bucket-B per the §4 split; bucket-C diagnostics → read `al compile` / test output.
-2. **Sync — #66 token guards** (merged upstream) ported to conductor/implement/review/dredd.
-3. **Sync — #67 triage guard + #68 spec-as-truth** (still-open upstream) ported as INTENT to triage, al-spec-create §5, planner, implementer, conductor.
+2. **Sync — #66 token guards** ported to conductor/implement/review/dredd.
+3. **Sync — #67 triage guard + #68 spec-as-truth** ported to triage, al-spec-create (§1.3 verify-events, §1.4 ground-in-framework, §5 decision-vs-signature, success criteria), planner, implementer, conductor.
+4. **Sync — #70 instructions+skills actually load** (the core runtime fix — even more relevant under Claude Code, no editor-attached auto-apply): conductor injects the 7 always-on instruction micro-rules inline + passes skills as hints; implement/review/dredd load skills on demand (`Read` the `SKILL.md`); symbolic evidencing (`📐 instr ✓ · 🧠 skill·tag` / `{domain, ✓ | ↗bcq | ∅}`) replaces the verbose Skills-Loaded tables; dead "Copilot loads automatically" prose removed from architect/presales/developer.
+5. **Sync — #71 checkpoint evidence row** ported to the conductor's checkpoints (adapted to the plugin's existing card format).
+
+> Mid-session, `main` advanced (#67/#68 merged with final wording; #70/#71 landed new). The branch was **rebased onto current main** and the sync re-aligned to the merged wording — the plugin and top-level have diverged structurally, so the intent was adapted, not blind-copied.
 
 **Follow-up (optional, not done — config, not prose):** plugin command `allowed-tools` frontmatter doesn't list MCP tools (`al-symbols-mcp`, `microsoft-docs`, `context7`) now referenced in prose. Not a hard block (referenced tools still resolve via the normal flow, matching the pre-existing al-context-create pattern), so left for a separate config change.
