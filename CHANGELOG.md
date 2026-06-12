@@ -1,5 +1,25 @@
 # ALDC Core Changelog
+## [4.2.0] - 2026-06-12
 
+### Fixed
+
+- **Fase 0 conformidad** (PR #74): contadores contradictorios en CLAUDE.md, 3 enlaces rotos en README, primitivos sin declarar en aldc.yaml (al-triage, skill-manifest, skill-contribution-assistant, al-agent.build-instructions), y fichero `packages/foundation/skills/skill-manifest/SKILL.md` truncado (afectaba al empaquetado del VSIX).
+- Contadores del banner de `install.js` alineados con la realidad (10 agentes / 16 skills / 11 workflows / 9 instructions).
+
+### Added
+
+- `ARCHITECTURE.md` — mapa fuente ↔ generado ↔ canal de distribución.
+- `scripts/check-conformance.js` — verificador de conformidad, integrado en CI.
+- `scripts/sync-foundation.js` — sincronización raíz → packages/foundation (fuente del VSIX), con modo `--check` en CI.
+- Nota de contexto del ecosistema (CIRCE → Copilot Studio, DELFOS → Power BI) en skill-manifest.
+
+### Removed
+
+- `packages/foundation/skills/skill-manifest/samples/` (duplicado de `examples/`, sin referencias).
+
+## [4.1.1 – 4.1.8]
+
+- Releases solo de la extensión VS Code en el Marketplace (sin cambios de framework en este repositorio).
 ## [4.1.0] - 2026-06-05
 
 ### Changed
