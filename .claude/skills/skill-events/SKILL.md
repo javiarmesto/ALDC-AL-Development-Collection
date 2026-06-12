@@ -25,7 +25,7 @@ This skill should be loaded when:
 Before writing any subscriber, discover which events are raised during the business process:
 
 ```
-1. al_open_Event_Recorder            ← open the recorder in VS Code
+1. Open the Event Recorder in the BC client / VS Code (a human step — no agent tool here)
 2. Start recording
 3. Execute the business process in BC (e.g., post a sales order)
 4. Stop recording
@@ -167,7 +167,7 @@ end;
 
 ### Step 1: Discover Events
 
-1. Open Event Recorder: `al_open_Event_Recorder`
+1. Open the Event Recorder in the BC client / VS Code (a human step — no agent tool here)
 2. Execute the target business process in BC
 3. Review recorded events — filter by relevant object
 4. Use `al_get_object_definition` to inspect publisher signatures
@@ -189,7 +189,7 @@ For **creating new integration events** in your codeunit:
 
 ### Step 3: Implement
 
-Use `al_insert_event` to scaffold subscriber/publisher structures, then fill the body:
+Write the subscriber/publisher structures with `Write`/`Edit` (in VS Code the `teventsub`/`tevent` snippets scaffold these for a human), then fill the body:
 
 ```al
 // Subscriber handler codeunit
@@ -211,9 +211,9 @@ codeunit 50102 "Customer Validation Handler"
 
 ### Step 4: Verify
 
-1. Build: `al_build` — check for compilation errors (signature mismatches)
+1. Build: `Bash: al compile` — check for compilation errors (signature mismatches)
 2. Set breakpoint inside subscriber
-3. Debug: `al_debug_without_publish`
+3. Debug in VS Code (AL debugger, attach without publish) — a human step
 4. Execute the business process — confirm subscriber fires
 5. If subscriber does NOT fire, check:
    - Signature mismatch (most common cause)
@@ -243,7 +243,7 @@ codeunit 50102 "Customer Validation Handler"
 
 ## Constraints
 
-- This skill covers **event discovery, design, and implementation patterns** — it does NOT duplicate the passive rules in `al-events.instructions.md` (auto-applied to all `.al` files)
+- This skill covers **event discovery, design, and implementation patterns** — it does NOT duplicate the passive rules in `al-events.md` (auto-applied to all `.al` files)
 - Do NOT create publishers without an `OnBefore` + `OnAfter` pair at minimum
 - Do NOT use `Commit` inside event subscribers unless absolutely required
 - Do NOT set `IsHandled = true` without clear documentation of why default logic is skipped

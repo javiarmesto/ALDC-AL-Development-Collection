@@ -1,5 +1,5 @@
 ---
-name: AL Agent Builder
+name: al-agent-builder
 description: >
   Agent Toolkit Builder specialist in designing and coding Business Central agents
   using the AI Development Toolkit and Agent SDK. Follows the official Agent

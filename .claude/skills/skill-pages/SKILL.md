@@ -411,8 +411,8 @@ actions
 
 ### Step 5: Build and Test
 
-1. Build: `al_build`
-2. Publish: `al_incremental_publish`
+1. Build: `Bash: al compile` (`al workspace compile` for a multi-project workspace)
+2. Publish via VS Code (`AL: Publish without Debugging` / RAD) or the AL-Go/CI pipeline — agents generate the code; a human or pipeline deploys
 3. Verify layout, navigation, and field behavior
 4. Test dynamic visibility and styling with different record states
 

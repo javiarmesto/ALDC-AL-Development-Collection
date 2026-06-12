@@ -22,12 +22,12 @@ You are an AI assistant designed to aid in AL development, particularly for Micr
 
 Before implementing AL code, review the following domain-specific guidelines that apply to your current file context:
 
-- [AL Code Style Guidelines](./al-code-style.instructions.md) - Code structure and formatting
-- [AL Naming Conventions](./al-naming-conventions.instructions.md) - Consistent naming patterns
-- [AL Performance Guidelines](./al-performance.instructions.md) - Optimization best practices
-- [AL Error Handling](./al-error-handling.instructions.md) - Error patterns and telemetry
-- [AL Events Guidelines](./al-events.instructions.md) - Event-driven development
-- [AL Testing Guidelines](./al-testing.instructions.md) - Test implementation patterns
+- [AL Code Style Guidelines](./al-code-style.md) - Code structure and formatting
+- [AL Naming Conventions](./al-naming-conventions.md) - Consistent naming patterns
+- [AL Performance Guidelines](./al-performance.md) - Optimization best practices
+- [AL Error Handling](./al-error-handling.md) - Error patterns and telemetry
+- [AL Events Guidelines](./al-events.md) - Event-driven development
+- [AL Testing Guidelines](./al-testing.md) - Test implementation patterns
 
 ## Key Guidelines Summary
 

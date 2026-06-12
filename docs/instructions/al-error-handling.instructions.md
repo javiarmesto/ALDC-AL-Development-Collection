@@ -1,5 +1,7 @@
 # :material-alert-circle-outline: AL Error Handling
 
+> **Documentation view** — the normative, auto-applied source is [`instructions/al-error-handling.instructions.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/instructions/al-error-handling.instructions.md). If this page and the source ever diverge, the source wins.
+
 <div class="agent-card" markdown>
 
 | | |

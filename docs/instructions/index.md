@@ -1,5 +1,7 @@
 # Instructions - Layer 2: Agent Primitives
 
+> **Documentation views** — these pages describe the instructions for the website. The normative, auto-applied sources live in [`instructions/`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/main/instructions). If a page and its source ever diverge, the source wins.
+
 **Markdown Prompt Engineering** implemented as modular `.instructions.md` files with **Context Engineering** via `applyTo` patterns. These files customize GitHub Copilot's behavior for AL development in Business Central.
 
 ## 📋 What Are Instructions?

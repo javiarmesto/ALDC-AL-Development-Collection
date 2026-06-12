@@ -36,6 +36,9 @@ jobs:
       run: node scripts/check-conformance.js
     - name: Foundation drift check
       run: node scripts/sync-foundation.js --check
+
+    - name: Claude workspace drift check
+      run: node scripts/sync-claude-workspace.js --check
     - name: Upload validation results
       if: always()
       uses: actions/upload-artifact@v4

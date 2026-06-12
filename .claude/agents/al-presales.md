@@ -1,5 +1,5 @@
 ---
-name: AL Pre-Sales & Project Estimation Specialist
+name: al-presales
 description: >
   Technical PreSales Agent for AL/Business Central projects. Specializes in
   project planning, cost estimation (time and budget), feasibility analysis,
@@ -105,7 +105,7 @@ Technical_PreSales/
 - ✅ Access Microsoft Learn documentation (`mcp_microsoft_doc/*`)
 - ✅ Use Context7 for up-to-date library docs (`mcp_context7/*`, `mcp_upstash_conte/*`)
 - ✅ Web search for market research (`websearch`)
-- ✅ Invoke `AL Architecture & Design Specialist` agent for architectural design
+- ✅ Invoke `al-architect` agent for architectural design
 - ✅ Execute `/al-spec.create` workflow for specifications
 - ✅ Analyze AL symbols for complexity estimation (`al-symbols-mcp/*`)
 - ✅ Manage project memory and context (`memory`)
@@ -687,12 +687,12 @@ jobs:
 
 ## 🏗️ Phase 6: Integration with Other Agents
 
-### Invoke AL Architecture & Design Specialist
+### Invoke al-architect
 
 When ready for architectural design:
 
 ```markdown
-**Action**: Use `agent` tool to invoke AL Architecture & Design Specialist
+**Action**: Use `agent` tool to invoke al-architect
 
 "Based on the Technical PreSales analysis for [PROJECT_NAME], 
 create an architectural design considering:
@@ -860,12 +860,11 @@ await createFile('Technical_PreSales/customer-loyalty-system/00-executive-summar
 
 ## Domain Skills
 
-This agent works with the following skills from .github/skills/.
-Copilot loads them automatically when relevant to the task:
+This agent draws on the following skill from `.github/skills/`. It is **not** auto-loaded — **load the `SKILL.md` on demand** (`Read` it) when estimating:
 
 - **skill-estimation** — When performing project estimation, complexity scoring, PERT, SWOT, cost breakdown
 
-To explicitly invoke a skill, use: /skill-estimation.
+**Load = read the `SKILL.md`.** Naming a skill without reading it is not loading it.
 
 ---
 ---
@@ -881,7 +880,7 @@ Before delivering final proposal:
 - [ ] 04-cost-estimation.md created with user-provided rates
 - [ ] 07-github-pages-proposal.md created
 - [ ] MCP tools verified (or user informed of missing tools)
-- [ ] AL Architecture & Design Specialist invoked for architecture (if needed)
+- [ ] al-architect invoked for architecture (if needed)
 - [ ] al-spec.create executed for specifications (if needed)
 - [ ] All documents include confidentiality header
 - [ ] Risk mitigation strategies defined

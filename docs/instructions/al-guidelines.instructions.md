@@ -1,5 +1,7 @@
 # :material-book-open-variant: AL Guidelines
 
+> **Documentation view** — the normative, auto-applied source is [`instructions/al-guidelines.instructions.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/instructions/al-guidelines.instructions.md). If this page and the source ever diverge, the source wins.
+
 <div class="agent-card" markdown>
 
 | | |

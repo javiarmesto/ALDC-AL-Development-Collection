@@ -1,5 +1,7 @@
 # :material-tag-text-outline: AL Naming Conventions
 
+> **Documentation view** — the normative, auto-applied source is [`instructions/al-naming-conventions.instructions.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/instructions/al-naming-conventions.instructions.md). If this page and the source ever diverge, the source wins.
+
 <div class="agent-card" markdown>
 
 | | |
