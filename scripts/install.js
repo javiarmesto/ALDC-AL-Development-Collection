@@ -188,10 +188,10 @@ function ask(question, defaultYes = true) {
 
 // ─── ALDC Core v1.1 component map ──────────────────────────────────────────
 const COMPONENTS = [
-  { name: 'Agents',      src: 'agents',             count: '5 agents (4 public + 1 optional) + 3 subagents' },
-  { name: 'Skills',      src: 'skills',             count: '14 skills (7 required + 4 recommended + 3 optional)' },
-  { name: 'Prompts',     src: 'prompts',            count: '10 workflows (6 core + 4 agent-builder)' },
-  { name: 'Instructions',src: 'instructions',       count: '10 auto-applied' },
+  { name: 'Agents',      src: 'agents',             count: '10 agents (4 public + 2 on-demand + 3 subagents + 1 optional)' },
+  { name: 'Skills',      src: 'skills',             count: '16 skills (7 required + 4 recommended + 5 optional)' },
+  { name: 'Prompts',     src: 'prompts',            count: '11 workflows (6 core + 5 agent-builder)' },
+  { name: 'Instructions',src: 'instructions',       count: '9 instruction files (8 auto-applied + copilot entrypoint)' },
   { name: 'Templates',   src: 'docs/templates',     count: '7 contract templates' },
   { name: 'Framework',   src: 'docs/framework',     count: 'spec + docs' },
   { name: 'Validator',   src: 'tools/aldc-validate', count: 'compliance checker' },

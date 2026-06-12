@@ -278,7 +278,7 @@ Clone this repo and open it with Claude Code. The `.claude/` directory and `CLAU
 3. Start with any agent: `@al-architect`, `@al-developer`, `@al-conductor`, or `@al-presales`
 4. Or run a workflow: `/aldc:al-spec-create`
 
-See [QUICKSTART.md](aldc-core-v1.1/docs/framework/QUICKSTART.md) for the full onboarding guide.
+See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 
 ---
 
@@ -483,8 +483,8 @@ On first enable, the plugin prompts for optional settings:
 
 - [Core Specification v1.1](docs/framework/ALDC-Core-Spec-v1.1.md)
 - [Architecture Diagrams](docs/framework/ALDC-Architecture-Diagrams.md)
-- [Manifesto](aldc-core-v1.1/docs/framework/ALDC-Manifesto.md)
-- [Quickstart](aldc-core-v1.1/docs/framework/QUICKSTART.md)
+- [Manifesto](docs/framework/ALDC-Manifesto.md)
+- [Quickstart](docs/framework/QUICKSTART.md)
 - [Governance](docs/framework/ALDC-Governance.md)
 - [Compliance Model](docs/framework/ALDC-Compliance-Model.md)
 - [Migration Guide v1.0→v1.1](docs/framework/ALDC-Migration-v1.0-to-v1.1.md)

@@ -7,6 +7,8 @@ description: "Generates a handoff manifest at the end of the ALDC pipeline so CI
 
 > Generates a handoff manifest at the end of the ALDC pipeline, enabling CIRCE and/or DELFOS to consume the extension's published surface without sharing a workspace.
 
+> **Ecosystem context** — CIRCE and DELFOS are sibling collections in the ALDC family: **CIRCE** provides AI agents for **Microsoft Copilot Studio**; **DELFOS** provides AI agents for **Power BI**. The manifest emitted by this skill is the contract those collections consume (through the Business Central MCP server) without sharing a workspace.
+
 ## Trigger
 
 This skill activates **after the Conductor pipeline completes successfully** (all sub-agents finalized, all HITL gates passed). The agent MUST NOT generate the manifest until the extension compiles and all tests pass.
@@ -182,4 +184,7 @@ Examples: `lead-tracking-manifest.md`, `vibeleads-manifest.md`, `frontier-incide
 ## Reference URLs
 
 - [BC MCP Server Configuration](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/configure-mcp-server)
-- [Create Agent in Copilot Studio](https://learn.m
+- [Create Agent in Copilot Studio](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/ai/create-agent-in-copilot-studio)
+- [BC API Page Documentation](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-api-pagetype)
+- [Power BI Star Schema Guidance](https://learn.microsoft.com/en-us/power-bi/guidance/star-schema)
+- DELFOS bc-data-source-mapping skill: internal reference within the DELFOS framework

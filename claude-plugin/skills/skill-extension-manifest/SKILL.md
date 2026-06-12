@@ -10,6 +10,8 @@ description: >
 
 > Generates a handoff manifest at the end of the ALDC pipeline, enabling CIRCE and/or DELFOS to consume the extension's published surface without sharing a workspace.
 
+> **Ecosystem context** — CIRCE and DELFOS are sibling collections in the ALDC family: **CIRCE** provides AI agents for **Microsoft Copilot Studio**; **DELFOS** provides AI agents for **Power BI**. The manifest emitted by this skill is the contract those collections consume (through the Business Central MCP server) without sharing a workspace.
+
 ## Trigger
 
 This skill activates **after the Conductor pipeline completes successfully** (all sub-agents finalized, all HITL gates passed). The agent MUST NOT generate the manifest until the extension compiles and all tests pass.

@@ -143,7 +143,7 @@ No npm/yarn build steps. AL compilation is handled by the AL Language VS Code ex
 ## Project Structure
 
 ```
-instructions/          # Auto-applied instruction files (7)
+instructions/          # Auto-applied instruction files (9)
 agents/                # Agent definitions (4 user-facing + 3 internal subagents)
 skills/                # Composable knowledge modules (11 skill directories)
 prompts/               # Workflow definitions (6 prompt files)
@@ -161,4 +161,4 @@ app.json               # Extension manifest
 - [BC Development Docs](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/)
 
 ---
-**Framework**: ALDC Core v1.1 | **Primitives**: 4 agents + 3 subagents + 11 skills + 6 workflows + 7 instructions
+**Framework**: ALDC Core v1.1 | **Primitives**: 4 agents + 3 subagents + 11 skills + 6 workflows + 9 instructions

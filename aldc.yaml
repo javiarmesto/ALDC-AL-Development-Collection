@@ -73,6 +73,7 @@ required:
     - "agents/al-developer.agent.md"
     - "agents/al-presales.agent.md"
     - "agents/dredd.agent.md"
+    - "agents/al-triage.agent.md"
 
   subagents:
     - "agents/al-planning-subagent.agent.md"
@@ -129,11 +130,14 @@ optional:
     - "skills/skill-agent-instructions/SKILL.md"
     - "skills/skill-agent-task-patterns/SKILL.md"
     - "skills/skill-agent-toolkit/SKILL.md"
+    - "skills/skill-manifest/SKILL.md"
+    - "skills/skill-contribution-assistant/SKILL.md"
   workflows:
     - "prompts/al-agent.create.prompt.md"
     - "prompts/al-agent.task.prompt.md"
     - "prompts/al-agent.instructions.prompt.md"
     - "prompts/al-agent.test.prompt.md"
+    - "prompts/al-agent.build-instructions.prompt.md"
   instructions:
     - "instructions/al-agent-toolkit.instructions.md"
   tools:
