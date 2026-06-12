@@ -1,11 +1,11 @@
 # ALDC — Claude Code Instructions
 
-@import ./docs/framework/ALDC-Core-Spec-v1.1.md
+@import ./docs/framework/ALDC-Core-Spec-v1.2.md
 
 ## Overview
 
 AL (Application Language) workspace for Microsoft Dynamics 365 Business Central.
-Architecture: **ALDC Core v1.1** — 4 agents + 11 skills + 6 workflows + 9 instructions.
+Architecture: **ALDC Core v1.2** — 10 agents (4 core + 2 on-demand + 3 subagents + 1 extension) + 16 skills + 11 workflows + 9 instructions.
 
 ## Core Principles
 
@@ -36,7 +36,7 @@ Project estimation?        -> al-presales
 
 ## Workflows
 
-6 workflows invoked via `/workflow-name`:
+11 workflows (6 core + 5 BC Agents pack). The 6 core, invoked via `/workflow-name`:
 
 | Workflow | When to use |
 |----------|-------------|
@@ -49,7 +49,7 @@ Project estimation?        -> al-presales
 
 ## Skills
 
-11 composable knowledge modules loaded on-demand by agents (not invoked directly):
+16 composable knowledge modules (7 required + 4 recommended + 3 BC Agents + 2 utility) loaded on-demand by agents (not invoked directly):
 
 | Skill | Domain | Loaded by |
 |-------|--------|-----------|
@@ -144,10 +144,10 @@ No npm/yarn build steps. AL compilation is handled by the AL Language VS Code ex
 
 ```
 instructions/          # Auto-applied instruction files (9)
-agents/                # Agent definitions (4 user-facing + 3 internal subagents)
-skills/                # Composable knowledge modules (11 skill directories)
-prompts/               # Workflow definitions (6 prompt files)
-docs/framework/        # Normative spec (ALDC-Core-Spec-v1.1.md)
+agents/                # Agent definitions (4 core + 2 on-demand + 3 subagents + 1 extension)
+skills/                # Composable knowledge modules (16 skill directories)
+prompts/               # Workflow definitions (11 prompt files)
+docs/framework/        # Normative spec (ALDC-Core-Spec-v1.2.md)
 docs/templates/        # Immutable templates
 .github/plans/         # Requirement sets & memory
 src/                   # AL source code
@@ -156,9 +156,9 @@ app.json               # Extension manifest
 
 ## Reference
 
-- [ALDC Core Spec v1.1](./docs/framework/ALDC-Core-Spec-v1.1.md) — Normative specification
+- [ALDC Core Spec v1.2](./docs/framework/ALDC-Core-Spec-v1.2.md) — Normative specification
 - [AL Language Reference](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-reference-overview)
 - [BC Development Docs](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/)
 
 ---
-**Framework**: ALDC Core v1.1 | **Primitives**: 4 agents + 3 subagents + 11 skills + 6 workflows + 9 instructions
+**Framework**: ALDC Core v1.2 | **Primitives**: 10 agents + 16 skills + 11 workflows + 9 instructions

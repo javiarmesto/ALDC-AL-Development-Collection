@@ -2,8 +2,8 @@
 # Skills-based modularization with preserved orchestration + per-requirement contracts + global memory
 
 core:
-  version: "1.1.0"
-  specFile: "docs/framework/ALDC-Core-Spec-v1.1.md"
+  version: "1.2.0"
+  specFile: "docs/framework/ALDC-Core-Spec-v1.2.md"
 
 toolkitRoot: "."
 

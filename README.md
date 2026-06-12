@@ -6,8 +6,8 @@
 >
 > **Now available for both GitHub Copilot and Claude Code.**
 
-[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.1%20Compliant-7a9e00.svg?style=flat-square&labelColor=232529)](docs/framework/ALDC-Core-Spec-v1.1.md)
-[![Version](https://img.shields.io/badge/version-4.1.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
+[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-7a9e00.svg?style=flat-square&labelColor=232529)](docs/framework/ALDC-Core-Spec-v1.2.md)
+[![Version](https://img.shields.io/badge/version-4.2.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-ff631f.svg?style=flat-square&labelColor=232529)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-7a9e00?style=flat-square&labelColor=232529)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-7a9e00?style=flat-square&labelColor=232529)](./LICENSE)
@@ -15,6 +15,15 @@
 [![GitHub Stars](https://img.shields.io/github/stars/javiarmesto/AL-Development-Collection-for-GitHub-Copilot)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/stargazers)
 
 ---
+
+## What's New in 4.2.0
+
+Conformance release: the framework now enforces its own spec in CI.
+
+- **Core Spec v1.2** — normalizes the real tier model: 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. Everything that ships is declared.
+- **Conformance tooling** — `scripts/check-conformance.js` (counters, cross-references, links, frontmatter) and `scripts/sync-foundation.js --check` (zero drift between the canonical trees and `packages/foundation/`, the VSIX packaging source) run on every push and PR.
+- **`ARCHITECTURE.md`** — one-page map of what is source, what is generated, and which distribution channel consumes each tree.
+- Fixed: truncated `skill-manifest` in `packages/foundation/`, broken README links, undeclared primitives in `aldc.yaml`, contradictory counters.
 
 ## What's New in 4.1.0
 
@@ -308,7 +317,7 @@ The architect analyzes requirements, designs the solution, and recommends the ap
 node tools/aldc-validate/index.js --config aldc.yaml
 ```
 
-Expected result: `✅ ALDC Core v1.1 COMPLIANT`
+Expected result: `✅ ALDC Core v1.2 COMPLIANT`
 
 ---
 
@@ -326,7 +335,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.architecture.md
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
-├── agents/                               # 4 public agents + 3 subagents
+├── agents/                               # 10 agents (4 core + 2 on-demand + 3 subagents + 1 extension)
 ├── skills/                               # 11 composable skills
 ├── prompts/                              # 6 retained workflows
 ├── instructions/                         # 9 auto-applied coding standards
@@ -335,16 +344,16 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── CLAUDE.md                             # Master instructions
 ├── .mcp.json                             # MCP server configuration
 ├── .claude/
-│   ├── agents/                           # 8 agents (5 public + 3 internal)
-│   ├── skills/                           # 25 skills (11 knowledge + 10 workflows + 4 toolkit)
+│   ├── agents/                           # 10 agents (7 public + 3 internal)
+│   ├── skills/                           # 16 skills (composable knowledge modules)
 │   ├── rules/                            # 8 path-scoped coding standards
 │   └── settings.json                     # Hooks + permissions
 │
 │── Claude Code Plugin ─────────────────────────────────
 ├── claude-plugin/
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
-│   ├── agents/                           # 8 agents (auto-discovered)
-│   ├── skills/                           # 25 skills (auto-discovered)
+│   ├── agents/                           # 10 agents (auto-discovered)
+│   ├── skills/                           # 16 skills (auto-discovered)
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
 │   ├── rules-templates/                  # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
@@ -355,7 +364,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │   ├── framework/                        # Normative spec + diagrams
 │   └── templates/                        # Immutable contract templates (7)
 ├── tools/aldc-validate/                  # ALDC Core validator
-├── aldc.yaml                             # Core v1.1 configuration
+├── aldc.yaml                             # Core v1.2 configuration
 ├── CHANGELOG.md                          # Version history
 └── README.md                             # This file
 ```
@@ -421,8 +430,8 @@ ALDC is available as a native **Claude Code** integration in two forms:
 
 | Primitive | Direct (`.claude/`) | Plugin (`aldc:`) | Count |
 | --------- | ------------------- | ---------------- | ----- |
-| Agents | `.claude/agents/` | `agents/` | 5 public + 3 internal |
-| Skills | `.claude/skills/` | `skills/` | 11 knowledge + 10 workflows + 4 agent-toolkit |
+| Agents | `.claude/agents/` | `agents/` | 7 public + 3 internal |
+| Skills | `.claude/skills/` | `skills/` | 16 composable knowledge modules |
 | Rules | `.claude/rules/` | `rules-templates/` (injected via `al-initialize`) | 8 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
 | Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
@@ -481,7 +490,7 @@ On first enable, the plugin prompts for optional settings:
 
 ## Framework Documentation
 
-- [Core Specification v1.1](docs/framework/ALDC-Core-Spec-v1.1.md)
+- [Core Specification v1.2](docs/framework/ALDC-Core-Spec-v1.2.md)
 - [Architecture Diagrams](docs/framework/ALDC-Architecture-Diagrams.md)
 - [Manifesto](docs/framework/ALDC-Manifesto.md)
 - [Quickstart](docs/framework/QUICKSTART.md)
@@ -539,6 +548,6 @@ MIT — See [LICENSE](LICENSE) for details.
 
 ---
 
-**Status**: ALDC Core v1.1 COMPLIANT | **Platforms**: GitHub Copilot + Claude Code
-**Version**: 3.2.0 (ALDC Core v1.1)
+**Status**: ALDC Core v1.2 COMPLIANT | **Platforms**: GitHub Copilot + Claude Code
+**Version**: 4.2.0 (ALDC Core v1.2)
 **Last Updated**: 2026-03-30
