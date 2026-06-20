@@ -86,6 +86,15 @@ cd .github/plans/canvas-extensions-pack-prototype
 node agent-consume.mjs
 ```
 
+The read path now generalizes beyond the Conductor: `demo-all.mjs` loads **C1 (Spec Studio)**,
+**C3 (Test-Plan Checklist)** and **C4 (Conductor Pipeline)** over one plan dir, all built on the shared
+`lib.mjs` core — concrete evidence for the §1 design rule and the §3C "stable artifact schema" requirement.
+C2, C5–C8 remain designed-only; **C5 (Review/Audit Board)** is the recommended next new surface.
+
+```bash
+node demo-all.mjs
+```
+
 ---
 
 ### References

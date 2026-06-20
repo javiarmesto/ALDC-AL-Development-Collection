@@ -33,3 +33,24 @@ node extension.mjs fixture sample-req     # or: npm run demo
 
 Prints the derived view model (`run`, `phases`, `gates`) for the bundled `fixture/sample-req/` plan —
 demonstrating P0/P1 of the study's execution plan against real markdown.
+
+## Files
+
+| File | Role |
+|------|------|
+| `lib.mjs` | shared read-only core (markdown parsers) used by every canvas |
+| `extension.mjs` | **C4** Conductor Pipeline canvas + standalone runner |
+| `spec-studio.mjs` | **C1** Spec Studio canvas (read path) |
+| `test-plan.mjs` | **C3** Test-Plan Checklist canvas (read path) |
+| `agent-consume.mjs` | demonstrates agent consumption of capabilities (read + HITL write) |
+| `demo-all.mjs` | loads C1 + C3 + C4 over one plan dir |
+| `fixture/sample-req/` | sample plan the runners read |
+
+## Multi-canvas demo
+
+```bash
+node demo-all.mjs        # prints C1, C3 and C4 view models for fixture/sample-req
+```
+
+Shows the catalog pattern generalizing: three methodology canvases built on the same `lib.mjs`
+core, each a view over its own markdown artifact. See [`../canvas-extensions-catalog.md`](../canvas-extensions-catalog.md).

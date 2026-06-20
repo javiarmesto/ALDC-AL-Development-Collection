@@ -11,16 +11,14 @@
 // Every capability re-derives its view from those files; writes append to the markdown phase
 // report — the canvas never becomes a second store.
 
-import { readFile, writeFile, readdir, access } from 'node:fs/promises';
+import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { exists, readIf } from './lib.mjs';
 
 const PHASE_RE = /^##\s+Phase\s+(\d+)\s+Complete:\s*(.+?)\s*$/m;
 const REVIEW_RE = /^\*\*Review Status:\*\*\s*(.+?)\s*$/m;
 const H1_RE = /^#\s+(.+)$/m;
-
-const exists = async (p) => { try { await access(p); return true; } catch { return false; } };
-const readIf = async (p) => ((await exists(p)) ? readFile(p, 'utf8') : '');
 
 // --- read model (re-derived from disk on every call) ----------------------------------------
 
