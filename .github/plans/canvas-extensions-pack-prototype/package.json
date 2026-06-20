@@ -1,0 +1,11 @@
+{
+  "name": "aldc-conductor-canvas-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PROTOTYPE — al-conductor TDD pipeline canvas for the GitHub Copilot app. Reference spike for .github/plans/canvas-extensions-pack.md. Not shipped, not declared in aldc.yaml, no dependencies.",
+  "main": "extension.mjs",
+  "scripts": {
+    "demo": "node extension.mjs fixture sample-req"
+  }
+}
