@@ -1,0 +1,45 @@
+<svg width="1280" height="320" viewBox="0 0 1280 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ALDC — AL Development Collection">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1b1d1f"/>
+      <stop offset="1" stop-color="#232529"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7a9e00"/>
+      <stop offset="1" stop-color="#d8723c"/>
+    </linearGradient>
+    <style>
+      .title  { font: 800 96px 'Segoe UI', system-ui, -apple-system, sans-serif; fill: #f5f5f0; letter-spacing: 4px; }
+      .tagline{ font: 600 30px 'Segoe UI', system-ui, -apple-system, sans-serif; fill: #d8723c; }
+      .sub    { font: 400 22px 'Segoe UI', system-ui, -apple-system, sans-serif; fill: #b9c08a; letter-spacing: 1px; }
+      .pill   { font: 600 18px 'Segoe UI', system-ui, -apple-system, sans-serif; fill: #232529; }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="1280" height="320" rx="20" fill="url(#bg)"/>
+  <!-- accent bar -->
+  <rect x="0" y="0" width="14" height="320" rx="7" fill="url(#accent)"/>
+
+  <!-- decorative bracket glyph (extension-only / contract motif) -->
+  <g transform="translate(1010,70)" opacity="0.9">
+    <path d="M70 0 H170 V40 H110 V140 H170 V180 H70 Z" fill="none" stroke="#7a9e00" stroke-width="10" stroke-linejoin="round"/>
+    <circle cx="200" cy="90" r="10" fill="#d8723c"/>
+    <path d="M0 90 H60" stroke="#d8723c" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <!-- text block -->
+  <text x="72" y="138" class="title">ALDC</text>
+  <text x="74" y="186" class="sub">AL Development Collection</text>
+  <text x="74" y="240" class="tagline">From vibe coding to controlled engineering.</text>
+
+  <!-- platform pills -->
+  <g transform="translate(74,266)">
+    <rect x="0"   y="0" width="184" height="34" rx="17" fill="#7a9e00"/>
+    <text x="22"  y="23" class="pill">GitHub Copilot</text>
+    <rect x="200" y="0" width="160" height="34" rx="17" fill="#d8723c"/>
+    <text x="224" y="23" class="pill">Claude Code</text>
+    <rect x="376" y="0" width="196" height="34" rx="17" fill="none" stroke="#b9c08a" stroke-width="2"/>
+    <text x="398" y="23" class="pill" fill="#b9c08a">ALDC Core v1.2</text>
+  </g>
+</svg>
