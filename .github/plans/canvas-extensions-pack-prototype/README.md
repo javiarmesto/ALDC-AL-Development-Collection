@@ -38,19 +38,24 @@ demonstrating P0/P1 of the study's execution plan against real markdown.
 
 | File | Role |
 |------|------|
-| `lib.mjs` | shared read-only core (markdown parsers) used by every canvas |
+| `lib.mjs` | shared read-only core (markdown parsers) used by the per-requirement canvases |
 | `extension.mjs` | **C4** Conductor Pipeline canvas + standalone runner |
 | `spec-studio.mjs` | **C1** Spec Studio canvas (read path) |
 | `test-plan.mjs` | **C3** Test-Plan Checklist canvas (read path) |
+| `review-audit.mjs` | **C5** Review/Audit Board (read + HITL triage over the Dredd Audit-Report JSON) |
 | `agent-consume.mjs` | demonstrates agent consumption of capabilities (read + HITL write) |
 | `demo-all.mjs` | loads C1 + C3 + C4 over one plan dir |
-| `fixture/sample-req/` | sample plan the runners read |
+| `demo-audit.mjs` | C5 read board + HITL triage write (sidecar) |
+| `fixture/sample-req/` | sample plan the per-requirement runners read |
+| `fixture/audits/` | sample Dredd Audit-Report JSON the C5 runner reads |
 
 ## Multi-canvas demo
 
 ```bash
 node demo-all.mjs        # prints C1, C3 and C4 view models for fixture/sample-req
+node demo-audit.mjs      # C5 Review/Audit Board: triage board + HITL assign to al-developer (sidecar)
 ```
 
-Shows the catalog pattern generalizing: three methodology canvases built on the same `lib.mjs`
-core, each a view over its own markdown artifact. See [`../canvas-extensions-catalog.md`](../canvas-extensions-catalog.md).
+Shows the catalog pattern generalizing across artifacts: the per-requirement canvases (C1/C3/C4) share
+the `lib.mjs` markdown core, and C5 binds to the canonical Dredd Audit-Report JSON. See
+[`../canvas-extensions-catalog.md`](../canvas-extensions-catalog.md).

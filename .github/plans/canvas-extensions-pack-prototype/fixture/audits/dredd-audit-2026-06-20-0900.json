@@ -1,0 +1,59 @@
+{
+  "skill": { "id": "dredd", "version": 1 },
+  "outcome": "completed",
+  "audit": {
+    "target": "changed-vs-main",
+    "verdict": "FAIL",
+    "gate": "advisory",
+    "bcquality": {
+      "submodule-sha": "f562fba",
+      "outcome": "completed",
+      "skills-run": ["al-performance-review", "al-security-review", "al-style-review"]
+    },
+    "coverage": { "objects-total": 3, "objects-audited": 3 },
+    "notes": "Fixture audit for the C5 Review/Audit Board prototype. Not a real audit."
+  },
+  "summary": {
+    "counts": { "blocker": 0, "major": 1, "minor": 1, "info": 1 },
+    "coverage": { "worklist-size": 12, "items-evaluated": 12 }
+  },
+  "findings": [
+    {
+      "id": "performance/al-performance.md#setloadfields",
+      "source": "bcquality",
+      "domain": "performance",
+      "severity": "major",
+      "message": "Heavy query without SetLoadFields loads all fields on every page render.",
+      "location": { "file": "src/CustomerExt.PageExt.al", "line": 42 },
+      "references": [{ "path": "performance/al-performance.md", "sha": "f562fba" }],
+      "confidence": "high",
+      "fix-hint": "Call SetLoadFields(...) before FindSet()."
+    },
+    {
+      "id": "native:error-without-context",
+      "source": "native",
+      "domain": "error-handling",
+      "severity": "minor",
+      "message": "Error() raised without a descriptive, labelled message hampers diagnostics.",
+      "location": { "file": "src/OrderMgt.Codeunit.al", "line": 88 },
+      "references": [],
+      "native-rule": { "path": "instructions/al-error-handling.instructions.md" },
+      "confidence": "medium",
+      "fix-hint": "Use a labelled error with operation context."
+    },
+    {
+      "id": "agent:naming-abbreviation",
+      "source": "agent",
+      "domain": "style",
+      "severity": "info",
+      "message": "Abbreviated variable 'custNo' could be spelled out for clarity.",
+      "location": { "file": "src/OrderMgt.Codeunit.al", "line": 15 },
+      "references": [],
+      "from-sub-skill": "agent",
+      "confidence": "low",
+      "fix-hint": "Rename to 'customerNo'."
+    }
+  ],
+  "suppressed": [],
+  "sub-results": []
+}

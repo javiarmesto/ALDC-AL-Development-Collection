@@ -89,10 +89,17 @@ node agent-consume.mjs
 The read path now generalizes beyond the Conductor: `demo-all.mjs` loads **C1 (Spec Studio)**,
 **C3 (Test-Plan Checklist)** and **C4 (Conductor Pipeline)** over one plan dir, all built on the shared
 `lib.mjs` core — concrete evidence for the §1 design rule and the §3C "stable artifact schema" requirement.
-C2, C5–C8 remain designed-only; **C5 (Review/Audit Board)** is the recommended next new surface.
+
+**C5 (Review/Audit Board)** is prototyped too, bound to the **canonical Dredd Audit-Report JSON**
+(`.github/audits/dredd-audit-*.json`, schema per `agents/dredd.agent.md` Step 4): it renders verdict +
+severity counts + findings (`file:line` + citation), and its HITL triage (accept / dismiss / assign) is
+appended to a **sidecar** `<audit>.triage.json` so Dredd's CI-validated report stays immutable (TD-01).
+That sidecar is the §3B cross-host handoff made concrete: `dredd → JSON → canvas (human triage) →
+sidecar → al-developer`. **Prototyped: C1, C3, C4, C5** · designed-only: C2, C6, C7, C8.
 
 ```bash
-node demo-all.mjs
+node demo-all.mjs      # C1 + C3 + C4 (per-requirement canvases)
+node demo-audit.mjs    # C5 Review/Audit Board (read board + HITL triage write)
 ```
 
 ---
