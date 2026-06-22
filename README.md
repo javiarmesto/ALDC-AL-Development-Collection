@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/images/aldc-banner.svg" alt="ALDC — AL Development Collection" width="100%">
+<img src="docs/assets/images/NewALDCbanner.png" alt="ALDC — AL Development Collection — blueprint" width="760">
 
 # ALDC — AL Development Collection
 
