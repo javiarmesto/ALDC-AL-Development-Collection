@@ -28,6 +28,18 @@ After completion they:
 - Verify `<home>/skills/entry.md` exists; fail loudly if not.
 - Print the actual HEAD SHA of the clone so you can confirm it matches `aldc.yaml`.
 - Warn if `aldc.yaml` doesn't record the same pin (the evidence validator would fail).
+- **Build the knowledge index** (`<home>/knowledge-index.json`) — see below.
+
+### Knowledge index (Source-step accelerator)
+
+Recent BCQuality versions ship a **knowledge index**: a single `knowledge-index.json` at the clone root that the review skills' `Source` step reads instead of opening every knowledge file just to parse its frontmatter. The index is **owned and produced by BCQuality** — its generator (`tools/Build-KnowledgeIndex.ps1`) lives inside the clone, next to the skills and knowledge it derives from — so ALDC never re-implements the parser; it just runs that generator once, here.
+
+After the clone is ready, the install scripts:
+
+1. Look for `<home>/tools/Build-KnowledgeIndex.ps1` in the clone. Absent (an older BCQuality with no index feature) → skip with a note; agents use path-based discovery.
+2. Present → run it over the clone (`-BCQualityRoot <home>`), writing `<home>/knowledge-index.json`. `install.ps1` already runs under PowerShell; `install.sh` needs `pwsh` (PowerShell 7+) on `PATH` and skips with a warning if it is missing.
+
+**This step is never fatal.** A missing generator, a missing `pwsh`, or a failed build all degrade to path-based discovery — review still works, just without the index acceleration. ALDC builds the index **once at install** (rather than per run) because ALDC consumes the **full** clone — it does not prune by allow/deny policy — so the index is stable between installs. `entry.md`'s own preparation step rebuilds the index on demand at runtime when it is absent or stale, so the two paths reinforce each other.
 
 The canonical pin lives in **three** places: `aldc.yaml` under `external.bcquality.pinnedCommit` (the source of truth) and the hardcoded `BCQUALITY_PIN` / `$BcqualityPin` in `install.sh` and `install.ps1`. If you ever bump the pin, update all three in the same commit — `validate_evidence.py` (and the `bcquality-evidence` CI workflow) fails the build if any of them drift.
 

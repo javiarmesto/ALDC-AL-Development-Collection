@@ -100,5 +100,32 @@ if ($BcqualityPin) {
     Warn "No pinnedCommit in aldc.yaml - tracking '$BcqualityRef'. Set external.bcquality.pinnedCommit to a 40-hex SHA for reproducible, evidence-validated runs."
 }
 
+# --- Build the knowledge index (BCQuality-owned Source-step accelerator) ---
+# The review skills' Source step reads <home>\knowledge-index.json instead of
+# opening every knowledge file just to read its frontmatter. The index is OWNED
+# and produced by BCQuality (tools\Build-KnowledgeIndex.ps1); ALDC simply runs
+# that generator over the clone once, here, because ALDC consumes the FULL clone
+# (it never prunes by allow/deny policy), so the index is stable between installs.
+# Everything below is defensive and NEVER fatal: a missing generator (older
+# BCQuality) or a failed build falls back to path-based discovery, and entry.md's
+# preparation step rebuilds the index on demand later. We already run under pwsh,
+# so no availability check is needed here.
+$indexGen = Join-Path $BcqualityHome 'tools\Build-KnowledgeIndex.ps1'
+if (Test-Path $indexGen) {
+    Say 'Building BCQuality knowledge index (Source-step accelerator)'
+    try {
+        & $indexGen -BCQualityRoot $BcqualityHome | Out-Null
+        if (Test-Path (Join-Path $BcqualityHome 'knowledge-index.json')) {
+            Say "knowledge-index.json ready at $BcqualityHome"
+        } else {
+            Warn 'Index generator ran but knowledge-index.json is missing - agents fall back to path-based discovery.'
+        }
+    } catch {
+        Warn "Index generator failed ($($_.Exception.Message)) - agents fall back to path-based discovery (never blocks)."
+    }
+} else {
+    Say 'This BCQuality version has no knowledge-index generator - agents use path-based discovery (no action needed).'
+}
+
 Say "Done. Open 'aldc.code-workspace' in VS Code - BCQuality appears as a second"
 Say "root the agents can read, while staying OUT of your extension's compilation."

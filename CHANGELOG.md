@@ -1,4 +1,10 @@
 # ALDC Core Changelog
+## [Unreleased]
+
+### Added
+
+- **BCQuality knowledge index (Source-step acceleration)** — `tools/bcquality/install.{sh,ps1}` now build BCQuality's `knowledge-index.json` over the clone right after checkout, so the review skills' `Source` step reads one index file instead of every knowledge file's frontmatter. The index is **owned and produced by BCQuality** (its `tools/Build-KnowledgeIndex.ps1` generator); ALDC just runs it. Built **once at install** because ALDC consumes the full clone (no allow/deny pruning), and rebuilt on demand by `entry.md`'s preparation step. Fully defensive: a missing generator (older BCQuality), a missing `pwsh`, or a failed build all fall back to path-based discovery — never blocks. Documented in `docs/bcquality.md` and `tools/bcquality/README.md`.
+
 ## [4.2.0] - 2026-06-12
 
 ### Fixed

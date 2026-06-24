@@ -88,5 +88,34 @@ else
   warn "No pinnedCommit in aldc.yaml - tracking '$BCQUALITY_REF'. Set external.bcquality.pinnedCommit to a 40-hex SHA for reproducible, evidence-validated runs."
 fi
 
+# --- Build the knowledge index (BCQuality-owned Source-step accelerator) ---
+# The review skills' Source step reads <home>/knowledge-index.json instead of
+# opening every knowledge file just to read its frontmatter. The index is OWNED
+# and produced by BCQuality (tools/Build-KnowledgeIndex.ps1); ALDC simply runs
+# that generator over the clone once, here, because ALDC consumes the FULL clone
+# (it never prunes by allow/deny policy), so the index is stable between installs.
+# Everything below is defensive and NEVER fatal: a missing generator (older
+# BCQuality), a missing pwsh, or a failed build all fall back to path-based
+# discovery, and entry.md's preparation step rebuilds the index on demand later.
+INDEX_GEN="$BCQUALITY_HOME/tools/Build-KnowledgeIndex.ps1"
+if [ -f "$INDEX_GEN" ]; then
+  if command -v pwsh >/dev/null 2>&1; then
+    say "Building BCQuality knowledge index (Source-step accelerator)"
+    if pwsh -NoProfile -File "$INDEX_GEN" -BCQualityRoot "$BCQUALITY_HOME" >/dev/null; then
+      if [ -f "$BCQUALITY_HOME/knowledge-index.json" ]; then
+        say "knowledge-index.json ready at $BCQUALITY_HOME"
+      else
+        warn "Index generator ran but knowledge-index.json is missing - agents fall back to path-based discovery."
+      fi
+    else
+      warn "Index generator failed - agents fall back to path-based discovery (never blocks)."
+    fi
+  else
+    warn "pwsh (PowerShell 7+) not found - skipping knowledge-index build. Agents fall back to path-based discovery; entry.md rebuilds the index when pwsh is available."
+  fi
+else
+  say "This BCQuality version has no knowledge-index generator - agents use path-based discovery (no action needed)."
+fi
+
 say "Done. Open 'aldc.code-workspace' in VS Code - BCQuality appears as a second"
 say "root the agents can read, while staying OUT of your extension's compilation."

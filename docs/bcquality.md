@@ -34,6 +34,30 @@ reviews.
   Subagents consume that decision and do not re-probe — except `@dredd`/`@al-triage`
   run standalone, so they read `enabled` and probe themselves.
 
+## Knowledge index (Source-step acceleration)
+
+Recent BCQuality versions add a **knowledge index** — a single `knowledge-index.json`
+at the clone root that the review skills read at their `Source` step instead of
+opening every knowledge file to parse its frontmatter. It changes only **how**
+candidate knowledge files are discovered, never **which** are selected, so findings
+and citations are identical with or without it.
+
+- **Owned by BCQuality, not ALDC.** The generator (`tools/Build-KnowledgeIndex.ps1`)
+  ships inside the clone, next to the skills and knowledge it derives from. ALDC does
+  not re-implement the parser — it just runs that generator.
+- **Built once at install.** Because ALDC consumes the **full** clone (it filters by
+  `enabled-layers` / `disabled-skills` in the task-context, it does **not** prune the
+  clone by allow/deny policy), the index is stable between installs. The install
+  scripts build it right after the clone (`install.ps1` runs under PowerShell;
+  `install.sh` needs `pwsh` on `PATH`). `entry.md`'s preparation step rebuilds it on
+  demand at runtime if it is absent or stale, so the two paths reinforce each other.
+- **Never blocks.** A missing generator (older BCQuality), a missing `pwsh`, or a
+  failed build all fall back to path-based discovery. Review still works — it just
+  loses the index acceleration. Same principle as the absent-layer fallback: BCQuality
+  is additive and never fails the review.
+
+See `tools/bcquality/README.md` for the exact install-time behaviour.
+
 ## Install (only if you want BCQuality-backed reviews)
 
 From your **AL project root**:
