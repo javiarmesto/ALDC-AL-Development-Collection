@@ -25,14 +25,10 @@ Your goal is to prepare a **pull request draft** for the branch `${input:Branch}
 
 #### Inspect Branch Differences
 
-Use `codebase` to analyze modifications:
-```
-codebase: Compare ${input:Branch} with main branch
-```
-
-Use `githubRepo` to gather context:
-```
-githubRepo: Get branch information and commit history
+Compare the branch against main with `Bash`:
+```bash
+git diff main...${input:Branch} --stat
+git log main..${input:Branch} --oneline
 ```
 
 **Gather:**
