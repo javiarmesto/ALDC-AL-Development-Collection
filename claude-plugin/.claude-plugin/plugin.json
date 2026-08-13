@@ -34,9 +34,8 @@
       "url": "https://mcp.context7.com/mcp"
     },
     "microsoft-docs": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@nicholasglazer/microsoft-docs-mcp"]
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
     }
   },
   "userConfig": {
