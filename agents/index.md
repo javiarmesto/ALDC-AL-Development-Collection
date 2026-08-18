@@ -6,13 +6,14 @@ description: "Index of ALDC role-based agent specialists for AL development in B
 
 **Role-based specialists** implemented as `.agent.md` files for AL development in Business Central.
 
-## Public Agents (4)
+## Public Agents (5)
 
 | Agent | Purpose | Loads Skills |
 |-------|---------|--------------|
 | [@AL Architecture & Design Specialist](al-architect.agent.md) | Solution architecture & design | skill-api, skill-copilot, skill-performance, skill-events, skill-testing |
 | [@AL Development Conductor](al-conductor.agent.md) | TDD orchestration: Planning → Implementation → Review → Commit | skill-testing |
 | [@AL Implementation Specialist](al-developer.agent.md) | Tactical implementation with full build tools | skill-debug, skill-api, skill-copilot, skill-events, skill-permissions, skill-pages, skill-migrate, skill-translate, skill-performance |
+| [@AL Standard Grounding Specialist](al-standard-grounding.agent.md) | Microsoft BC standard source, graph, versions and localization via BC Code Atlas | skill-standard-grounding |
 | [@AL Pre-Sales & Project Estimation Specialist](al-presales.agent.md) | Project estimation & pre-sales analysis | skill-estimation |
 
 ## Subagents (3)
@@ -30,6 +31,7 @@ description: "Index of ALDC role-based agent specialists for AL development in B
 | Design a solution | @AL Architecture & Design Specialist |
 | Implement a feature (simple) | @AL Implementation Specialist |
 | Implement a feature (complex, TDD) | @AL Development Conductor |
+| Investigate Microsoft standard BC behavior or version changes | @AL Standard Grounding Specialist |
 | Estimate a project | @AL Pre-Sales & Project Estimation Specialist |
 
 ## Requirement Contracts
@@ -43,4 +45,4 @@ All agents read/write to `.github/plans/`:
 ---
 
 **Version**: 1.1.0
-**Last Updated**: 2026-03-01
+**Last Updated**: 2026-08-18
