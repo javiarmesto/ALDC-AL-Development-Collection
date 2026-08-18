@@ -16,6 +16,8 @@ import sys
 
 DOMAINS = {"project", "standard", "quality"}
 STATUSES = {"verified", "partial", "unavailable", "contradicted"}
+REQUIREMENTS = {"none", "supporting", "material"}
+CONFIDENCE = {"low", "medium", "high"}
 SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
 
 
@@ -68,14 +70,65 @@ def validate_record(ev: dict, where: str) -> list[str]:
             errors.append(f"{where}: bc-code-atlas evidence domain must be 'standard'")
         if not locator.get("country"):
             errors.append(f"{where}: bc-code-atlas locator requires country")
+        if not locator.get("version"):
+            errors.append(f"{where}: bc-code-atlas locator requires human-readable version")
         commit_sha = locator.get("commit_sha")
-        if commit_sha is not None and not SHA_RE.match(str(commit_sha)):
+        if not commit_sha:
+            errors.append(f"{where}: bc-code-atlas locator requires commit_sha")
+        elif not SHA_RE.match(str(commit_sha)):
             errors.append(f"{where}: invalid bc-code-atlas commit_sha '{commit_sha}'")
     elif provider == "bcquality":
         if ev["domain"] != "quality":
             errors.append(f"{where}: bcquality evidence domain must be 'quality'")
         if not locator.get("path"):
             errors.append(f"{where}: bcquality locator requires path")
+    return errors
+
+
+def finding_evidence_records(finding: dict, by_id: dict[str, dict]) -> tuple[list[dict], list[str]]:
+    records: list[dict] = []
+    missing: list[str] = []
+    for ev_id in finding.get("evidence_ids") or []:
+        ev = by_id.get(ev_id)
+        if ev is None:
+            missing.append(ev_id)
+        else:
+            records.append(ev)
+    for ev in finding.get("evidence") or []:
+        if isinstance(ev, dict):
+            records.append(ev)
+    return records, missing
+
+
+def validate_finding(finding: dict, idx: int, by_id: dict[str, dict]) -> list[str]:
+    errors: list[str] = []
+    where = f"findings[{idx}]"
+    requirement = finding.get("evidence_requirement")
+    has_links = bool(finding.get("evidence_ids") or finding.get("evidence"))
+    if requirement is None:
+        requirement = "supporting" if has_links else "none"
+    if requirement not in REQUIREMENTS:
+        errors.append(f"{where}: invalid evidence_requirement '{requirement}'")
+        return errors
+
+    records, missing = finding_evidence_records(finding, by_id)
+    for ev_id in missing:
+        errors.append(f"{where}: evidence_ids references unknown top-level evidence '{ev_id}'")
+
+    if requirement == "material" and not records:
+        errors.append(f"{where}: material finding requires at least one evidence record")
+
+    confidence = finding.get("confidence")
+    if confidence is not None and confidence not in CONFIDENCE:
+        errors.append(f"{where}: invalid confidence '{confidence}'")
+
+    statuses = {ev.get("status") for ev in records if isinstance(ev, dict)}
+    if confidence == "high" and statuses and "verified" not in statuses:
+        errors.append(f"{where}: high confidence requires at least one verified evidence record")
+    if confidence == "high" and statuses == {"partial"}:
+        errors.append(f"{where}: partial evidence alone cannot justify high confidence")
+    if "contradicted" in statuses and confidence == "high":
+        errors.append(f"{where}: contradicted evidence cannot coexist with high-confidence accepted claim")
     return errors
 
 
@@ -108,7 +161,15 @@ def main() -> int:
             continue
 
         seen: set[str] = set()
-        top_level_ids = {ev.get("id") for ev in report.get("evidence") or [] if isinstance(ev, dict)}
+        top_level = [ev for ev in report.get("evidence") or [] if isinstance(ev, dict)]
+        by_id: dict[str, dict] = {}
+        for ev in top_level:
+            ev_id = ev.get("id")
+            if ev_id:
+                if ev_id in by_id:
+                    errors.append(f"{rel}: duplicate top-level evidence id '{ev_id}'")
+                by_id[ev_id] = ev
+
         for where, ev in iter_evidence(report):
             total += 1
             if not isinstance(ev, dict):
@@ -122,9 +183,10 @@ def main() -> int:
             errors.extend(f"{rel}:{e}" for e in validate_record(ev, where))
 
         for idx, finding in enumerate(report.get("findings") or []):
-            for ev_id in finding.get("evidence_ids") or []:
-                if ev_id not in top_level_ids:
-                    errors.append(f"{rel}: findings[{idx}] evidence_ids references unknown top-level evidence '{ev_id}'")
+            if not isinstance(finding, dict):
+                errors.append(f"{rel}: findings[{idx}] must be an object")
+                continue
+            errors.extend(f"{rel}:{e}" for e in validate_finding(finding, idx, by_id))
 
     if errors:
         print("ALDC evidence validation FAILED:")
