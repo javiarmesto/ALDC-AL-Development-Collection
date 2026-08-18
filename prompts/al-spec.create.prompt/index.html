@@ -16,7 +16,7 @@
 </span><span id=__span-2-14><a id=__codelineno-2-14 name=__codelineno-2-14 href=#__codelineno-2-14></a>[What is included. What is explicitly excluded.]
 </span><span id=__span-2-15><a id=__codelineno-2-15 name=__codelineno-2-15 href=#__codelineno-2-15></a>
 </span><span id=__span-2-16><a id=__codelineno-2-16 name=__codelineno-2-16 href=#__codelineno-2-16></a><span class=gu>### Architecture Reference</span>
-</span><span id=__span-2-17><a id=__codelineno-2-17 name=__codelineno-2-17 href=#__codelineno-2-17></a>[If architecture.md exists: &quot;Implements {req_name}.architecture.md — {pattern chosen}&quot;. If not: &quot;No architecture document — spec defines structure.&quot;]
+</span><span id=__span-2-17><a id=__codelineno-2-17 name=__codelineno-2-17 href=#__codelineno-2-17></a>[If architecture.md exists: "Implements {req_name}.architecture.md — {pattern chosen}". If not: "No architecture document — spec defines structure."]
 </span><span id=__span-2-18><a id=__codelineno-2-18 name=__codelineno-2-18 href=#__codelineno-2-18></a>
 </span><span id=__span-2-19><a id=__codelineno-2-19 name=__codelineno-2-19 href=#__codelineno-2-19></a>---
 </span><span id=__span-2-20><a id=__codelineno-2-20 name=__codelineno-2-20 href=#__codelineno-2-20></a>
@@ -40,19 +40,19 @@
 </span><span id=__span-2-38><a id=__codelineno-2-38 name=__codelineno-2-38 href=#__codelineno-2-38></a>For each table/extension:
 </span><span id=__span-2-39><a id=__codelineno-2-39 name=__codelineno-2-39 href=#__codelineno-2-39></a>
 </span><span id=__span-2-40><a id=__codelineno-2-40 name=__codelineno-2-40 href=#__codelineno-2-40></a>```al
-</span><span id=__span-2-41><a id=__codelineno-2-41 name=__codelineno-2-41 href=#__codelineno-2-41></a>tableextension {ID} &quot;{Prefix} {BaseName} Ext&quot; extends &quot;{BaseName}&quot;
+</span><span id=__span-2-41><a id=__codelineno-2-41 name=__codelineno-2-41 href=#__codelineno-2-41></a>tableextension {ID} "{Prefix} {BaseName} Ext" extends "{BaseName}"
 </span><span id=__span-2-42><a id=__codelineno-2-42 name=__codelineno-2-42 href=#__codelineno-2-42></a>{
 </span><span id=__span-2-43><a id=__codelineno-2-43 name=__codelineno-2-43 href=#__codelineno-2-43></a>    fields
 </span><span id=__span-2-44><a id=__codelineno-2-44 name=__codelineno-2-44 href=#__codelineno-2-44></a>    {
-</span><span id=__span-2-45><a id=__codelineno-2-45 name=__codelineno-2-45 href=#__codelineno-2-45></a>        field({FieldID}; &quot;{Prefix} {FieldName}&quot;; {DataType}[{Length}])
+</span><span id=__span-2-45><a id=__codelineno-2-45 name=__codelineno-2-45 href=#__codelineno-2-45></a>        field({FieldID}; "{Prefix} {FieldName}"; {DataType}[{Length}])
 </span><span id=__span-2-46><a id=__codelineno-2-46 name=__codelineno-2-46 href=#__codelineno-2-46></a>        {
-</span><span id=__span-2-47><a id=__codelineno-2-47 name=__codelineno-2-47 href=#__codelineno-2-47></a>            Caption = &#39;{Caption}&#39;, Comment = &#39;{Translation key}&#39;;
+</span><span id=__span-2-47><a id=__codelineno-2-47 name=__codelineno-2-47 href=#__codelineno-2-47></a>            Caption = '{Caption}', Comment = '{Translation key}';
 </span><span id=__span-2-48><a id=__codelineno-2-48 name=__codelineno-2-48 href=#__codelineno-2-48></a>            DataClassification = CustomerContent; // or ToBeClassified / SystemMetadata
 </span><span id=__span-2-49><a id=__codelineno-2-49 name=__codelineno-2-49 href=#__codelineno-2-49></a>            {CalcFormula / TableRelation / BlankZero / etc. if applicable}
 </span><span id=__span-2-50><a id=__codelineno-2-50 name=__codelineno-2-50 href=#__codelineno-2-50></a>        }
 </span><span id=__span-2-51><a id=__codelineno-2-51 name=__codelineno-2-51 href=#__codelineno-2-51></a>    }
 </span><span id=__span-2-52><a id=__codelineno-2-52 name=__codelineno-2-52 href=#__codelineno-2-52></a>}
-</span></code></pre></div> <blockquote> <p>Specify GDPR DataClassification for every field.</p> </blockquote> <h3 id=field-catalogue>Field Catalogue<a class=headerlink href=#field-catalogue title="Permanent link">&para;</a></h3> <table> <thead> <tr> <th>Field No.</th> <th>Field Name</th> <th>Type</th> <th>Length</th> <th>Required</th> <th>Relation</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td>{ID}</td> <td name=Name>{Prefix}</td> <td>{Type}</td> <td>{L}</td> <td>Yes/No</td> <td>{Table."Field"}</td> <td>{Purpose}</td> </tr> </tbody> </table> <hr> <h2 id=4-business-logic-codeunit-procedures>4. Business Logic — Codeunit Procedures<a class=headerlink href=#4-business-logic-codeunit-procedures title="Permanent link">&para;</a></h2> <p>For each codeunit, list every public procedure with full signature:</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-3-1><a id=__codelineno-3-1 name=__codelineno-3-1 href=#__codelineno-3-1></a>codeunit {ID} &quot;{Prefix} {Name} Mgt&quot;
+</span></code></pre></div> <blockquote> <p>Specify GDPR DataClassification for every field.</p> </blockquote> <h3 id=field-catalogue>Field Catalogue<a class=headerlink href=#field-catalogue title="Permanent link">&para;</a></h3> <table> <thead> <tr> <th>Field No.</th> <th>Field Name</th> <th>Type</th> <th>Length</th> <th>Required</th> <th>Relation</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td>{ID}</td> <td name=Name>{Prefix}</td> <td>{Type}</td> <td>{L}</td> <td>Yes/No</td> <td>{Table."Field"}</td> <td>{Purpose}</td> </tr> </tbody> </table> <hr> <h2 id=4-business-logic-codeunit-procedures>4. Business Logic — Codeunit Procedures<a class=headerlink href=#4-business-logic-codeunit-procedures title="Permanent link">&para;</a></h2> <p>For each codeunit, list every public procedure with full signature:</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-3-1><a id=__codelineno-3-1 name=__codelineno-3-1 href=#__codelineno-3-1></a>codeunit {ID} "{Prefix} {Name} Mgt"
 </span><span id=__span-3-2><a id=__codelineno-3-2 name=__codelineno-3-2 href=#__codelineno-3-2></a>{
 </span><span id=__span-3-3><a id=__codelineno-3-3 name=__codelineno-3-3 href=#__codelineno-3-3></a>    // Procedure: {What it does}
 </span><span id=__span-3-4><a id=__codelineno-3-4 name=__codelineno-3-4 href=#__codelineno-3-4></a>    // Called by: {who calls this}
@@ -71,24 +71,24 @@
 </span><span id=__span-4-3><a id=__codelineno-4-3 name=__codelineno-4-3 href=#__codelineno-4-3></a>local procedure OnAfter{ActionName}({Param}: {Type})
 </span><span id=__span-4-4><a id=__codelineno-4-4 name=__codelineno-4-4 href=#__codelineno-4-4></a>begin
 </span><span id=__span-4-5><a id=__codelineno-4-5 name=__codelineno-4-5 href=#__codelineno-4-5></a>end;
-</span></code></pre></div> <h3 id=subscribers-events-this-feature-hooks-into>Subscribers (events this feature hooks into)<a class=headerlink href=#subscribers-events-this-feature-hooks-into title="Permanent link">&para;</a></h3> <div class="language-text highlight"><pre><span></span><code><span id=__span-5-1><a id=__codelineno-5-1 name=__codelineno-5-1 href=#__codelineno-5-1></a>[EventSubscriber(ObjectType::Codeunit, Codeunit::{Publisher}, &#39;{EventName}&#39;, &#39;&#39;, false, false)]
+</span></code></pre></div> <h3 id=subscribers-events-this-feature-hooks-into>Subscribers (events this feature hooks into)<a class=headerlink href=#subscribers-events-this-feature-hooks-into title="Permanent link">&para;</a></h3> <div class="language-text highlight"><pre><span></span><code><span id=__span-5-1><a id=__codelineno-5-1 name=__codelineno-5-1 href=#__codelineno-5-1></a>[EventSubscriber(ObjectType::Codeunit, Codeunit::{Publisher}, '{EventName}', '', false, false)]
 </span><span id=__span-5-2><a id=__codelineno-5-2 name=__codelineno-5-2 href=#__codelineno-5-2></a>local procedure {EventName}_Handler({Param}: {Type})
 </span><span id=__span-5-3><a id=__codelineno-5-3 name=__codelineno-5-3 href=#__codelineno-5-3></a>begin
 </span><span id=__span-5-4><a id=__codelineno-5-4 name=__codelineno-5-4 href=#__codelineno-5-4></a>    // What this subscriber does
 </span><span id=__span-5-5><a id=__codelineno-5-5 name=__codelineno-5-5 href=#__codelineno-5-5></a>end;
-</span></code></pre></div> <blockquote> <p><strong>The spec owns the <em>decision</em>; symbols own the <em>exact signature</em>.</strong> Record the <strong>verified</strong> publisher object, the exact <strong>event name</strong>, and the <strong>fields the subscriber consumes</strong> (e.g. <code>SalesHeader."Sell-to Customer No."</code>). Do <strong>not</strong> transcribe the full parameter list verbatim — that is a version-specific platform fact the <strong>implementer</strong> resolves from symbols (<code>al_symbolsearch</code>) at code time. Copying it here creates a second source of truth that drifts on the next BC upgrade. The event name + publisher, however, MUST be symbol-verified (Step 1.3).</p> </blockquote> <hr> <h2 id=6-pages-and-ui>6. Pages and UI<a class=headerlink href=#6-pages-and-ui title="Permanent link">&para;</a></h2> <h3 id=page-extensions-new-pages>Page Extensions / New Pages<a class=headerlink href=#page-extensions-new-pages title="Permanent link">&para;</a></h3> <div class="language-text highlight"><pre><span></span><code><span id=__span-6-1><a id=__codelineno-6-1 name=__codelineno-6-1 href=#__codelineno-6-1></a>pageextension {ID} &quot;{Prefix} {BasePage} Ext&quot; extends &quot;{BasePage}&quot;
+</span></code></pre></div> <blockquote> <p><strong>The spec owns the <em>decision</em>; symbols own the <em>exact signature</em>.</strong> Record the <strong>verified</strong> publisher object, the exact <strong>event name</strong>, and the <strong>fields the subscriber consumes</strong> (e.g. <code>SalesHeader."Sell-to Customer No."</code>). Do <strong>not</strong> transcribe the full parameter list verbatim — that is a version-specific platform fact the <strong>implementer</strong> resolves from symbols (<code>al_symbolsearch</code>) at code time. Copying it here creates a second source of truth that drifts on the next BC upgrade. The event name + publisher, however, MUST be symbol-verified (Step 1.3).</p> </blockquote> <hr> <h2 id=6-pages-and-ui>6. Pages and UI<a class=headerlink href=#6-pages-and-ui title="Permanent link">&para;</a></h2> <h3 id=page-extensions-new-pages>Page Extensions / New Pages<a class=headerlink href=#page-extensions-new-pages title="Permanent link">&para;</a></h3> <div class="language-text highlight"><pre><span></span><code><span id=__span-6-1><a id=__codelineno-6-1 name=__codelineno-6-1 href=#__codelineno-6-1></a>pageextension {ID} "{Prefix} {BasePage} Ext" extends "{BasePage}"
 </span><span id=__span-6-2><a id=__codelineno-6-2 name=__codelineno-6-2 href=#__codelineno-6-2></a>{
 </span><span id=__span-6-3><a id=__codelineno-6-3 name=__codelineno-6-3 href=#__codelineno-6-3></a>    layout
 </span><span id=__span-6-4><a id=__codelineno-6-4 name=__codelineno-6-4 href=#__codelineno-6-4></a>    {
 </span><span id=__span-6-5><a id=__codelineno-6-5 name=__codelineno-6-5 href=#__codelineno-6-5></a>        addafter({ExistingGroup})
 </span><span id=__span-6-6><a id=__codelineno-6-6 name=__codelineno-6-6 href=#__codelineno-6-6></a>        {
-</span><span id=__span-6-7><a id=__codelineno-6-7 name=__codelineno-6-7 href=#__codelineno-6-7></a>            group(&quot;{Prefix} {GroupName}&quot;)
+</span><span id=__span-6-7><a id=__codelineno-6-7 name=__codelineno-6-7 href=#__codelineno-6-7></a>            group("{Prefix} {GroupName}")
 </span><span id=__span-6-8><a id=__codelineno-6-8 name=__codelineno-6-8 href=#__codelineno-6-8></a>            {
-</span><span id=__span-6-9><a id=__codelineno-6-9 name=__codelineno-6-9 href=#__codelineno-6-9></a>                Caption = &#39;{Caption}&#39;;
-</span><span id=__span-6-10><a id=__codelineno-6-10 name=__codelineno-6-10 href=#__codelineno-6-10></a>                field(&quot;{Prefix} {FieldName}&quot;; Rec.&quot;{Prefix} {FieldName}&quot;)
+</span><span id=__span-6-9><a id=__codelineno-6-9 name=__codelineno-6-9 href=#__codelineno-6-9></a>                Caption = '{Caption}';
+</span><span id=__span-6-10><a id=__codelineno-6-10 name=__codelineno-6-10 href=#__codelineno-6-10></a>                field("{Prefix} {FieldName}"; Rec."{Prefix} {FieldName}")
 </span><span id=__span-6-11><a id=__codelineno-6-11 name=__codelineno-6-11 href=#__codelineno-6-11></a>                {
 </span><span id=__span-6-12><a id=__codelineno-6-12 name=__codelineno-6-12 href=#__codelineno-6-12></a>                    ApplicationArea = All;
-</span><span id=__span-6-13><a id=__codelineno-6-13 name=__codelineno-6-13 href=#__codelineno-6-13></a>                    ToolTip = &#39;{Explain what this field does}&#39;;
+</span><span id=__span-6-13><a id=__codelineno-6-13 name=__codelineno-6-13 href=#__codelineno-6-13></a>                    ToolTip = '{Explain what this field does}';
 </span><span id=__span-6-14><a id=__codelineno-6-14 name=__codelineno-6-14 href=#__codelineno-6-14></a>                }
 </span><span id=__span-6-15><a id=__codelineno-6-15 name=__codelineno-6-15 href=#__codelineno-6-15></a>            }
 </span><span id=__span-6-16><a id=__codelineno-6-16 name=__codelineno-6-16 href=#__codelineno-6-16></a>        }
@@ -98,9 +98,9 @@
 </span><span id=__span-6-20><a id=__codelineno-6-20 name=__codelineno-6-20 href=#__codelineno-6-20></a>    {
 </span><span id=__span-6-21><a id=__codelineno-6-21 name=__codelineno-6-21 href=#__codelineno-6-21></a>        addafter({ExistingAction})
 </span><span id=__span-6-22><a id=__codelineno-6-22 name=__codelineno-6-22 href=#__codelineno-6-22></a>        {
-</span><span id=__span-6-23><a id=__codelineno-6-23 name=__codelineno-6-23 href=#__codelineno-6-23></a>            action(&quot;{Prefix} {ActionName}&quot;)
+</span><span id=__span-6-23><a id=__codelineno-6-23 name=__codelineno-6-23 href=#__codelineno-6-23></a>            action("{Prefix} {ActionName}")
 </span><span id=__span-6-24><a id=__codelineno-6-24 name=__codelineno-6-24 href=#__codelineno-6-24></a>            {
-</span><span id=__span-6-25><a id=__codelineno-6-25 name=__codelineno-6-25 href=#__codelineno-6-25></a>                Caption = &#39;{Caption}&#39;;
+</span><span id=__span-6-25><a id=__codelineno-6-25 name=__codelineno-6-25 href=#__codelineno-6-25></a>                Caption = '{Caption}';
 </span><span id=__span-6-26><a id=__codelineno-6-26 name=__codelineno-6-26 href=#__codelineno-6-26></a>                ApplicationArea = All;
 </span><span id=__span-6-27><a id=__codelineno-6-27 name=__codelineno-6-27 href=#__codelineno-6-27></a>                Image = {IconName};
 </span><span id=__span-6-28><a id=__codelineno-6-28 name=__codelineno-6-28 href=#__codelineno-6-28></a>                trigger OnAction()
@@ -111,7 +111,7 @@
 </span><span id=__span-6-33><a id=__codelineno-6-33 name=__codelineno-6-33 href=#__codelineno-6-33></a>        }
 </span><span id=__span-6-34><a id=__codelineno-6-34 name=__codelineno-6-34 href=#__codelineno-6-34></a>    }
 </span><span id=__span-6-35><a id=__codelineno-6-35 name=__codelineno-6-35 href=#__codelineno-6-35></a>}
-</span></code></pre></div> <hr> <h2 id=7-tests-givenwhenthen>7. Tests (Given/When/Then)<a class=headerlink href=#7-tests-givenwhenthen title="Permanent link">&para;</a></h2> <p>For LOW complexity you may omit this section. For MEDIUM/HIGH it is mandatory.</p> <p>For each main scenario:</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-7-1><a id=__codelineno-7-1 name=__codelineno-7-1 href=#__codelineno-7-1></a>codeunit {ID} &quot;{Prefix} {Feature} Tests&quot;
+</span></code></pre></div> <hr> <h2 id=7-tests-givenwhenthen>7. Tests (Given/When/Then)<a class=headerlink href=#7-tests-givenwhenthen title="Permanent link">&para;</a></h2> <p>For LOW complexity you may omit this section. For MEDIUM/HIGH it is mandatory.</p> <p>For each main scenario:</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-7-1><a id=__codelineno-7-1 name=__codelineno-7-1 href=#__codelineno-7-1></a>codeunit {ID} "{Prefix} {Feature} Tests"
 </span><span id=__span-7-2><a id=__codelineno-7-2 name=__codelineno-7-2 href=#__codelineno-7-2></a>{
 </span><span id=__span-7-3><a id=__codelineno-7-3 name=__codelineno-7-3 href=#__codelineno-7-3></a>    Subtype = Test;
 </span><span id=__span-7-4><a id=__codelineno-7-4 name=__codelineno-7-4 href=#__codelineno-7-4></a>
@@ -128,26 +128,26 @@
 </span><span id=__span-7-15><a id=__codelineno-7-15 name=__codelineno-7-15 href=#__codelineno-7-15></a>        // Act
 </span><span id=__span-7-16><a id=__codelineno-7-16 name=__codelineno-7-16 href=#__codelineno-7-16></a>
 </span><span id=__span-7-17><a id=__codelineno-7-17 name=__codelineno-7-17 href=#__codelineno-7-17></a>        // Assert
-</span><span id=__span-7-18><a id=__codelineno-7-18 name=__codelineno-7-18 href=#__codelineno-7-18></a>        Assert.{AssertMethod}({Expected}, {Actual}, &#39;{Message}&#39;);
+</span><span id=__span-7-18><a id=__codelineno-7-18 name=__codelineno-7-18 href=#__codelineno-7-18></a>        Assert.{AssertMethod}({Expected}, {Actual}, '{Message}');
 </span><span id=__span-7-19><a id=__codelineno-7-19 name=__codelineno-7-19 href=#__codelineno-7-19></a>    end;
 </span><span id=__span-7-20><a id=__codelineno-7-20 name=__codelineno-7-20 href=#__codelineno-7-20></a>}
-</span></code></pre></div> <table> <thead> <tr> <th>Test Name</th> <th>Given</th> <th>When</th> <th>Then</th> </tr> </thead> <tbody> <tr> <td>{Scenario1}</td> <td>{State}</td> <td>{Action}</td> <td>{Result}</td> </tr> <tr> <td>{Scenario2}</td> <td>{State}</td> <td>{Action}</td> <td>{Result}</td> </tr> </tbody> </table> <hr> <h2 id=8-permission-sets>8. Permission Sets<a class=headerlink href=#8-permission-sets title="Permanent link">&para;</a></h2> <div class="language-text highlight"><pre><span></span><code><span id=__span-8-1><a id=__codelineno-8-1 name=__codelineno-8-1 href=#__codelineno-8-1></a>permissionset {ID} &quot;{Prefix} - {Feature}&quot;
+</span></code></pre></div> <table> <thead> <tr> <th>Test Name</th> <th>Given</th> <th>When</th> <th>Then</th> </tr> </thead> <tbody> <tr> <td>{Scenario1}</td> <td>{State}</td> <td>{Action}</td> <td>{Result}</td> </tr> <tr> <td>{Scenario2}</td> <td>{State}</td> <td>{Action}</td> <td>{Result}</td> </tr> </tbody> </table> <hr> <h2 id=8-permission-sets>8. Permission Sets<a class=headerlink href=#8-permission-sets title="Permanent link">&para;</a></h2> <div class="language-text highlight"><pre><span></span><code><span id=__span-8-1><a id=__codelineno-8-1 name=__codelineno-8-1 href=#__codelineno-8-1></a>permissionset {ID} "{Prefix} - {Feature}"
 </span><span id=__span-8-2><a id=__codelineno-8-2 name=__codelineno-8-2 href=#__codelineno-8-2></a>{
 </span><span id=__span-8-3><a id=__codelineno-8-3 name=__codelineno-8-3 href=#__codelineno-8-3></a>    Assignable = true;
-</span><span id=__span-8-4><a id=__codelineno-8-4 name=__codelineno-8-4 href=#__codelineno-8-4></a>    Caption = &#39;{Caption}&#39;;
+</span><span id=__span-8-4><a id=__codelineno-8-4 name=__codelineno-8-4 href=#__codelineno-8-4></a>    Caption = '{Caption}';
 </span><span id=__span-8-5><a id=__codelineno-8-5 name=__codelineno-8-5 href=#__codelineno-8-5></a>
 </span><span id=__span-8-6><a id=__codelineno-8-6 name=__codelineno-8-6 href=#__codelineno-8-6></a>    Permissions =
-</span><span id=__span-8-7><a id=__codelineno-8-7 name=__codelineno-8-7 href=#__codelineno-8-7></a>        tabledata &quot;{Table}&quot; = RIMD,
-</span><span id=__span-8-8><a id=__codelineno-8-8 name=__codelineno-8-8 href=#__codelineno-8-8></a>        codeunit &quot;{Codeunit}&quot; = X;
+</span><span id=__span-8-7><a id=__codelineno-8-7 name=__codelineno-8-7 href=#__codelineno-8-7></a>        tabledata "{Table}" = RIMD,
+</span><span id=__span-8-8><a id=__codelineno-8-8 name=__codelineno-8-8 href=#__codelineno-8-8></a>        codeunit "{Codeunit}" = X;
 </span><span id=__span-8-9><a id=__codelineno-8-9 name=__codelineno-8-9 href=#__codelineno-8-9></a>}
-</span></code></pre></div> <hr> <h2 id=9-api-endpoints-if-applicable>9. API Endpoints (if applicable)<a class=headerlink href=#9-api-endpoints-if-applicable title="Permanent link">&para;</a></h2> <p>Omit this section entirely if the feature does not expose or consume APIs.</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-9-1><a id=__codelineno-9-1 name=__codelineno-9-1 href=#__codelineno-9-1></a>page {ID} &quot;{Prefix} {Entity} API&quot;
+</span></code></pre></div> <hr> <h2 id=9-api-endpoints-if-applicable>9. API Endpoints (if applicable)<a class=headerlink href=#9-api-endpoints-if-applicable title="Permanent link">&para;</a></h2> <p>Omit this section entirely if the feature does not expose or consume APIs.</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-9-1><a id=__codelineno-9-1 name=__codelineno-9-1 href=#__codelineno-9-1></a>page {ID} "{Prefix} {Entity} API"
 </span><span id=__span-9-2><a id=__codelineno-9-2 name=__codelineno-9-2 href=#__codelineno-9-2></a>{
 </span><span id=__span-9-3><a id=__codelineno-9-3 name=__codelineno-9-3 href=#__codelineno-9-3></a>    PageType = API;
-</span><span id=__span-9-4><a id=__codelineno-9-4 name=__codelineno-9-4 href=#__codelineno-9-4></a>    APIPublisher = &#39;{publisher}&#39;;
-</span><span id=__span-9-5><a id=__codelineno-9-5 name=__codelineno-9-5 href=#__codelineno-9-5></a>    APIGroup = &#39;{group}&#39;;
-</span><span id=__span-9-6><a id=__codelineno-9-6 name=__codelineno-9-6 href=#__codelineno-9-6></a>    APIVersion = &#39;v2.0&#39;;
-</span><span id=__span-9-7><a id=__codelineno-9-7 name=__codelineno-9-7 href=#__codelineno-9-7></a>    EntityName = &#39;{entity}&#39;;
-</span><span id=__span-9-8><a id=__codelineno-9-8 name=__codelineno-9-8 href=#__codelineno-9-8></a>    EntitySetName = &#39;{entities}&#39;;
+</span><span id=__span-9-4><a id=__codelineno-9-4 name=__codelineno-9-4 href=#__codelineno-9-4></a>    APIPublisher = '{publisher}';
+</span><span id=__span-9-5><a id=__codelineno-9-5 name=__codelineno-9-5 href=#__codelineno-9-5></a>    APIGroup = '{group}';
+</span><span id=__span-9-6><a id=__codelineno-9-6 name=__codelineno-9-6 href=#__codelineno-9-6></a>    APIVersion = 'v2.0';
+</span><span id=__span-9-7><a id=__codelineno-9-7 name=__codelineno-9-7 href=#__codelineno-9-7></a>    EntityName = '{entity}';
+</span><span id=__span-9-8><a id=__codelineno-9-8 name=__codelineno-9-8 href=#__codelineno-9-8></a>    EntitySetName = '{entities}';
 </span><span id=__span-9-9><a id=__codelineno-9-9 name=__codelineno-9-9 href=#__codelineno-9-9></a>    SourceTable = {Table};
 </span><span id=__span-9-10><a id=__codelineno-9-10 name=__codelineno-9-10 href=#__codelineno-9-10></a>    DelayedInsert = true;
 </span><span id=__span-9-11><a id=__codelineno-9-11 name=__codelineno-9-11 href=#__codelineno-9-11></a>
@@ -158,7 +158,7 @@
 </span><span id=__span-9-16><a id=__codelineno-9-16 name=__codelineno-9-16 href=#__codelineno-9-16></a>            repeater(Group)
 </span><span id=__span-9-17><a id=__codelineno-9-17 name=__codelineno-9-17 href=#__codelineno-9-17></a>            {
 </span><span id=__span-9-18><a id=__codelineno-9-18 name=__codelineno-9-18 href=#__codelineno-9-18></a>                field(id; Rec.SystemId) { }
-</span><span id=__span-9-19><a id=__codelineno-9-19 name=__codelineno-9-19 href=#__codelineno-9-19></a>                field({camelCaseField}; Rec.&quot;{Field Name}&quot;) { }
+</span><span id=__span-9-19><a id=__codelineno-9-19 name=__codelineno-9-19 href=#__codelineno-9-19></a>                field({camelCaseField}; Rec."{Field Name}") { }
 </span><span id=__span-9-20><a id=__codelineno-9-20 name=__codelineno-9-20 href=#__codelineno-9-20></a>            }
 </span><span id=__span-9-21><a id=__codelineno-9-21 name=__codelineno-9-21 href=#__codelineno-9-21></a>        }
 </span><span id=__span-9-22><a id=__codelineno-9-22 name=__codelineno-9-22 href=#__codelineno-9-22></a>    }

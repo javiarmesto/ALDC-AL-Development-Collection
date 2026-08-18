@@ -14,7 +14,7 @@
 </span><span id=__span-1-3><a id=__codelineno-1-3 name=__codelineno-1-3 href=#__codelineno-1-3></a>npx<span class=w> </span>al-collection<span class=w> </span>install
 </span><span id=__span-1-4><a id=__codelineno-1-4 name=__codelineno-1-4 href=#__codelineno-1-4></a>
 </span><span id=__span-1-5><a id=__codelineno-1-5 name=__codelineno-1-5 href=#__codelineno-1-5></a><span class=c1># Reload VS Code</span>
-</span><span id=__span-1-6><a id=__codelineno-1-6 name=__codelineno-1-6 href=#__codelineno-1-6></a>Ctrl+Shift+P<span class=w> </span>→<span class=w> </span><span class=s2>&quot;Developer: Reload Window&quot;</span>
+</span><span id=__span-1-6><a id=__codelineno-1-6 name=__codelineno-1-6 href=#__codelineno-1-6></a>Ctrl+Shift+P<span class=w> </span>→<span class=w> </span><span class=s2>"Developer: Reload Window"</span>
 </span></code></pre></div></p> <hr> <h3 id=step-1-design-with-al-architect-20-min>Step 1: Design with al-architect (20 min)<a class=headerlink href=#step-1-design-with-al-architect-20-min title="Permanent link">&para;</a></h3> <pre class=mermaid><code>sequenceDiagram
     participant User
     participant Architect as 🏗️ al-architect
@@ -49,7 +49,7 @@
 </span></code></pre></div> <p><strong>⏳ Wait 2-3 minutes</strong> while al-architect analyzes and designs.</p> <p><strong>Expected result</strong> (save this for verification):</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-3-1><a id=__codelineno-3-1 name=__codelineno-3-1 href=#__codelineno-3-1></a>📐 COMPLETE ARCHITECTURE
 </span><span id=__span-3-2><a id=__codelineno-3-2 name=__codelineno-3-2 href=#__codelineno-3-2></a>
 </span><span id=__span-3-3><a id=__codelineno-3-3 name=__codelineno-3-3 href=#__codelineno-3-3></a>🗂️ DATA MODEL:
-</span><span id=__span-3-4><a id=__codelineno-3-4 name=__codelineno-3-4 href=#__codelineno-3-4></a>1. Table 50100 &quot;Loyalty Point Entry&quot;
+</span><span id=__span-3-4><a id=__codelineno-3-4 name=__codelineno-3-4 href=#__codelineno-3-4></a>1. Table 50100 "Loyalty Point Entry"
 </span><span id=__span-3-5><a id=__codelineno-3-5 name=__codelineno-3-5 href=#__codelineno-3-5></a>   - Entry No. (Integer, PK, AutoIncrement)
 </span><span id=__span-3-6><a id=__codelineno-3-6 name=__codelineno-3-6 href=#__codelineno-3-6></a>   - Customer No. (Code[20], TableRelation Customer)
 </span><span id=__span-3-7><a id=__codelineno-3-7 name=__codelineno-3-7 href=#__codelineno-3-7></a>   - Points (Decimal)
@@ -58,28 +58,28 @@
 </span><span id=__span-3-10><a id=__codelineno-3-10 name=__codelineno-3-10 href=#__codelineno-3-10></a>   - Transaction Date (Date)
 </span><span id=__span-3-11><a id=__codelineno-3-11 name=__codelineno-3-11 href=#__codelineno-3-11></a>   - Description (Text[100])
 </span><span id=__span-3-12><a id=__codelineno-3-12 name=__codelineno-3-12 href=#__codelineno-3-12></a>
-</span><span id=__span-3-13><a id=__codelineno-3-13 name=__codelineno-3-13 href=#__codelineno-3-13></a>2. TableExtension 50100 &quot;Customer Ext&quot; extends Customer
-</span><span id=__span-3-14><a id=__codelineno-3-14 name=__codelineno-3-14 href=#__codelineno-3-14></a>   - &quot;Loyalty Points Balance&quot; (Decimal, FlowField SUM)
-</span><span id=__span-3-15><a id=__codelineno-3-15 name=__codelineno-3-15 href=#__codelineno-3-15></a>   - &quot;Loyalty Points Enabled&quot; (Boolean)
+</span><span id=__span-3-13><a id=__codelineno-3-13 name=__codelineno-3-13 href=#__codelineno-3-13></a>2. TableExtension 50100 "Customer Ext" extends Customer
+</span><span id=__span-3-14><a id=__codelineno-3-14 name=__codelineno-3-14 href=#__codelineno-3-14></a>   - "Loyalty Points Balance" (Decimal, FlowField SUM)
+</span><span id=__span-3-15><a id=__codelineno-3-15 name=__codelineno-3-15 href=#__codelineno-3-15></a>   - "Loyalty Points Enabled" (Boolean)
 </span><span id=__span-3-16><a id=__codelineno-3-16 name=__codelineno-3-16 href=#__codelineno-3-16></a>
 </span><span id=__span-3-17><a id=__codelineno-3-17 name=__codelineno-3-17 href=#__codelineno-3-17></a>🔗 INTEGRATION (Event-Driven):
 </span><span id=__span-3-18><a id=__codelineno-3-18 name=__codelineno-3-18 href=#__codelineno-3-18></a>- EventSubscriber: OnAfterPostSalesInvoice
-</span><span id=__span-3-19><a id=__codelineno-3-19 name=__codelineno-3-19 href=#__codelineno-3-19></a>  → Codeunit 50101 &quot;Sales Event Subscriber&quot;
+</span><span id=__span-3-19><a id=__codelineno-3-19 name=__codelineno-3-19 href=#__codelineno-3-19></a>  → Codeunit 50101 "Sales Event Subscriber"
 </span><span id=__span-3-20><a id=__codelineno-3-20 name=__codelineno-3-20 href=#__codelineno-3-20></a>  → Calls LoyaltyManagement.AddPoints()
 </span><span id=__span-3-21><a id=__codelineno-3-21 name=__codelineno-3-21 href=#__codelineno-3-21></a>
-</span><span id=__span-3-22><a id=__codelineno-3-22 name=__codelineno-3-22 href=#__codelineno-3-22></a>- Codeunit 50100 &quot;Loyalty Management&quot;
+</span><span id=__span-3-22><a id=__codelineno-3-22 name=__codelineno-3-22 href=#__codelineno-3-22></a>- Codeunit 50100 "Loyalty Management"
 </span><span id=__span-3-23><a id=__codelineno-3-23 name=__codelineno-3-23 href=#__codelineno-3-23></a>  → AddPoints(CustomerNo, Amount)
 </span><span id=__span-3-24><a id=__codelineno-3-24 name=__codelineno-3-24 href=#__codelineno-3-24></a>  → RedeemPoints(CustomerNo, Points)
 </span><span id=__span-3-25><a id=__codelineno-3-25 name=__codelineno-3-25 href=#__codelineno-3-25></a>  → CalcPointsFromAmount(Amount): Decimal
 </span><span id=__span-3-26><a id=__codelineno-3-26 name=__codelineno-3-26 href=#__codelineno-3-26></a>  → GetBalance(CustomerNo): Decimal
 </span><span id=__span-3-27><a id=__codelineno-3-27 name=__codelineno-3-27 href=#__codelineno-3-27></a>
 </span><span id=__span-3-28><a id=__codelineno-3-28 name=__codelineno-3-28 href=#__codelineno-3-28></a>📄 UI COMPONENTS:
-</span><span id=__span-3-29><a id=__codelineno-3-29 name=__codelineno-3-29 href=#__codelineno-3-29></a>1. PageExtension 50100 &quot;Customer Card Ext&quot; extends &quot;Customer Card&quot;
-</span><span id=__span-3-30><a id=__codelineno-3-30 name=__codelineno-3-30 href=#__codelineno-3-30></a>   - Adds field &quot;Loyalty Points Balance&quot; (Editable=false)
-</span><span id=__span-3-31><a id=__codelineno-3-31 name=__codelineno-3-31 href=#__codelineno-3-31></a>   - Adds action &quot;View Loyalty History&quot;
+</span><span id=__span-3-29><a id=__codelineno-3-29 name=__codelineno-3-29 href=#__codelineno-3-29></a>1. PageExtension 50100 "Customer Card Ext" extends "Customer Card"
+</span><span id=__span-3-30><a id=__codelineno-3-30 name=__codelineno-3-30 href=#__codelineno-3-30></a>   - Adds field "Loyalty Points Balance" (Editable=false)
+</span><span id=__span-3-31><a id=__codelineno-3-31 name=__codelineno-3-31 href=#__codelineno-3-31></a>   - Adds action "View Loyalty History"
 </span><span id=__span-3-32><a id=__codelineno-3-32 name=__codelineno-3-32 href=#__codelineno-3-32></a>
-</span><span id=__span-3-33><a id=__codelineno-3-33 name=__codelineno-3-33 href=#__codelineno-3-33></a>2. Page 50100 &quot;Loyalty Point Entries&quot;
-</span><span id=__span-3-34><a id=__codelineno-3-34 name=__codelineno-3-34 href=#__codelineno-3-34></a>   - SourceTable: &quot;Loyalty Point Entry&quot;
+</span><span id=__span-3-33><a id=__codelineno-3-33 name=__codelineno-3-33 href=#__codelineno-3-33></a>2. Page 50100 "Loyalty Point Entries"
+</span><span id=__span-3-34><a id=__codelineno-3-34 name=__codelineno-3-34 href=#__codelineno-3-34></a>   - SourceTable: "Loyalty Point Entry"
 </span><span id=__span-3-35><a id=__codelineno-3-35 name=__codelineno-3-35 href=#__codelineno-3-35></a>   - PageType: List
 </span><span id=__span-3-36><a id=__codelineno-3-36 name=__codelineno-3-36 href=#__codelineno-3-36></a>   - Filters by Customer, Date Range, Transaction Type
 </span><span id=__span-3-37><a id=__codelineno-3-37 name=__codelineno-3-37 href=#__codelineno-3-37></a>   - DrillDown from Customer Card
@@ -145,49 +145,49 @@
 </span><span id=__span-6-2><a id=__codelineno-6-2 name=__codelineno-6-2 href=#__codelineno-6-2></a>[Test]
 </span><span id=__span-6-3><a id=__codelineno-6-3 name=__codelineno-6-3 href=#__codelineno-6-3></a>procedure TestInsertLoyaltyPointEntry()
 </span><span id=__span-6-4><a id=__codelineno-6-4 name=__codelineno-6-4 href=#__codelineno-6-4></a>var
-</span><span id=__span-6-5><a id=__codelineno-6-5 name=__codelineno-6-5 href=#__codelineno-6-5></a>    LoyaltyPointEntry: Record &quot;Loyalty Point Entry&quot;;
+</span><span id=__span-6-5><a id=__codelineno-6-5 name=__codelineno-6-5 href=#__codelineno-6-5></a>    LoyaltyPointEntry: Record "Loyalty Point Entry";
 </span><span id=__span-6-6><a id=__codelineno-6-6 name=__codelineno-6-6 href=#__codelineno-6-6></a>begin
 </span><span id=__span-6-7><a id=__codelineno-6-7 name=__codelineno-6-7 href=#__codelineno-6-7></a>    // [GIVEN] Empty table
 </span><span id=__span-6-8><a id=__codelineno-6-8 name=__codelineno-6-8 href=#__codelineno-6-8></a>    LoyaltyPointEntry.DeleteAll();
 </span><span id=__span-6-9><a id=__codelineno-6-9 name=__codelineno-6-9 href=#__codelineno-6-9></a>
 </span><span id=__span-6-10><a id=__codelineno-6-10 name=__codelineno-6-10 href=#__codelineno-6-10></a>    // [WHEN] Insert entry
 </span><span id=__span-6-11><a id=__codelineno-6-11 name=__codelineno-6-11 href=#__codelineno-6-11></a>    LoyaltyPointEntry.Init();
-</span><span id=__span-6-12><a id=__codelineno-6-12 name=__codelineno-6-12 href=#__codelineno-6-12></a>    LoyaltyPointEntry.&quot;Entry No.&quot; := 1;
-</span><span id=__span-6-13><a id=__codelineno-6-13 name=__codelineno-6-13 href=#__codelineno-6-13></a>    LoyaltyPointEntry.&quot;Customer No.&quot; := &#39;CUST001&#39;;
+</span><span id=__span-6-12><a id=__codelineno-6-12 name=__codelineno-6-12 href=#__codelineno-6-12></a>    LoyaltyPointEntry."Entry No." := 1;
+</span><span id=__span-6-13><a id=__codelineno-6-13 name=__codelineno-6-13 href=#__codelineno-6-13></a>    LoyaltyPointEntry."Customer No." := 'CUST001';
 </span><span id=__span-6-14><a id=__codelineno-6-14 name=__codelineno-6-14 href=#__codelineno-6-14></a>    LoyaltyPointEntry.Points := 10;
 </span><span id=__span-6-15><a id=__codelineno-6-15 name=__codelineno-6-15 href=#__codelineno-6-15></a>    LoyaltyPointEntry.Insert(true);
 </span><span id=__span-6-16><a id=__codelineno-6-16 name=__codelineno-6-16 href=#__codelineno-6-16></a>
 </span><span id=__span-6-17><a id=__codelineno-6-17 name=__codelineno-6-17 href=#__codelineno-6-17></a>    // [THEN] Entry exists
-</span><span id=__span-6-18><a id=__codelineno-6-18 name=__codelineno-6-18 href=#__codelineno-6-18></a>    Assert.AreEqual(1, LoyaltyPointEntry.Count, &#39;Entry count&#39;);
+</span><span id=__span-6-18><a id=__codelineno-6-18 name=__codelineno-6-18 href=#__codelineno-6-18></a>    Assert.AreEqual(1, LoyaltyPointEntry.Count, 'Entry count');
 </span><span id=__span-6-19><a id=__codelineno-6-19 name=__codelineno-6-19 href=#__codelineno-6-19></a>end;
 </span></code></pre></div> <strong>Run test</strong> → ❌ FAILS (table doesn't exist)</p> <p><strong>GREEN (7 min)</strong> - AL Implementation Subagent: <div class="language-text highlight"><pre><span></span><code><span id=__span-7-1><a id=__codelineno-7-1 name=__codelineno-7-1 href=#__codelineno-7-1></a>// App/Tables/LoyaltyPointEntry.Table.al
-</span><span id=__span-7-2><a id=__codelineno-7-2 name=__codelineno-7-2 href=#__codelineno-7-2></a>table 50100 &quot;Loyalty Point Entry&quot;
+</span><span id=__span-7-2><a id=__codelineno-7-2 name=__codelineno-7-2 href=#__codelineno-7-2></a>table 50100 "Loyalty Point Entry"
 </span><span id=__span-7-3><a id=__codelineno-7-3 name=__codelineno-7-3 href=#__codelineno-7-3></a>{
 </span><span id=__span-7-4><a id=__codelineno-7-4 name=__codelineno-7-4 href=#__codelineno-7-4></a>    DataClassification = CustomerContent;
-</span><span id=__span-7-5><a id=__codelineno-7-5 name=__codelineno-7-5 href=#__codelineno-7-5></a>    Caption = &#39;Loyalty Point Entry&#39;;
+</span><span id=__span-7-5><a id=__codelineno-7-5 name=__codelineno-7-5 href=#__codelineno-7-5></a>    Caption = 'Loyalty Point Entry';
 </span><span id=__span-7-6><a id=__codelineno-7-6 name=__codelineno-7-6 href=#__codelineno-7-6></a>
 </span><span id=__span-7-7><a id=__codelineno-7-7 name=__codelineno-7-7 href=#__codelineno-7-7></a>    fields
 </span><span id=__span-7-8><a id=__codelineno-7-8 name=__codelineno-7-8 href=#__codelineno-7-8></a>    {
-</span><span id=__span-7-9><a id=__codelineno-7-9 name=__codelineno-7-9 href=#__codelineno-7-9></a>        field(1; &quot;Entry No.&quot;; Integer)
+</span><span id=__span-7-9><a id=__codelineno-7-9 name=__codelineno-7-9 href=#__codelineno-7-9></a>        field(1; "Entry No."; Integer)
 </span><span id=__span-7-10><a id=__codelineno-7-10 name=__codelineno-7-10 href=#__codelineno-7-10></a>        {
 </span><span id=__span-7-11><a id=__codelineno-7-11 name=__codelineno-7-11 href=#__codelineno-7-11></a>            AutoIncrement = true;
-</span><span id=__span-7-12><a id=__codelineno-7-12 name=__codelineno-7-12 href=#__codelineno-7-12></a>            Caption = &#39;Entry No.&#39;;
+</span><span id=__span-7-12><a id=__codelineno-7-12 name=__codelineno-7-12 href=#__codelineno-7-12></a>            Caption = 'Entry No.';
 </span><span id=__span-7-13><a id=__codelineno-7-13 name=__codelineno-7-13 href=#__codelineno-7-13></a>        }
-</span><span id=__span-7-14><a id=__codelineno-7-14 name=__codelineno-7-14 href=#__codelineno-7-14></a>        field(2; &quot;Customer No.&quot;; Code[20])
+</span><span id=__span-7-14><a id=__codelineno-7-14 name=__codelineno-7-14 href=#__codelineno-7-14></a>        field(2; "Customer No."; Code[20])
 </span><span id=__span-7-15><a id=__codelineno-7-15 name=__codelineno-7-15 href=#__codelineno-7-15></a>        {
-</span><span id=__span-7-16><a id=__codelineno-7-16 name=__codelineno-7-16 href=#__codelineno-7-16></a>            TableRelation = Customer.&quot;No.&quot;;
-</span><span id=__span-7-17><a id=__codelineno-7-17 name=__codelineno-7-17 href=#__codelineno-7-17></a>            Caption = &#39;Customer No.&#39;;
+</span><span id=__span-7-16><a id=__codelineno-7-16 name=__codelineno-7-16 href=#__codelineno-7-16></a>            TableRelation = Customer."No.";
+</span><span id=__span-7-17><a id=__codelineno-7-17 name=__codelineno-7-17 href=#__codelineno-7-17></a>            Caption = 'Customer No.';
 </span><span id=__span-7-18><a id=__codelineno-7-18 name=__codelineno-7-18 href=#__codelineno-7-18></a>        }
 </span><span id=__span-7-19><a id=__codelineno-7-19 name=__codelineno-7-19 href=#__codelineno-7-19></a>        field(3; Points; Decimal)
 </span><span id=__span-7-20><a id=__codelineno-7-20 name=__codelineno-7-20 href=#__codelineno-7-20></a>        {
-</span><span id=__span-7-21><a id=__codelineno-7-21 name=__codelineno-7-21 href=#__codelineno-7-21></a>            Caption = &#39;Points&#39;;
+</span><span id=__span-7-21><a id=__codelineno-7-21 name=__codelineno-7-21 href=#__codelineno-7-21></a>            Caption = 'Points';
 </span><span id=__span-7-22><a id=__codelineno-7-22 name=__codelineno-7-22 href=#__codelineno-7-22></a>        }
 </span><span id=__span-7-23><a id=__codelineno-7-23 name=__codelineno-7-23 href=#__codelineno-7-23></a>        // ... more fields
 </span><span id=__span-7-24><a id=__codelineno-7-24 name=__codelineno-7-24 href=#__codelineno-7-24></a>    }
 </span><span id=__span-7-25><a id=__codelineno-7-25 name=__codelineno-7-25 href=#__codelineno-7-25></a>
 </span><span id=__span-7-26><a id=__codelineno-7-26 name=__codelineno-7-26 href=#__codelineno-7-26></a>    keys
 </span><span id=__span-7-27><a id=__codelineno-7-27 name=__codelineno-7-27 href=#__codelineno-7-27></a>    {
-</span><span id=__span-7-28><a id=__codelineno-7-28 name=__codelineno-7-28 href=#__codelineno-7-28></a>        key(PK; &quot;Entry No.&quot;)
+</span><span id=__span-7-28><a id=__codelineno-7-28 name=__codelineno-7-28 href=#__codelineno-7-28></a>        key(PK; "Entry No.")
 </span><span id=__span-7-29><a id=__codelineno-7-29 name=__codelineno-7-29 href=#__codelineno-7-29></a>        {
 </span><span id=__span-7-30><a id=__codelineno-7-30 name=__codelineno-7-30 href=#__codelineno-7-30></a>            Clustered = true;
 </span><span id=__span-7-31><a id=__codelineno-7-31 name=__codelineno-7-31 href=#__codelineno-7-31></a>        }
