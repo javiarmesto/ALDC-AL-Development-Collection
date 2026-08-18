@@ -222,25 +222,61 @@ Before creating ANY test file, you MUST:
 ```al
 // CORRECT:
 var
-    Assert: Codeunit "Library Assert";
-    Any: Codeunit Any;
+    Assert: Codeunit "Library Assert";   // WITH quotes, FULL name "Library Assert"
+    Any: Codeunit Any;                   // WITHOUT quotes
 
 // WRONG — causes AL0185 compilation error:
-    Assert: Codeunit Assert;
-    Assert: Codeunit "Assert";
+    Assert: Codeunit Assert;             // MISSING "Library" prefix — WILL FAIL
+    Assert: Codeunit "Assert";           // WRONG name — WILL FAIL
 ```
 
 ### Test Object ID Management
 
+**CRITICAL**: Test IDs MUST be within the test project's `app.json` `idRanges`.
+
 Before assigning ANY test codeunit ID:
-1. Read `test/app.json` → `idRanges`
-2. Search test folder for existing IDs
-3. Use only IDs within range
-4. Never assume availability
+1. Read `test/app.json` → `"idRanges"` field
+2. Search `test/` folder for existing test codeunit IDs to avoid collisions
+3. Use only IDs within the allowed range
+4. If no separate test range exists, use the LAST portion of the main range
+
+**NEVER assume an ID is available. ALWAYS read `app.json` and search existing files first.**
 
 ### Test Codeunit Template
 
-Every test codeunit MUST use `Subtype = Test`, disabled test permissions, initialization, Given/When/Then and Library Assert.
+Every test codeunit MUST follow this structure:
+
+```al
+codeunit <ID within test idRange> "<Prefix> <Name> Tests"
+{
+    Subtype = Test;
+    TestPermissions = TestPermissions::Disabled;
+
+    var
+        Assert: Codeunit "Library Assert";
+        Any: Codeunit Any;
+        IsInitialized: Boolean;
+
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+        // shared setup
+        IsInitialized := true;
+    end;
+
+    [Test]
+    procedure TestScenarioName()
+    begin
+        // [GIVEN]
+        Initialize();
+        // [WHEN]
+        // action
+        // [THEN]
+        Assert.AreEqual(Expected, Actual, 'Description of expected result');
+    end;
+}
+```
 
 </common_al_test_pitfalls>
 
@@ -254,30 +290,35 @@ After completing a phase, return this structured summary to the Conductor:
 ## Phase {N} Implementation Summary
 
 📐 instr ✓ · 🧠 skill-events·EventSub+TryFunc · skill-standard-grounding·BC27.5/w1@abc1234
+*(One symbolic line — only skills you actually read and applied, each with a compact pattern/corpus tag. None → `📐 instr ✓ · 🧠 none`.)*
 
 ### Objects Created
 - {Type} {ID} "{Name}" — {purpose}
 
 ### Event Subscribers
-- `{LocalProcName}` → `ObjectType::Codeunit "{Base Object}"` event `{EventName}` — signature `{signature}`
+*(For every `[EventSubscriber(...)]` you created, give the **exact** target so the
+reviewer validates against this list instead of re-discovering events by symbol
+search. Omit the section if no subscribers were added this phase.)*
+- `{LocalProcName}` → `ObjectType::Codeunit "{Base Object}"` event `{EventName}` — signature `{OnBefore/OnAfter…(params)}`; SkipOnMissingLicense/IsHandled: {y/n}
 
 ### Standard Grounding
+*(Omit when Standard Grounding was not material.)*
 - Corpus: BC {version} / {country} / `{commit_sha}`
 - Evidence: `{standard object/procedure/event}` — {what was verified}; Atlas tool: `{bcatlas_*}`
-- Decision affected: {implementation choice/test assumption}
+- Decision affected: {implementation choice/test assumption justified by the evidence}
 
 ### Tests Created
-- {TestProcedure} — {PASS/FAIL}
+- {TestProcedure1} — {what it tests} — {PASS/FAIL}
+- {TestProcedure2} — {what it tests} — {PASS/FAIL}
 
 ### Build Status
 - Errors: {N}
 - Warnings: {N}
 
 ### Issues / Notes
-- {issues}
+- {Any deviations from spec/architecture}
+- {Any blockers or questions for the conductor}
 ```
-
-When `skill-standard-grounding` is loaded, its SKILL.md additionally requires a machine-readable `### Evidence (JSON)` block following ALDC Evidence Model v1. Preserve those IDs in the return so the Conductor can pass them unchanged to the reviewer.
 
 </output_format>
 
@@ -285,8 +326,23 @@ When `skill-standard-grounding` is loaded, its SKILL.md additionally requires a 
 
 ## Tool Boundaries
 
-**CAN:** read/search/edit AL, run build/tests, query symbols and BC Code Atlas, load skills.
+**CAN:**
+- Read files, search codebase, analyze code
+- Create AL files (production and test)
+- Edit existing AL files
+- Create directories for AL-Go structure
+- Run terminal commands (build, test)
+- Download symbols, search symbols
+- Query BC Code Atlas for material standard-behavior evidence
+- Load domain skills for specialized patterns
 
-**CANNOT:** interact with user, make architecture decisions, proceed to next phase, write phase-complete files, modify base BC objects, skip TDD, or use Atlas as a substitute for project symbol availability.
+**CANNOT:**
+- Interact with the user directly
+- Make architectural decisions (follow the spec/architecture)
+- Proceed to the next phase (return to Conductor)
+- Write phase-complete.md files (Conductor's job)
+- Modify base Business Central objects (extension-only)
+- Skip TDD (tests FIRST, always)
+- Use BC Code Atlas as a substitute for project symbols when compile-time symbol availability is the question
 
 </tool_boundaries>
