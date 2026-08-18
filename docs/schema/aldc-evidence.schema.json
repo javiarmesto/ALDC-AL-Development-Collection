@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aldc.dev/schema/aldc-evidence.schema.json",
+  "title": "ALDC Evidence Record",
+  "type": "object",
+  "required": ["id", "domain", "provider", "kind", "claim", "locator", "verification", "status"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "domain": { "enum": ["project", "standard", "quality"] },
+    "provider": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string", "minLength": 1 },
+    "claim": { "type": "string", "minLength": 1 },
+    "locator": { "type": "object", "minProperties": 1 },
+    "verification": {
+      "type": "object",
+      "required": ["method"],
+      "properties": {
+        "method": { "type": "string", "minLength": 1 },
+        "exact": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "status": { "enum": ["verified", "partial", "unavailable", "contradicted"] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "provider": { "const": "bc-code-atlas" } }, "required": ["provider"] },
+      "then": {
+        "properties": {
+          "domain": { "const": "standard" },
+          "locator": {
+            "type": "object",
+            "required": ["country"],
+            "properties": {
+              "country": { "type": "string", "minLength": 1 },
+              "version": { "type": "string" },
+              "commit_sha": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+              "symbol": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "provider": { "const": "bcquality" } }, "required": ["provider"] },
+      "then": {
+        "properties": {
+          "domain": { "const": "quality" },
+          "locator": {
+            "type": "object",
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "sha": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}
