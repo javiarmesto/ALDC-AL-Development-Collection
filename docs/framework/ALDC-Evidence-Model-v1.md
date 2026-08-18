@@ -4,19 +4,24 @@
 
 ALDC Evidence Model is the provider-neutral contract used by agents, subagents, audits, and gates to record **why a technical claim is trusted**.
 
-It separates evidence from reasoning and from findings. A finding may have zero or more evidence records; evidence identifies the source, target, reproducibility coordinates, and verification method.
+It separates four concepts:
+
+1. **Evidence** — reproducible factual support.
+2. **Claim** — what that evidence establishes.
+3. **Finding** — an actionable or informational conclusion drawn from claims.
+4. **Verdict/Gate** — workflow decision derived from findings plus evidence sufficiency.
+
+A finding can compose evidence from project, Microsoft standard, and quality knowledge without coupling the finding schema to a specific provider.
 
 ## Evidence domains
 
-ALDC currently recognizes three evidence domains:
-
-| Domain | Question answered | Typical provider |
+| Domain | Question answered | Typical providers |
 |---|---|---|
-| `project` | What does the current extension/workspace contain or execute? | workspace, AL symbols, compiler, tests |
+| `project` | What does the current extension/workspace contain or execute? | workspace, AL symbols, compiler, tests, git |
 | `standard` | What does Microsoft Business Central standard actually implement? | BC Code Atlas |
 | `quality` | What quality rule or curated guidance governs this code? | BCQuality |
 
-These domains are orthogonal. One finding can combine them.
+These domains are orthogonal. One finding can combine all three.
 
 ## Canonical evidence record
 
@@ -48,13 +53,13 @@ Every evidence record MUST contain:
 - `id` — unique within the report.
 - `domain` — `project | standard | quality`.
 - `provider` — stable provider identifier.
-- `kind` — evidence type, provider-specific but stable enough for tooling.
+- `kind` — stable evidence type.
 - `claim` — concise statement the evidence supports.
-- `locator` — reproducibility coordinates. Shape varies by provider.
-- `verification.method` — tool/process used to obtain the evidence.
+- `locator` — reproducibility coordinates.
+- `verification.method` — tool/process used.
 - `status` — `verified | partial | unavailable | contradicted`.
 
-`verification.exact` SHOULD be `true` when evidence is re-read from an authoritative exact source rather than inferred from semantic search.
+`verification.exact` SHOULD be `true` when evidence is re-read from an authoritative exact source rather than inferred from retrieval.
 
 ## Provider contracts
 
@@ -73,13 +78,13 @@ Typical locator:
 }
 ```
 
-Examples of `kind`: `source`, `symbol`, `diagnostic`, `test-result`, `call-reference`.
+Typical `kind`: `source`, `symbol`, `diagnostic`, `test-result`, `call-reference`.
 
 ### Standard evidence — BC Code Atlas
 
 Provider: `bc-code-atlas`.
 
-The locator MUST include `country` and resolved `commit_sha` whenever a non-default corpus is used. `version` is human-readable context; `commit_sha` is the reproducible selector.
+For a non-default corpus the locator MUST retain `country`, human-readable `version`, and resolved immutable `commit_sha`.
 
 ```json
 {
@@ -90,15 +95,13 @@ The locator MUST include `country` and resolved `commit_sha` whenever a non-defa
 }
 ```
 
-Examples of `kind`: `search-candidate`, `graph-relationship`, `signature`, `procedure-source`, `object-source`, `version-diff`, `symbol-history`.
+Typical `kind`: `search-candidate`, `graph-relationship`, `signature`, `procedure-source`, `object-source`, `version-diff`, `symbol-history`.
 
-Semantic search alone MUST NOT be recorded as decisive evidence for a behavioral claim. It can be `search-candidate`; decisive claims SHOULD be backed by graph or exact source evidence.
+**Discovery is not proof.** Semantic search alone MUST NOT be decisive evidence for a behavioral claim. It may locate a candidate; decisive behavior SHOULD be verified with graph structure or exact source.
 
 ### Quality evidence — BCQuality
 
 Provider: `bcquality`.
-
-Typical locator:
 
 ```json
 {
@@ -107,38 +110,25 @@ Typical locator:
 }
 ```
 
-Examples of `kind`: `knowledge-citation`, `quality-rule`.
+Typical `kind`: `knowledge-citation`, `quality-rule`.
 
-For Review-Report v1 compatibility, BCQuality findings MAY continue to populate legacy `references[]`. When `evidence[]` is also present, the BCQuality citation SHOULD be represented there too. The two forms must agree.
+For Review-Report v1 compatibility, BCQuality findings MAY continue to populate legacy `references[]`. When typed `evidence[]` is also present, both representations MUST agree.
 
 ## Findings and evidence
 
-A finding owns an `evidence[]` array. Evidence does not determine severity by itself; it establishes factual support.
+Evidence does not determine severity. It establishes factual support.
+
+Prefer report-level reusable evidence:
 
 ```json
 {
-  "id": "native:events:posting-order",
-  "source": "native",
-  "domain": "events",
-  "severity": "major",
-  "message": "The subscriber assumes a posting sequence that differs from standard BC 27.5.",
   "evidence": [
-    {
-      "id": "ev-project-001",
-      "domain": "project",
-      "provider": "workspace",
-      "kind": "source",
-      "claim": "The subscriber executes custom validation after the selected event.",
-      "locator": { "path": "src/Posting/Handler.Codeunit.al", "line": 42 },
-      "verification": { "method": "readFile", "exact": true },
-      "status": "verified"
-    },
     {
       "id": "ev-standard-001",
       "domain": "standard",
       "provider": "bc-code-atlas",
       "kind": "procedure-source",
-      "claim": "Standard BC performs the relevant validation earlier in the posting flow.",
+      "claim": "Standard BC performs the validation before the selected event.",
       "locator": {
         "country": "es",
         "version": "27.5",
@@ -148,40 +138,110 @@ A finding owns an `evidence[]` array. Evidence does not determine severity by it
       "verification": { "method": "bcatlas_get_procedure_body", "exact": true },
       "status": "verified"
     }
+  ],
+  "findings": [
+    {
+      "id": "native:events:posting-order",
+      "severity": "major",
+      "message": "The subscriber assumes a posting sequence that differs from standard BC.",
+      "evidence_requirement": "material",
+      "evidence_ids": ["ev-standard-001"]
+    }
   ]
 }
 ```
 
-## Report-level evidence
-
-Reports MAY also include top-level `evidence[]` for evidence reused by several findings. Findings SHOULD reference those records through `evidence_ids[]` rather than duplicating large records.
-
-For v1, both forms are accepted:
-
-- inline `finding.evidence[]` for local evidence;
-- top-level `evidence[]` + `finding.evidence_ids[]` for reusable evidence.
+Inline `finding.evidence[]` remains valid for evidence used only once.
 
 An evidence ID MUST resolve to exactly one record in the report.
+
+## Evidence requirement
+
+A finding MAY declare:
+
+- `evidence_requirement: "none"` — the finding is self-evident from its own location/rule and does not require an additional evidence record.
+- `evidence_requirement: "supporting"` — evidence improves traceability/confidence but the finding remains valid without it.
+- `evidence_requirement: "material"` — the finding's conclusion or severity materially depends on the referenced evidence.
+
+Default when omitted: `supporting` for findings that contain `evidence_ids`/inline evidence; otherwise `none`.
+
+Use `material` deliberately, for example when claiming:
+
+- standard BC executes a particular validation/order/side effect;
+- a behavior differs between BC versions/localizations;
+- an executable test/diagnostic is required to establish a defect;
+- a quality finding depends on a specific external knowledge rule.
+
+Do not mark trivial source-local defects as `material` just to force extra tooling.
+
+## Evidence-aware gate semantics
+
+The workflow owner (Conductor for phase reviews; Dredd for advisory audit) applies these rules **after** normal finding severity calculation.
+
+For each finding with `evidence_requirement: material`:
+
+1. Resolve every `evidence_id`; missing/duplicate IDs make the report structurally invalid.
+2. At least one relevant evidence record MUST exist.
+3. If all relevant evidence is `verified`, normal severity/verdict logic applies.
+4. If decisive evidence is `partial`, the finding MUST NOT be `high` confidence; the gate may continue only if the normal workflow allows the uncertainty and records it.
+5. If decisive evidence is `unavailable`, provider failure is **not** a code defect, but a blocking/major conclusion that depends on it cannot be treated as fully proven. The workflow must lower confidence and either request/retry evidence or stop at its human gate.
+6. If decisive evidence is `contradicted`, the original claim cannot remain accepted: revise/suppress it or emit a contradiction finding.
+
+The evidence gate is therefore **epistemic**, not another quality score. It prevents ALDC from confidently gating on an unproven material claim.
+
+## Confidence guidance
+
+- Exact source/compiler/test evidence with `verified` status may justify high confidence.
+- Semantic retrieval alone does not justify high confidence for behavior.
+- `partial` cannot alone justify high confidence.
+- `unavailable` cannot be converted into a defect.
+- `contradicted` requires claim reconsideration.
+
+## Reuse across agents
+
+Evidence is intended to flow through the graph:
+
+```text
+Implementation Subagent
+  produces project/standard evidence
+           ↓
+Review Subagent
+  reuses + verifies + adds quality/standard evidence
+           ↓
+Conductor
+  validates evidence integrity + gates findings
+
+Dredd
+  independently produces the same evidence contract
+```
+
+A consumer SHOULD reuse a compatible evidence record rather than re-querying the provider. Re-query only when the corpus/claim/locator is incompatible, stale for the target, or the prior status is insufficient for the decision.
 
 ## Degraded providers
 
 Tool/provider failure is not a code defect.
 
-When evidence cannot be obtained, record an evidence item with `status: unavailable` only when the missing evidence itself matters to the audit trail. Do not fabricate a locator or a claim.
+Record `status: unavailable` only when the missing evidence matters to the audit trail. Never fabricate a locator or claim.
 
-If a conclusion materially depends on unavailable evidence, the agent MUST lower confidence, mark the conclusion partial, or stop at the relevant human gate according to the owning workflow.
+If a conclusion materially depends on unavailable evidence, lower confidence or stop at the owning human gate according to workflow policy.
 
 ## Compatibility
 
-Review-Report v1 fields remain valid. This model adds `evidence[]` and `evidence_ids[]` without changing the semantics of existing `references[]`.
+Review-Report v1 remains valid. This model adds:
+
+- top-level `evidence[]`;
+- `finding.evidence[]`;
+- `finding.evidence_ids[]`;
+- `finding.evidence_requirement`.
 
 `references[]` remains a BCQuality compatibility field until a future Review-Report version removes that coupling. New providers MUST use ALDC Evidence Model records, never overload `references[]`.
 
 ## Design principles
 
-1. **Provider-neutral at the finding layer.** Findings consume evidence, not provider-specific prose conventions.
-2. **Reproducible coordinates.** Version labels are insufficient when a provider exposes immutable commits; retain the immutable selector.
-3. **Discovery is not proof.** Semantic retrieval can locate candidates; exact source, graph structure, compiler output, or test execution proves material claims.
-4. **Evidence is composable.** Project + standard + quality evidence may jointly support one finding.
-5. **Failures are explicit.** Missing providers degrade evidence, not code quality scores by themselves.
-6. **No knowledge dump.** Store compact locators and claims, not entire source bodies.
+1. **Provider-neutral findings.** Findings consume evidence, not provider prose conventions.
+2. **Reproducible coordinates.** Retain immutable selectors when available.
+3. **Discovery is not proof.** Retrieval locates; exact source/graph/compiler/tests prove.
+4. **Composable evidence.** Project + standard + quality may jointly support one finding.
+5. **Explicit degradation.** Missing providers degrade evidence, not quality scores.
+6. **Evidence-aware gating.** Material claims cannot silently become confident verdicts without sufficient evidence.
+7. **No knowledge dump.** Persist compact locators and claims, not entire source bodies.
