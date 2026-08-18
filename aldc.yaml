@@ -7,6 +7,26 @@ core:
 
 toolkitRoot: "."
 
+# Provider-neutral evidence contract used by review, audit and orchestration gates.
+# Provider-specific validators may add deeper checks, but must not change the
+# semantics of the common Evidence -> Finding -> Verdict -> Gate model.
+evidence:
+  model: "docs/framework/ALDC-Evidence-Model-v1.md"
+  schema: "docs/schema/aldc-evidence.schema.json"
+  validator: "tools/evidence/validate_evidence.py"
+  ciWorkflow: ".github/workflows/aldc-evidence.yaml"
+  domains:
+    project:
+      providers: ["workspace", "al-symbols", "compiler", "tests", "git"]
+    standard:
+      provider: "bc-code-atlas"
+      skill: "skills/skill-standard-grounding/SKILL.md"
+    quality:
+      provider: "bcquality"
+  gate:
+    materialEvidenceState: "EVIDENCE_REQUIRED"
+    providerFailureIsCodeDefect: false
+
 # External citable knowledge base, consumed by al-review-subagent (Step 0) as an
 # audit/citation layer. Does NOT replace instructions or skills.
 external:
@@ -74,6 +94,7 @@ required:
     - "agents/al-presales.agent.md"
     - "agents/dredd.agent.md"
     - "agents/al-triage.agent.md"
+    - "agents/al-standard-grounding.agent.md"
 
   subagents:
     - "agents/al-planning-subagent.agent.md"
@@ -97,6 +118,7 @@ required:
       - "skills/skill-events/SKILL.md"
       - "skills/skill-permissions/SKILL.md"
       - "skills/skill-testing/SKILL.md"
+      - "skills/skill-standard-grounding/SKILL.md"
     recommended:
       - "skills/skill-migrate/SKILL.md"
       - "skills/skill-pages/SKILL.md"
