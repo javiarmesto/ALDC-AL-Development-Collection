@@ -16,6 +16,7 @@ Skills follow the GitHub Copilot Agent Skills structure (`skills/{skill-name}/SK
 | [skill-performance](skill-performance/SKILL.md) | Performance patterns, triage | architect, developer |
 | [skill-events](skill-events/SKILL.md) | Event subscriber/publisher patterns | architect, developer |
 | [skill-permissions](skill-permissions/SKILL.md) | Permission sets, security | developer |
+| [skill-standard-grounding](skill-standard-grounding/SKILL.md) | Microsoft BC standard source, graph, versions, localization | architect, developer, reviewer, Dredd, specification |
 | [skill-testing](skill-testing/SKILL.md) | Test strategy, Given/When/Then | conductor, developer |
 
 ## Recommended Skills (SHOULD exist)
