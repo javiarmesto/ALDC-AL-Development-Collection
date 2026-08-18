@@ -6,6 +6,10 @@
       "args": ["-y", "@nicholasglazer/al-symbols-mcp"],
       "env": {}
     },
+    "bc-code-atlas": {
+      "type": "http",
+      "url": "https://bc-code-atlas.stefanmaron.dev/mcp"
+    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp",
