@@ -7,7 +7,7 @@ description: "Ground AL architecture, implementation, debugging, reviews, and up
 
 ## Purpose
 
-Use **BC Code Atlas** as ALDC's Standard Grounding Provider. The goal is to replace guesses about Microsoft standard behavior with evidence from the real Business Central AL source and official documentation.
+Use **BC Code Atlas** as ALDC's Standard Grounding Provider. Replace guesses about Microsoft standard behavior with evidence from the real Business Central AL source and official documentation.
 
 This skill does **not** copy Base Application, Business Foundation, or System Application into the consuming project. Agents query BC Code Atlas through MCP and load only the evidence required for the current decision.
 
@@ -15,11 +15,11 @@ This skill does **not** copy Base Application, Business Foundation, or System Ap
 
 ALDC separates three evidence domains:
 
-1. **Project grounding** — the current workspace answers what the customization does.
+1. **Project grounding** — current workspace answers what the customization does.
 2. **Standard grounding** — BC Code Atlas answers what Microsoft Business Central does.
 3. **Quality grounding** — BCQuality answers what AL quality guidance applies.
 
-Do not substitute one domain for another. A BCQuality rule is not proof of standard implementation, and a standard source excerpt is not proof of the customization's behavior.
+Do not substitute one domain for another. All machine-readable evidence follows `docs/framework/ALDC-Evidence-Model-v1.md`.
 
 ## Provider
 
@@ -57,10 +57,10 @@ Use, in order:
 
 1. `application` when it identifies the Business Central application version;
 2. `platform` only when the application version is unavailable;
-3. an explicit target version supplied by the user/spec/upgrade plan;
+3. explicit target version supplied by user/spec/upgrade plan;
 4. BC Code Atlas default corpus only when no version can be established and the result is explicitly marked as default-corpus evidence.
 
-Normalize the version to the most specific useful major/minor value, e.g. `27.5` or `28.3`.
+Normalize to the most specific useful major/minor value, e.g. `27.5` or `28.3`.
 
 ### 2. Determine country/localization
 
@@ -73,12 +73,12 @@ Never invent a country. If localization materially affects the answer and cannot
 For any non-default target corpus:
 
 1. `bcatlas_resolve_version(country=<country>, spec=<version>)`.
-2. If unresolved, use `bcatlas_list_versions(country=<country>)` to find the nearest valid specification.
+2. If unresolved, use `bcatlas_list_versions(country=<country>)` to find a valid specification.
 3. If resolved but not warm, check `bcatlas_list_warm_versions()`.
-4. If the exact target is required, call `bcatlas_request_version(country=<country>, spec=<version>)` and use `bcatlas_version_status(...)` until ready when the runtime permits waiting/polling.
-5. Use the returned **`commit_sha`** as the `version` argument in subsequent search/graph/source calls. Do not pass `version_string` as the version selector.
+4. If the exact target is required, call `bcatlas_request_version(...)` and use `bcatlas_version_status(...)` when the runtime permits polling.
+5. Use returned **`commit_sha`** as the `version` argument in subsequent search/graph/source calls. Do not use `version_string` as the selector.
 
-Do not silently fall back from an exact requested version to another version. If the exact corpus is unavailable, say which corpus was used.
+Do not silently fall back from an exact requested version to another version.
 
 ## Query strategy
 
@@ -86,63 +86,84 @@ Use the cheapest evidence path that can answer the question.
 
 ### Semantic discovery
 
-Use `bcatlas_search` when you know the behavior/concept but not the exact symbol.
-
-Examples:
-
-- `sales order posting validation`
-- `item availability before sales line posting`
-- `document date validation sales header`
-
-Treat semantic results as **candidates**, not final proof.
+Use `bcatlas_search` when you know the behavior/concept but not the exact symbol. Treat results as **candidates**, never final proof.
 
 ### Structural investigation
 
-Use graph tools when the question is about relationships:
+Use graph tools for relationship claims:
 
 - `bcatlas_query_graph`
 - `bcatlas_get_node`
 - `bcatlas_get_neighbors`
 - `bcatlas_shortest_path`
 
-Prefer structural evidence for claims such as "X calls Y", "Z subscribes to event E", or "this page extends object O".
+Prefer structural evidence for claims such as "X calls Y", "Z subscribes to E", or "this object extends O".
 
 ### Exact source verification
 
-Before making a material implementation or review decision, verify the selected candidate with exact source when practical:
+Before a material implementation/review decision, verify the selected candidate with exact source when practical:
 
-- `bcatlas_get_signature` — cheapest exact declaration check;
-- `bcatlas_get_procedure_body` — exact implementation of a procedure/trigger;
-- `bcatlas_get_object_source` — full object only when narrower evidence is insufficient.
+- `bcatlas_get_signature`
+- `bcatlas_get_procedure_body`
+- `bcatlas_get_object_source`
 
 Do not pull a full object when a signature or procedure body is enough.
 
 ### Version/change investigation
 
-Use:
+Use `bcatlas_diff` for scoped comparisons and `bcatlas_symbol_history` for real change points. Never claim a version behavior change from memory when version evidence is available.
 
-- `bcatlas_diff` for a scoped comparison between two versions;
-- `bcatlas_symbol_history` for real change points of a specific symbol.
+## Machine-readable evidence contract
 
-Never claim a BC-version behavioral change from memory when version-diff evidence is available.
+Every Standard Grounding conclusion that affects architecture, implementation, review severity, audit verdict, or upgrade risk MUST produce an **ALDC Evidence Model v1 record**.
 
-## Evidence contract
+Required shape:
 
-Any Standard Grounding conclusion that affects architecture, implementation, review severity, or upgrade risk must capture:
-
-```text
-STANDARD EVIDENCE
-provider: bc-code-atlas
-country: <country>
-requested-version: <version>
-resolved-version: <version_string when returned>
-commit: <commit_sha when version-resolved>
-symbol: <object/procedure/event>
-evidence: <search | graph | signature | procedure-body | object-source | diff | history>
-conclusion: <one concise statement supported by the evidence>
+```json
+{
+  "id": "ev-standard-<unique>",
+  "domain": "standard",
+  "provider": "bc-code-atlas",
+  "kind": "procedure-source",
+  "claim": "<one concise statement actually supported>",
+  "locator": {
+    "country": "<country>",
+    "version": "<requested/resolved human version>",
+    "commit_sha": "<resolved immutable commit>",
+    "symbol": "<object/procedure/event when applicable>"
+  },
+  "verification": {
+    "method": "<bcatlas_* tool>",
+    "exact": true
+  },
+  "status": "verified"
+}
 ```
 
-When source evidence is unavailable, mark the conclusion as unverified instead of presenting it as standard behavior.
+Rules:
+
+- `commit_sha` is mandatory for persisted BC Code Atlas evidence.
+- `kind: search-candidate` is allowed for discovery but MUST NOT be the sole decisive evidence of a behavioral claim.
+- `graph-relationship` may be decisive for relationship claims.
+- `signature`, `procedure-source`, `object-source`, `version-diff`, and `symbol-history` should identify the exact verification tool.
+- `status` is one of `verified | partial | unavailable | contradicted`.
+- When evidence is reused by multiple findings, preserve one top-level evidence record and reference it via `evidence_ids[]`; do not duplicate it with new IDs.
+- Never put Atlas paths/URLs into legacy BCQuality `references[]`.
+
+### Subagent return requirement
+
+When this skill is loaded by an implementation/review subagent, append to its normal output:
+
+```markdown
+### Evidence (JSON)
+```json
+[
+  { "id": "...", "domain": "standard", "provider": "bc-code-atlas", "kind": "...", "claim": "...", "locator": {"country":"...","version":"...","commit_sha":"..."}, "verification": {"method":"bcatlas_...","exact":true}, "status": "verified" }
+]
+```
+```
+
+If no decisive Standard Grounding evidence was produced, do not invent a record.
 
 ## Decision workflow
 
@@ -150,40 +171,43 @@ For a standard-dependent task:
 
 1. Inspect workspace/spec and identify the exact standard question.
 2. Resolve BC version and country.
-3. Discover candidate symbols with semantic search if needed.
-4. Follow structural relationships when the claim concerns calls/subscribers/dependencies.
-5. Verify the decisive symbol using exact source.
-6. Compare versions when the task is an upgrade/regression/collision investigation.
-7. Return only the relevant evidence to the parent agent; do not dump large source objects into context.
-8. Keep Project, Standard, and Quality evidence separate in the final reasoning/report.
+3. Discover candidate symbols if needed.
+4. Follow structural relationships for calls/subscribers/dependencies.
+5. Verify decisive symbol using exact source.
+6. Compare versions for upgrade/regression/collision work.
+7. Produce compact typed evidence.
+8. Return only relevant evidence to parent agent; do not dump large standard source bodies.
+9. Keep Project, Standard, and Quality evidence separate.
 
 ## Failure and fallback policy
 
-BC Code Atlas is an evidence provider, not a hard runtime dependency for every ALDC task.
+BC Code Atlas is an evidence provider, not a hard dependency for every ALDC task.
 
-If the provider is unavailable:
+If unavailable:
 
 - do not fabricate standard-source evidence;
-- continue only when the task can be completed safely from project symbols/workspace evidence;
-- mark standard-dependent conclusions as **UNVERIFIED STANDARD BEHAVIOR**;
-- for architecture, code review, specification, or upgrade decisions where standard behavior is decisive, request human confirmation before treating an unverified assumption as accepted evidence.
+- continue only when task can be completed safely from project symbols/workspace evidence;
+- when the missing evidence matters, produce an `unavailable` record with a real locator only if known and useful;
+- never convert provider outage into a code defect;
+- for a material claim, let the owning workflow apply its evidence gate (`EVIDENCE_REQUIRED` / human confirmation).
 
-`al-symbols-mcp` may verify symbols available in installed `.app` dependencies, but it is not a replacement for BC Code Atlas source/graph/version-history evidence.
+`al-symbols-mcp` may verify symbols available in installed dependencies, but it is not a replacement for source/graph/version-history evidence.
 
 ## Anti-patterns
 
 Do not:
 
-- clone or vendor the entire Microsoft BaseApp into an ALDC consuming project merely to give an agent context;
+- clone/vendor the entire Microsoft BaseApp into a consuming project for context;
 - load complete standard objects when a narrow signature/body answers the question;
-- use the default `w1-28` corpus while claiming evidence for another version;
+- use default `w1-28` while claiming another version;
 - present semantic similarity as proof of a call relationship;
-- use model memory as evidence when BC Code Atlas can verify the claim;
-- mix BCQuality guidance with Microsoft standard-source evidence in a single citation/evidence statement.
+- use model memory as evidence when Atlas can verify the claim;
+- mix BCQuality guidance with standard-source evidence in one citation;
+- create multiple evidence IDs for the same claim + locator just because another agent consumes it.
 
 ## Provider abstraction
 
-Agents depend on the **Standard Grounding capability**, not on BC Code Atlas internals. BC Code Atlas is the first provider and may be replaced or supplemented later without changing the evidence contract above.
+Agents depend on the **Standard Grounding capability**, not BC Code Atlas internals. BC Code Atlas is the first provider and may be replaced/supplemented later without changing the ALDC Evidence Model.
 
 Conceptual capability surface:
 
@@ -195,4 +219,4 @@ trace_standard_relationships(symbol)
 compare_standard_versions(symbol, from, to)
 ```
 
-Map these capabilities to the available `bcatlas_*` tools at runtime.
+Map these to available `bcatlas_*` tools at runtime.
