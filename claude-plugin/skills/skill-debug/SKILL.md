@@ -42,7 +42,7 @@ Scenario: "Value is wrong after posting"
 
 1. Set breakpoint at final location (where value is wrong)
 2. Work backwards to find where value is set
-3. Use `usages` tool to find all assignments
+3. Use al-symbols-mcp `al_find_references` (or `Grep` for text search) to find all assignments
 4. Set breakpoints at each assignment point
 5. Step through to find which execution path is taken
 6. Inspect conditions and variable states at each point
@@ -130,7 +130,7 @@ Gather issue information:
 
 ### Step 2a: Isolate the Problem (Runtime / Logic)
 
-1. Narrow down scope with `search` and `usages` tools
+1. Narrow down scope with `Grep`/`Glob` and al-symbols-mcp `al_find_references`
 2. Identify suspect objects (tables, pages, codeunits, event subscribers)
 3. Attach debugger with selected strategy (Pattern 1)
 4. Set strategic breakpoints:
