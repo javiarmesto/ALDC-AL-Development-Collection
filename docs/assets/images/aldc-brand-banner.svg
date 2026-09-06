@@ -3,76 +3,76 @@
   <desc id="desc">Technical paper banner showing a traceable agentic engineering flow with human review.</desc>
   <defs>
     <pattern id="minorGrid" width="8" height="8" patternUnits="userSpaceOnUse">
-      <path d="M8 0H0V8" fill="none" stroke="#0891B2" stroke-opacity=".035" stroke-width="1"/>
+      <path d="M8 0H0V8" fill="none" stroke="#1E2160" stroke-opacity=".025" stroke-width="1"/>
     </pattern>
     <pattern id="majorGrid" width="32" height="32" patternUnits="userSpaceOnUse">
       <rect width="32" height="32" fill="url(#minorGrid)"/>
-      <path d="M32 0H0V32" fill="none" stroke="#0F172A" stroke-opacity=".07" stroke-width="1"/>
+      <path d="M32 0H0V32" fill="none" stroke="#1E2160" stroke-opacity=".075" stroke-width="1"/>
     </pattern>
     <linearGradient id="accent" x1="0" x2="1">
-      <stop offset="0" stop-color="#38BDF8"/>
-      <stop offset=".72" stop-color="#0891B2"/>
-      <stop offset=".72" stop-color="#D946EF"/>
-      <stop offset="1" stop-color="#A21CAF"/>
+      <stop offset="0" stop-color="#22CCE0"/>
+      <stop offset=".72" stop-color="#0B8293"/>
+      <stop offset=".72" stop-color="#C72F83"/>
+      <stop offset="1" stop-color="#98225F"/>
     </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0F172A" flood-opacity=".09"/>
+      <feDropShadow dx="3" dy="3" stdDeviation="0" flood-color="#1E2160" flood-opacity=".07"/>
     </filter>
   </defs>
 
-  <rect x="1" y="1" width="1278" height="418" rx="18" fill="#F7F9F8" stroke="#B8C9D3" stroke-width="2"/>
+  <rect x="1" y="1" width="1278" height="418" rx="3" fill="#F6F3EC" stroke="#C9C5BD" stroke-width="2"/>
   <rect x="1" y="1" width="1278" height="418" rx="18" fill="url(#majorGrid)"/>
-  <rect x="1" y="1" width="1278" height="7" rx="4" fill="url(#accent)"/>
+  <rect x="1" y="1" width="1278" height="5" fill="#1E2160"/>
 
   <g font-family="Inter, Segoe UI, Arial, sans-serif">
     <g transform="translate(72 58)">
-      <rect width="166" height="30" rx="4" fill="#E0F7FF" stroke="#38BDF8"/>
-      <text x="15" y="20" fill="#0E7490" font-family="JetBrains Mono, Consolas, monospace" font-size="13" font-weight="700" letter-spacing="1.5">OPEN ENGINEERING</text>
-      <text x="184" y="20" fill="#64748B" font-family="JetBrains Mono, Consolas, monospace" font-size="13" font-weight="600">// BUSINESS CENTRAL</text>
+      <rect width="166" height="30" rx="2" fill="#E3F6F4" stroke="#22CCE0"/>
+      <text x="15" y="20" fill="#0B8293" font-family="JetBrains Mono, Consolas, monospace" font-size="13" font-weight="700" letter-spacing="1.5">OPEN ENGINEERING</text>
+      <text x="184" y="20" fill="#626274" font-family="JetBrains Mono, Consolas, monospace" font-size="13" font-weight="600">// BUSINESS CENTRAL</text>
     </g>
 
-    <text x="70" y="205" fill="#0F172A" font-size="104" font-weight="800" letter-spacing="-6">ALDC</text>
-    <rect x="72" y="225" width="116" height="5" fill="#38BDF8"/>
-    <rect x="188" y="225" width="48" height="5" fill="#D946EF"/>
-    <text x="72" y="276" fill="#263548" font-size="32" font-weight="700" letter-spacing="-.7">AL Agentic Engineering System</text>
-    <text x="72" y="321" fill="#64748B" font-size="22">Structured delivery. Traceable decisions. Human-governed AI.</text>
+    <text x="70" y="205" fill="#1E2160" font-size="104" font-weight="800" letter-spacing="-6">ALDC</text>
+    <rect x="72" y="225" width="116" height="5" fill="#22CCE0"/>
+    <rect x="188" y="225" width="48" height="5" fill="#C72F83"/>
+    <text x="72" y="276" fill="#35364F" font-size="32" font-weight="700" letter-spacing="-.7">AL Agentic Engineering System</text>
+    <text x="72" y="321" fill="#626274" font-size="22">Structured delivery. Traceable decisions. Human-governed AI.</text>
     <g transform="translate(88 354) rotate(-1)">
-      <path d="M0 9H22" stroke="#D946EF" stroke-width="2" stroke-linecap="round"/>
-      <path d="M17 4L23 9L17 14" fill="none" stroke="#D946EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="34" y="15" fill="#A21CAF" font-size="18" font-style="italic" font-weight="650">Engineering systems, visibly reasoned.</text>
+      <path d="M0 9H22" stroke="#C72F83" stroke-width="2" stroke-linecap="round"/>
+      <path d="M17 4L23 9L17 14" fill="none" stroke="#C72F83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="34" y="15" fill="#98225F" font-size="18" font-style="italic" font-weight="650">Engineering systems, visibly reasoned.</text>
     </g>
   </g>
 
   <g transform="translate(730 88)" filter="url(#shadow)" font-family="JetBrains Mono, Consolas, monospace">
-    <path d="M70 108H408" fill="none" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="70" cy="108" r="7" fill="#D946EF"/>
-    <circle cx="408" cy="108" r="7" fill="#D946EF"/>
+    <path d="M70 108H408" fill="none" stroke="#22CCE0" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="70" cy="108" r="7" fill="#C72F83"/>
+    <circle cx="408" cy="108" r="7" fill="#C72F83"/>
 
     <g transform="translate(0 62)">
-      <rect width="140" height="92" rx="9" fill="#FFFFFF" fill-opacity=".96" stroke="#38BDF8" stroke-width="2"/>
-      <text x="18" y="30" fill="#0891B2" font-size="12" font-weight="700" letter-spacing="1.5">01 / ARCH</text>
-      <path d="M18 49H104M18 62H84" stroke="#B8C9D3" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="112" cy="66" r="9" fill="#E0F7FF" stroke="#38BDF8"/>
+      <rect width="140" height="92" rx="3" fill="#FBF8F1" fill-opacity=".96" stroke="#22CCE0" stroke-width="2"/>
+      <text x="18" y="30" fill="#0B8293" font-size="12" font-weight="700" letter-spacing="1.5">01 / ARCH</text>
+      <path d="M18 49H104M18 62H84" stroke="#C9C5BD" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="112" cy="66" r="9" fill="#E3F6F4" stroke="#22CCE0"/>
     </g>
     <g transform="translate(122 0)">
-      <rect width="140" height="92" rx="9" fill="#FFFFFF" fill-opacity=".96" stroke="#38BDF8" stroke-width="2"/>
-      <text x="18" y="30" fill="#0891B2" font-size="12" font-weight="700" letter-spacing="1.5">02 / SPEC</text>
-      <path d="M18 49H104M18 62H84" stroke="#B8C9D3" stroke-width="3" stroke-linecap="round"/>
-      <rect x="104" y="54" width="18" height="18" rx="3" fill="#E0F7FF" stroke="#38BDF8"/>
+      <rect width="140" height="92" rx="3" fill="#FBF8F1" fill-opacity=".96" stroke="#22CCE0" stroke-width="2"/>
+      <text x="18" y="30" fill="#0B8293" font-size="12" font-weight="700" letter-spacing="1.5">02 / SPEC</text>
+      <path d="M18 49H104M18 62H84" stroke="#C9C5BD" stroke-width="3" stroke-linecap="round"/>
+      <rect x="104" y="54" width="18" height="18" rx="2" fill="#E3F6F4" stroke="#22CCE0"/>
     </g>
     <g transform="translate(244 124)">
-      <rect width="140" height="92" rx="9" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
+      <rect width="140" height="92" rx="3" fill="#1E2160" stroke="#22CCE0" stroke-width="2"/>
       <text x="18" y="30" fill="#91E3FA" font-size="12" font-weight="700" letter-spacing="1.5">03 / BUILD</text>
       <path d="M18 49H104M18 62H84" stroke="#587287" stroke-width="3" stroke-linecap="round"/>
-      <path d="M108 56L115 63L125 49" fill="none" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M108 56L115 63L125 49" fill="none" stroke="#22CCE0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
     <g transform="translate(366 62)">
-      <rect width="140" height="92" rx="9" fill="#FCE7F3" fill-opacity=".96" stroke="#D946EF" stroke-width="2"/>
-      <text x="18" y="30" fill="#A21CAF" font-size="12" font-weight="700" letter-spacing="1.5">04 / REVIEW</text>
+      <rect width="140" height="92" rx="3" fill="#F5DCE8" fill-opacity=".96" stroke="#C72F83" stroke-width="2"/>
+      <text x="18" y="30" fill="#98225F" font-size="12" font-weight="700" letter-spacing="1.5">04 / REVIEW</text>
       <path d="M18 49H96M18 62H76" stroke="#D6A5D8" stroke-width="3" stroke-linecap="round"/>
-      <path d="M101 57L110 66L126 45" fill="none" stroke="#A21CAF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M101 57L110 66L126 45" fill="none" stroke="#98225F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
-    <text x="118" y="264" fill="#64748B" font-size="12" letter-spacing="1">EVIDENCE → DECISION → CONTROL</text>
-    <path d="M93 250C180 278 288 278 398 248" fill="none" stroke="#D946EF" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 7"/>
+    <text x="118" y="264" fill="#626274" font-size="12" letter-spacing="1">EVIDENCE → DECISION → CONTROL</text>
+    <path d="M93 250C180 278 288 278 398 248" fill="none" stroke="#C72F83" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 7"/>
   </g>
 </svg>
