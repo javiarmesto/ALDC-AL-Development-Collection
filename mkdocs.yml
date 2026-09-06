@@ -1,5 +1,5 @@
-site_name: AL Development Collection
-site_description: Spec-driven AI framework for Microsoft Dynamics 365 Business Central
+site_name: ALDC — AL Agentic Engineering System
+site_description: Open agentic engineering for Microsoft Dynamics 365 Business Central — structured, traceable and human-governed
 site_author: Javier Armesto González
 site_url: https://javiarmesto.github.io/ALDC-AL-Development-Collection/
 
@@ -7,19 +7,19 @@ repo_name: javiarmesto/ALDC-AL-Development-Collection
 repo_url: https://github.com/javiarmesto/ALDC-AL-Development-Collection
 edit_uri: edit/main/docs/
 
-copyright: Copyright &copy; 2025 Javier Armesto González
+copyright: Copyright &copy; 2026 Javier Armesto González
 
 theme:
   name: material
   language: en
   palette:
-    # Single light palette — Base44 Softly Lit Gradient Canvas
+    # Single light palette — ALDC Open Engineering technical paper
     - scheme: default
       primary: custom
       accent: custom
 
-  logo: assets/images/logo.png
-  favicon: assets/images/favicon.png
+  logo: assets/images/aldc-mark.svg
+  favicon: assets/images/aldc-favicon.svg
 
   font:
     text: Inter

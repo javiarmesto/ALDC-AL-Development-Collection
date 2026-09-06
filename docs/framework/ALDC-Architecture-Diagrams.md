@@ -101,23 +101,23 @@ flowchart TD
     COND --> DONE[Delivery]
     DEV --> DONE_LOW[Delivery]
 
-    style REQ fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style CLASSIFY fill:#ebffb1,color:#232529,stroke:#ade900
-    style DECOMPOSE fill:#ebffb1,color:#232529,stroke:#ade900
-    style ARCH fill:#ebffb1,color:#232529,stroke:#ade900
-    style DEV fill:#7a9e00,color:#fff
-    style COND fill:#d8723c,color:#fff
-    style COND_A fill:#d8723c,color:#fff
-    style COND_B fill:#d8723c,color:#fff
-    style SPEC_LOW fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style SPEC_A fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style SPEC_B fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style SPEC_SINGLE fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style ARCH_DOC fill:#faf9f7,color:#232529,stroke:#cfcfcf
-    style DONE fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style DONE_A fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style DONE_B fill:#ffffff,color:#232529,stroke:#cfcfcf
-    style DONE_LOW fill:#ffffff,color:#232529,stroke:#cfcfcf
+    style REQ fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style CLASSIFY fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style DECOMPOSE fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style ARCH fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style DEV fill:#0F172A,color:#fff,stroke:#38BDF8
+    style COND fill:#A21CAF,color:#fff,stroke:#D946EF
+    style COND_A fill:#A21CAF,color:#fff,stroke:#D946EF
+    style COND_B fill:#A21CAF,color:#fff,stroke:#D946EF
+    style SPEC_LOW fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style SPEC_A fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style SPEC_B fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style SPEC_SINGLE fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style ARCH_DOC fill:#F7F9F8,color:#0F172A,stroke:#B8C9D3
+    style DONE fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style DONE_A fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style DONE_B fill:#ffffff,color:#0F172A,stroke:#B8C9D3
+    style DONE_LOW fill:#ffffff,color:#0F172A,stroke:#B8C9D3
 ```
 
 ---
@@ -167,9 +167,9 @@ flowchart TD
         FINAL_HITL -->|Approved| PLAN_COMPLETE
     end
 
-    style RED fill:#ff631f,color:#fff
-    style GREEN fill:#7a9e00,color:#fff
-    style REFACTOR fill:#7a9e00,color:#fff
+    style RED fill:#A21CAF,color:#fff,stroke:#D946EF
+    style GREEN fill:#0F766E,color:#fff,stroke:#38BDF8
+    style REFACTOR fill:#0E7490,color:#fff,stroke:#38BDF8
 ```
 
 ---
@@ -207,10 +207,10 @@ graph TB
     COND -->|produces| DONE
     ALL_AGENTS["All Agents"] -->|read/update| MEMORY
 
-    style MEMORY fill:#d8723c,color:#fff
-    style ARCH_A fill:#ebffb1,color:#232529,stroke:#ade900
-    style SPEC_A fill:#7a9e00,color:#fff
-    style TP_A fill:#7a9e00,color:#fff
+    style MEMORY fill:#A21CAF,color:#fff,stroke:#D946EF
+    style ARCH_A fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style SPEC_A fill:#0E7490,color:#fff,stroke:#38BDF8
+    style TP_A fill:#0F172A,color:#fff,stroke:#38BDF8
 ```
 
 ---

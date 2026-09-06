@@ -163,10 +163,10 @@ flowchart TD
     C -->|"produces"| D
     
     %% Elegant, accessible color palette with proper contrast
-    classDef foundation fill:#7a9e00,stroke:#7a9e00,stroke-width:2px,color:#ffffff,font-size:14px
-    classDef primitives fill:#ffffff,stroke:#cfcfcf,stroke-width:1.5px,color:#232529,font-size:12px
-    classDef optimization fill:#d8723c,stroke:#d8723c,stroke-width:2px,color:#ffffff,font-size:14px
-    classDef outcome fill:#7a9e00,stroke:#7a9e00,stroke-width:2.5px,color:#ffffff,font-size:14px
+    classDef foundation fill:#0F172A,stroke:#38BDF8,stroke-width:2px,color:#ffffff,font-size:14px
+    classDef primitives fill:#ffffff,stroke:#38BDF8,stroke-width:1.5px,color:#0F172A,font-size:12px
+    classDef optimization fill:#A21CAF,stroke:#D946EF,stroke-width:2px,color:#ffffff,font-size:14px
+    classDef outcome fill:#0E7490,stroke:#38BDF8,stroke-width:2.5px,color:#ffffff,font-size:14px
     
     class A foundation
     class B1,B2,B3,B4,B5,B6 primitives
@@ -178,7 +178,7 @@ flowchart TD
     style B_ROW2 fill:transparent,stroke:none
     
     %% High contrast container styling for Agent Primitives with spacing
-    style B fill:#ebffb1,stroke:#696f7b,stroke-width:2px,color:#232529,font-size:13px,font-weight:bold,margin-top:10px,padding-top:15px
+    style B fill:#E0F7FF,stroke:#0891B2,stroke-width:2px,color:#0F172A,font-size:13px,font-weight:bold,margin-top:10px,padding-top:15px
 ```
 
 </div>
