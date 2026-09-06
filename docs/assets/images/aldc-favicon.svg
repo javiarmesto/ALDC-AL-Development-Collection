@@ -6,5 +6,5 @@
   <circle cx="32.4" cy="14.8" r="3.6" fill="#38BDF8"/>
   <circle cx="14.5" cy="47.5" r="3.2" fill="#38BDF8"/>
   <circle cx="50" cy="47.5" r="3.2" fill="#38BDF8"/>
-  <path d="M42.5 29.8L48.2 35.5L42.5 41.2L36.8 35.5Z" fill="#D946EF" stroke="#0F172A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M42.5 29.8L48.2 35.5L42.5 41.2L36.8 35.5Z" fill="#D946EF" stroke="#0F172A" stroke-width=".8" stroke-linejoin="round"/>
 </svg>
