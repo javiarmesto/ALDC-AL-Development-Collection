@@ -54,12 +54,12 @@ graph TD
     HighCopilot --> HighCond2["Use al-conductor mode"]
     HighStd --> HighCond3["Use al-conductor mode"]
     
-    style Gate fill:#ff631f,stroke:#d8723c,stroke-width:4px,color:#fff
-    style Low fill:#7a9e00,stroke:#7a9e00,color:#fff
-    style Med fill:#ebffb1,stroke:#d8723c,color:#000
-    style High fill:#ff631f,stroke:#d8723c,color:#fff
-    style Analyze fill:#E3FAFC,stroke:#7a9e00
-    style Present fill:#FFF4E6,stroke:#d8723c
+    style Gate fill:#D946EF,stroke:#A21CAF,stroke-width:4px,color:#fff
+    style Low fill:#0F766E,stroke:#0F766E,color:#fff
+    style Med fill:#E0F7FF,stroke:#0891B2,color:#0F172A
+    style High fill:#A21CAF,stroke:#D946EF,color:#fff
+    style Analyze fill:#E0F7FF,stroke:#38BDF8,color:#0F172A
+    style Present fill:#FCE7F3,stroke:#D946EF,color:#0F172A
 ```
 
 ### 🚦 Validation Gate Protocol
@@ -690,4 +690,3 @@ Use al-debugger mode
 **Framework**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)  
 **Collection**: AL Development Collection v2.6.0  
 **Last Updated**: 2025-11-08
-

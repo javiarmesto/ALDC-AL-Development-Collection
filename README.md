@@ -1,20 +1,20 @@
 <div align="center">
 
-<img src="docs/assets/images/NewALDCbanner.png" alt="ALDC — AL Development Collection — blueprint" width="760">
+<img src="docs/assets/images/aldc-brand-banner.svg" alt="ALDC — AL Agentic Engineering System" width="900">
 
-# ALDC — AL Development Collection
+# ALDC — AL Agentic Engineering System
 
 **Skills-based, spec-driven, TDD-orchestrated development framework for Microsoft Dynamics 365 Business Central.**
 
-_From vibe coding to controlled engineering._
+_Engineering systems, visibly reasoned._
 
-[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-7a9e00.svg?style=flat-square&labelColor=232529)](docs/framework/ALDC-Core-Spec-v1.2.md)
-[![Version](https://img.shields.io/badge/version-4.2.0-d8723c?style=flat-square&labelColor=232529)](CHANGELOG.md)
-[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-ff631f.svg?style=flat-square&labelColor=232529)](claude-plugin/)
-[![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-7a9e00?style=flat-square&labelColor=232529)](https://danielmeppiel.github.io/awesome-ai-native/)
-[![License](https://img.shields.io/badge/license-MIT-7a9e00?style=flat-square&labelColor=232529)](./LICENSE)
-[![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/AL-Development-Collection-for-GitHub-Copilot?style=flat-square&labelColor=232529)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/javiarmesto/AL-Development-Collection-for-GitHub-Copilot?style=flat-square&labelColor=232529)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/stargazers)
+[![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-0891B2.svg?style=flat-square&labelColor=0F172A)](docs/framework/ALDC-Core-Spec-v1.2.md)
+[![Version](https://img.shields.io/badge/version-4.2.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
+[![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
+[![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/AL-Development-Collection-for-GitHub-Copilot?style=flat-square&labelColor=0F172A&color=0891B2)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/javiarmesto/AL-Development-Collection-for-GitHub-Copilot?style=flat-square&labelColor=0F172A&color=D946EF)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/stargazers)
 
 </div>
 

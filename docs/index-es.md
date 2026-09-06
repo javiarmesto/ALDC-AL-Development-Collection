@@ -14,9 +14,11 @@ hide:
   <span class="hero-banner__arrow">→</span>
 </a>
 
-<div class="hero-eyebrow">AL Development Collection · IA dirigida por specs para Business Central · <a href="../">English</a></div>
+<div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="../">English</a></div>
 
 <h2 class="hero-title">Entrega extensiones de Business Central con agentes de IA que siguen tu proceso.</h2>
+
+<div class="hero-annotation">Sistemas de ingeniería, con razonamiento visible.</div>
 
 <p class="hero-tagline">ALDC da a Copilot y Claude Code un modelo de trabajo para entregar AL: specs, planes, tests, gates de revisión y skills reutilizables. Menos "vibe coding". Más implementación trazable.</p>
 
@@ -104,13 +106,13 @@ flowchart TD
     I --> V[Review<br/><small>contra la spec</small>]
     V --> M([Merge])
 
-    style R fill:#ebffb1,color:#232529,stroke:#ade900
-    style M fill:#7a9e00,color:#fff,stroke:none
-    style S fill:#ebffb1,color:#232529,stroke:#ade900
-    style A fill:#ebffb1,color:#232529,stroke:#ade900
-    style T fill:#d8723c,color:#fff,stroke:none
-    style I fill:#d8723c,color:#fff,stroke:none
-    style V fill:#d8723c,color:#fff,stroke:none
+    style R fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style M fill:#0F172A,color:#fff,stroke:#38BDF8
+    style S fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style A fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
+    style T fill:#0E7490,color:#fff,stroke:#38BDF8
+    style I fill:#0E7490,color:#fff,stroke:#38BDF8
+    style V fill:#A21CAF,color:#fff,stroke:#D946EF
 ```
 
 </div>

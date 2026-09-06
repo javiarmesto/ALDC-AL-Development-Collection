@@ -158,10 +158,10 @@ graph TD
     Arch3 --> Conductor4[🎼 al-conductor]
     Arch4 --> Conductor5[🎼 al-conductor]
     
-    style Gate fill:#ff631f,stroke:#d8723c,color:#fff
-    style Low fill:#7a9e00,stroke:#7a9e00,color:#fff
-    style Med fill:#ebffb1,stroke:#d8723c,color:#000
-    style High fill:#ff631f,stroke:#d8723c,color:#fff
+    style Gate fill:#D946EF,stroke:#A21CAF,color:#fff
+    style Low fill:#0F766E,stroke:#0F766E,color:#fff
+    style Med fill:#E0F7FF,stroke:#0891B2,color:#0F172A
+    style High fill:#A21CAF,stroke:#D946EF,color:#fff
 ```
 
 ## 📖 Detailed Mode Descriptions
