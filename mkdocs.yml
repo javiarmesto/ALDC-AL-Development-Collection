@@ -168,3 +168,8 @@ nav:
     - Complete Development Flow: workflows/complete-development-flow.md
   - Contributing: CONTRIBUTING.md
   - Changelog: CHANGELOG.md
+
+# Product documentation only.
+exclude_docs: |
+  worklogs/
+  TEST-VSIX.md

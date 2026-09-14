@@ -15,7 +15,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
-aldc_audit* 
+aldc_audit*
 # Test outputs
 test-results/
 coverage/
@@ -85,3 +85,12 @@ aldc_audit*.md
 aldc_audit*.json
 PUSH.md
 PUSH.ps1
+
+# Maintainer-only notes and rehearsal material
+/ALDC-Ensayo*.md
+/ALDC-Cambios-y-Ensayo*.md
+/ALDC-Resultado-Prueba*.md
+/ALDC-Comunicacion*.md
+/ALDC-Evidencias*.zip
+/docs/worklogs/
+/TEST-VSIX.md

@@ -97,8 +97,8 @@
     "claude-plugin/templates/memory-template.md": "cc9a55e50c97f83dafba1a05d747d91afaf5fe3eccf7ea6bee41e25ba4c5cb4b",
     "claude-plugin/tools/bcquality/precondition_hook.ps1": "aa028d40a3c0ab4d1c327b97262a0c1857687d4122d55426e0ae238e11cf45d1",
     "claude-plugin/tools/bcquality/precondition_hook.sh": "0193f100b2bb262a928de3c9c6acf0d1ef0807dca3e36c98844c992b3bee4323",
-    "claude-plugin/tools/context-doctor/README.md": "70b128462d52633dbb7efe410543a783fcd96c5392badc502849e92f2ab902aa",
-    "claude-plugin/tools/context-doctor/aldc_context_doctor.py": "08fb8650af50762430a1e44a7be12d86d28ad66cd7e8c546dcab44fd0ad4073e",
+    "claude-plugin/tools/context-doctor/README.md": "4537d3b8baf1211ec6d5892d6d508536aed6b40d8bff7839f670ff92a49d5dc3",
+    "claude-plugin/tools/context-doctor/aldc_context_doctor.py": "b5a7cf613ba14953a47c6167d51e2349d2e6cec717b3fc33cbeae8b7d84ad1f3",
     "docs/templates/architecture-template.md": "d249785873c1951de082cb4b78896d57c7fafd9d2599007dd0437c14a9746696",
     "docs/templates/bcquality-task-context.md": "91e6e1bb675ebb2ff45002c96d4db6a8038faec3fef6a01b28061f2298e2b3d2",
     "docs/templates/code-review-template.md": "12b817389da5e0689e5f021315c8f18de36e2abd559244f43999beb49b77ed04",
@@ -117,13 +117,13 @@
     "scripts/init-plugin.js": "9e50747624844a612f584650f887aa27286623bb0df93a24ef7c5d5efce86c0b",
     "scripts/install-transaction.js": "55d01d423a1604c622ddf496f1b3aca88d99728da7007cb60bc2d98f16eb2611",
     "scripts/package-provenance.js": "53b3b5423fdea83e668561eefbc6f46f1742a3c9b386079aff50bc21323dc5f5",
-    "scripts/sync-copilot-cli.js": "8c2f3c6d5495ccbcc3f851d19da6c3f169ac55d9423fb8abf54bfaa1a26b0491",
+    "scripts/sync-copilot-cli.js": "6baa7810e3999ca8baf0ed63edd451d3a1d0e4bbbd144275e5de441e86c7ce09",
     "scripts/sync-plugin-support.js": "59e320f5ca05faea8618ddd45009cc77c4df2bb8bff4c9f664dd7b704e7d1ea0",
-    "tools/context-doctor/README.md": "70b128462d52633dbb7efe410543a783fcd96c5392badc502849e92f2ab902aa",
-    "tools/context-doctor/aldc_context_doctor.py": "08fb8650af50762430a1e44a7be12d86d28ad66cd7e8c546dcab44fd0ad4073e"
+    "tools/context-doctor/README.md": "4537d3b8baf1211ec6d5892d6d508536aed6b40d8bff7839f670ff92a49d5dc3",
+    "tools/context-doctor/aldc_context_doctor.py": "b5a7cf613ba14953a47c6167d51e2349d2e6cec717b3fc33cbeae8b7d84ad1f3"
   },
   "outputs": {
-    "README.md": "9dce7daad5f966599751dab7624ab9b70c9160362b9e7ba379fbf77f93443d48",
+    "README.md": "905585950e149dd2094ed2b713f3b8700f5876588e5a9da89ffbfca5fefcbced",
     "agents/al-agent-builder.agent.md": "e938bc634fbfe7268a86259c090c28734064acdb89186f76adf827dd00539397",
     "agents/al-architect.agent.md": "498e8eebc387b30de2da04d6341bb32747226442fbe29ef81fb44c1f6d0db4ed",
     "agents/al-conductor.agent.md": "7505f59be40a2efdddf4b09d3bdcd6056a5f95585d630d77d97ce4288e7ab9f8",
@@ -198,7 +198,7 @@
     "skills/skill-translate/SKILL.md": "6bfed401436afd121d0de0e466e19235e400a77aae4d957c02128430da544ba3",
     "surface.json": "4a202ad44d4e8f8a2742c4fe0f0d651ecfcb9ec0bfab122429ab95ddb7db2aad",
     "templates/memory-template.md": "cc9a55e50c97f83dafba1a05d747d91afaf5fe3eccf7ea6bee41e25ba4c5cb4b",
-    "tools/context-doctor/README.md": "70b128462d52633dbb7efe410543a783fcd96c5392badc502849e92f2ab902aa",
-    "tools/context-doctor/aldc_context_doctor.py": "08fb8650af50762430a1e44a7be12d86d28ad66cd7e8c546dcab44fd0ad4073e"
+    "tools/context-doctor/README.md": "4537d3b8baf1211ec6d5892d6d508536aed6b40d8bff7839f670ff92a49d5dc3",
+    "tools/context-doctor/aldc_context_doctor.py": "b5a7cf613ba14953a47c6167d51e2349d2e6cec717b3fc33cbeae8b7d84ad1f3"
   }
 }

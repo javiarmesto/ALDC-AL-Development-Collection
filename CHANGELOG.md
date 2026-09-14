@@ -1,4 +1,45 @@
-# ALDC Core Changelog
+# ALDC Changelog
+
+## [Unreleased] — planned 4.3.0
+
+### Added
+
+- Architecture-led specification decomposition with stable unit ownership, separate
+  authoring/implementation dependencies and joint review of current revisions.
+
+- Dedicated Spec Agent and a shared specification entrypoint, with human approval
+  before implementation and contracts proportionate to requirement complexity.
+- Read-only Doctor diagnostics for specification, App compilation, Test compilation
+  and test execution, with configuration and runtime observations reported separately.
+- Opt-in BC29-native profile for Copilot Chat, with role-specific AL tool permissions
+  and AL18 guidance. BC28 remains the default for new installations.
+- Canonical adapters for Claude Code, Copilot CLI and Codex, with generated content
+  integrity checks and project initialization.
+- Installation previews, collision reporting, verification receipts and recoverable
+  updates that preserve existing project memory and protect subsequent edits.
+
+### Changed
+
+- Specifications capture technical contracts and acceptance criteria without
+  anticipating AL implementation bodies at MEDIUM complexity.
+- Agent routing preserves approved architecture and passes approved specifications
+  to Conductor or Developer according to complexity.
+- Instruction and domain-guide references are retained for continuation from the
+  current artifacts; native capabilities can satisfy relevant tool requirements.
+
+### Fixed
+
+- Profile projection with CRLF files, packaged template references and cross-host
+  role links.
+- Incomplete payloads, installation recovery edge cases and inconsistent role counts.
+
+### Compatibility
+
+- Node.js 20+ for command-line installation; Python 3.9+ for Doctor.
+- BC29-native selection does not upgrade BC, AL Language or project manifests.
+- This section describes unreleased source changes. Extension and registry releases
+  are separate; 4.2.0 remains the declared package version.
+
 ## [4.2.0] - 2026-06-12
 
 ### Fixed

@@ -83,8 +83,8 @@
     "scripts/sync-plugin-support.js": "59e320f5ca05faea8618ddd45009cc77c4df2bb8bff4c9f664dd7b704e7d1ea0",
     "skills/skill-agent-instructions/examples/agent-advanced-instructions.txt": "f9938f734399e9ec2ad01186dbc761030dd815a1595b813e028c9914a10d9eba",
     "skills/skill-agent-instructions/examples/agent-simple-instructions.txt": "4ad7eb9e8e961f179664118c37ab58c1734be60295bb69e78929cc765b6c98c1",
-    "tools/context-doctor/README.md": "70b128462d52633dbb7efe410543a783fcd96c5392badc502849e92f2ab902aa",
-    "tools/context-doctor/aldc_context_doctor.py": "08fb8650af50762430a1e44a7be12d86d28ad66cd7e8c546dcab44fd0ad4073e"
+    "tools/context-doctor/README.md": "4537d3b8baf1211ec6d5892d6d508536aed6b40d8bff7839f670ff92a49d5dc3",
+    "tools/context-doctor/aldc_context_doctor.py": "b5a7cf613ba14953a47c6167d51e2349d2e6cec717b3fc33cbeae8b7d84ad1f3"
   },
   "outputs": {
     ".claude-plugin/marketplace.json": "51bc579dc146de218dce7a1e7d81c50db38c7168187a664dbe402b34955c8369",
@@ -169,7 +169,7 @@
     "templates/memory-template.md": "cc9a55e50c97f83dafba1a05d747d91afaf5fe3eccf7ea6bee41e25ba4c5cb4b",
     "tools/bcquality/precondition_hook.ps1": "aa028d40a3c0ab4d1c327b97262a0c1857687d4122d55426e0ae238e11cf45d1",
     "tools/bcquality/precondition_hook.sh": "0193f100b2bb262a928de3c9c6acf0d1ef0807dca3e36c98844c992b3bee4323",
-    "tools/context-doctor/README.md": "70b128462d52633dbb7efe410543a783fcd96c5392badc502849e92f2ab902aa",
-    "tools/context-doctor/aldc_context_doctor.py": "08fb8650af50762430a1e44a7be12d86d28ad66cd7e8c546dcab44fd0ad4073e"
+    "tools/context-doctor/README.md": "4537d3b8baf1211ec6d5892d6d508536aed6b40d8bff7839f670ff92a49d5dc3",
+    "tools/context-doctor/aldc_context_doctor.py": "b5a7cf613ba14953a47c6167d51e2349d2e6cec717b3fc33cbeae8b7d84ad1f3"
   }
 }

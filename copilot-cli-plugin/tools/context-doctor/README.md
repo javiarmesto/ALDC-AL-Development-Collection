@@ -109,22 +109,7 @@ Exit 1: selected operation reported unavailable or failed.
 Exit 2: malformed input or affected configuration problem.
 **Exit 0 is not functional success.** JSON retains each operation's state.
 
-## Extraction provenance
+## Maintenance
 
-Read-only donors from `javiarmesto/ALDC-Research-Lab`:
-
-- `b2ce9d9f137fc92574261317294ca2d585beb74b`,
-  `tools/context-doctor/aldc_context_doctor.py` v0.1.6: adapt configuration versus
-  discovered/loaded/executed/verified stages, local report and operation diagnosis.
-- Same commit, `tools/context-handoff/workspace_fingerprint.py`: adapt only
-  `discover_al_projects`, folder/role discovery and dependencies. Prune traversal
-  before recursion and reject symlinks/escapes. No hashing module imported.
-- `7c8ec39e37c0eb1fc8f8e9ad0cf0a08b6aa8421d`, Doctor practical semantics candidate:
-  adapt optional providers and unavailable versus failed execution. Replace the
-  global readiness classifier with per-operation outcomes.
-
-No Evidence Store, Context Envelope, transition fingerprints, Run Health Graph,
-command-version probes, installs, permission changes, builds or publication.
-Source and all three terminal payloads are regenerated together. Acceptance in the **canonical checkout/CI only** (this test script is not
-shipped inside terminal plugins):
-`python3 -B scripts/test-doctor.py`, plus existing installer/package CI gates.
+The canonical script and host adapters are synchronized by the repository generators.
+The behavioral checks run with `python3 -B scripts/test-doctor.py` from a source checkout.

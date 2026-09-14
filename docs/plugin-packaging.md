@@ -1,9 +1,6 @@
-# Canonical plugin packaging — handoff 02, delivery 1
+# ALDC plugins and recoverable installation
 
-This increment adds recoverable project initialization and verifiable packaging.
-Doctor, Spec Agent and changes to the Conductor loop belong to later deliveries.
-No release, marketplace registration, package publication or BC deployment is part
-of this work. The Research Lab was consulted read-only.
+ALDC distributes the same role and workflow contracts through host-specific adapters.
 
 ## Consumer commands
 
@@ -66,7 +63,7 @@ was introduced.
 
 ## Host scope and acceptance
 
-| Surface | Implemented / verified statically | Live acceptance still required |
+| Surface | Distribution | Host requirements |
 | --- | --- | --- |
 | Chat | BC28/BC29 fixtures, force switching, custom target, receipts/recovery | VS Code discovery, full role loading and operation-specific AL capability |
 | Claude | 11 canonical roles/10 commands; safe rules initialization; read-only SessionStart context for AL workspaces | Plugin reload, hook output injection, rules and full Conductor loading |
@@ -84,32 +81,10 @@ Codex profile format follows [official custom-agent documentation](https://learn
 Guidance precedence follows [AGENTS.md discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
 The skill layout follows [local skill discovery](https://learn.chatgpt.com/docs/build-skills).
 
-Local evidence is Linux/Node 24 with synthetic files, not Windows or a running BC
-system. No usable VS Code, Claude, Copilot CLI or Codex executable is available.
-Generated Codex Architect and Conductor remain above 29k characters; no truncation
-or reduction was applied. Host completeness is pending, not inferred from counts
-or TOML parsing. Compilation App/Test and functional sales-order behavior remain
-unexecuted. No claim of cross-host functional equivalence is made.
+## Compatibility
 
-## Donor transformations
-
-| Pinned Lab source | Canonical destination / change | Verification |
-| --- | --- | --- |
-| b2ce9d9f137fc92574261317294ca2d585beb74b — Claude scripts/sync.mjs and provenance.json | Existing generators + package-provenance.js source/output hashes | Regeneration drift, tampered payload and CRLF tests |
-| Same SHA — Claude scripts/init.mjs and hooks/session-context.mjs | init-plugin.js; existing Claude command; bounded read-only hook | Fresh/update fixtures; unrelated-project silence |
-| Same SHA — Copilot scripts/build_copilot_commands.py | Compared with sync-copilot-cli.js; retained JS generator, added locks and LF checks | Existing CLI checks plus extracted archive |
-| Same SHA — Codex skills/aldc-graph/install_runtime.py | sync-codex.js and common initializer: planned writes, native profiles, managed block | TOML parsing; memory, collision and override fixtures |
-| 0c2a14731507c24782718cc739c74676b3528f17 — experiments/chat-install-001/lib/installer.mjs and both test suites | install-transaction.js used by existing Chat installer and terminal initialization | Partial failure, chained rollback, late edits, corrupted backup, locks and symlinks |
-
-No Graph identity, historical Core payload, DAG, Evidence Store, Context Envelope,
-transition fingerprints, Run Health Graph or runtime overlay was imported.
-
-## Remaining packaging delta
-
-Observe host loading in isolated projects, especially full Architect/Conductor
-bodies, rule/template paths, cache refresh and duplicate registrations. A host that
-rejects or truncates a role needs a scoped fix and repeat of that host's test before
-certification. Repeat recovery on Windows with actual host configuration. The
-external VSIX PR requires separate coordination and regenerated templates from the
-integrated canonical main; it is not modified here. The next implementation
-increment is Doctor, then Spec Agent, with their adapters synchronized in each PR.
+Confirm agent discovery and complete instruction loading in the installed host.
+Host versions, available tools and authentication determine which operations can
+run. A manifest or successful installation does not certify runtime execution.
+ALDC inherits host model, permission and MCP settings. See [native AL tools](framework/native-al-tools.md)
+for Copilot Chat and the packaged terminal guide for CLI hosts.

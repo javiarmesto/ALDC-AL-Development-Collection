@@ -13,19 +13,29 @@ _Engineering systems, visibly reasoned._
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
-[![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/AL-Development-Collection-for-GitHub-Copilot?style=flat-square&labelColor=0F172A&color=0891B2)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/javiarmesto/AL-Development-Collection-for-GitHub-Copilot?style=flat-square&labelColor=0F172A&color=D946EF)](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/javiarmesto/ALDC-AL-Development-Collection?style=flat-square&labelColor=0F172A&color=0891B2)](https://github.com/javiarmesto/ALDC-AL-Development-Collection/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/javiarmesto/ALDC-AL-Development-Collection?style=flat-square&labelColor=0F172A&color=D946EF)](https://github.com/javiarmesto/ALDC-AL-Development-Collection/stargazers)
 
 </div>
 
-> [!IMPORTANT]
-> **Now available for both GitHub Copilot and Claude Code.** ALDC is under active development against **Core Spec v1.2**, with conformance enforced in CI. See [What's New](#whats-new) for the latest release.
+ALDC combines specialist agents, reusable domain skills and human approval to
+support Business Central extension development from requirements to review.
 
-Project initialization now supports preview, drift checks and recoverable updates. A canonical Codex adapter is available for local testing; live host loading remains pending. See [plugin packaging and recovery](docs/plugin-packaging.md).
+**Release status:** package manifests declare **4.2.0**. The source includes
+features planned for **4.3.0**, documented under [Unreleased](CHANGELOG.md).
+Marketplace and plugin installations may contain an earlier packaged snapshot.
 
-The [Spec Agent](docs/spec-agent.md) now owns the shared specification contract behind `al-spec.create`, preserving approved architecture and human approval before implementation.
+| Capability | What it provides |
+| --- | --- |
+| Architect and Spec Agent | Approved design, bounded Specs, explicit dependencies and joint consistency review before implementation. |
+| Conductor | Planning, implementation and review coordinated through existing human gates. |
+| Doctor | Read-only diagnosis of configuration and operation-specific runtime observations. |
+| BC28 / BC29-native | Explicit Chat profile selection with role-specific tools and AL18 guidance. |
+| Host adapters | Dedicated content for Copilot Chat, Copilot CLI, Claude Code and Codex. |
+| Recoverable installation | Preview, visible collisions, receipts, verification and restoration. |
 
-The [canonical Doctor](tools/context-doctor/README.md) diagnoses specification, App/Test compilation and test execution separately. It reports local configuration and optional host observations without running builds or installing software.
+See [Spec Agent](docs/spec-agent.md), [profiles](docs/native-bc29.md),
+[plugins and recovery](docs/plugin-packaging.md) and [Doctor](tools/context-doctor/README.md).
 
 ---
 
@@ -45,10 +55,12 @@ AI accelerates AL development — but raw code generation is unpredictable, hard
 
 ## What is ALDC?
 
-ALDC (AL Development Collection) transforms how you develop Business Central extensions. Instead of ad-hoc code generation, it provides **structured, contract-driven development** with specialized agents, composable skills, and human-in-the-loop gates — the same framework working natively across two platforms:
+ALDC (AL Development Collection) transforms how you develop Business Central extensions. Instead of ad-hoc code generation, it provides **structured, contract-driven development** with specialized agents, composable skills, and human-in-the-loop gates — with host-specific distributions:
 
 - **GitHub Copilot** — Agents, skills, prompts, and instructions in `.github/` and `agents/`
-- **Claude Code** — Agents, skills, rules, and hooks in `.claude/` + official plugin in `claude-plugin/`
+- **Claude Code** — Agents, skills, rules, and hooks in `.claude/` and `claude-plugin/`
+- **Copilot CLI** — Terminal agents and commands in `copilot-cli-plugin/`
+- **Codex** — Generated agent profiles and a local ALDC skill in `plugins/aldc-codex/`
 
 ---
 
@@ -65,13 +77,13 @@ installation and pending runtime verification. The VS Code extension is publishe
 Install from the VS Code Marketplace or:
 
 ```bash
-code --install-extension JavierArmesto.aldc-al-development-collection
+code --install-extension javierarmestogonzalez.al-development-collection
 ```
 
 Then, from the Command Palette:
 
 - `AL Collection: Install Toolkit to Workspace` — copies the framework into your project's `.github/`
-- `AL Collection: Update Toolkit` — merges a new version, preserving your customizations
+- `AL Collection: Update Toolkit` — updates toolkit content; review collision behavior in your installed version
 - `AL Collection: Validate Installation` — verifies compliance
 
 ### GitHub Copilot (Plugin Marketplace)
@@ -514,6 +526,13 @@ AL-Development-Collection-for-GitHub-Copilot/
 
 ## What's New
 
+### Planned 4.3.0 — specifications, diagnostics and host integration
+
+Dedicated Spec Agent, per-operation Doctor, BC29-native tooling, terminal adapters
+and recoverable initialization. These changes are described in [Unreleased](CHANGELOG.md)
+and are not a claim that a new Marketplace package has been published.
+
+
 ### 4.2.0 — Conformance release
 
 The framework now enforces its own spec in CI.
@@ -552,8 +571,8 @@ Head of R&D & AI at VS Sistemas
 
 ## Support & Contributing
 
-- Report issues: [GitHub Issues](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
-- Ask questions: [GitHub Discussions](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/discussions)
+- Report issues: [GitHub Issues](https://github.com/javiarmesto/ALDC-AL-Development-Collection/issues)
+- Ask questions: [GitHub Discussions](https://github.com/javiarmesto/ALDC-AL-Development-Collection/discussions)
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines
 
 ---
@@ -564,6 +583,6 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Platforms:** GitHub Copilot + Claude Code · **Version:** 4.2.0 · **Last Updated:** 2026-03-30
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.2.0
 
 </div>

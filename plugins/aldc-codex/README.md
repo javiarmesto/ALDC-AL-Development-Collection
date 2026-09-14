@@ -20,5 +20,5 @@ same project. Plugin discovery alone does not install the project TOML profiles.
 Restart Codex, inspect /skills and loaded instruction sources, then request a
 bounded read-only role invocation and inspect its full loaded profile. Counting
 files is not this host test. Full Conductor/Architect bodies remain intact and
-have not been proven loadable in this environment. No Codex executable or BC
-runtime was available. See ../../docs/plugin-packaging.md for acceptance limits.
+must load completely in the installed host. See ../../docs/plugin-packaging.md
+for installation behavior and compatibility requirements.

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Canonical ALDC Doctor: local, read-only, Python 3.9+ stdlib diagnostics.
 
-Discovery adapted from Lab workspace_fingerprint.py at b2ce9d9 (discovery only).
-Stage separation adapted from Doctor v0.1.6 and practical semantics at 7c8ec39.
 No commands, network, installations, compilation, or implicit runtime evidence.
 """
 from __future__ import annotations
