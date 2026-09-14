@@ -19,7 +19,7 @@ requires `--force`. Custom target directories must be inside the project and mus
 not cross symlinks. Terminal initialization does not change the Chat profile.
 No initializer runs dependency installation. Install the Chat validator's js-yaml
 separately with `npm install` in its installed tools/aldc-validate directory when
-needed. Node already serves all adapters, so the donor Python resolver is omitted.
+needed. Node runs all installation adapters; Context Doctor separately requires Python 3.9+.
 
 Tracked, unedited toolkit files update automatically. Unknown or customized files
 remain visible collisions. `--force` authorizes their replacement with backup.
