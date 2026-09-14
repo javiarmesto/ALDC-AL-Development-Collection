@@ -36,7 +36,7 @@ authorize deployment. Do not invent `al_graph`, `al_get_diagnostics` or
 | Owner | Calls | Graph responsibility |
 | --- | --- | --- |
 | Architect | Search, diagnostics | Frame a design question; consume results. |
-| `al-spec.create` workflow | Search, diagnostics | Specify decisions; consume results. No separate Spec Agent. |
+| `al-spec.create` workflow | Search, diagnostics | Spec Agent specifies the assigned unit; consumes results and preserves both dependency types. |
 | Planning Subagent | Search, diagnostics | Fill a concrete plan gap; reuse evidence. |
 | Developer | Search, diagnostics, download, build, debugging | Own bounded extraction/query/export via existing terminal. |
 | Implementation Subagent | Search, diagnostics, download, build | Own bounded extraction/query/export via existing terminal. |
@@ -107,7 +107,7 @@ not a runner. No environment upgrade or publication is authorized by this profil
 ## Optional static AL graph
 
 `al graph` analyzes AL source relationships; **ALDC Graph** organizes agents.
-The canonical Conductor remains intact. No Doctor, graph execution ledger,
+The canonical Conductor remains intact. No mandatory graph execution ledger,
 parallel scheduler or mandatory graph step is introduced.
 
 Developer/Implementer checks `al version`, `al graph --help`, then the installed

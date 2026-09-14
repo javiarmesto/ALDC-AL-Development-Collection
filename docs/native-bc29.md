@@ -112,7 +112,8 @@ ofrecer este perfil.
 
 ## Inventario por agente y flujo
 
-La especificación corresponde a **`al-spec.create`**, no a un agente adicional.
+La especificación corresponde a **AL Spec Agent**, invocable mediante **`al-spec.create`**.
+El reparto aprobado por Architect distingue dependencias de redacción e implementación.
 Todos los contratos proyectados indican cuándo leer y aplicar
 [el contrato nativo](framework/native-al-tools.md).
 

@@ -320,3 +320,36 @@ fuente, colección, CLAUDE.md, README y plugin/tabla Codex. Las notas histórica
 4.2.0 quedan explícitamente históricas y remiten al incremento actual.
 Se atienden los cuatro hilos y los cinco comentarios suprimidos en fuentes y
 copias; la revisión inicial no se presenta como aprobación del head corregido.
+
+
+## Follow-up — Architect-owned spec decomposition
+
+User requested recovery of multi-spec design and justified parallel authoring
+before the next host acceptance run. Base main `5bb47a8cf1dba39e9fa7e09c8a95c1bebd676d18`;
+no open PRs at start. One branch: `feat/canonical-spec-decomposition`. Keep this
+increment unmerged pending real host acceptance; no release, VSIX or BC deployment.
+
+- Architect explicitly chooses single/multi-spec, assigns IDs/paths and bounded
+  capabilities, distinguishes generation/implementation dependencies and checks
+  shared contracts, cycles and resource collisions before declaring authoring groups.
+- Spec consumes the assigned approved contract revisions, writes one isolated file,
+  waits on genuine generation prerequisites and retains implementation dependencies.
+  Architect performs joint consistency review; changed shared contracts reopen only
+  affected consumers and their approval/readiness, without replacing Conductor gates.
+- Section 14 of the existing architecture template is the common decomposition rule
+  source. Root and Claude Architect reference it; Spec and its prompt carry the same
+  assignment. All existing adapters are regenerated with actual template links.
+- Scoped stale references claiming no Spec Agent or AL bodies in the spec are fixed.
+  BC28/BC29 projection and AL18 references remain; Conductor content is untouched.
+
+Donors and excluded runtime in docs/spec-agent.md. The revised host acceptance now
+covers two independently authored specs, genuine generation blocking, shared
+resource conflicts, joint review and correction/resume. Validation: 109 Spec routing/reference/permission checks, 222 BC28/BC29 profile
+checks, 237 CLI checks, 15 recovery tests, 20 Doctor fixtures, 58 conformance checks,
+11 Codex TOML profiles, Foundation/Claude drift and offline extracted npm package
+all pass. No Conductor file or AL18 capability/projection source changed. Collection
+validation reports zero errors with 78 existing advisory warnings. The additional
+checks resolve the common decomposition template from each actual host layout;
+they do not simulate dependency decisions or parallel model execution.
+
+No real host concurrency or BC test result is claimed from artifact validation.

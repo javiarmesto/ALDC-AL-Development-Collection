@@ -72,10 +72,19 @@ Use a separate AL fixture with a confirmed target version, unchanged base/model
 and host limits. Business case: require an external reference when releasing a
 sales order if the customer has the corresponding option enabled.
 
-Have Architect define two sequential units: customer option/data contract, then
-release enforcement consuming it. Preserve that assignment; introduce no DAG or
-additional JSON contracts. Do not assume a standard event or signature. Supply
-approved requirement/architecture as genuine inputs, never fabricate approval.
+Have Architect define two bounded specs: policy administration (option, customer
+experience and data contract) and release enforcement (business rule and acceptance).
+Prefer a stable shared contract in the approved architecture when the available
+sources support it. Both specs can then share one authoring group even though
+release implementation depends on the policy capability. If a material technical
+contract genuinely needs the first spec's output, declare a generation dependency
+and wait instead; never assert parallel eligibility to satisfy the test design.
+
+The architecture owns stable SPEC-IDs, unique .spec.md paths, both dependency types,
+shared resource allocations and the justification for each group. Its section 14
+also records joint consistency review of actual returned revisions. No DAG runtime,
+JSON companions or scheduler is required. Do not assume a standard event or signature.
+Supply genuinely approved requirement/architecture inputs, never fabricate approval.
 
 Run once through the specification entrypoint and once through direct Spec Agent
 from identical isolated fixture copies. Confirm the full role, matching AL rules,
@@ -89,7 +98,12 @@ domain guides and template were loaded. Compare behavior against these criteria:
 | Unknown target event | Spec investigates; unverified facts remain explicit and are not declared implementation-ready |
 | Definition known, persistence unknown | Separate behavioral proof obligation; no inference from signature |
 | Corrected contract after resume | Governing paths reloaded; unchanged approved scope preserved; changed material decision presented for approval |
-| Human approval | Spec reaches Conductor with the current spec/architecture paths only after actual approval |
+| Eligible parallel group | Two actual separate sessions author distinct assigned spec files using the same approved architecture/shared contracts; record overlap or mark parallel execution untested |
+| Generation prerequisite missing | In a separately approved variant, the dependent spec reports the missing/unapproved contract and does not finalize; unaffected work continues |
+| Implementation-only dependency | Does not block authoring from stable approved contracts; remains in downstream handoff |
+| Shared resource collision | Report to Architect without modifying shared files, allocating conflicting IDs or inventing a semantic dependency |
+| Joint consistency | Architect compares actual spec revisions, reports mismatches and affected consumers; approval of one spec does not approve the other |
+| Human approval | Selected increment reaches Conductor only with current approved specs and applicable current joint consistency review |
 | Write scope | Only assigned `.spec.md` changes; AL/app.json/architecture/memory untouched |
 
 Record host/model, input versions, actual source loading, prompts/interventions,
@@ -97,3 +111,20 @@ elapsed time and token counters where the host supplies them. These business
 outcomes are specification acceptance criteria here, not executed BC test results.
 An actual material contradiction returns only the affected decision to Architect.
 Do not open a loop-rewrite increment unless this run exposes concrete friction.
+
+## Recovered decomposition provenance and boundary
+
+The follow-up recovers the Architect/Spec decomposition behavior from Lab
+`b2ce9d9f137fc92574261317294ca2d585beb74b`: `.github/agents/al-architect.agent.md`,
+`.github/agents/al-spec-agent.agent.md` and the relevant sections of
+`.github/contracts/context/spec-decomposition-contract.md` (unit ownership, two
+dependency types, necessary-edge test, shared-resource coordination and authoring
+groups). The common rules live in section 14 of the existing architecture template;
+Spec records only its consumed contracts and resource needs in the existing spec.
+
+Excluded donor behavior: Context/Evidence pairs, machine handoff metadata, runtime
+validators, automatic wave scheduling, changed planning/final gates and global
+provider requirements. Legacy approved single/decomposed specs preserve their paths
+and agreed order; concurrency is not retroactively inferred. Architecture/Spec
+frontmatter keeps its existing models/tools, apart from manual role handoff text.
+Conductor is unchanged. Static artifact checks cannot establish parallel execution.

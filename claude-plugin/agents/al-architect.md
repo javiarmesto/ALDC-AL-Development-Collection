@@ -356,9 +356,9 @@ Based on requirements, create comprehensive architectural design following secti
    If decomposed (multiple specs):
    ```
    /al-spec.create
-   Create spec for {req_name}-core. Read .github/plans/{req_name}/{req_name}.architecture.md section "Spec Decomposition"
+   Create the assigned SPEC-ID at its approved output path. Read section 14 in .github/plans/{req_name}/{req_name}.architecture.md and required approved predecessor contracts.
    ```
-   Then repeat for each sub-spec.
+   Repeat per assigned unit in its approved authoring group; return results for joint consistency review.
 
    After the required current specs are human-approved:
    ```
@@ -759,30 +759,29 @@ Remember: You are an architecture advisor helping developers build well-designed
 
 ### Requirement Decomposition
 
-When the architect detects that a requirement is too complex for a single spec:
-1. Document the decomposition rationale in architecture.md
-2. Define the sub-requirements with clear boundaries
-3. Specify the dependency order between sub-specs
-4. Indicate which specs can be parallelized
-5. Create a **"## Spec Decomposition"** section in architecture.md:
+Read [section 14 of the architecture template](../docs/templates/architecture-template.md)
+and apply its decomposition rules before proposing MEDIUM/HIGH approval. Explicitly
+choose single-spec or multi-spec; define stable SPEC-IDs, bounded capabilities,
+unique output paths, shared contracts, both dependency types and resource ownership.
 
-```markdown
-## Spec Decomposition
+Name the concrete predecessor result for every dependency. Derive authoring groups
+from `generation_depends_on`; an `implementation_depends_on` edge alone does not
+block parallel authoring. Validate references, cycles, output/ID collisions and
+shared-contract readiness before declaring a group eligible. Do not split merely
+by AL object type or equate shared resources with semantic dependencies.
 
-This requirement requires 2 separate technical specifications:
+The architecture document is the source of assignments and approvals. Hand each
+Spec invocation one SPEC-ID, output path, current architecture revision and required
+approved contract references. Separate invocations may author eligible units in
+parallel when the host/session allows; no new scheduler or Graph runtime is required.
+If unavailable, run sequentially and state that concurrency was not observed.
 
-### Spec A: {req_name}-core
-- Scope: Table, Enum, Codeunit (data model + business logic)
-- Dependencies: None
-- Estimated phases: 2
-
-### Spec B: {req_name}-ui
-- Scope: Pages, FactBox, Actions
-- Dependencies: Spec A must be completed first
-- Estimated phases: 2
-
-Order: Spec A → Spec B (sequential)
-```
+After the specs return, perform the template's joint consistency review on their
+actual revisions. Resolve shared-contract/ownership conflicts with the affected
+Spec owners; do not write their specs yourself. Present the selected coherent
+increment for human approval, then pass its paths and implementation dependencies
+to Conductor under the existing gates. A changed contract invalidates only affected
+consumer readiness and prior consistency conclusions; preserve unrelated approvals.
 
 ### Architecture Document Sections (MANDATORY for MEDIUM/HIGH)
 
@@ -801,7 +800,7 @@ The `{req_name}.architecture.md` MUST include all 14 sections:
 11. **Implementation Phases** (ordered, with dependencies)
 12. **Risks & Mitigations** (min 3)
 13. **Deployment Plan** (pre/post checklist)
-14. **Spec Decomposition** (if applicable — defines which specs to create)
+14. **Spec Decomposition** (explicit single-spec or multi-spec decision, dependencies and authoring groups)
 
 ---
 
@@ -992,9 +991,9 @@ Create spec for {req_name}. Read .github/plans/{req_name}/{req_name}.architectur
 If decomposed (multiple specs, see "Spec Decomposition" section above):
 ```
 /al-spec.create
-Create spec for {req_name}-core. Read section "Spec Decomposition" in .github/plans/{req_name}/{req_name}.architecture.md
+Create the assigned SPEC-ID at its approved output path. Read section 14 in .github/plans/{req_name}/{req_name}.architecture.md and required approved predecessor contracts.
 ```
-Then repeat for each sub-spec in the defined order.
+Repeat per assigned unit in its approved authoring group; implementation dependencies do not alone block specification.
 
 After the required current specs are human-approved → implement:
 ```
@@ -1039,7 +1038,7 @@ Implement {req_name}. Read .github/plans/{req_name}/{req_name}.spec.md
 
 ### After Document Creation
 - [ ] Suggest `/al-spec.create` as the NEXT step (MEDIUM/HIGH)
-- [ ] If decomposed: indicate the order of specs to create
+- [ ] If decomposed: provide SPEC-IDs/paths, both dependency types, justified authoring groups and joint consistency review
 - [ ] Offer to answer additional questions
 - [ ] Clarify handoff: architect → spec.create → conductor
 

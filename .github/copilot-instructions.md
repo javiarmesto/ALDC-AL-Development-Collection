@@ -149,7 +149,7 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 **MEDIUM / HIGH:**
 
 1. `@AL Architecture & Design Specialist` — Designs solution, creates `.github/plans/{req_name}/{req_name}.architecture.md`
-2. `@workspace use al-spec.create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (detailed blueprint: object IDs, procedure signatures, AL code)
+2. `@workspace use al-spec.create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (technical contracts: object IDs, procedure signatures, acceptance; no AL implementation bodies)
 3. `@AL Development Conductor` — Reads spec + architecture from `.github/plans/{req_name}/`, orchestrates TDD: planning → implementation → review
 4. `@workspace use al-pr-prepare` — Prepares PR referencing the plan
 
