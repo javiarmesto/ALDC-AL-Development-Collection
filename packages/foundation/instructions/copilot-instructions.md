@@ -336,3 +336,11 @@ Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Dev
 **Last Updated**: 2026-05-18
 **Workspace**: AL Development for Business Central
 **Primitives**: 11 agents (including 3 subagents) + 16 skills + 11 prompts + 8 scoped instructions; 6 core workflows
+
+## Optional BCQuality provider
+
+Follow `docs/templates/bcquality-provider-contract.md` for the current project.
+Select plugin or external-multiroot explicitly; disabled means no probe.
+The plugin loads its configured skill (default bcquality-al-review).
+Discovery, loading, execution and best-effort index generation require distinct
+observations. Native A–G remains until completed results establish coverage.

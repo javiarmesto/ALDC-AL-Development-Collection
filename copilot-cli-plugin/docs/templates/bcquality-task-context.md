@@ -18,7 +18,7 @@ task-context:
   countries: <from app.json; OMIT if unknown>
   application-area: <union of the changed objects' areas; OMIT if undeterminable>
   enabled-layers: [microsoft, community, custom]
-  disabled-skills: [...]                # the non-pilot review leaves (see Pilot below)
+  disabled-skills: [...]                # only when supported by the selected provider
 ```
 
 Only `goal` and `inputs-available` are required.
@@ -32,17 +32,15 @@ Derive `bc-version`/`countries` from `app.json` and `application-area` from the
 confidence. The contract caps findings derived from an `unknown` dimension at
 `confidence: medium`, which is the correct, honest outcome.
 
-## Pilot scope
+## Provider routing and scope
 
-`disabled-skills` is the **only** place the pilot is expressed: it lists the
-review leaves that are NOT in the pilot. The **source of truth** is
-`aldc.yaml` → `external.bcquality.pilotSkills`. Today the pilot is
-performance/security/style, so `disabled-skills` disables privacy, upgrade, ui.
-When the pilot changes, change `aldc.yaml` and this denylist together (until the
-denylist is derived from `aldc.yaml` automatically).
+Apply [the provider contract](bcquality-provider-contract.md) before constructing
+this context. Preserve the real request and actual paths. For multiroot, derive
+pilot exclusions from the configured `pilotSkills` and the available Entry
+contract; never assume a fixed list of leaves. For plugin mode, load the configured
+skill and use its supported inputs/layer controls; do not copy a multiroot denylist
+or custom consumer layer. If a requested restriction cannot be expressed, state
+that limitation and continue native checks for that scope.
 
-## After building it
-
-Hand the task-context to the BCQuality entry point (`<home>/skills/entry.md`, per `aldc.yaml`) and **execute whatever
-`dispatch[]` returns** — do not assume which skills come back. Entry owns
-routing; the consumer owns only the convention "invoke entry.md first."
+Entry owns routing. Execute only actual active dispatches and preserve their
+results; catalog discovery and loading alone are not execution evidence.

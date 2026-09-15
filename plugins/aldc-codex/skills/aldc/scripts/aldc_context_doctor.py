@@ -6,6 +6,7 @@ No commands, network, installations, compilation, or implicit runtime evidence.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -173,7 +174,91 @@ def runtime_observations(path, root, host, projects, selected):
     return result
 
 
-def diagnose(workspace, host="chat", toolkit=None, runtime=None, operations=None):
+def bcquality_observations(snapshot, runtime, root, host):
+    """Bind explicit YAML export to source bytes; runtime is reported, not proven."""
+    result = {"configured": None, "status": "configuration-uninspected",
+              "discovered": None, "loaded": None, "executed": None,
+              "index": {"status": "unobserved"}, "native_fallback": True,
+              "note": "Supply --bcquality-config from the YAML exporter. No provider was probed."}
+    if not snapshot:
+        return result
+    data = load_json(Path(snapshot))
+    source = root / "aldc.yaml"
+    digest = hashlib.sha256(source.read_bytes()).hexdigest() if source.is_file() else None
+    if (data.get("contractVersion") != 1 or data.get("workspace") != str(root)
+            or data.get("configPath") != str(source) or data.get("configSha256") != digest):
+        raise ValueError("BCQuality configuration snapshot is stale or belongs to another workspace")
+    config = data.get("bcquality", {})
+    if (not isinstance(config, dict) or config.get("mode") not in {"plugin", "external-multiroot"}
+            or not (isinstance(config.get("enabled"), bool) or config.get("enabled") == "auto")):
+        raise ValueError("BCQuality configuration snapshot has an invalid mode/enabled value")
+    result.update(configured=True, configuration=config, status="configured",
+                  note="Explicit configuration export checked against source bytes; runtime stages remain caller reports.")
+    if config["enabled"] is False:
+        result.update(status="disabled", note="Disabled by configuration; no provider observations consumed.")
+        return result
+    if not runtime:
+        return result
+    envelope = load_json(Path(runtime))
+    if envelope.get("workspace") != str(root) or envelope.get("host") != host:
+        raise ValueError("BCQuality observations must name the current workspace and host")
+    obs = envelope.get("bcquality")
+    if obs is None:
+        return result
+    if not isinstance(obs, dict) or not isinstance(obs.get("detail"), str) or not obs["detail"].strip():
+        raise ValueError("BCQuality observations require detail")
+    if obs.get("mode") != config["mode"]:
+        raise ValueError("BCQuality observed mode differs from configuration")
+    plugin = config.get("plugin", {})
+    if not isinstance(plugin, dict):
+        raise ValueError("BCQuality plugin identity must be an object")
+    if config["mode"] == "plugin" and (obs.get("id") != plugin.get("id") or obs.get("skill") != plugin.get("skill")):
+        raise ValueError("BCQuality observed plugin/skill differs from configuration")
+    stages = ("discovered", "loaded", "executed")
+    for i, stage in enumerate(stages):
+        value = obs.get(stage)
+        if value is not None and not isinstance(value, bool):
+            raise ValueError("BCQuality stages must be boolean or null")
+        if value is True and any(obs.get(s) is not True for s in stages[:i]):
+            raise ValueError("BCQuality later stages require explicit earlier-stage observations")
+        result[stage] = value
+    if obs.get("executed") is True and (not isinstance(obs.get("outcome"), str) or not obs["outcome"].strip()):
+        raise ValueError("BCQuality execution requires the actual reported outcome")
+    expected = {"observedVersion": plugin.get("expectedVersion"),
+                "observedSourceRef": plugin.get("sourceRef")} if config["mode"] == "plugin" else {"observedSourceRef": config.get("pinnedCommit")}
+    mismatch = [key for key, value in expected.items() if value and obs.get(key) and obs[key] != value]
+    unverified = [key for key, value in expected.items() if value and not obs.get(key)]
+    index = obs.get("index", {"status": "unobserved"})
+    if not isinstance(index, dict) or index.get("status") not in {"unobserved", "not-attempted", "failed", "generated"}:
+        raise ValueError("BCQuality index status is invalid")
+    if index["status"] != "unobserved" and (not isinstance(index.get("detail"), str) or not index["detail"].strip()):
+        raise ValueError("BCQuality index observation needs detail")
+    if index["status"] == "generated":
+        if (index.get("exitCode") != 0 or isinstance(index.get("exitCode"), bool)
+                or not all(isinstance(index.get(k), str) and index[k].strip() for k in ("command", "path", "freshness"))
+                or not re.fullmatch(r"[0-9a-f]{64}", str(index.get("sha256", "")))):
+            raise ValueError("BCQuality generated index requires command, exitCode 0, path, SHA-256 and freshness evidence")
+        index_path = Path(index["path"])
+        if not index_path.is_absolute() or not index_path.is_file():
+            raise ValueError("BCQuality generated index must identify a readable absolute file")
+        load_json(index_path)
+        if hashlib.sha256(index_path.read_bytes()).hexdigest() != index["sha256"]:
+            raise ValueError("BCQuality index SHA-256 differs from the observed file")
+    status = next((s + "-reported" for s in reversed(stages) if obs.get(s) is True), "unavailable-reported")
+    if mismatch:
+        status = "incompatible-reported"
+    elif unverified:
+        status = "identity-unverified"
+    result.update(status=status, index=index, detail=obs["detail"],
+                  expected_identity_unverified=unverified, identity_mismatches=mismatch,
+                  observedVersion=obs.get("observedVersion"), observedSourceRef=obs.get("observedSourceRef"),
+                  outcome=obs.get("outcome"))
+    # Doctor does not adjudicate domain coverage from a reported invocation.
+    result["note"] = "Stages and generator execution are caller reports. Index bytes/hash checked when supplied; freshness and domain coverage require review evidence. Native checks remain required."
+    return result
+
+
+def diagnose(workspace, host="chat", toolkit=None, runtime=None, operations=None, bcquality_config=None):
     root = Path(workspace).resolve()
     if not root.is_dir():
         raise ValueError(f"workspace directory missing: {root}")
@@ -255,6 +340,7 @@ def diagnose(workspace, host="chat", toolkit=None, runtime=None, operations=None
     return {"version": VERSION, "workspace": str(root), "host": host, "toolkit": str(toolkit),
             "profile": profile, "projects": projects, "layout": layout, "configuration": config,
             "configuration_errors": config_errors, "operations": result,
+            "bcquality": bcquality_observations(bcquality_config, runtime, root, host),
             "runtime_source": str(runtime) if runtime else None,
             "note": "Local configuration inspection only. Runtime observations are caller reports, not independently verified or freshness-checked. No global functional success is inferred. Native capabilities need no duplicate community provider."}
 
@@ -265,11 +351,12 @@ def main(argv=None):
     parser.add_argument("--host", choices=("chat", "claude", "cli", "codex"), default="chat")
     parser.add_argument("--toolkit", help="Installed toolkit/plugin root; defaults to workspace")
     parser.add_argument("--runtime", help="Optional current host observations JSON; never generated implicitly")
+    parser.add_argument("--bcquality-config", help="Explicit JSON export from tools/bcquality/config.js")
     parser.add_argument("--operation", action="append", choices=OPERATIONS)
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
     try:
-        report = diagnose(args.workspace, args.host, args.toolkit, args.runtime, args.operation)
+        report = diagnose(args.workspace, args.host, args.toolkit, args.runtime, args.operation, args.bcquality_config)
         if args.json:
             print(json.dumps(report, indent=2))
         else:
@@ -286,6 +373,7 @@ def main(argv=None):
                 impact = "repair the affected host setting" if problem["blocking"] else "optional provider; use a sufficient native capability if available, or repair this provider"
                 print(f"Configuration problem: {problem['path']}: {problem['problem']}; {impact}.")
             print(report["note"])
+            print("BCQuality: " + report["bcquality"]["status"] + " | " + report["bcquality"]["note"])
         states = {op["status"] for op in report["operations"].values()}
         return 2 if "configuration-blocked" in states or any(e["blocking"] for e in report["configuration_errors"]) else 1 if states & {"unavailable", "failed-reported"} else 0
     except (OSError, ValueError) as exc:

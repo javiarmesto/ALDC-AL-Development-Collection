@@ -12,11 +12,9 @@ toolkitRoot: "."
 external:
   bcquality:
     mode: "external-multiroot"            # consumed from OUTSIDE the AL project (see aldc.code-workspace)
-    # Master switch resolved ONCE by al-conductor and propagated to the subagents
-    # (it is recorded in the plan doc; subagents consume the decision, they don't re-probe):
-    #   auto  (default) — probe <home>/<entryPoint> to detect; mounted -> consult, absent -> native A-G
-    #   true            — BCQuality is expected; probe to confirm mount, warn + native fallback if absent
-    #   false           — disabled: never probe, always native A-G (the explicit off switch)
+    # Select once per host/configuration; execute and evidence each review separately.
+    # auto / true: discover the selected mode; true additionally expects availability.
+    # false: no probe, load, execution or refresh; full native A-G.
     enabled: "auto"
     # Source of the knowledge base. Configurable: defaults to the canonical upstream
     # (microsoft/BCQuality). Override `url` to point at your own fork. The install
@@ -28,11 +26,14 @@ external:
     home: "../bcquality"                  # external clone location (override: $BCQUALITY_HOME); 2nd workspace root
     entryPoint: "skills/entry.md"         # relative to `home`
     workspace: "aldc.code-workspace"      # multi-root workspace (this repo root + ../bcquality); see docs/bcquality.md
+    # Used only with mode: plugin. Expectations do not install or prove identity.
+    plugin:
+      id: "bcquality"
+      skill: "bcquality-al-review"
+      expectedVersion: ""
+      sourceRef: ""
     consumedBy: ["agents/al-review-subagent.agent.md", "agents/dredd.agent.md", "agents/al-triage.agent.md"]
-    # Policy when BCQuality is ABSENT (the default until install.sh clones it).
-    # The .github/hooks/bcquality-precondition hook reads this and injects the
-    # directive (hook ported later as Preview); the agents' prose precondition is
-    # the backstop (#49/#54).
+    # Missing/incompatible provider: native review, never an AL code defect.
     fallback:
       mode: "skills-mode"        # review natively via instructions + skills
       residual: "A-G"            # expand the native checklist from A/C/F/G to full A-G

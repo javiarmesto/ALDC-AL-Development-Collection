@@ -16,7 +16,7 @@
 
 ## Purpose
 
-Quality assurance gate for Business Central AL code. Reviews each implementation phase against the **A–G** checklist, test coverage, BC patterns, and the original requirements, and emits a structured **Review-Report (JSON)** that the Conductor renders. When the external **BCQuality** knowledge layer is mounted, **Step 0** consults it for citable findings; when it is absent (the default until installed), the review falls back to the full A–G native checklist + auto-applied instructions + skills — recorded as `not-applicable`, and it **never blocks**.
+Quality assurance gate for Business Central AL code. Reviews each implementation phase against the **A–G** checklist, test coverage, BC patterns, and the original requirements, and emits a structured **Review-Report (JSON)** that the Conductor renders. When the configured **BCQuality** plugin or external Entry can be loaded, **Step 0** consults it for citable findings; when it is absent (the default until installed), the review falls back to the full A–G native checklist + auto-applied instructions + skills — recorded as `not-applicable`, and it **never blocks**.
 
 ## Review checklist
 
@@ -49,3 +49,5 @@ Quality assurance gate for Business Central AL code. Reviews each implementation
 ---
 
 <small>Source: [`agents/al-review-subagent.agent.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/agents/al-review-subagent.agent.md)</small>
+Provider identity, discovered/loaded/executed stages, best-effort index evidence
+and native fallback follow [the shared contract](../templates/bcquality-provider-contract.md).

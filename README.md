@@ -177,7 +177,7 @@ al-guidelines · al-code-style · al-naming-conventions · al-performance · al-
 
 ### 📚 BCQuality (optional) — external, citable BC knowledge layer
 
-An externally-consumed BC knowledge base (multi-root), defaulting to the canonical upstream [`microsoft/BCQuality`](https://github.com/microsoft/BCQuality) and configurable to your own fork. Agents cite findings to real knowledge files, with a graceful native fallback when it is absent. See [`docs/bcquality.md`](docs/bcquality.md).
+Optional cited review through an explicitly selected host plugin or external multiroot knowledge base. Agents distinguish discovery, loading, execution and best-effort index generation; unavailable providers retain native A–G coverage. See [`docs/bcquality.md`](docs/bcquality.md).
 
 ### 📄 Contracts per Requirement — structured docs in `.github/plans/{req_name}/`
 
@@ -402,25 +402,11 @@ On first enable, the plugin prompts for optional settings:
 
 ## Using BCQuality (optional)
 
-BCQuality is an optional, externally-consumed BC knowledge layer for cited reviews and audits. The source is configurable in `aldc.yaml` and defaults to the canonical upstream [microsoft/BCQuality](https://github.com/microsoft/BCQuality) (point it at your own fork if you keep one); it is consumed via a multi-root workspace — **not a submodule, never compiled**. When absent, agents fall back gracefully to the native A–G checklist and are never blocked.
-
-**Quick start (3 steps):**
-
-1. From your AL project root, run the install script — clones the pinned fork to `../bcquality`:
-   ```bash
-   bash tools/bcquality/install.sh
-   # or on Windows:
-   pwsh -File tools/bcquality/install.ps1
-   ```
-   Override the target location with `$BCQUALITY_HOME` if needed.
-
-2. Open `aldc.code-workspace` (multi-root: your extension + `../bcquality`, which does **not** compile).
-
-3. Run a review or audit (`@AL Development Conductor`, `@Dredd`, or `@AL Triage`): they cite BCQuality if mounted, or degrade gracefully to native checks if not.
-
-See [`docs/bcquality.md`](docs/bcquality.md) for the full guide.
-
----
+BCQuality supports explicit `plugin` and `external-multiroot` modes in `aldc.yaml`.
+Plugin mode loads the configured skill (default `bcquality-al-review`); multiroot
+retains the external Entry workflow. An expected version or commit is not proof of
+the installed identity, and catalog discovery is not execution. When unavailable,
+native review continues. See [configuration and evidence](docs/bcquality.md).
 
 ## BC Agent Builder (optional)
 

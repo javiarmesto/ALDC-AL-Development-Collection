@@ -38,18 +38,23 @@ You are **read-only on AL code**: analyze, check diagnostics, search — never e
 - **Full** (only when the user asks, e.g. "audit everything"): every `*.al` under `app/` **and** `test/`.
 - **Batch** the files **by module/folder** — each batch is one BCQuality consultation (cheaper than per-file).
 
-### Step 2 — Consult BCQuality (probe, don't assume)
-Resolve the external clone from `aldc.yaml → external.bcquality.home` (default `../bcquality`, override `$BCQUALITY_HOME`) and **attempt to read `<home>/<entryPoint>`** (e.g. `../bcquality/skills/entry.md`) **before** deciding. The external root lives outside the project, so it won't surface unless read explicitly — a successful read **is** the presence signal; consult it scoped to each batch → cited findings. If the probe **fails**, treat the layer as absent: note it, and **expand Step 3 from A/C/F/G to the full A–G** native checklist. A missing knowledge layer **never** aborts the audit. *Absent is the default* until `install.sh` clones BCQuality.
+### Step 2 — Consult the configured BCQuality provider per batch
+
+Read and apply [the shared BCQuality provider contract](../docs/templates/bcquality-provider-contract.md). Resolve the current project configuration, select plugin or external-multiroot, and honor enabled=false without probing. Consume a passed selection and task-context; otherwise resolve them once. Load instructions in this executing context and distinguish discovered, loaded, executed and index generation. Use only observed revision/version in evidence. Missing or incompatible BCQuality never blocks native review.
+
+Build or consume task-context per [the construction reference](../docs/templates/bcquality-task-context.md). In plugin mode load the exact configured skill (default `bcquality-al-review`) and follow its adapter; in multiroot mode read `home/entryPoint` and execute only its active dispatches. Preserve each actual result and its citations unchanged. Cache knowledge within this invocation; do not turn skipped leaves into review passes. An index refresh is best-effort: without an authorized execution tool, record `not-attempted` and use the provider's path fallback. Do not grant yourself additional tools.
+
+Attach the contract's `provider` evidence envelope inside `review.bcquality` or `audit.bcquality`, including observed outcome and index status. A report with no findings is not proof of absent knowledge; retain the returned outcome. Re-enable native checks for every domain without a completed provider result. Display a specific stage and outcome, not an ambiguous active status.
 
 ### Step 3 — Native residual (what BCQuality doesn't reach)
 Apply the native A–G checks (event-driven architecture, naming/structure, AL-Go separation, performance, error handling, test coverage, feature organization).
 
-> **You run standalone — read the governing rule, don't assume it's ambient.** There is no Conductor to inject the instructions and **no `applyTo` auto-apply in this runtime** (and none in Claude Code at all — no editor-attached files). When a domain falls to the native residual, **`Read` its governing `instructions/al-*.instructions.md`** (and `skill-performance` / `skill-permissions` where the residual names them) and judge against it. A domain already owned by an active BCQuality leaf needs no such read — defer to its finding (no double-load).
+> **You run standalone — read the governing rule, don't assume it's ambient.** There is no Conductor to inject the instructions and **no `applyTo` auto-apply in this runtime** (and none in Claude Code at all — no editor-attached files). When a domain falls to the native residual, **`Read` its governing `instructions/al-*.instructions.md`** (and `skill-performance` / `skill-permissions` where the residual names them) and judge against it. A domain already owned by a completed BCQuality leaf result needs no such read — defer to its finding (no double-load).
 
 > **Token discipline — load knowledge & symbols once, then reuse.** Read each BCQuality knowledge file **once** and reuse it across the batches that need it — never `Read` the same skill file twice. Resolve a base object's symbols **once** via **al-symbols-mcp** and reuse them across batches; don't re-query the same symbol per file. Don't re-read a source `.al` already in context this invocation. Re-walking a batch to apply a different check is a **reasoning** pass, not a reload.
 
 ### Step 4 — Verdict & persist
-Return an **advisory verdict** (PASS / CONCERNS / FAIL) with severity-tagged findings (CRITICAL / MAJOR / MINOR), each with `file:line`, problem, impact, and fix. **Persist** the audit report under `.github/audits/dredd-audit-<YYYY-MM-DD-HHMM>.md` (create the folder if absent) — the durable, checkable artifact; the `bcquality-evidence` CI workflow validates its citations against the BCQuality clone at the pinned SHA. Write **only** there.
+Return an **advisory verdict** (PASS / CONCERNS / FAIL) with severity-tagged findings (CRITICAL / MAJOR / MINOR), each with `file:line`, problem, impact, and fix. **Persist** the audit report under `.github/audits/dredd-audit-<YYYY-MM-DD-HHMM>.md` (create the folder if absent) — the durable, checkable artifact; JSON evidence can be checked for structure and citation paths against an explicitly available corpus; Markdown alone is not machine-validated and CI does not prove plugin execution. Write **only** there.
 
 ## Constraints
 

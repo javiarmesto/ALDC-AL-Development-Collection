@@ -4,6 +4,11 @@
 
 ### Added
 
+- Explicit BCQuality plugin mode alongside external multiroot, with shared provider
+  identity, stage evidence and native fallback rules across review agents.
+- Doctor configuration snapshots and BCQuality observations distinguish discovery,
+  loading, execution and best-effort knowledge-index generation.
+
 - Architecture-led specification decomposition with stable unit ownership, separate
   authoring/implementation dependencies and joint review of current revisions.
 
