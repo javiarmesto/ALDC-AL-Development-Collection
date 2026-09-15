@@ -65,7 +65,7 @@ Use this template verbatim when writing `.github/plans/<plan-name>/<plan-name>-c
 |-------|-----------|---------|--------------------|-----------|------------|
 | 2 | al-performance-review, al-security-review | completed | 0/1/1/0 | 2 | `<plan>-bcquality-phase-2.json` |
 
-- Submodule SHA (all phases): {e.g. f562fba}
+- Observed provider revisions per phase: {full SHA, or unverified}
 - Citations validated by `bcquality-evidence` CI: ✅ / ❌
 
 **Recommendations for Next Steps:**

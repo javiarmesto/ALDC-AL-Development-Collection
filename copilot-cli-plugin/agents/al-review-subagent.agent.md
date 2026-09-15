@@ -40,13 +40,13 @@ You are an **AL CODE REVIEW SUBAGENT** called by a parent **agent `al-conductor`
 
 ## Review Workflow
 
-### 0. Consult BCQuality (external citable knowledge — probe, don't assume)
+### Step 0 — Consult the configured BCQuality provider
 
-BCQuality is a curated, citable BC knowledge base consumed from an **external** clone (multi-root, per `aldc.yaml`). It is a citation/audit layer — it does **not** replace the A–G checklist or the auto-applied instructions; it adds findings backed by a knowledge file.
+Read and apply [the shared BCQuality provider contract](../docs/templates/bcquality-provider-contract.md). Resolve the current project configuration, select plugin or external-multiroot, and honor enabled=false without probing. Consume a passed selection and task-context; otherwise resolve them once. Load instructions in this executing context and distinguish discovered, loaded, executed and index generation. Use only observed revision/version in evidence. Missing or incompatible BCQuality never blocks native review.
 
-Resolve the home from `aldc.yaml → external.bcquality.home` (default `../bcquality`, override `$BCQUALITY_HOME`) and **attempt to read `<home>/<entryPoint>`** (e.g. `../bcquality/skills/entry.md`) **before** deciding. The external root lives outside the project and won't surface unless you read its path explicitly — a successful read **is** the mounted signal: consult BCQuality scoped to this phase's changed objects and **cite each finding to its knowledge file** in the review. If the probe **fails** (entry point absent — the default until installed), record BCQuality as `not-applicable`, note `"BCQuality unavailable — reviewed via ALDC skills + auto-applied instructions"`, and review against the **full A–G** checklist below. A missing knowledge layer **never** blocks the review.
+Build or consume task-context per [the construction reference](../docs/templates/bcquality-task-context.md). In plugin mode load the exact configured skill (default `bcquality-al-review`) and follow its adapter; in multiroot mode read `home/entryPoint` and execute only its active dispatches. Preserve each actual result and its citations unchanged. Cache knowledge within this invocation; do not turn skipped leaves into review passes. An index refresh is best-effort: without an authorized execution tool, record `not-attempted` and use the provider's path fallback. Do not grant yourself additional tools.
 
-> The Conductor builds the BCQuality task-context (it already holds `app.json` + the phase's changed objects) and passes it inline — consume that rather than re-deriving it.
+Attach the contract's `provider` evidence envelope inside `review.bcquality` or `audit.bcquality`, including observed outcome and index status. A report with no findings is not proof of absent knowledge; retain the returned outcome. Re-enable native checks for every domain without a completed provider result. Display a specific stage and outcome, not an ambiguous active status.
 
 ### 1. Analyze Changes
 
@@ -72,7 +72,7 @@ Review the AL code changes using available tools:
 
 ### 2. Verify Implementation
 
-> **How the framework's rules reach you here — not by passive auto-apply (it does not fire in subagent runtime).** The **always-on instruction micro-rules** arrive **inline from the Conductor** (hard-rule baseline, in effect for the whole review). For domain **depth**, **load the skill yourself** — `read` its `SKILL.md` — **only for the residual you actually own**: domains an active BCQuality leaf does **not** cover. Where a domain is owned by an enabled BCQuality leaf, do **not** load the ALDC skill — its knowledge is already loaded; defer to its finding (no double-load). Don't re-derive a rule's text — verify and flag, citing `file:line`.
+> **How the framework's rules reach you here — not by passive auto-apply (it does not fire in subagent runtime).** The **always-on instruction micro-rules** arrive **inline from the Conductor** (hard-rule baseline, in effect for the whole review). For domain **depth**, **load the skill yourself** — `read` its `SKILL.md` — **only for the residual you actually own**: domains a completed BCQuality leaf result does **not** cover. Where a domain is owned by an enabled BCQuality leaf, do **not** load the ALDC skill — its knowledge is already loaded; defer to its finding (no double-load). Don't re-derive a rule's text — verify and flag, citing `file:line`.
 
 Check that the implementation meets **AL-specific criteria**:
 
@@ -331,7 +331,7 @@ Return a **structured review** containing:
 - {Test improvement - add edge cases, integration tests}
 
 **Skills Compliance Check (symbolic):**
-*(One entry per domain — `✓` verified native · `↗bcq` covered by an active BCQuality leaf (deferred) · `∅` n-a. Check per domain only for the `✓` residual.)*
+*(One entry per domain — `✓` verified native · `↗bcq` covered by a completed BCQuality leaf result (deferred) · `∅` n-a. Check per domain only for the `✓` residual.)*
 - **skill-api** {✓ | ↗bcq | ∅} — ODataKeyFields, APIPublisher, EntityName
 - **skill-performance** {✓ | ↗bcq | ∅} — SetLoadFields, early filtering, CalcSums
 - **skill-events** {✓ | ↗bcq | ∅} — EventSubscriber attributes, IsHandled
@@ -395,7 +395,7 @@ Return a **structured review** containing:
 
 Every review MUST include a **Skills Compliance Check** that verifies whether the implementer correctly applied domain skill patterns. This check appears in the Output Format and must be filled in every review.
 
-Emit it **symbolically** — one entry per domain `{ domain, status }` where status is `✓` (verified native), `↗bcq` (covered by an active BCQuality leaf — deferred, not re-derived, ALDC skill not loaded), or `∅` (n-a). A `file:line` finding already carries the proof, so drop verbose evidence prose.
+Emit it **symbolically** — one entry per domain `{ domain, status }` where status is `✓` (verified native), `↗bcq` (covered by a completed BCQuality leaf result — deferred, not re-derived, ALDC skill not loaded), or `∅` (n-a). A `file:line` finding already carries the proof, so drop verbose evidence prose.
 
 **How to evaluate:**
 1. Read the implementer's **symbolic skills line** (`🧠 skill-x·tag`) in their Phase Summary

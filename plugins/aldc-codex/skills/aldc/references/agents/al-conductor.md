@@ -15,6 +15,10 @@ If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
 
+## BCQuality selection and evidence
+
+Read and apply [the shared BCQuality provider contract](../templates/bcquality-provider-contract.md). Resolve the current project configuration, select plugin or external-multiroot, and honor enabled=false without probing. Consume a passed selection and task-context; otherwise resolve them once. Load instructions in this executing context and distinguish discovered, loaded, executed and index generation. Use only observed revision/version in evidence. Missing or incompatible BCQuality never blocks native review. Pass selection and task-context to the reviewer, not a claim that this context's load/execution occurred in the delegated context. Refresh result evidence for each phase's inputs.
+
 ## BC29 / AL18 terminal contract
 
 Before selecting AL tools, dependency changes or validation evidence, read
@@ -185,7 +189,7 @@ After presenting the plan:
 🚦 Checkpoint — Phase 1/{Total}: Planning
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 Plan: {N} phases · Requirement set: spec ✅ · architecture {✅|N/A} · test-plan ✅
-🔎 {🟢 BCQuality active <sha> | ⚪ BCQuality disabled — native A–G}
+🔎 {🟢 BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ BCQuality disabled — native A–G}
 📄 {req_name}-plan.md ✅ · {req_name}-phase-1-complete.md ✅
 ✅ Plan ready → approve & start Phase 2?   (or ⏸️ revise)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -264,7 +268,7 @@ Build success ≠ review approval. NEVER skip review.
    - The phase objective and acceptance criteria
    - Files that were modified/created
    - **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events via **al-symbols-mcp** (a measured token sink — trial-and-error symbol searches). Tell it to query symbols only to spot-confirm a single signature it cannot resolve from the list.
-   - **The BCQuality task-context, built inline.** You already hold `app.json` and this phase's changed objects, so build the task-context (per the BCQuality task-context template; OMIT unknown dimensions; pilot skills from `aldc.yaml`) and pass it — the review subagent consumes it instead of re-deriving `bc-version`/`application-area`. It still reads the external BCQuality clone itself for the knowledge files.
+   - **The BCQuality task-context, built inline.** You already hold `app.json` and this phase's changed objects, so build the task-context (per the BCQuality task-context template; OMIT unknown dimensions; pilot skills from `aldc.yaml`) and pass it — the review subagent consumes it instead of re-deriving `bc-version`/`application-area`. It still reads the selected BCQuality provider itself for the knowledge files.
    - AL-specific validation requirements:
      - Event-driven patterns (no base modifications)
      - Naming conventions (26-char limit)
@@ -284,7 +288,7 @@ Build success ≠ review approval. NEVER skip review.
 🚦 Checkpoint — Phase {N}/{Total} complete: {Phase Name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 {AL objects} · 🔌 {event subscribers} · 🧪 {X/X ✅ | n/a}
-🔎 {🟢 BCQuality <sha> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
+🔎 {BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
 ✅ {verdict} — {blocker}/{major}/{minor}{ · ⚠️ {top actionable finding}}
 💾 Commit msg in {req_name}-phase-{N}-complete.md → commit & {start Phase {N+1} | finalize}?   (or ⏸️ revise)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -787,7 +791,7 @@ Include a **"Skills Utilization Summary"** table aggregating all phases:
 ```markdown
 🚦 Checkpoint — Phase {N}/{Total}: {Phase Name}
 📦 {AL objects} · 🔌 {event subscribers} · 🧪 {X/X ✅ | n/a}
-🔎 {🟢 BCQuality <sha> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
+🔎 {BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
 ✅ {verdict} — {b}/{M}/{m}{ · ⚠️ {top actionable finding}}
 💾 {commit & next-step question}   (or ⏸️ revise)
 ```
@@ -948,7 +952,7 @@ Instead, **pass phase-relevant excerpts inline** in the subagent delegation inst
 
 Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.github/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works.
 
-> **Don't re-read what's already in context (yours or theirs).** Within a single invocation, a file read once must be **reused, not re-read** — measured runs show the same source `.al`/`spec`/`memory` read 5–7× in one review, each re-injecting the file into the growing context. Instruct subagents: *"if you already read a path this invocation, reuse it; do not Read it again."* The same principle covers the **BCQuality task-context** — you build it and pass it inline (you already hold `app.json` and the phase's changed objects); the review subagent still reads the external BCQuality clone itself for the knowledge files, but no longer re-derives the task-context.
+> **Don't re-read what's already in context (yours or theirs).** Within a single invocation, a file read once must be **reused, not re-read** — measured runs show the same source `.al`/`spec`/`memory` read 5–7× in one review, each re-injecting the file into the growing context. Instruct subagents: *"if you already read a path this invocation, reuse it; do not Read it again."* The same principle covers the **BCQuality task-context** — you build it and pass it inline (you already hold `app.json` and the phase's changed objects); the review subagent still reads the selected BCQuality provider itself for the knowledge files, but no longer re-derives the task-context.
 
 ### Documentation Creation During Orchestration
 

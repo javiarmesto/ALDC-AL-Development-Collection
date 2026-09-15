@@ -1,6 +1,6 @@
 {
   "name": "aldc-cli",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "ALDC for Copilot CLI: terminal-adapted agents, skills and commands; conditional BC29/AL18 capability checks and canonical human gates.",
   "author": {
     "name": "javiarmesto",

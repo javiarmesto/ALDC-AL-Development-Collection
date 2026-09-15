@@ -74,3 +74,5 @@ HIGH → al-architect → al-spec.create → al-conductor
 ---
 
 <small>Source: [`agents/al-conductor.agent.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/agents/al-conductor.agent.md)</small>
+Provider identity, discovered/loaded/executed stages, best-effort index evidence
+and native fallback follow [the shared contract](../templates/bcquality-provider-contract.md).

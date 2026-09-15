@@ -22,7 +22,7 @@ for (const [file, content] of generated) {
   if (!file.endsWith('.md')) continue;
   check(!/\bTodoWrite\b/.test(content), `${file}: no Claude task-list tool remains`);
   // Verify actual packaged links for new contracts rather than repo-only links.
-  for (const match of content.matchAll(/\]\(([^)]+(?:cli-al-tools|al18-capabilities)\.md)\)/g)) {
+  for (const match of content.matchAll(/\]\(([^)]+(?:cli-al-tools|al18-capabilities|bcquality-provider-contract|bcquality-task-context)\.md)\)/g)) {
     const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), match[1]));
     check(generated.has(target), `${file}: bundled reference ${target}`);
   }
@@ -43,7 +43,7 @@ for (const [file, content] of generated) {
 }
 const conductor = split(read('claude-plugin/agents/al-conductor.md'));
 const originalBody = conductor.body.slice(conductor.body.indexOf('\n# AL Conductor Agent'));
-check(crypto.createHash('sha256').update(originalBody).digest('hex') === '7eff0a1f389fc66afb9e5bdd5af4ac05bf69d2fb8eaba6539b87fe8c09d88608', 'Original Claude Conductor body preserved byte for byte');
+check(crypto.createHash('sha256').update(originalBody).digest('hex') === '810a81c82cdf716e21cdc8caa31d4e6ce11f52b540eb026e311a4276f36cfd56', 'Claude Conductor workflow baseline, including explicit BCQuality provider contract, preserved byte for byte');
 check(conductor.data.model === 'haiku', 'Claude Conductor model unchanged');
 check(!conductor.data.tools.includes('mcp__'), 'Conductor does not acquire AL MCP execution');
 for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {

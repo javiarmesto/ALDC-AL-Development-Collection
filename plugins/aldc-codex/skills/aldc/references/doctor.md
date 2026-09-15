@@ -113,3 +113,32 @@ Exit 2: malformed input or affected configuration problem.
 
 The canonical script and host adapters are synchronized by the repository generators.
 The behavioral checks run with `python3 -B scripts/test-doctor.py` from a source checkout.
+
+## Optional BCQuality observations
+
+Doctor remains Python stdlib-only and never parses YAML with a partial parser.
+Export the current configuration explicitly with the packaged YAML reader:
+
+```sh
+node tools/bcquality/config.js /absolute/project > /tmp/bcquality-config.json
+python3 tools/context-doctor/aldc_context_doctor.py --workspace /absolute/project --host claude --bcquality-config /tmp/bcquality-config.json --runtime /tmp/runtime.json --json
+```
+
+The exporter requires the declared `js-yaml` dependency (root npm install or an
+explicit install in `tools/aldc-validate`). For Codex local bootstrap, tools live
+under `.agents/skills/aldc/scripts/`, including `bcquality/config.js` and
+`aldc-validate/package.json`. Use those paths instead of `tools/`. Export as UTF-8;
+in Windows PowerShell 5 use `[IO.File]::WriteAllText` with UTF8Encoding rather than
+its default UTF-16 redirection.
+
+The optional runtime JSON retains `workspace`, `host` and `operations` (use `{}`
+when only BCQuality is observed), and adds a `bcquality` object matching the
+[provider contract](templates/bcquality-provider-contract.md) evidence
+shape. `executed: true` additionally requires `outcome`. Doctor checks snapshot
+workspace/source hash, exact configured plugin/skill, consistent stages, expected
+identity and index output bytes/hash when generation is reported. Stages and
+freshness are caller reports, not independent proof. Missing export is
+`configuration-uninspected`; a catalog-only observation is `discovered-reported`,
+never loaded or executed. An unavailable optional provider does not block other
+Doctor operations. Invalid evidence input returns 2 for repair; that is not an AL
+review verdict.

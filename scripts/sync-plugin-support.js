@@ -26,7 +26,13 @@ function support(surface, rootDir = root) {
   }
   for (const rel of ['aldc_context_doctor.py', 'README.md']) {
     const dest = surface === 'codex' ? (rel.endsWith('.py') ? 'skills/aldc/scripts/' + rel : 'skills/aldc/references/doctor.md') : 'tools/context-doctor/' + rel;
-    files.set(dest, fs.readFileSync(path.join(rootDir, 'tools/context-doctor', rel), 'utf8'));
+    let body = fs.readFileSync(path.join(rootDir, 'tools/context-doctor', rel), 'utf8');
+    if (surface === 'codex' && rel === 'README.md') body = body.replaceAll('../../docs/templates/', 'templates/');
+    files.set(dest, body);
+  }
+  for (const rel of ['bcquality/precondition_hook.sh', 'bcquality/precondition_hook.ps1', 'bcquality/config.js', 'bcquality/validate_evidence.py', 'bcquality/install.sh', 'bcquality/install.ps1', 'aldc-validate/package.json', 'aldc-validate/index.js']) {
+    const dest = surface === 'codex' ? 'skills/aldc/scripts/' + rel : 'tools/' + rel;
+    files.set(dest, fs.readFileSync(path.join(rootDir, 'tools', rel), 'utf8'));
   }
   if (surface === 'claude') for (const p of walk(rootDir, 'skills/skill-agent-instructions/examples')) files.set(p, fs.readFileSync(path.join(rootDir,p), 'utf8'));
   for (const name of ['install-transaction.js', 'package-provenance.js']) files.set(`scripts/${name}`, fs.readFileSync(path.join(rootDir,'scripts',name), 'utf8'));
@@ -45,7 +51,7 @@ function sync(check = false) {
   const dest = path.join(root,'claude-plugin'), outputs = support('claude');
   for (const rel of walk(dest)) if (rel !== 'provenance.json' && !outputs.has(rel)) outputs.set(rel, normalized(fs.readFileSync(path.join(dest,rel))));
   const sources = [...outputs.keys()].filter(p => !support('claude').has(p)).map(p => 'claude-plugin/' + p);
-  sources.push('agents/al-spec-agent.agent.md','prompts/al-spec.create.prompt.md',...walk(root, 'tools/context-doctor'),'scripts/install-transaction.js','scripts/package-provenance.js','scripts/init-plugin.js',...walk(root, 'docs/templates'), ...walk(root, 'skills/skill-agent-instructions/examples'));
+  sources.push('agents/al-spec-agent.agent.md','prompts/al-spec.create.prompt.md',...walk(root, 'tools/context-doctor'),...walk(root, 'tools/bcquality'),'tools/aldc-validate/package.json','tools/aldc-validate/index.js','scripts/install-transaction.js','scripts/package-provenance.js','scripts/init-plugin.js',...walk(root, 'docs/templates'), ...walk(root, 'skills/skill-agent-instructions/examples'));
   outputs.set('provenance.json', provenance(root,sources,outputs,'scripts/sync-plugin-support.js'));
   let drift = 0;
   for (const [rel,b] of outputs) {

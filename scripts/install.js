@@ -143,6 +143,7 @@ const COMPONENTS = [
   { name: 'Framework',   src: 'docs/framework',     count: 'spec + docs' },
   { name: 'Doctor',      src: 'tools/context-doctor', count: 'read-only Python environment diagnostics' },
   { name: 'Validator',   src: 'tools/aldc-validate', count: 'compliance checker' },
+  { name: 'BCQuality',   src: 'tools/bcquality', count: 'optional provider configuration and evidence tools' },
   { name: 'BC Tools',    src: 'tools/bc-agents',    count: 'scaffolder + validator' },
 ];
 
@@ -247,6 +248,9 @@ async function install(opts) {
   for (const comp of COMPONENTS) tree(path.join(packageDir, comp.src), path.join(targetDir, comp.src));
   tree(path.join(packageDir, 'collections'), path.join(targetDir, 'collections'));
   tree(path.join(packageDir, 'tools/bcquality'), path.join(projectDir, 'tools/bcquality'));
+  // Keep the shared YAML reader and its declared dependency location adjacent
+  // in both the toolkit target and the project-level compatibility tools.
+  tree(path.join(packageDir, 'tools/aldc-validate'), path.join(projectDir, 'tools/aldc-validate'));
   add(path.join(packageDir, 'aldc.code-workspace'), path.join(projectDir, 'aldc.code-workspace'));
   add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
   add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);

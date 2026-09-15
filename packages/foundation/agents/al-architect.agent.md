@@ -7,7 +7,7 @@ argument-hint: 'Feature or system to design architecture for (e.g., "customer lo
 handoffs:
   - label: Specify approved architecture
     agent: AL Spec Agent
-    prompt: Read the approved architecture and requirement. Produce the canonical spec under the Spec Agent contract, preserving decisions and scope. Present it for human approval before Conductor implementation.
+    prompt: Read the approved architecture, requirement and assigned SPEC-ID/output path. Respect generation prerequisites and approved parallel-authoring groups; preserve implementation dependencies. Produce only the assigned spec, then return it for joint consistency review and human approval before Conductor implementation.
     send: false
   - label: Quick Implementation
     agent: AL Implementation Specialist
@@ -171,7 +171,7 @@ Cover all relevant areas based on complexity:
    Create spec for {req_name}. Read .github/plans/{req_name}/{req_name}.architecture.md
    ```
 
-   **Decomposed (multiple specs)**: invoke al-spec.create per sub-spec in defined order.
+   **Decomposed (multiple specs)**: invoke al-spec.create once per assigned SPEC-ID/output path, following approved authoring groups and required contract revisions. Distinguish generation from implementation dependencies.
 
    **After human approval of the current spec, implement**:
    ```
@@ -258,25 +258,29 @@ The `> **Skills applied**:` line at the top of the architecture document is **ma
 
 ## Requirement Decomposition
 
-When a requirement is too complex for a single spec, document decomposition in architecture.md under **"## Spec Decomposition"**:
+Read [section 14 of the architecture template](../docs/templates/architecture-template.md)
+and apply its decomposition rules before proposing MEDIUM/HIGH approval. Explicitly
+choose single-spec or multi-spec; define stable SPEC-IDs, bounded capabilities,
+unique output paths, shared contracts, both dependency types and resource ownership.
 
-```markdown
-## Spec Decomposition
+Name the concrete predecessor result for every dependency. Derive authoring groups
+from `generation_depends_on`; an `implementation_depends_on` edge alone does not
+block parallel authoring. Validate references, cycles, output/ID collisions and
+shared-contract readiness before declaring a group eligible. Do not split merely
+by AL object type or equate shared resources with semantic dependencies.
 
-This requirement requires 2 separate technical specifications:
+The architecture document is the source of assignments and approvals. Hand each
+Spec invocation one SPEC-ID, output path, current architecture revision and required
+approved contract references. Separate invocations may author eligible units in
+parallel when the host/session allows; no new scheduler or Graph runtime is required.
+If unavailable, run sequentially and state that concurrency was not observed.
 
-### Spec A: {req_name}-core
-- Scope: Table, Enum, Codeunit (data model + business logic)
-- Dependencies: None
-- Estimated phases: 2
-
-### Spec B: {req_name}-ui
-- Scope: Pages, FactBox, Actions
-- Dependencies: Spec A must be completed first
-- Estimated phases: 2
-
-Order: Spec A → Spec B (sequential)
-```
+After the specs return, perform the template's joint consistency review on their
+actual revisions. Resolve shared-contract/ownership conflicts with the affected
+Spec owners; do not write their specs yourself. Present the selected coherent
+increment for human approval, then pass its paths and implementation dependencies
+to Conductor under the existing gates. A changed contract invalidates only affected
+consumer readiness and prior consistency conclusions; preserve unrelated approvals.
 
 ## Architecture Document Structure
 
@@ -319,7 +323,7 @@ Execute the sequence in **§🚨 Critical: Automatic Architecture Document Creat
 
 ### After Document Creation
 - [ ] Suggest `@workspace use al-spec.create` as NEXT step (MEDIUM/HIGH)
-- [ ] If decomposed: indicate order of specs to create
+- [ ] If decomposed: provide assigned SPEC-IDs/paths, both dependency types, justified authoring groups and joint consistency review
 - [ ] Clarify handoff: architect → spec.create → conductor
 
 **If approval unclear**: ask explicitly "Does this architecture meet your requirements? Should I create the documentation?"

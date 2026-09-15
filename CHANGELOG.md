@@ -1,8 +1,16 @@
 # ALDC Changelog
 
-## [Unreleased] — planned 4.3.0
+## [Unreleased] — 4.3.0
 
 ### Added
+
+- Explicit BCQuality plugin mode alongside external multiroot, with shared provider
+  identity, stage evidence and native fallback rules across review agents.
+- Doctor configuration snapshots and BCQuality observations distinguish discovery,
+  loading, execution and best-effort knowledge-index generation.
+
+- Architecture-led specification decomposition with stable unit ownership, separate
+  authoring/implementation dependencies and joint review of current revisions.
 
 - Dedicated Spec Agent and a shared specification entrypoint, with human approval
   before implementation and contracts proportionate to requirement complexity.
@@ -16,6 +24,9 @@
   updates that preserve existing project memory and protect subsequent edits.
 
 ### Changed
+
+- Aligned canonical package, plugin and catalog versions to 4.3.0 for the
+  upcoming release; previously built artifacts remain unchanged.
 
 - Specifications capture technical contracts and acceptance criteria without
   anticipating AL implementation bodies at MEDIUM complexity.
@@ -35,7 +46,8 @@
 - Node.js 20+ for command-line installation; Python 3.9+ for Doctor.
 - BC29-native selection does not upgrade BC, AL Language or project manifests.
 - This section describes unreleased source changes. Extension and registry releases
-  are separate; 4.2.0 remains the declared package version.
+  are separate; canonical package, plugin and catalog metadata now declare 4.3.0.
+  Existing VSIX files retain their original version; no publication is implied.
 
 ## [4.2.0] - 2026-06-12
 

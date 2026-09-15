@@ -167,3 +167,7 @@ announces static graph analysis, environment discovery, test lifecycle extension
 isolation controls, namespace translations and AL0926. Announcement does not verify
 installed flags, declarations or behavior. Language-specific checks are in the
 existing migration, performance, testing, translation and debugging skills.
+
+BCQuality provider selection, exact skill identity, execution evidence and index
+limits follow [the shared contract](../templates/bcquality-provider-contract.md).
+A configured plugin does not grant execution tools or reduce native coverage.

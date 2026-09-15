@@ -9,7 +9,7 @@
 _Engineering systems, visibly reasoned._
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-0891B2.svg?style=flat-square&labelColor=0F172A)](docs/framework/ALDC-Core-Spec-v1.2.md)
-[![Version](https://img.shields.io/badge/version-4.2.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.3.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
@@ -21,13 +21,14 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release status:** package manifests declare **4.2.0**. The source includes
-features planned for **4.3.0**, documented under [Unreleased](CHANGELOG.md).
-Marketplace and plugin installations may contain an earlier packaged snapshot.
+**Release status:** canonical package and plugin manifests declare **4.3.0**.
+These changes remain [Unreleased](CHANGELOG.md), pending acceptance and publication.
+Previously built VSIX files and existing Marketplace/plugin installations retain
+their original version and packaged snapshot.
 
 | Capability | What it provides |
 | --- | --- |
-| Architect and Spec Agent | Approved design, technical contracts and acceptance criteria before implementation. |
+| Architect and Spec Agent | Approved design, bounded Specs, explicit dependencies and joint consistency review before implementation. |
 | Conductor | Planning, implementation and review coordinated through existing human gates. |
 | Doctor | Read-only diagnosis of configuration and operation-specific runtime observations. |
 | BC28 / BC29-native | Explicit Chat profile selection with role-specific tools and AL18 guidance. |
@@ -176,7 +177,7 @@ al-guidelines · al-code-style · al-naming-conventions · al-performance · al-
 
 ### 📚 BCQuality (optional) — external, citable BC knowledge layer
 
-An externally-consumed BC knowledge base (multi-root), defaulting to the canonical upstream [`microsoft/BCQuality`](https://github.com/microsoft/BCQuality) and configurable to your own fork. Agents cite findings to real knowledge files, with a graceful native fallback when it is absent. See [`docs/bcquality.md`](docs/bcquality.md).
+Optional cited review through an explicitly selected host plugin or external multiroot knowledge base. Agents distinguish discovery, loading, execution and best-effort index generation; unavailable providers retain native A–G coverage. See [`docs/bcquality.md`](docs/bcquality.md).
 
 ### 📄 Contracts per Requirement — structured docs in `.github/plans/{req_name}/`
 
@@ -401,25 +402,11 @@ On first enable, the plugin prompts for optional settings:
 
 ## Using BCQuality (optional)
 
-BCQuality is an optional, externally-consumed BC knowledge layer for cited reviews and audits. The source is configurable in `aldc.yaml` and defaults to the canonical upstream [microsoft/BCQuality](https://github.com/microsoft/BCQuality) (point it at your own fork if you keep one); it is consumed via a multi-root workspace — **not a submodule, never compiled**. When absent, agents fall back gracefully to the native A–G checklist and are never blocked.
-
-**Quick start (3 steps):**
-
-1. From your AL project root, run the install script — clones the pinned fork to `../bcquality`:
-   ```bash
-   bash tools/bcquality/install.sh
-   # or on Windows:
-   pwsh -File tools/bcquality/install.ps1
-   ```
-   Override the target location with `$BCQUALITY_HOME` if needed.
-
-2. Open `aldc.code-workspace` (multi-root: your extension + `../bcquality`, which does **not** compile).
-
-3. Run a review or audit (`@AL Development Conductor`, `@Dredd`, or `@AL Triage`): they cite BCQuality if mounted, or degrade gracefully to native checks if not.
-
-See [`docs/bcquality.md`](docs/bcquality.md) for the full guide.
-
----
+BCQuality supports explicit `plugin` and `external-multiroot` modes in `aldc.yaml`.
+Plugin mode loads the configured skill (default `bcquality-al-review`); multiroot
+retains the external Entry workflow. An expected version or commit is not proof of
+the installed identity, and catalog discovery is not execution. When unavailable,
+native review continues. See [configuration and evidence](docs/bcquality.md).
 
 ## BC Agent Builder (optional)
 
@@ -583,6 +570,6 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.2.0
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0 (unreleased)
 
 </div>

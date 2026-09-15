@@ -46,7 +46,10 @@ Use this template verbatim when the AL Code Review Subagent reports back to the 
 **External Knowledge Findings (BCQuality):**
 (From the Step 0 BCQuality consultation. If the consultation returned `no-knowledge` / `not-applicable`, write "No applicable knowledge". If it `failed` / `partial`, note what ran. BCQuality CRITICAL/MAJOR findings raise the overall Status above.)
 
-- BCQuality commit: {the `pinnedCommit` from `aldc.yaml`; `n/a` if not consulted}
+- Expected provider identity: {configured version/revision, or unspecified}
+- Observed provider identity: {actual version/revision, or unverified}
+- Provider stages: {discovered / loaded / executed with outcome}
+- Index: {unobserved / not-attempted / failed / generated with evidence}
 - Skills run: {e.g. al-performance-review, al-security-review, al-style-review}
 - Outcome: {completed | no-knowledge | not-applicable | partial | failed}
 

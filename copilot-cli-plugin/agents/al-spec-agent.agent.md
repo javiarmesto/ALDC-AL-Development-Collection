@@ -35,7 +35,8 @@ family or an automatic decomposition/scheduling system.
 - Preserve architecture, decision identifiers, constraints, object boundaries
   and assigned scope. If Architect already decomposed the work, author only the
   assigned unit and consult only required predecessor contracts. Preserve its
-  recorded dependencies for planning; do not invent parallelism or a DAG.
+  recorded generation and implementation dependencies; only Architect declares
+  parallel-authoring eligibility. Do not invent a scheduler or rewrite dependencies.
 - Spec owns ordinary technical investigation: fields, types, procedure contracts,
   event signatures and target-version availability. A missing signature alone is
   not a reason to return the whole task to Architect. Return only a demonstrated
@@ -45,6 +46,40 @@ family or an automatic decomposition/scheduling system.
   navigation, not authority for current IDs, signatures or approval. Preserve
   unrelated edits and approved decisions. Continue authorized bounded revisions;
   ask only when an overwrite or material change is not already authorized.
+
+## Assigned units, dependencies and parallel authoring
+
+Read [section 14 of the architecture template](../docs/templates/architecture-template.md)
+for the shared decomposition rules, then resolve the assignment from the actual
+approved architecture. For multi-spec, require one unambiguous SPEC-ID and its
+unique output path in the same requirement folder; do not guess a unit, create
+an aggregate spec, rename existing files or expand into sibling scope.
+
+Check `generation_depends_on` against the actual completed, human-approved
+predecessor contract revisions before dependent authoring. If absent, unapproved
+or materially revised, report the precise affected contract and continue only
+independent research; do not finalize this unit. `implementation_depends_on`
+constrains downstream implementation, not authoring from stable approved contracts.
+Record both types and consumed revision references in your spec's Overview.
+
+Write only your assigned .spec.md. Read sibling specs only for required contracts;
+never edit shared architecture, memory, manifests or another unit's spec. Respect
+approved resource allocations (project/app, object type/ID, field IDs, output paths).
+If a new overlap, missing dependency or incompatible shared contract appears, return
+the finding, affected units and smallest decision to Architect; do not reserve IDs
+by editing shared files or silently serialize/repartition the work.
+
+In a delegated host without human interaction, return the spec and blocking/
+non-blocking questions to the caller for the human gate. Never impersonate approval
+or claim a sequential role change was concurrent execution. When resuming, reload
+current assignment and consumed contract revisions, alongside governing sources.
+Report changed inputs and affected approval/readiness; preserve unrelated work.
+
+Return the current spec revision for Architect's joint consistency review before
+forwarding the selected multi-spec implementation increment. The joint review must
+cover the actual revisions; a stale result is not readiness. Human approval applies
+only to named revisions/units and never implicitly to siblings. Do not implement
+or change Conductor's planning/approval policy.
 
 ## Scope of action
 
@@ -147,7 +182,8 @@ Present the concrete spec and material questions for human review. Keep its stat
 Draft/Pending until the human approves this version; preserve applicable existing
 approval, and mark materially changed portions for renewed approval.
 
-After human approval, continue to `al-conductor` for MEDIUM/HIGH or `al-developer`
+After human approval and the applicable multi-spec joint consistency review,
+continue to `al-conductor` for MEDIUM/HIGH or `al-developer`
 for LOW, carrying the spec/architecture paths and verification limits. A handoff
 button or role selection is not proof of approval. If a host cannot switch/delegate,
 provide the same paths and next role without claiming a delegated run occurred.
