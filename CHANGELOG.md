@@ -1,6 +1,6 @@
 # ALDC Changelog
 
-## [Unreleased] — planned 4.3.0
+## [Unreleased] — 4.3.0
 
 ### Added
 
@@ -20,6 +20,9 @@
 
 ### Changed
 
+- Aligned canonical package, plugin and catalog versions to 4.3.0 for the
+  upcoming release; previously built artifacts remain unchanged.
+
 - Specifications capture technical contracts and acceptance criteria without
   anticipating AL implementation bodies at MEDIUM complexity.
 - Agent routing preserves approved architecture and passes approved specifications
@@ -38,7 +41,8 @@
 - Node.js 20+ for command-line installation; Python 3.9+ for Doctor.
 - BC29-native selection does not upgrade BC, AL Language or project manifests.
 - This section describes unreleased source changes. Extension and registry releases
-  are separate; 4.2.0 remains the declared package version.
+  are separate; canonical package, plugin and catalog metadata now declare 4.3.0.
+  Existing VSIX files retain their original version; no publication is implied.
 
 ## [4.2.0] - 2026-06-12
 

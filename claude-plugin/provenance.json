@@ -4,8 +4,8 @@
   "generator": "scripts/sync-plugin-support.js",
   "sources": {
     "agents/al-spec-agent.agent.md": "b211c7f6df3507a823dc959bfb7213292335e5be25ea8eb168d564df86d0d0ff",
-    "claude-plugin/.claude-plugin/marketplace.json": "51bc579dc146de218dce7a1e7d81c50db38c7168187a664dbe402b34955c8369",
-    "claude-plugin/.claude-plugin/plugin.json": "69f86d239d0fada39c3e08ec36d4710628b903e41144998a5844b87360fb1507",
+    "claude-plugin/.claude-plugin/marketplace.json": "9bf1f136bad8e4e60bb6d27cbae5b384ea12c43aacb11f629fa7d89bfa66c3c4",
+    "claude-plugin/.claude-plugin/plugin.json": "27d12e6bb7a2ca33b354f964462a7c146b8330121ade0eff488b12c15424f2ca",
     "claude-plugin/.mcp.json": "0169e02ecf6d394e7d45f649ce9660e39c1cc032b03b21ead11e86208bdc2a94",
     "claude-plugin/CLAUDE.md": "318e0a6c762ca0720c17338b7fff0548073f424488a34ea7d32818815293afd4",
     "claude-plugin/README.md": "7f849cf22e486eef21d284e07e79cbcbe5707026e7ef348f2c7e2c465370a91b",
@@ -87,8 +87,8 @@
     "tools/context-doctor/aldc_context_doctor.py": "b5a7cf613ba14953a47c6167d51e2349d2e6cec717b3fc33cbeae8b7d84ad1f3"
   },
   "outputs": {
-    ".claude-plugin/marketplace.json": "51bc579dc146de218dce7a1e7d81c50db38c7168187a664dbe402b34955c8369",
-    ".claude-plugin/plugin.json": "69f86d239d0fada39c3e08ec36d4710628b903e41144998a5844b87360fb1507",
+    ".claude-plugin/marketplace.json": "9bf1f136bad8e4e60bb6d27cbae5b384ea12c43aacb11f629fa7d89bfa66c3c4",
+    ".claude-plugin/plugin.json": "27d12e6bb7a2ca33b354f964462a7c146b8330121ade0eff488b12c15424f2ca",
     ".mcp.json": "0169e02ecf6d394e7d45f649ce9660e39c1cc032b03b21ead11e86208bdc2a94",
     "CLAUDE.md": "318e0a6c762ca0720c17338b7fff0548073f424488a34ea7d32818815293afd4",
     "README.md": "7f849cf22e486eef21d284e07e79cbcbe5707026e7ef348f2c7e2c465370a91b",

@@ -9,7 +9,7 @@
 _Engineering systems, visibly reasoned._
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-0891B2.svg?style=flat-square&labelColor=0F172A)](docs/framework/ALDC-Core-Spec-v1.2.md)
-[![Version](https://img.shields.io/badge/version-4.2.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.3.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
@@ -21,9 +21,10 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release status:** package manifests declare **4.2.0**. The source includes
-features planned for **4.3.0**, documented under [Unreleased](CHANGELOG.md).
-Marketplace and plugin installations may contain an earlier packaged snapshot.
+**Release status:** canonical package and plugin manifests declare **4.3.0**.
+These changes remain [Unreleased](CHANGELOG.md), pending acceptance and publication.
+Previously built VSIX files and existing Marketplace/plugin installations retain
+their original version and packaged snapshot.
 
 | Capability | What it provides |
 | --- | --- |
@@ -583,6 +584,6 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.2.0
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0 (unreleased)
 
 </div>
