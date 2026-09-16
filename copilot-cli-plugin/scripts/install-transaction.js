@@ -69,7 +69,7 @@ function plan({ root, surface, files, force = false }) {
     const drift = before !== null && !before.equals(desired) && hash(before) !== oldHash;
     const preserve = before !== null && (record.seed || (drift && !force && !record.merge));
     const after = preserve ? before : desired;
-    actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain),
+    actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain), customized: Boolean(drift),
       status: before === null ? 'add' : preserve ? (record.seed ? 'preserve' : 'collision') : before.equals(after) ? 'unchanged' : 'replace' });
   }
   // Never delete unknown files. A retired tracked path needs an explicit decision
@@ -83,7 +83,9 @@ function plan({ root, surface, files, force = false }) {
   }
   return { root, surface, state, actions };
 }
-function report(plan) { return plan.actions.map(({ rel, status, before, after }) => ({ path: rel, action: status, before: hash(before), after: hash(after) })); }
+// customized: existing bytes match neither the receipt nor the packaged content,
+// so a replace action overwrites a local change (recoverably) rather than a tracked file.
+function report(plan) { return plan.actions.map(({ rel, status, before, after, customized }) => ({ path: rel, action: status, before: hash(before), after: hash(after), customized: Boolean(customized) })); }
 // Stable identity of a planned outcome: the same files, actions and bytes.
 function digest(plan) { return hash(Buffer.from(JSON.stringify(report(plan).map(f => [f.path, f.action, f.before, f.after])))); }
 function restore(root, journal, interrupted = false, beforeWrites = () => {}) {

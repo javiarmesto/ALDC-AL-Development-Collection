@@ -283,6 +283,7 @@ async function install(opts) {
     profileSwitch: existingPrimitives && profile !== previousProfile, existingInstallation: existingPrimitives,
     targetDir: relTarget, force: Boolean(opts.force), digest: result.digest, transaction: result.transaction || null,
     files: result.files, summary, collisions: result.files.filter(f => f.action === 'collision').map(f => f.path),
+    replaced: result.files.filter(f => f.action === 'replace' && f.customized).map(f => f.path),
     doctorScript: relative(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) };
   if (opts.dryRun) { info('Dry run: no files written.'); return structured; }
   const totalCopied = result.files.filter(f => ['add', 'replace'].includes(f.action)).length;

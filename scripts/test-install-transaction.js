@@ -144,7 +144,8 @@ test('preview digest binds apply to the previewed plan',t=>{
  assert.equal(fs.existsSync(path.join(r,'b.md')),false);
  const fresh=tx.apply({...opts,dryRun:true});assert.notEqual(fresh.digest,preview.digest);
  const applied=tx.apply({...opts,expectDigest:fresh.digest});assert.equal(applied.digest,fresh.digest);assert.equal(read(r,'a.md'),'custom');
- assert.equal(applied.files.find(f=>f.path==='a.md').before,tx.hash(Buffer.from('custom')));
+ assert.equal(applied.files.find(f=>f.path==='a.md').before,tx.hash(Buffer.from('custom')));assert.equal(applied.files.find(f=>f.path==='a.md').customized,true);
+ assert.equal(tx.apply({...opts,dryRun:true,force:true}).files.find(f=>f.path==='a.md').customized,true);assert.equal(tx.apply({...opts,dryRun:true}).files.find(f=>f.path==='b.md').customized,false);
 });
 test('Chat CLI --json returns structured status, preview, guarded apply, verify and rollback',t=>{
  const r=temp(t); const run=args=>{const p=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args,'--json'],{cwd:r,encoding:'utf8'});return {status:p.status,body:JSON.parse(p.stdout)};};
@@ -153,6 +154,7 @@ test('Chat CLI --json returns structured status, preview, guarded apply, verify 
  write(r,'.github/agents/al-developer.agent.md','custom');
  const stale=run(['install','--expect-plan',preview.body.digest]);assert.equal(stale.status,1);assert.match(stale.body.error,/plan changed/);assert.equal(fs.existsSync(path.join(r,'aldc.yaml')),false);
  const again=run(['install','--dry-run']);assert.deepEqual(again.body.collisions,['.github/agents/al-developer.agent.md']);
+ assert.deepEqual(again.body.replaced,[]);const forced=run(['install','--dry-run','--force']);assert.deepEqual(forced.body.replaced,['.github/agents/al-developer.agent.md']);assert.deepEqual(forced.body.collisions,[]);
  const applied=run(['install','--expect-plan',again.body.digest]);assert.equal(applied.status,0);assert.match(applied.body.transaction,/^[0-9a-f-]{36}$/);assert.equal(read(r,'.github/agents/al-developer.agent.md'),'custom');
  s=run(['status']);assert.equal(s.body.receipt,'valid');assert.equal(s.body.profile,'bc28');assert.deepEqual(s.body.drift,['.github/agents/al-developer.agent.md']);assert.ok(s.body.doctorScript);
  const verify=run(['verify-install']);assert.equal(verify.status,1);assert.equal(verify.body.command,'verify-install');
