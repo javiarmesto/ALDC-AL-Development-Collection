@@ -7,6 +7,17 @@ core:
 
 toolkitRoot: "."
 
+# Multi-root layout of this AL solution. ALDC seeds `aldc.code-workspace` from these
+# roots at installation and never rewrites it afterwards: the file is yours. Paths are
+# relative to this file; an empty value means the solution has no such folder yet.
+# The BCQuality root is not declared here; it comes from external.bcquality when the
+# mode is external-multiroot, so the location is stated once.
+solution:
+  workspaceFile: "aldc.code-workspace"
+  roots:
+    application: ""
+    test: ""
+
 # External citable knowledge base, consumed by al-review-subagent (Step 0) as an
 # audit/citation layer. Does NOT replace instructions or skills.
 external:

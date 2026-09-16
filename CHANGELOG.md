@@ -18,6 +18,20 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   `rollback` accept `--json`. Previews carry a plan digest and `--expect-plan`
   refuses to apply a plan that changed after the preview. Each file reports whether
   a replace overwrites a local customization. Human output is unchanged.
+- `solution` anchor in `aldc.yaml`: `workspaceFile` and `roots.application` /
+  `roots.test` declare the multi-root layout of the AL solution. The installer
+  detects the folders that exist (AL-Go `appFolders` / `testFolders` first, then the
+  conventional names) and writes them there; it never creates a folder.
+- `aldc.code-workspace` is generated from that layout at installation instead of
+  copied: root, application, tests, and the BCQuality root when the configured mode
+  is external-multiroot. It stays a seeded file, so it is written once and then
+  belongs to the developer.
+- The installation marker records the installed version, and `status` reports it as
+  `installedVersion` so a host can compare it with what it packages. Markers written
+  before this release report `null` and are never repaired.
+- `tools/bcquality/config.js` reports `toolkitRoot` and `solution` alongside the
+  BCQuality configuration, so every Node consumer reads one source of truth. Doctor
+  still receives `--toolkit` explicitly, now resolved by its caller from that value.
 - Doctor reports manifests that declare different BC application targets (for
   example an App on BC28 next to a Test on BC27) as an advisory configuration
   problem. The exit code is unchanged; the compiler adjudicates.

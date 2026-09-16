@@ -67,6 +67,16 @@ try {
   config('plugin','true'); assert.throws(()=>readConfig(temp),/enabled/);
   config('plugin','auto',{sourceRef:'024a571e'}); assert.throws(()=>readConfig(temp),/full commit/);
   config('external-multiroot'); assert.equal(readConfig(temp).bcquality.entryPoint,'skills/entry.md');
+  // The snapshot carries the solution anchor, so Node consumers read one source.
+  write('aldc.yaml','toolkitRoot: ".copilot"\nsolution:\n  workspaceFile: "mi.code-workspace"\n  roots:\n    application: "src"\n    test: "test"\n');
+  const anchored=readConfig(temp);
+  assert.equal(anchored.toolkitRoot,'.copilot');
+  assert.deepEqual(anchored.solution,{workspaceFile:'mi.code-workspace',roots:{application:'src',test:'test'}});
+  write('aldc.yaml','{}');
+  assert.deepEqual(readConfig(temp).solution,{workspaceFile:'aldc.code-workspace',roots:{application:'',test:''}});
+  write('aldc.yaml','toolkitRoot: ""\n'); assert.throws(()=>readConfig(temp),/toolkitRoot: must not be empty/);
+  write('aldc.yaml','solution: []\n'); assert.throws(()=>readConfig(temp),/solution must be an object/);
+  write('aldc.yaml','solution:\n  roots: "x"\n'); assert.throws(()=>readConfig(temp),/solution.roots must be an object/);
   for (const key of ['url','ref','home','entryPoint']) { write('aldc.yaml',{external:{bcquality:{mode:'external-multiroot',[key]:''}}}); assert.throws(()=>readConfig(temp),new RegExp(key+': must not be empty')); }
   write('aldc.yaml',{external:{bcquality:{mode:'external-multiroot',pinnedCommit:'',plugin:{expectedVersion:'',sourceRef:''}}}}); assert.equal(readConfig(temp).bcquality.pinnedCommit,'');
   run('git',['init','--quiet']);

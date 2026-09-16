@@ -147,6 +147,34 @@ test('inspect reports absent, invalid, valid, drifted and restorable state witho
  assert.throws(()=>tx.rollback(r,'fixture'),/Changed since installation/);
  write(r,'a.md','v1');tx.rollback(r,'fixture');s=tx.inspect(r,'fixture');assert.equal(s.receipt,'absent');assert.equal(s.restore.available,false);assert.equal(fs.existsSync(path.join(r,'a.md')),false);
 });
+test('the solution anchor is detected, the workspace is seeded once and the marker records the version',t=>{
+ const r=temp(t);const version=require('../package.json').version;
+ const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
+ write(r,'src/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ write(r,'test/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ assert.equal(run(['install','--yes']).status,0);
+ const strip=text=>text.replace(/^\s*\/\/.*$/gm,'');
+ assert.deepEqual(JSON.parse(strip(read(r,'aldc.code-workspace'))).folders.map(f=>f.path),['.','src','test','../bcquality']);
+ assert.match(read(r,'aldc.yaml'),/application: "src"/);assert.match(read(r,'aldc.yaml'),/test: "test"/);
+ assert.equal(JSON.parse(read(r,'.github/aldc-profile.json')).version,version);
+ const status=JSON.parse(run(['status','--json']).stdout);
+ assert.equal(status.installedVersion,version);assert.equal(status.profile,'bc28');
+ // Seeded means seeded: the developer's edits survive even a forced install.
+ write(r,'aldc.code-workspace','{"folders":[{"name":"mio","path":"."}]}');
+ assert.equal(run(['install','--yes','--force']).status,0);
+ assert.equal(read(r,'aldc.code-workspace'),'{"folders":[{"name":"mio","path":"."}]}');
+ // A marker written before versions were recorded is reported, never repaired.
+ write(r,'.github/aldc-profile.json',JSON.stringify({profile:'bc28',surface:'copilot-chat-vscode'}));
+ assert.equal(JSON.parse(run(['status','--json']).stdout).installedVersion,null);
+});
+test('a solution without app or test folders seeds only the roots that exist',t=>{
+ const r=temp(t);
+ const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
+ assert.equal(run(['install','--yes']).status,0);
+ assert.deepEqual(JSON.parse(read(r,'aldc.code-workspace').replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),['.','../bcquality']);
+ assert.match(read(r,'aldc.yaml'),/application: ""/);
+ assert.equal(fs.existsSync(path.join(r,'src')),false,'no folder is ever created');
+});
 test('preview digest binds apply to the previewed plan',t=>{
  const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};
  const preview=tx.apply({...opts,dryRun:true});assert.match(preview.digest,/^[0-9a-f]{64}$/);

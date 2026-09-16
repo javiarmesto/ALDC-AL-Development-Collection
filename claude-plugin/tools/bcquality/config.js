@@ -53,9 +53,18 @@ function readConfig(workspace, configName = 'aldc.yaml') {
     if (v && !/^[0-9a-f]{40}$/i.test(v)) throw Error(`${k}: expected an empty value or full commit SHA`);
   if (!Array.isArray(config.pilotSkills) || config.pilotSkills.some(x => typeof x !== 'string')) throw Error('pilotSkills: expected string array');
   if (Object.keys(p).some(k => !['id', 'skill', 'expectedVersion', 'sourceRef'].includes(k))) throw Error('Unknown plugin identity field');
+  // The solution anchor travels with the snapshot: one source of truth for where the
+  // toolkit lives and how the multi-root workspace is laid out.
+  const toolkitRoot = string(data.toolkitRoot, '.', 'toolkitRoot', true);
+  const s = data.solution ?? {};
+  if (typeof s !== 'object' || Array.isArray(s)) throw Error('solution must be an object');
+  const r = s.roots ?? {};
+  if (typeof r !== 'object' || Array.isArray(r)) throw Error('solution.roots must be an object');
+  const solution = { workspaceFile: string(s.workspaceFile, 'aldc.code-workspace', 'solution.workspaceFile', true),
+    roots: { application: string(r.application, '', 'solution.roots.application'), test: string(r.test, '', 'solution.roots.test') } };
   return { contractVersion: 1, workspace: root, configPath: file,
     configSha256: raw ? crypto.createHash('sha256').update(raw).digest('hex') : null,
-    bcquality: config };
+    toolkitRoot, solution, bcquality: config };
 }
 if (require.main === module) {
   try { process.stdout.write(JSON.stringify(readConfig(process.argv[2] || '.'), null, 2) + '\n'); }

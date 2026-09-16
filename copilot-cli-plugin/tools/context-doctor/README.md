@@ -32,7 +32,9 @@ workspace folder is inspected separately; Doctor never traverses another root
 implicitly. For a custom Chat target, point `--toolkit` at the directory holding
 `agents/` and `prompts/`; its aldc-profile.json is diagnosed there, including
 invalid profile values. The default installation uses .github/aldc-profile.json.
-It does not parse `toolkitRoot` from aldc.yaml.
+It does not parse YAML: the caller resolves `toolkitRoot` from aldc.yaml (through
+`tools/bcquality/config.js`, which reports it alongside the solution layout) and
+passes the result as `--toolkit`. The VS Code extension does exactly that.
 
 App/Test discovery reads `.AL-Go/settings.json` appFolders/testFolders. Non-empty
 lists are authoritative per role; otherwise scan at most three folder levels,

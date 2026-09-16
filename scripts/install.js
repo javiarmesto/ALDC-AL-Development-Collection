@@ -271,13 +271,17 @@ async function install(opts) {
   // The multi-root workspace definition belongs to the developer: their folder list,
   // names and settings live here. Seed it once and never replace it, not even with
   // --force, exactly like project memory.
-  add(path.join(packageDir, 'aldc.code-workspace'), path.join(projectDir, 'aldc.code-workspace'), true);
   add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
   add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
   const relTarget = relative(targetDir) || '.';
+  const solution = detectSolution(projectDir);
   files.set('aldc.yaml', { content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
-    .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`) });
-  files.set(relative(markerPath), { content: JSON.stringify({ profile, surface: 'copilot-chat-vscode' }, null, 2) + '\n' });
+    .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`)
+    .replace(/^(\s{4}application:)\s*""/m, `$1 ${JSON.stringify(solution.application)}`)
+    .replace(/^(\s{4}test:)\s*""/m, `$1 ${JSON.stringify(solution.test)}`) });
+  // The developer's multi-root definition: written when absent, never replaced.
+  files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, '../bcquality'), seed: true });
+  files.set(relative(markerPath), { content: JSON.stringify({ profile, surface: 'copilot-chat-vscode', version: packageVersion(packageDir) }, null, 2) + '\n' });
   const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
   for (const file of result.files) if (file.action !== 'unchanged') log(`  ${file.action}: ${file.path}`);
   const summary = {};
@@ -320,15 +324,56 @@ async function install(opts) {
 function failure(message, code) { return Object.assign(new Error(message), { code }); }
 
 function readProfileMarker(markerPath) {
-  if (!fs.existsSync(markerPath)) return { present: false, profile: null, problem: null };
+  if (!fs.existsSync(markerPath)) return { present: false, profile: null, version: null, problem: null };
   try {
     const value = JSON.parse(fs.readFileSync(markerPath, 'utf8'));
     const profile = value && typeof value === 'object' && !Array.isArray(value) ? value.profile : undefined;
-    if (!['bc28', 'bc29-native'].includes(profile)) return { present: true, profile: null, problem: 'expected bc28 or bc29-native profile' };
-    return { present: true, profile, problem: null };
+    if (!['bc28', 'bc29-native'].includes(profile)) return { present: true, profile: null, version: null, problem: 'expected bc28 or bc29-native profile' };
+    // Installations written before 4.3.1 carry no version; that is reported, not repaired.
+    const version = typeof value.version === 'string' && /^\d+\.\d+\.\d+/.test(value.version) ? value.version : null;
+    return { present: true, profile, version, problem: null };
   } catch (error) {
-    return { present: true, profile: null, problem: error instanceof SyntaxError ? 'malformed JSON' : error.message };
+    return { present: true, profile: null, version: null, problem: error instanceof SyntaxError ? 'malformed JSON' : error.message };
   }
+}
+
+// Which folders this solution actually has. AL-Go declares them when present;
+// otherwise the conventional names are probed. Nothing is ever created here.
+function packageVersion(packageDir) {
+  try { return String(JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8')).version || ''); } catch { return ''; }
+}
+
+function detectSolution(projectDir) {
+  const manifest = rel => rel && fs.existsSync(path.join(projectDir, rel, 'app.json')) ? rel.replace(/\\/g, '/') : '';
+  let declared = {};
+  try {
+    const settings = JSON.parse(fs.readFileSync(path.join(projectDir, '.AL-Go/settings.json'), 'utf8'));
+    declared = { application: manifest((settings.appFolders || [])[0]), test: manifest((settings.testFolders || [])[0]) };
+  } catch { declared = {}; }
+  const first = names => names.map(manifest).find(Boolean) || '';
+  return { application: declared.application || first(['src', 'app', 'App']),
+    test: declared.test || first(['test', 'Test', 'tests', 'Tests']) };
+}
+
+// Seeded once, then owned by the developer. Comments survive because the file is text.
+function workspaceSeed(projectDir, solution, bcqualityHome) {
+  const folders = [{ name: path.basename(projectDir) || 'AL solution', path: '.' }];
+  if (solution.application) folders.push({ name: 'Application', path: solution.application });
+  if (solution.test) folders.push({ name: 'Tests', path: solution.test });
+  if (bcqualityHome) folders.push({ name: 'BCQuality (knowledge, not compiled)', path: bcqualityHome });
+  return ['{',
+    '  // Multi-root workspace for this AL solution, seeded by ALDC from the folders that',
+    '  // existed at installation. ALDC never rewrites this file: adjust it freely.',
+    '  // The declared layout lives in aldc.yaml under `solution.roots`.',
+    '  //',
+    '  // The BCQuality root has no app.json, so the AL compiler never builds it and its',
+    '  // example objects cannot reach your extension. Run tools/bcquality/install.sh',
+    '  // (install.ps1 on Windows) if that root shows as missing.',
+    '  "folders": ' + JSON.stringify(folders, null, 2).split('\n').join('\n  ') + ',',
+    '  "settings": {',
+    '    "git.detectSubmodules": false',
+    '  }',
+    '}', ''].join('\n');
 }
 
 // Read-only installation state for hosts. Never installs, repairs or writes.
@@ -343,7 +388,7 @@ function status(opts) {
   const receiptTarget = markerKey ? (markerKey.includes('/') ? markerKey.slice(0, markerKey.lastIndexOf('/')) : '.') : null;
   const targetMismatch = receiptTarget !== null && receiptTarget !== relTarget ? receiptTarget : null;
   return { ok: state.receipt === 'valid' && state.drift.length === 0 && targetMismatch === null, command: 'status', targetDir: relTarget, receiptTarget, targetMismatch,
-    profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem,
+    profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem, installedVersion: marker.version,
     toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),
     doctorScript: fs.existsSync(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) ? relTarget + '/tools/context-doctor/aldc_context_doctor.py' : null,
     message: state.receipt === 'absent' ? 'No installation receipt. Older toolkit copies may have no receipt; Install reviews existing-file collisions.'
