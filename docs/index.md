@@ -7,239 +7,80 @@ hide:
 # ALDC
 
 <div class="hero">
-
 <a class="hero-banner" href="#whats-new">
-  <span class="hero-banner__badge">NEW</span>
-  <span class="hero-banner__text">ALDC 4.1.0 — 31% lighter entrypoint + BCQuality-cited reviews</span>
+  <span class="hero-banner__badge">UPCOMING</span>
+  <span class="hero-banner__text">ALDC 4.3.0 · candidate under validation</span>
   <span class="hero-banner__arrow">→</span>
 </a>
-
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="index-es/">Español</a></div>
-
-<h2 class="hero-title">Ship Business Central extensions with AI agents that follow your process.</h2>
-
+<h2 class="hero-title">From business requirements to AL development.</h2>
 <div class="hero-annotation">Engineering systems, visibly reasoned.</div>
-
-<p class="hero-tagline">ALDC gives Copilot and Claude Code a working model for AL delivery: specs, plans, tests, review gates and reusable skills. Less vibe coding. More traceable implementation.</p>
-
+<p class="hero-tagline"><strong>Specialist AI agents. Human review.</strong> Design the architecture, define connected specifications, and coordinate implementation, testing and review for Business Central. You decide at key checkpoints.</p>
 <div class="hero-actions">
   <a class="md-button md-button--primary" href="getting-started/">Start with the docs</a>
-  <a class="md-button" href="al-development/">Open the collection guide</a>
+  <a class="md-button" href="#whats-new">Explore what is new</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-
-<p class="hero-subnote">Free, hands-on: <a href="https://javiarmesto.github.io/aldc-workshop/en/" target="_blank" rel="noopener">Public ALDC Workshop →</a></p>
-
+<p class="hero-subnote">Marketplace remains on 4.2.0. The 4.3.0 capabilities are under validation and have not been published yet.</p>
 <div class="hero-pills">
-  <span class="pill"><b>4</b> public + <b>2</b> on-demand agents</span>
-  <span class="pill"><b>11</b> skills</span>
-  <span class="pill"><b>6</b> workflows</span>
-  <span class="pill pill--accent">BCQuality-ready</span>
-  <span class="pill pill--accent">Copilot + Claude Code</span>
-  <span class="pill pill--version"><b>v4.1.0</b> · MIT</span>
+  <span class="pill">Architect → Spec → Conductor</span>
+  <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
+  <span class="pill pill--accent">AL18 · Tools · MCP</span>
+  <span class="pill pill--version"><b>4.3.0 candidate</b> · MIT</span>
+</div>
 </div>
 
-</div>
-
----
-
-## What's new in 4.1.0 { #whats-new .section-title }
+## What is coming { #whats-new .section-title }
 
 <div class="grid cards" markdown="1">
 
--   :material-flash-outline: &nbsp; **Lower token / AIC cost per interaction**
+-   **Architect → Spec**
 
     ---
 
-    A **31% lighter** always-on entrypoint, narrow per-object instruction globs, and
-    curated context passed to subagents. Same capabilities — fewer tokens on every request.
+    Architect defines units, shared contracts and dependencies. Spec develops each contract and returns contradictions for joint review.
 
--   :material-book-search-outline: &nbsp; **Cited reviews & audits with BCQuality**
-
-    ---
-
-    Optional external knowledge base (configurable, defaults to upstream
-    [microsoft/BCQuality](bcquality/)). Agents cite findings to real files, with a
-    graceful native fallback when it's absent. Never blocks.
-
-</div>
-
-<div class="two-col">
-<div class="two-col-text">
-
-<p><strong>Install once, from the Command Palette.</strong> Run <code>AL Collection: Install Toolkit to Workspace</code> and ALDC drops the agents, skills, instructions and config into your project — then start with <code>@AL Architecture &amp; Design Specialist</code> or <code>@AL Development Conductor</code>.</p>
-
-<p>Also new: on-demand <strong><code>@AL Triage</code></strong> (reactive diagnosis) and <strong><code>@Dredd</code></strong> (independent auditor) — read-only on your code.</p>
-
-</div>
-<div class="two-col-visual">
-  <img src="assets/images/aldcinstalltoolkit.gif" alt="Installing the ALDC toolkit from the VS Code Command Palette" loading="lazy">
-</div>
-</div>
-
----
-
-## What's ALDC { #whats-aldc .section-title }
-
-<div class="two-col">
-<div class="two-col-text">
-
-<p>Most AI coding tools generate a file and hope for the best. <strong>ALDC is different.</strong></p>
-
-<p>Every feature starts with a <strong>spec contract</strong> that is functional, technical, and testable, kept in <code>.github/plans/{req_name}/</code>. Architecture and test plans live next to it.</p>
-
-<p>A <strong>conductor agent</strong> orchestrates a TDD cycle: the Implementation Subagent writes tests first, code second, then refactors. A Review Subagent validates against the spec. You approve every phase.</p>
-
-<p>Underneath it all, <strong>11 composable skills</strong> covering API, events, performance, testing, and more load on demand so agents only know what they need for the task in front of them.</p>
-
-<p>The result: AL code that passes review the first time, with traceable decisions from requirement to merge.</p>
-
-</div>
-<div class="two-col-visual" markdown="1">
-
-```mermaid
-flowchart TD
-    R([Requirement]) --> S[Spec Contract<br/><small>functional + technical</small>]
-    S --> A[Architecture<br/><small>decisions + diagrams</small>]
-    A --> T[Test Plan<br/><small>RED before GREEN</small>]
-    T --> I[TDD Implementation<br/><small>subagent loop</small>]
-    I --> V[Review<br/><small>vs spec</small>]
-    V --> M([Merged])
-
-    style R fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
-    style M fill:#0F172A,color:#fff,stroke:#38BDF8
-    style S fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
-    style A fill:#E0F7FF,color:#0F172A,stroke:#38BDF8
-    style T fill:#0E7490,color:#fff,stroke:#38BDF8
-    style I fill:#0E7490,color:#fff,stroke:#38BDF8
-    style V fill:#A21CAF,color:#fff,stroke:#D946EF
-```
-
-</div>
-</div>
-
----
-
-## Why it matters { .section-title }
-
-<div class="grid cards" markdown="1">
-
--   :material-file-document-check-outline: &nbsp; **Spec-driven, not prompt-and-pray**
+-   **AL18 · Tools · MCP**
 
     ---
 
-    No more "please re-explain the requirement for the 5th time".
-    Every feature has a written contract that agents consult.
+    Optional BC29-native guidance for AL tools available in Copilot Chat. BC28 remains the default; selecting a profile does not install tools or change app.json.
 
--   :material-test-tube: &nbsp; **TDD enforced, not suggested**
-
-    ---
-
-    The Implementation Subagent refuses to write code before tests.
-    RED → GREEN → REFACTOR is hardcoded in the agent.
-
--   :material-account-check-outline: &nbsp; **You approve every phase**
+-   **Doctor · BCQuality**
 
     ---
 
-    Agents stop at architecture, plan, implementation, review, deploy.
-    Nothing ships without a human saying yes.
+    Operation-specific diagnostics and optional BCQuality reviews. Configuration, discovery, loading and execution are recorded as separate facts.
 
--   :material-shield-lock-outline: &nbsp; **Extension-only discipline**
-
-    ---
-
-    Never touches base app objects. Always tableextensions, pageextensions,
-    event subscribers. Least-privilege permissions by default.
-
--   :material-compare-horizontal: &nbsp; **One toolkit, two runtimes**
+-   **Recoverable updates**
 
     ---
 
-    Same primitives work in **GitHub Copilot** and **Claude Code**.
-    Pick the tool your team already uses.
-
--   :material-puzzle-outline: &nbsp; **Skills load on demand**
-
-    ---
-
-    11 composable skills replace 300kb of prompt soup.
-    Agents only load what's relevant to the task.
+    Review collisions, verify installed content and restore the preceding transaction when integrity checks permit it. Restoration protects later edits.
 
 </div>
 
----
+## From design to reviewable implementation { #whats-aldc .section-title }
 
-## Cited reviews & audits with BCQuality { #bcquality .section-title }
+Architect determines how many specifications a solution needs, what they share and which can be drafted independently. Drafting and implementation dependencies are evaluated separately. Actual concurrency depends on the host and execution; a plan does not demonstrate that agents ran in parallel.
 
-<div class="two-col">
-<div class="two-col-text">
+Spec develops technical contracts and acceptance criteria within the approved design. Joint review checks the current revisions before handoff to Conductor or Developer. Conductor coordinates planning, test-first implementation and review. Skills supply domain guidance when the task calls for it.
 
-<p>BCQuality is an <strong>optional</strong> layer that turns the review/audit agents into <strong>citing</strong> reviewers — every finding points to a real Business Central knowledge file, not just an opinion.</p>
+[Explore Spec Agent](spec-agent/) · [BC28 / BC29-native profiles](native-bc29/)
 
-<ul>
-  <li><strong>Configurable source.</strong> Defaults to the canonical upstream <a href="https://github.com/microsoft/BCQuality">microsoft/BCQuality</a>; point it at your own fork in <code>aldc.yaml</code>.</li>
-  <li><strong>Consumed externally.</strong> A sibling clone via multi-root workspace — never compiled, never pollutes your app.</li>
-  <li><strong>Hooks in via <code>entry.md</code>.</strong> Agents read the meta-skill and run whatever it dispatches.</li>
-  <li><strong>Never blocks.</strong> Absent by default → graceful native A–G fallback.</li>
-</ul>
+## Reviews with BCQuality { #bcquality .section-title }
 
-<a class="md-button" href="bcquality/">Read the BCQuality guide →</a>
+BCQuality is optional and installed separately. Choose plugin or external-workspace mode in `aldc.yaml`, with the exact provider identity. Review evidence distinguishes discovery, loading, execution and index generation; native coverage is retained when external results are insufficient.
 
-</div>
-<div class="two-col-visual" markdown="1">
+[Configure BCQuality](bcquality/)
 
-```text
-# from your AL project root — opt in when you want cited reviews
-bash tools/bcquality/install.sh      # or: pwsh tools/bcquality/install.ps1
-#   → clones microsoft/BCQuality to ../bcquality (configurable)
+## Start in your environment { .section-title }
 
-# then open aldc.code-workspace and run:
-@Dredd                               # independent audit
-@AL Development Conductor            # review phases cite BCQuality
-```
+In VS Code, install the published ALDC extension and run **AL Collection: Install Toolkit to Workspace** in your AL project. Reload the window to discover the installed content. Installing the VSIX and updating a project's toolkit are separate operations.
 
-</div>
-</div>
+Claude Code, Copilot CLI and Codex have separate distributions. Updating the VSIX does not update those plugins. Follow your host's installation instructions and verify its available capabilities.
 
----
-
-## Quick start { .section-title }
-
-=== ":fontawesome-brands-github: GitHub Copilot (VS Code)"
-
-    ```bash
-    git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
-    cd ALDC-AL-Development-Collection
-    npm install
-    npx aldc init
-    ```
-
-    Then in VS Code with Copilot enabled:
-
-    ```text
-    @workspace use al-initialize
-    ```
-
-=== ":material-robot-outline: Claude Code"
-
-    ```bash
-    /plugin install aldc
-    ```
-
-    Then:
-
-    ```text
-    /aldc:al-initialize
-    ```
-
-=== ":material-magnify: Just exploring?"
-
-    ```bash
-    git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
-    cd ALDC-AL-Development-Collection
-    npm install && npm run validate
-    ```
+[Installation and recovery by host](plugin-packaging/) · [Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) · [Public workshop](https://javiarmesto.github.io/aldc-workshop/en/)
 
 ---
 
@@ -252,7 +93,7 @@ Everything ALDC-related lives here. Pick your path.
   <a class="resource-card" href="getting-started/">
     <span class="resource-kicker">Start here</span>
     <h3>Getting Started</h3>
-    <p>Install, configure and ship your first feature in under 10 minutes.</p>
+    <p>Install the toolkit and prepare your first requirement.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -266,21 +107,21 @@ Everything ALDC-related lives here. Pick your path.
   <a class="resource-card" href="agents/">
     <span class="resource-kicker">Roles</span>
     <h3>Agents</h3>
-    <p>Architect, Developer, Conductor, Pre-Sales — plus on-demand Triage &amp; Dredd. What each one does and when.</p>
+    <p>Architect, Spec, Developer, Conductor, Pre-Sales — plus on-demand Triage &amp; Dredd. What each one does and when.</p>
     <span class="resource-arrow">→</span>
   </a>
 
   <a class="resource-card" href="prompts/">
     <span class="resource-kicker">Automation</span>
     <h3>Workflows</h3>
-    <p>6 workflows from initialize to PR prepare. Invocable from chat.</p>
+    <p>Workflows from initialization to PR preparation. Invocable from chat.</p>
     <span class="resource-arrow">→</span>
   </a>
 
   <a class="resource-card" href="instructions/">
     <span class="resource-kicker">Standards</span>
     <h3>Instructions</h3>
-    <p>9 always-on AL coding standards. Style, perf, naming, errors, events.</p>
+    <p>Scoped AL coding instructions. Style, perf, naming, errors, events.</p>
     <span class="resource-arrow">→</span>
   </a>
 
