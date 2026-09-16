@@ -17,7 +17,11 @@
   refuses to apply a plan that changed after the preview. Each file reports whether
   a replace overwrites a local customization. Human output is unchanged.
 - Read-only installation inspection (`inspect`) reporting absent, invalid, matching
-  and drifted receipts and whether the last transaction can be restored.
+  and drifted receipts and whether the last transaction can be restored. Receipts
+  whose file map is not an object or contains an unsafe path are reported as
+  invalid, never thrown or planned against. `status` and `verify-install` report
+  the target recorded by the receipt (`receiptTarget`) and refuse to verify another
+  requested `--target-dir` (`targetMismatch`).
 - Developer Reviewer for independent direct-increment review, with a shared review
   pipeline, one bounded correction round and human approval.
 

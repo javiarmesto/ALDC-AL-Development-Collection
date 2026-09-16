@@ -58,7 +58,7 @@ function plan({ root, surface, files, force = false }) {
   root = path.resolve(root);
   if (json(root, `${META}/pending.json`)) throw Error('Interrupted operation: run rollback before installing');
   const state = json(root, statePath(surface));
-  if (state && (state.schema !== 1 || state.surface !== surface || !state.files)) throw Error('Invalid installation receipt');
+  if (state && (state.schema !== 1 || state.surface !== surface || !state.files || typeof state.files !== 'object' || Array.isArray(state.files))) throw Error('Invalid installation receipt');
   const seen = new Set(), actions = [];
   for (const [rel, record] of files) {
     if (rel.startsWith(META + '/')) throw Error('Reserved installer destination');
@@ -199,9 +199,13 @@ function inspect(root, surface) {
     else if (!state || state.schema !== 1 || state.surface !== surface || !state.files || typeof state.files !== 'object' || Array.isArray(state.files)) result.receiptProblem = 'unexpected receipt schema or surface';
     if (result.receiptProblem) { result.receipt = 'invalid'; state = null; }
     else {
-      result.receipt = 'valid'; result.transaction = state.transaction || null; result.managed = Object.keys(state.files).length;
-      result.collisions = [...(state.collisions || [])]; result.retained = [...(state.retained || [])];
-      result.drift = [...new Set([...result.collisions, ...Object.entries(state.files).filter(([p, h]) => hash(read(root, p)) !== h).map(([p]) => p)])];
+      try {
+        // Receipt keys are only read through the same path checks as installation; an unsafe key marks the receipt invalid.
+        const drift = Object.entries(state.files).filter(([p, h]) => hash(read(root, p)) !== h).map(([p]) => p);
+        result.receipt = 'valid'; result.transaction = state.transaction || null; result.managed = Object.keys(state.files).length; result.paths = Object.keys(state.files);
+        result.collisions = [...(state.collisions || [])]; result.retained = [...(state.retained || [])];
+        result.drift = [...new Set([...result.collisions, ...drift])];
+      } catch (error) { result.receipt = 'invalid'; result.receiptProblem = error.message; state = null; }
     }
   }
   try { result.pending = json(root, `${META}/pending.json`)?.id || null; } catch { result.pending = null; result.pendingProblem = 'malformed pending marker'; }

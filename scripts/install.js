@@ -335,12 +335,17 @@ function status(opts) {
   const state = require('./install-transaction').inspect(projectDir, 'chat');
   const marker = readProfileMarker(path.join(targetDir, 'aldc-profile.json'));
   const relTarget = path.relative(projectDir, targetDir).split(path.sep).join('/') || '.';
-  return { ok: state.receipt === 'valid' && state.drift.length === 0, command: 'status', targetDir: relTarget,
+  // The receipt records the profile marker under the installed target; another requested target is reported, never verified.
+  const markerKey = state.receipt === 'valid' ? (state.paths || []).find(p => p === 'aldc-profile.json' || p.endsWith('/aldc-profile.json')) : null;
+  const receiptTarget = markerKey ? (markerKey.includes('/') ? markerKey.slice(0, markerKey.lastIndexOf('/')) : '.') : null;
+  const targetMismatch = receiptTarget !== null && receiptTarget !== relTarget ? receiptTarget : null;
+  return { ok: state.receipt === 'valid' && state.drift.length === 0 && targetMismatch === null, command: 'status', targetDir: relTarget, receiptTarget, targetMismatch,
     profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem,
     toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),
     doctorScript: fs.existsSync(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) ? relTarget + '/tools/context-doctor/aldc_context_doctor.py' : null,
     message: state.receipt === 'absent' ? 'No installation receipt. Older toolkit copies may have no receipt; Install reviews existing-file collisions.'
       : state.receipt === 'invalid' ? `Invalid installation receipt (${state.receiptPath}): ${state.receiptProblem}. Preserve the receipt/backups and inspect before replacing anything.`
+      : targetMismatch ? `Installation receipt records target "${targetMismatch}", not "${relTarget}". Verify and restore apply to the recorded target; install to "${relTarget}" only after moving or rolling back the recorded installation.`
       : state.drift.length ? 'Drift: ' + state.drift.join(', ')
       : 'Managed files match installation receipt; host loading remains unverified.',
     ...state };

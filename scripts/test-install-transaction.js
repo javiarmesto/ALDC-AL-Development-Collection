@@ -126,6 +126,16 @@ test('verify distinguishes absent and corrupt receipts without changing user fil
  assert.equal(read(r,'sentinel.al'),'existing');
 });
 
+test('array receipts and unsafe receipt keys are invalid for planning and inspection alike', t => {
+ const r=temp(t);
+ write(r,'.aldc-install/fixture.json',JSON.stringify({schema:1,surface:'fixture',transaction:'t',files:[]}));
+ assert.throws(()=>tx.plan({root:r,surface:'fixture',files:files('v1')}),/Invalid installation receipt/);
+ let s=tx.inspect(r,'fixture');assert.equal(s.receipt,'invalid');assert.match(s.receiptProblem,/schema/);
+ write(r,'.aldc-install/fixture.json',JSON.stringify({schema:1,surface:'fixture',transaction:'t',files:{'../outside.md':'0'.repeat(64)}}));
+ s=tx.inspect(r,'fixture');assert.equal(s.receipt,'invalid');assert.match(s.receiptProblem,/Unsafe path/);assert.equal(s.managed,0);assert.deepEqual(s.drift,[]);
+ assert.throws(()=>tx.plan({root:r,surface:'fixture',files:files('v1')}),/Unsafe path/);
+ assert.deepEqual(fs.readdirSync(r),['.aldc-install'],'nothing written');
+});
 test('inspect reports absent, invalid, valid, drifted and restorable state without writing', t => {
  const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};
  let s=tx.inspect(r,'fixture');assert.equal(s.receipt,'absent');assert.equal(s.restore.available,false);assert.deepEqual(fs.readdirSync(r),[]);
@@ -157,6 +167,8 @@ test('Chat CLI --json returns structured status, preview, guarded apply, verify 
  assert.deepEqual(again.body.replaced,[]);const forced=run(['install','--dry-run','--force']);assert.deepEqual(forced.body.replaced,['.github/agents/al-developer.agent.md']);assert.deepEqual(forced.body.collisions,[]);
  const applied=run(['install','--expect-plan',again.body.digest]);assert.equal(applied.status,0);assert.match(applied.body.transaction,/^[0-9a-f-]{36}$/);assert.equal(read(r,'.github/agents/al-developer.agent.md'),'custom');
  s=run(['status']);assert.equal(s.body.receipt,'valid');assert.equal(s.body.profile,'bc28');assert.deepEqual(s.body.drift,['.github/agents/al-developer.agent.md']);assert.ok(s.body.doctorScript);
+ const other=run(['status','--target-dir','.copilot']);assert.equal(other.status,0);assert.equal(other.body.ok,false);assert.equal(other.body.receiptTarget,'.github');assert.equal(other.body.targetMismatch,'.github');assert.match(other.body.message,/records target "\.github"/);assert.equal(s.body.targetMismatch,null);
+ const otherVerify=run(['verify-install','--target-dir','.copilot']);assert.equal(otherVerify.status,1);assert.equal(otherVerify.body.targetMismatch,'.github');
  const verify=run(['verify-install']);assert.equal(verify.status,1);assert.equal(verify.body.command,'verify-install');
  const rollback=run(['rollback']);assert.equal(rollback.status,0);assert.equal(rollback.body.ok,true);assert.equal(fs.existsSync(path.join(r,'aldc.yaml')),false);
  write(r,'.github/aldc-profile.json','{"profile":"unsupported"}');s=run(['status']);assert.equal(s.body.profileMarker,'invalid');
