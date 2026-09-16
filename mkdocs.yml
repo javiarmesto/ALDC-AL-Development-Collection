@@ -159,7 +159,9 @@ nav:
     - Overview: agents/index.md
     - Core Agents:
       - Architect: agents/al-architect.agent.md
+      - Spec Agent: agents/al-spec-agent.agent.md
       - Developer: agents/al-developer.agent.md
+      - Developer Reviewer: agents/al-developer-reviewer.agent.md
       - Pre-Sales Specialist: agents/al-presales.agent.md
     - Orchestra System:
       - Conductor: agents/al-conductor.agent.md

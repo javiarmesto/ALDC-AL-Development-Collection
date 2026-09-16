@@ -82,7 +82,7 @@ never runs the generator, compiles AL or installs a provider.
 
 See [the shared provider contract](templates/bcquality-provider-contract.md),
 [task-context](templates/bcquality-task-context.md) and
-[Doctor usage](../tools/context-doctor/README.md).
+[Doctor usage](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/tools/context-doctor/README.md).
 
 ## Validation limits
 
