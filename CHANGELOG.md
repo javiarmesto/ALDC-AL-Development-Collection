@@ -4,6 +4,9 @@
 
 ### Added
 
+- Developer Reviewer for independent direct-increment review, with a shared review
+  pipeline, one bounded correction round and human approval.
+
 - Explicit BCQuality plugin mode alongside external multiroot, with shared provider
   identity, stage evidence and native fallback rules across review agents.
 - Doctor configuration snapshots and BCQuality observations distinguish discovery,
@@ -36,6 +39,10 @@
   current artifacts; native capabilities can satisfy relevant tool requirements.
 
 ### Fixed
+
+- Review coverage now distinguishes provider execution from index generation and
+  incomplete audits from zero-finding completed reviews. Dredd remains advisory
+  and supports explicit file scope and chat-only reports when writes are forbidden.
 
 - Profile projection with CRLF files, packaged template references and cross-host
   role links.

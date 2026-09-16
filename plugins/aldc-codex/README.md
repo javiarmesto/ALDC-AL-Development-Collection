@@ -8,7 +8,7 @@ From a checkout, preview a separate project:
 `node plugins/aldc-codex/scripts/init.js --project /path/to/project`
 
 Repeat with --apply after reviewing the plan. This installs one local ALDC skill,
-11 .codex/agents profiles, AL rules and a managed AGENTS.md block (or the existing
+12 .codex/agents profiles, AL rules and a managed AGENTS.md block (or the existing
 AGENTS.override.md). Models, sandbox, approvals and MCP settings are inherited.
 --force backs up reviewed collisions; --verify checks receipt drift; --rollback
 restores the preceding transaction if later project edits would not be lost.

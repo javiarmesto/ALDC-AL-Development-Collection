@@ -135,8 +135,8 @@ function ask(question, defaultYes = true) {
 
 // ─── ALDC Core v1.2 component map ──────────────────────────────────────────
 const COMPONENTS = [
-  { name: 'Agents',      src: 'agents',             count: '11 agents (5 public + 2 on-demand + 3 subagents + 1 optional)' },
-  { name: 'Skills',      src: 'skills',             count: '16 skills (7 required + 4 recommended + 5 optional)' },
+  { name: 'Agents',      src: 'agents',             count: '12 agents (5 public + 3 on-demand + 3 subagents + 1 optional)' },
+  { name: 'Skills',      src: 'skills',             count: '17 skills (8 required + 4 recommended + 5 optional)' },
   { name: 'Prompts',     src: 'prompts',            count: '11 workflows (6 core + 5 agent-builder)' },
   { name: 'Instructions',src: 'instructions',       count: '9 instruction files (8 auto-applied + copilot entrypoint)' },
   { name: 'Templates',   src: 'docs/templates',     count: '7 contract templates' },
@@ -408,8 +408,8 @@ ${C.cyan}Examples:${C.reset}
 ${C.cyan}What gets installed:${C.reset}
   ${C.bold}Core:${C.reset}
   <target-dir>/
-    agents/           11 agents (including 3 subagents)
-    skills/           16 skills (7 required + 4 recommended + 5 optional)
+    agents/           12 agents (including 3 subagents)
+    skills/           17 skills (8 required + 4 recommended + 5 optional)
     prompts/          11 workflows (6 core + 5 agent-builder)
     instructions/     8 scoped instructions + copilot entrypoint
     docs/framework/   Core specification & docs

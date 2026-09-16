@@ -69,7 +69,7 @@ for(const [surface,dir] of [['claude','claude-plugin'],['cli','copilot-cli-plugi
  assert.deepEqual(initialize({project:r,pluginRoot,check:true}).drift,[rule]);
  initialize({project:r,pluginRoot,apply:true,force:true});initialize({project:r,pluginRoot,rollback:true});assert.equal(read(r,rule),'custom rule');
  assert.equal(read(r,'App/Main.al'),'// project source');assert.equal(read(r,'Test/app.json'),'{"runtime":"18.0"}');
- if(surface==='codex') {assert.equal(fs.readdirSync(path.join(r,'.codex/agents')).length,11);assert.equal(read(r,'AGENTS.md'),'Shadowed instructions preserved');}
+ if(surface==='codex') {assert.equal(fs.readdirSync(path.join(r,'.codex/agents')).length,12);assert.equal(read(r,'AGENTS.md'),'Shadowed instructions preserved');}
 });
 test('tampered plugin fails before creating project files; CRLF locked checkout is accepted',t=>{
  const r=temp(t),pluginRoot=path.join(r,'plugin'),project=path.join(r,'project');fs.cpSync(path.join(root,'claude-plugin'),pluginRoot,{recursive:true});
@@ -113,4 +113,15 @@ test('Windows path casing and separators cannot bypass plugin-tree isolation',()
  const {overlaps}=require('./init-plugin');
  for(const [a,b] of [['C:/Plugin','c:/plugin'],['C:/PLUGIN/project','c:/plugin'],['c:/','C:/plugin']])assert.equal(overlaps(a,b,'win32'),true);
  assert.equal(overlaps('C:/plugin-other','c:/plugin','win32'),false);
+});
+
+test('verify distinguishes absent and corrupt receipts without changing user files', t => {
+ const r=temp(t); write(r,'sentinel.al','existing');
+ assert.throws(()=>tx.drift(r,'chat'), /No installation receipt/);
+ write(r,'.aldc-install/chat.json','{broken');
+ assert.throws(()=>tx.drift(r,'chat'), /Invalid installation receipt.*malformed JSON/);
+ assert.equal(read(r,'.aldc-install/chat.json'),'{broken');
+ write(r,'.aldc-install/chat.json',JSON.stringify({schema:1,surface:'wrong',files:{}}));
+ assert.throws(()=>tx.drift(r,'chat'), /Invalid installation receipt/);
+ assert.equal(read(r,'sentinel.al'),'existing');
 });

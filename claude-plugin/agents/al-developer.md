@@ -678,3 +678,12 @@ When your work is complete and approved by the user:
 - **TDD orchestration needed** → Use the Task tool to delegate to agent `al-conductor` with context: "Orchestrate TDD implementation for this feature"
 
 CRITICAL: NEVER auto-delegate. Always present your output to the user and wait for explicit approval before delegating. This is a HITL gate.
+
+## Independent direct-increment review
+
+After a direct implementation, provide the objective, acceptance criteria, changed
+files and current build/test evidence to AL Developer Reviewer. Use host handoff
+when available; otherwise the lead/user opens an independent reviewer context.
+Do not self-certify independent review. Apply actionable findings in one bounded
+correction round within approved scope, then request re-review; remaining issues go
+to the human. Reviewer approval does not authorize commit, push or deployment.

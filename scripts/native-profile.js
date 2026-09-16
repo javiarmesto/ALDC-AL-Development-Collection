@@ -14,6 +14,7 @@ const roles = {
   'al-planning-subagent': [SEARCH, 'Resolve material planning gaps and reuse approved evidence; do not reopen settled design decisions.'],
   'al-developer': [[...BUILD, ...DEBUG], 'Own scoped implementation, dependency setup, builds, tests and optional graph operations through your existing terminal.'],
   'al-implement-subagent': [BUILD, 'Own scoped TDD implementation, dependency setup, builds and optional graph operations through your existing terminal.'],
+  'al-developer-reviewer': [SEARCH, 'Independent direct-increment review. Read current sources and supplied build/test evidence; do not build, execute tests or modify code.'],
   'al-review-subagent': [SEARCH, 'Read sources and actual implementation evidence. Diagnostics, fresh builds and runtime tests are different claims. Do not execute builds, tests, debugging or graph extraction.'],
   'dredd': [SEARCH, 'Remain independent: choose the audit question, inspect raw evidence and source yourself, and request a bounded graph operation from an implementation owner when needed.'],
   'al-triage': [[...SEARCH, 'al_downloadsymbols', ...DEBUG], 'Diagnose within the existing read-only-on-code scope; use authorized debugging, consume graph results, and hand implementation to Developer.'],

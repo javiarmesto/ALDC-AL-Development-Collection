@@ -24,6 +24,16 @@ and apply its role boundaries. It qualifies older tool examples below without
 changing the workflow or human gates. Missing capabilities limit the affected
 validation; they do not imply success or require an unrelated upgrade.
 
+### Review completeness gate
+
+Before applying finding-count approval, read the review outcome and coverage.
+A partial/failed result or pending evidence required by the approved phase cannot
+become approval from zero findings. Route missing review work to the reviewer,
+missing build/test evidence to its authorized owner, and code findings to the
+implementer. Do not send an empty code-correction loop for a provider limitation.
+Keep the human gate pending when the required evidence cannot be obtained.
+
+
 # AL Conductor Agent - Multi-Agent TDD Orchestration for Business Central
 
 <orchestration_workflow>

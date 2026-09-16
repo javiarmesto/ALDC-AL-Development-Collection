@@ -1,46 +1,24 @@
 ---
-description: "Index of ALDC role-based agent specialists for AL development in Business Central."
+description: "ALDC agent roles for Business Central development."
 ---
+# ALDC agents
 
-# Agents - ALDC Core v1.1
+| Role | Purpose |
+|---|---|
+| [Architect](al-architect.agent.md) | Architecture and specification decomposition |
+| [Spec](al-spec-agent.agent.md) | Approved architecture to specification contracts |
+| [Developer](al-developer.agent.md) | Direct implementation |
+| [Developer Reviewer](al-developer-reviewer.agent.md) | Independent direct-increment review before human approval |
+| [Conductor](al-conductor.agent.md) | Orchestrated planning, implementation and review |
+| [Pre-Sales](al-presales.agent.md) | Estimation and discovery |
+| [Dredd](dredd.agent.md) | Independent advisory audit; no AL edits |
+| [Triage](al-triage.agent.md) | Diagnosis and runtime investigation |
+| [Agent Builder](al-agent-builder.agent.md) | Optional agent extension work |
 
-**Role-based specialists** implemented as `.agent.md` files for AL development in Business Central.
-
-## Public Agents (4)
-
-| Agent | Purpose | Loads Skills |
-|-------|---------|--------------|
-| [@AL Architecture & Design Specialist](al-architect.agent.md) | Solution architecture & design | skill-api, skill-copilot, skill-performance, skill-events, skill-testing |
-| [@AL Development Conductor](al-conductor.agent.md) | TDD orchestration: Planning → Implementation → Review → Commit | skill-testing |
-| [@AL Implementation Specialist](al-developer.agent.md) | Tactical implementation with full build tools | skill-debug, skill-api, skill-copilot, skill-events, skill-permissions, skill-pages, skill-migrate, skill-translate, skill-performance |
-| [@AL Pre-Sales & Project Estimation Specialist](al-presales.agent.md) | Project estimation & pre-sales analysis | skill-estimation |
-
-## Subagents (3)
-
-| Agent | Purpose | Invoked By |
-|-------|---------|------------|
-| [AL Planning Subagent](al-planning-subagent.agent.md) | AL-aware research & context gathering | @AL Development Conductor |
-| [AL Implementation Subagent](al-implement-subagent.agent.md) | TDD implementation (RED→GREEN→REFACTOR) | @AL Development Conductor |
-| [AL Code Review Subagent](al-review-subagent.agent.md) | Code review and quality gates | @AL Development Conductor |
-
-## Agent Selection Guide
-
-| Need | Agent |
-|------|-------|
-| Design a solution | @AL Architecture & Design Specialist |
-| Implement a feature (simple) | @AL Implementation Specialist |
-| Implement a feature (complex, TDD) | @AL Development Conductor |
-| Estimate a project | @AL Pre-Sales & Project Estimation Specialist |
-
-## Requirement Contracts
-
-All agents read/write to `.github/plans/`:
-- `{req_name}.spec.md` — Technical specification
-- `{req_name}.architecture.md` — Architectural design
-- `{req_name}.test-plan.md` — Test strategy
-- `memory.md` — Global memory (append-only)
-
----
-
-**Version**: 1.1.0
-**Last Updated**: 2026-03-01
+Conductor owns the internal [Planning](al-planning-subagent.agent.md),
+[Implementation](al-implement-subagent.agent.md) and
+[Review](al-review-subagent.agent.md) subagents.
+Developer Reviewer and Dredd are directly invocable; they have different purposes.
+Reviewers use [the shared pipeline](../skills/skill-al-review-pipeline/SKILL.md).
+Architecture, specs, plans and memory stay in `.github/plans/`; Dredd may write
+only its audit reports under `.github/audits/`, unless the user requests chat only.

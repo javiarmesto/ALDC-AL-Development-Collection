@@ -50,10 +50,11 @@ for (const [srcRel, dstRel] of MAP) {
     // Workspace rules are renamed and templates remain at the repository root.
     // Keep the new shared Spec contract intact except for these host paths.
     let content = fs.readFileSync(src);
-    if (srcRel === 'claude-plugin/agents' && ['al-spec-agent.md', 'al-architect.md'].includes(rel)) {
+    if (srcRel === 'claude-plugin/agents' && ['al-spec-agent.md', 'al-architect.md', 'al-review-subagent.md', 'al-developer-reviewer.md', 'dredd.md'].includes(rel)) {
       content = Buffer.from(content.toString('utf8').replaceAll('../rules-templates/', '../rules/')
         .replaceAll('../docs/templates/', '../../docs/templates/'));
     }
+    if (srcRel === 'claude-plugin/skills' && rel.startsWith('skill-al-review-pipeline')) content = Buffer.from(content.toString('utf8').replaceAll('../../docs/templates/', '../../../docs/templates/'));
     const same = fs.existsSync(dst) && content.equals(fs.readFileSync(dst));
     if (same) { identical++; continue; }
     drift.push(`${dstRel}/${rel.split(path.sep).join('/')} (desactualizado)`);

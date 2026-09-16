@@ -166,8 +166,16 @@ function rollback(root, surface) {
   } finally { release(); }
 }
 function drift(root, surface) {
-  const state = json(root, statePath(surface));
-  if (!state || state.schema !== 1 || !state.files) throw Error('No valid installation receipt');
+  const rel = statePath(surface);
+  let state;
+  try { state = json(root, rel); }
+  catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw Error(`Invalid installation receipt (${rel}): malformed JSON. Preserve the receipt/backups and inspect before replacing anything.`);
+  }
+  if (!state) throw Error(`No installation receipt (${rel}). Run Install Toolkit to Workspace (CLI: aldc install) and review existing-file collisions; older toolkit copies may have no receipt.`);
+  if (state.schema !== 1 || state.surface !== surface || !state.files || typeof state.files !== 'object' || Array.isArray(state.files))
+    throw Error(`Invalid installation receipt (${rel}). Preserve the receipt/backups and inspect before replacing anything.`);
   return [...new Set([...(state.collisions || []), ...Object.entries(state.files).filter(([rel, h]) => hash(read(root, rel)) !== h).map(([rel]) => rel)])];
 }
 // The caller supplies only its managed fragment; surrounding user bytes survive.

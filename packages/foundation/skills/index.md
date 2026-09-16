@@ -34,3 +34,7 @@ Skills follow the GitHub Copilot Agent Skills structure (`skills/{skill-name}/SK
 3. Fill in all sections (including frontmatter with `name` and `description`)
 4. Keep under 500 lines (context window optimization)
 5. Submit PR (required skills need RFC approval)
+
+## Shared review procedure
+
+[skill-al-review-pipeline](skill-al-review-pipeline/SKILL.md) is used by Developer Reviewer, the Conductor review subagent and Dredd. It separates execution, coverage and index generation.

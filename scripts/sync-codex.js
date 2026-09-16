@@ -10,7 +10,7 @@ const { support } = require('./sync-plugin-support');
 const { walk, provenance, normalized } = require('./package-provenance');
 const ROOT = path.resolve(__dirname,'..'), DEST = 'plugins/aldc-codex';
 function bodyFor(text) {
-  return text.replaceAll('../docs/templates/', '../templates/').replaceAll('../rules-templates/', '../rules/').replace(/Claude Code/g,'Codex')
+  return text.replaceAll('../../docs/templates/', '../../templates/').replaceAll('../docs/templates/', '../templates/').replaceAll('../rules-templates/', '../rules/').replace(/Claude Code/g,'Codex')
     .replace(/`?\bTodoWrite\b`?/g,'the available planning tool (or the plan document)')
     .replace(/\bTask tool\b/g,'subagent delegation tool').replace(/`Task`/g,'subagent delegation')
     .replace(/\bBash\b/g,'shell').replace(/`Read`/g,'Read').replace(/`(?:Glob|Grep)`/g,'Search')

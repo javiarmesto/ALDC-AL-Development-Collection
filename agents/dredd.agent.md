@@ -24,11 +24,18 @@ You are **read-only on code**: analyze, check diagnostics, search — never edit
 
 ### Step 1 — Determine scope & build the worklist
 
+- **Explicit scope**: when the user supplies files or an attached object, review those exact sources; no Git baseline is required. Do not expand to unrelated modules.
 - **Default**: objects **changed vs `main`**. Read the change set with the `changes` tool, or `git diff main...HEAD --name-only` (read-only; a diff mutates nothing), filtered to `*.al`. This is the runtime where ALDC agents live (VS Code/Copilot) — use local git, **not** the GitHub MCP.
-- **Full** (only when the user asks, e.g. "audita todo"): enumerate every `*.al` under `App/` **and** `Test/`.
+- **Full** (only when the user asks, e.g. "audita todo"): enumerate project-owned `*.al` in the actual source/test roots (including a root-layout project); exclude dependency caches and generated/vendor sources.
 - **Batch**: group the resulting files **by module/folder**. Each batch is one BCQuality consultation (cheaper than per-file).
 
 ### Step 2 — Consult the configured BCQuality provider per batch
+
+Load [the shared review pipeline](../skills/skill-al-review-pipeline/SKILL.md).
+Apply its provider execution and coverage discipline to each batch; retain your
+Audit-Report below and advisory role. You own execution of instruction-based
+reviews; do not wait for automatic host reports after reading a skill.
+
 
 Read and apply [the shared BCQuality provider contract](../docs/templates/bcquality-provider-contract.md). Resolve the current project configuration, select plugin or external-multiroot, and honor enabled=false without probing. Consume a passed selection and task-context; otherwise resolve them once. Load instructions in this executing context and distinguish discovered, loaded, executed and index generation. Use only observed revision/version in evidence. Missing or incompatible BCQuality never blocks native review.
 
@@ -38,23 +45,25 @@ Attach the contract's `provider` evidence envelope inside `review.bcquality` or 
 
 ### Step 3 — Native checks (repo-level residual)
 
-What BCQuality's pilot does not reach — verify and flag, citing `file:line` and the ALDC instruction:
+For applicable domains without completed provider coverage, verify and flag against the actual project rules, citing `file:line` and the ALDC instruction:
 - **A. No base-object modification** — extensions only (TableExtension/PageExtension/event subscribers).
-- **C. AL-Go structure** — `App/` vs `Test/`; test project depends on app, never the reverse.
+- **C. Project structure** — verify the approved layout (AL-Go when required); test project depends on app, never the reverse. A root app.json alone is not a defect.
 - **F. Test coverage** — `Subtype = Test`, Given/When/Then, `Library-*` fixtures, `Assert.*`.
-- **G. Feature-based folders** — grouped by business feature, not by object type.
+- **G. Feature-based folders** — evaluate only against applicable project conventions and the requested scope; do not manufacture a folder defect from one attached object.
 
 > **The residual is dynamic.** With completed BCQuality results covering the pilot domains it is A/C/F/G above. When BCQuality is **absent** (Step 2 precondition) or degraded for a domain, expand to the full **A–G**: add **B. Naming** (`al-naming-conventions`), **D. Performance** (`al-performance` + `skill-performance`), **E. Error handling** (`al-error-handling`), and the commit-in-subscriber / local part of **A** (`al-events`); permissions → `skill-permissions`. Secrets/security has no native check — flag what the instructions reach at `confidence ≤ medium` and note the thinner coverage.
 
-(Authoritative rule text lives in `.github/instructions/*` — don't copy it here. You run **standalone**, with no Conductor to inject it and no `applyTo` auto-apply in this runtime: when a domain falls to the native residual, **read** its governing `instructions/al-*.instructions.md` — and `skill-performance` / `skill-permissions` where the residual names them — and judge against it. Don't rely on ambient enforcement; it doesn't fire here. A domain already owned by a completed BCQuality leaf result needs no such read — defer to its finding.)
+(Authoritative rule text lives in `.github/instructions/*` — don't copy it here. You run **standalone**, with no Conductor to inject it and no `applyTo` auto-apply in this runtime: when a domain falls to the native residual, **read** its governing `instructions/al-*.instructions.md` — and `skill-performance` / `skill-permissions` where the residual names them — and judge against it. Don't rely on ambient enforcement; it doesn't fire here. A domain already owned by a completed BCQuality leaf result needs no duplicate check — preserve its findings and citations. Never assume custom-layer coverage. Acceptance compliance remains the reviewer's responsibility.)
 
 ### Step 4 — Build the Audit-Report JSON
 
-Aggregate everything into one **Audit-Report JSON** (a DO findings-report + an `audit` envelope). Reuses the review-report contract; see `.github/plans/bcquality-aldc-integration/propuesta-review-json-canonico.md` and `.github/plans/dredd-independent-auditor/propuesta-dredd.md`.
+Aggregate everything into one **Audit-Report JSON** (a DO findings-report + an `audit` envelope). Shares finding semantics with [the review report contract](../docs/templates/review-report-contract.md); no historical planning documents are required.
 
 - `skill`: `{ "id": "dredd", "version": 1 }`; `outcome`: `completed | partial | failed`.
-- `audit`: `{ target: "changed-vs-main" | "codebase", verdict: PASS | PASS_WITH_FINDINGS | FAIL, gate: "advisory", bcquality: {provider, submodule-sha, outcome, skills-run}, notes }`.
-- **Verdict** (advisory, from `summary.counts`): any `blocker`/`major` → **FAIL**; only `minor`/`info` → **PASS_WITH_FINDINGS**; none → **PASS**.
+- `audit`: `{ target: "changed-vs-main" | "codebase", verdict: PASS | PASS_WITH_FINDINGS | FAIL | INCOMPLETE, gate: "advisory", bcquality: {provider, submodule-sha, outcome, skills-run}, notes }`.
+- `audit.checks`: coverage entries `{check, source, status, evidence, reason}` as defined by the shared pipeline. Provider coverage, native coverage, build and runtime evidence stay separate.
+- **Completeness**: `outcome: partial | failed` yields `verdict: INCOMPLETE`, retaining all findings and the exact gap; no clean bill of health from zero counts. Tool/provider failure is not an AL defect.
+- **Verdict** (advisory, for a completed scope, from `summary.counts`): any `blocker`/`major` → **FAIL**; only `minor`/`info` → **PASS_WITH_FINDINGS**; none → **PASS**.
 - `summary`: `{ counts: {blocker, major, minor, info}, coverage: {worklist-size, items-evaluated} }` — canonical names per DO. The auditor's own headcount lives in the envelope as `audit.coverage: {objects-total, objects-audited}`; the two are separate by design (DO is per-knowledge-item, the envelope is per-object).
 - `findings[]`: `{ id, source: "native"|"bcquality"|"agent", domain, severity, message, location: {file, line, range}, references: [{path, sha}], confidence, from-sub-skill?, fix-hint, native-rule?, suggested-code?, suggested-code-omission-reason? }`. Rules from DO govern `id`, `references` and the fix payload — follow them strictly:
   - **BCQuality-cited findings** (`source: "bcquality"`) — `id` MUST equal `references[0].path` (the knowledge-file path). Do **not** prefix with `<from-sub-skill>:`; the sub-skill origin already travels in `from-sub-skill`, and DO is explicit that citation-based ids "MUST NOT be rewritten".
@@ -66,12 +75,12 @@ Aggregate everything into one **Audit-Report JSON** (a DO findings-report + an `
 
 ### Step 5 — Persist and report
 
-1. **Persist** the Audit-Report JSON verbatim to `.github/audits/dredd-audit-<YYYY-MM-DD-HHMM>.json` (create `.github/audits/` if absent). This is the durable, machine-checkable artifact; JSON evidence can be checked for structure and citation paths against an explicitly available corpus; Markdown alone is not machine-validated and CI does not prove plugin execution. Write **only** there.
+1. If the user forbids writes, return the report in chat and state that persistence was skipped; do not treat that as a failed review. Otherwise **persist** the Audit-Report JSON verbatim to `.github/audits/dredd-audit-<YYYY-MM-DD-HHMM>.json` (create `.github/audits/` if absent). This is the durable, machine-checkable artifact; JSON evidence can be checked for structure and citation paths against an explicitly available corpus; Markdown alone is not machine-validated and CI does not prove plugin execution. Write **only** there.
 2. **Report** in your reply, rendered from the JSON:
    - Verdict + counts; findings grouped **by module then domain**, each with `file:line` and its citation.
-   - A didactic callout so the use of BCQuality is visible: *"🔎 BCQuality consultado (SHA `<sha>`) → proveedor configurado devolvió [skills-run reales] → N findings con cita"*.
+   - A concise provider status: discovered / loaded / executed with actual outcome and covered/pending domains; include an observed SHA only when available. Show index status separately. Never say the provider returned results when you only read its instructions.
    - The path of the persisted report, and the full `### Audit-Report (JSON)` block.
    - If anything is actionable, recommend handing off to `@al-developer` (you do not fix).
-3. **Close out the worklist**: once the report is persisted and rendered, mark the final task **completed** in your todo list. Do not leave "Persist and report" open after the file is written — the audit is not done until the todo reflects it.
+3. Close the reporting task once the report is delivered (persisted when allowed). Keep any incomplete review coverage explicit; a completed reporting task does not certify a completed audit.
 
 > An optional CI gate (fail on `verdict == FAIL`) is a later step; today the verdict is advisory.

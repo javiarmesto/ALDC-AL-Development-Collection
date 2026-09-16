@@ -192,6 +192,16 @@ Review validates: spec compliance, architecture compliance, naming conventions, 
 
 The subagent returns a **single artifact**: the `### Review-Report (JSON)` (al-review-subagent Step 4). It is the source of truth — you **gate** on it, **render** the human-facing review from it, and **persist** it. The subagent no longer emits a markdown review or a separate BCQuality block.
 
+
+### Review completeness gate
+
+Before applying finding-count approval, read the review outcome and coverage.
+A partial/failed result or pending evidence required by the approved phase cannot
+become approval from zero findings. Route missing review work to the reviewer,
+missing build/test evidence to its authorized owner, and code findings to the
+implementer. Do not send an empty code-correction loop for a provider limitation.
+Keep the human gate pending when the required evidence cannot be obtained.
+
 **Gate on the JSON (defense in depth — Q4):**
 1. Parse the `### Review-Report (JSON)` block; read `summary.counts` and `review.verdict`.
 2. **Recompute the baseline** yourself from `summary.counts` (do not just trust the reported verdict):

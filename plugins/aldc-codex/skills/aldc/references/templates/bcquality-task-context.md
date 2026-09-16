@@ -17,7 +17,7 @@ task-context:
   bc-version: <from app.json; OMIT if unknown>
   countries: <from app.json; OMIT if unknown>
   application-area: <union of the changed objects' areas; OMIT if undeterminable>
-  enabled-layers: [microsoft, community, custom]
+  enabled-layers: [...]               # only as supported/derived from provider configuration; otherwise omit
   disabled-skills: [...]                # only when supported by the selected provider
 ```
 

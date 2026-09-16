@@ -1,4 +1,4 @@
-# ALDC Core Configuration v1.1
+# ALDC Core Configuration v1.2 (contract version; product version is in package.json)
 # Skills-based modularization with preserved orchestration + per-requirement contracts + global memory
 
 core:
@@ -73,6 +73,7 @@ required:
     - "agents/al-spec-agent.agent.md"
     - "agents/al-conductor.agent.md"
     - "agents/al-developer.agent.md"
+    - "agents/al-developer-reviewer.agent.md"
     - "agents/al-presales.agent.md"
     - "agents/dredd.agent.md"
     - "agents/al-triage.agent.md"
@@ -99,6 +100,7 @@ required:
       - "skills/skill-events/SKILL.md"
       - "skills/skill-permissions/SKILL.md"
       - "skills/skill-testing/SKILL.md"
+      - "skills/skill-al-review-pipeline/SKILL.md"
     recommended:
       - "skills/skill-migrate/SKILL.md"
       - "skills/skill-pages/SKILL.md"

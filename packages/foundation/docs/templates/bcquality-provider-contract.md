@@ -39,6 +39,20 @@ active dispatches run. Multiroot pilot limits come from `pilotSkills`; plugin ro
 and supported layer/skill settings come from the loaded adapter. Do not transplant
 a multiroot denylist, fork layers or unsupported configuration into a plugin.
 
+## Execution responsibility
+
+In plugin mode `home`, `entryPoint` and `workspace` are not plugin lookup paths.
+Use the actual host-discovered plugin identity. Provider defaults for layers and
+filters must come from the loaded provider, never a consumer example.
+
+For an instruction-based skill, the executing agent follows routing and all
+applicable dispatched checks and produces their results. Do not wait for the host
+to emit sub-results automatically. Account for child checks with actual completion,
+non-applicability, skip reasons or concrete missing resources. A file read is loading,
+not a completed check. Index `not-attempted` does not imply review `not-attempted`:
+continue via documented path-based lookup when available. This is still provider
+review; native fallback is a separate response to actual provider coverage gaps.
+
 ## Evidence and scope
 
 Record `provider` inside `review.bcquality` (or `audit.bcquality`):

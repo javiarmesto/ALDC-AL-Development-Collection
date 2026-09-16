@@ -453,7 +453,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.architecture.md
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
-├── agents/                               # 11 agents (5 core + 2 on-demand + 3 subagents + 1 extension)
+├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
 ├── skills/                               # 11 composable skills
 ├── prompts/                              # 6 retained workflows
 ├── instructions/                         # 9 auto-applied coding standards
@@ -462,16 +462,16 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── CLAUDE.md                             # Master instructions
 ├── .mcp.json                             # MCP server configuration
 ├── .claude/
-│   ├── agents/                           # 11 agents (8 public + 3 internal)
-│   ├── skills/                           # 16 skills (composable knowledge modules)
+│   ├── agents/                           # 12 agents (9 public + 3 internal)
+│   ├── skills/                           # 17 skills (composable knowledge modules)
 │   ├── rules/                            # 8 path-scoped coding standards
 │   └── settings.json                     # Hooks + permissions
 │
 │── Claude Code Plugin ─────────────────────────────────
 ├── claude-plugin/
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
-│   ├── agents/                           # 11 agents (auto-discovered)
-│   ├── skills/                           # 16 skills (auto-discovered)
+│   ├── agents/                           # 12 agents (auto-discovered)
+│   ├── skills/                           # 17 skills (auto-discovered)
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
 │   ├── rules-templates/                  # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
@@ -537,7 +537,7 @@ and are not a claim that a new Marketplace package has been published.
 
 The framework now enforces its own spec in CI.
 
-- **Core Spec v1.2 (original 4.2.0 release)** — originally normalized the tier model to 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. The subsequent canonical Spec Agent increment adds a fifth core role (11 total); the current inventory above includes it.
+- **Core Spec v1.2 (original 4.2.0 release)** — originally normalized the tier model to 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. The subsequent canonical Spec Agent increment adds a fifth core role (11 total); Developer Reviewer adds a direct review role (12 total, with 17 skills).
 - **Conformance tooling** — `scripts/check-conformance.js` (counters, cross-references, links, frontmatter) and `scripts/sync-foundation.js --check` (zero drift between the canonical trees and `packages/foundation/`) run on every push and PR.
 - **`ARCHITECTURE.md`** — one-page map of what is source, what is generated, and which distribution channel consumes each tree.
 - Fixed: truncated `skill-manifest` in `packages/foundation/`, broken README links, undeclared primitives in `aldc.yaml`, contradictory counters.
@@ -586,3 +586,13 @@ MIT — See [LICENSE](LICENSE) for details.
 **Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0 (unreleased)
 
 </div>
+
+### Independent review
+
+Use **Developer Reviewer** after a direct Developer increment; use the Conductor's
+review subagent for orchestrated phases. **Dredd** remains the independent advisory
+auditor for an explicit file set, changes or a broader codebase. All three share
+provider execution and coverage rules: loading BCQuality is not execution, and
+skipping its optional index refresh does not stop path-based review. A partial
+review never becomes approval from zero findings. See
+[the review contract](docs/templates/review-report-contract.md).

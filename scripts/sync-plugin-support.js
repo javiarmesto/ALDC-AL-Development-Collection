@@ -19,6 +19,19 @@ function support(surface, rootDir = root) {
     const tools = 'Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*';
     const preface = '\n\n## Terminal host contract\n\nRead [the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md) before capability decisions. Resolve packaged rules from rules-templates/ or project rules from .claude/rules; read only matching full bodies. The Spec write scope is the assigned .spec.md, regardless of broader editor permissions.\n';
     files.set('agents/al-spec-agent.md', '---\n' + yaml.dump({name:'al-spec-agent',description:role.data.description,tools,model:'sonnet',color:'cyan'}, {lineWidth:-1}) + '---' + preface + role.body.replaceAll('../instructions/', '../rules-templates/'));
+    // Review roles share one canonical body; translate only host tool/path vocabulary.
+    for (const name of ['al-review-subagent', 'al-developer-reviewer', 'dredd']) {
+      const role = parse(`agents/${name}.agent.md`);
+      const readTools = 'Read, Glob, Grep, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*';
+      const roleTools = name === 'dredd' ? readTools + ', Write' : readTools;
+      const host = '\n\n## Terminal host contract\n\nRead [the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md). Use only tools exposed by this host; missing diagnostics/build evidence remains unverified. Role write scopes are behavioral limits, not filesystem sandboxes. Discover the actual installed role names; the lead sequences independent review when direct handoff is unavailable.\n';
+      const body = role.body.replaceAll('../instructions/', '../rules-templates/')
+        .replace(/@al-/g, 'al-').replace(/read\/readFile/g, 'Read')
+        .replace(/`(?:al_symbolsearch|al_get_diagnostics|al_symbolrelations)`/g, 'the available read-only symbol/diagnostic capability')
+        .replace(/`changes`/g, 'available change inspection').replace(/`edit`/g, '`Write`');
+      files.set(`agents/${name}.md`, '---\n' + yaml.dump({name, description:role.data.description, tools:roleTools, model:'sonnet', color:'yellow'}, {lineWidth:-1}) + '---' + host + body);
+    }
+    for (const p of walk(rootDir, 'skills/skill-al-review-pipeline')) files.set(p, fs.readFileSync(path.join(rootDir,p), 'utf8'));
     const prompt = parse('prompts/al-spec.create.prompt.md');
     const body = prompt.body.replace('for `${input:req_name}` (complexity `${input:Complexity}`)', 'with the requirement, complexity and scope in `$ARGUMENTS`')
       .replaceAll('../agents/al-spec-agent.agent.md', '../agents/al-spec-agent.md');
@@ -51,7 +64,7 @@ function sync(check = false) {
   const dest = path.join(root,'claude-plugin'), outputs = support('claude');
   for (const rel of walk(dest)) if (rel !== 'provenance.json' && !outputs.has(rel)) outputs.set(rel, normalized(fs.readFileSync(path.join(dest,rel))));
   const sources = [...outputs.keys()].filter(p => !support('claude').has(p)).map(p => 'claude-plugin/' + p);
-  sources.push('agents/al-spec-agent.agent.md','prompts/al-spec.create.prompt.md',...walk(root, 'tools/context-doctor'),...walk(root, 'tools/bcquality'),'tools/aldc-validate/package.json','tools/aldc-validate/index.js','scripts/install-transaction.js','scripts/package-provenance.js','scripts/init-plugin.js',...walk(root, 'docs/templates'), ...walk(root, 'skills/skill-agent-instructions/examples'));
+  sources.push('agents/al-review-subagent.agent.md','agents/al-developer-reviewer.agent.md','agents/dredd.agent.md',...walk(root,'skills/skill-al-review-pipeline'),'scripts/sync-plugin-support.js','agents/al-spec-agent.agent.md','prompts/al-spec.create.prompt.md',...walk(root, 'tools/context-doctor'),...walk(root, 'tools/bcquality'),'tools/aldc-validate/package.json','tools/aldc-validate/index.js','scripts/install-transaction.js','scripts/package-provenance.js','scripts/init-plugin.js',...walk(root, 'docs/templates'), ...walk(root, 'skills/skill-agent-instructions/examples'));
   outputs.set('provenance.json', provenance(root,sources,outputs,'scripts/sync-plugin-support.js'));
   let drift = 0;
   for (const [rel,b] of outputs) {

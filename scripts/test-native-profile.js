@@ -79,7 +79,7 @@ try {
   check(grants('al-conductor').length === 0, 'Conductor has no native execution grants');
   const conductor = read(path.join(root, 'agents/al-conductor.agent.md'));
   check(agent('al-conductor').endsWith(conductor.slice(conductor.indexOf('\n---', 3) + 4)), 'Entire Conductor body retained inline');
-  for (const name of ['al-architect', 'al-planning-subagent', 'al-review-subagent', 'dredd', 'al-presales', 'al-agent-builder']) {
+  for (const name of ['al-architect', 'al-planning-subagent', 'al-review-subagent', 'al-developer-reviewer', 'dredd', 'al-presales', 'al-agent-builder']) {
     check(!grants(name).some(t => /al_build|al_downloadsymbols|al_debug|al_setbreakpoint|al_snapshotdebugging/.test(t)), `Read-only native scope: ${name}`);
   }
   for (const name of ['al-developer', 'al-implement-subagent']) check(grants(name).includes('ms-dynamics-smb.al/al_build'), `Implementation build grant: ${name}`);

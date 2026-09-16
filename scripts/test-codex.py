@@ -6,7 +6,7 @@ import pathlib
 import tomllib
 root = pathlib.Path(__file__).resolve().parents[1] / 'plugins/aldc-codex'
 roles = list((root / 'agents').glob('*.toml'))
-assert len(roles) == 11
+assert len(roles) == 12
 assert list((root / 'skills').rglob('SKILL.md')) == [root / 'skills/aldc/SKILL.md']
 names = set()
 for path in roles:
@@ -25,4 +25,4 @@ assert '../agents/al-spec-agent.md' in spec
 assert (root / 'skills/aldc/references/agents/al-spec-agent.md').is_file()
 for file in ['agent-simple-instructions.txt', 'agent-advanced-instructions.txt']:
     assert (root / 'skills/aldc/references/skills/skill-agent-instructions/examples' / file).is_file()
-print('Codex: 11 valid TOML profiles, full role bodies, one discoverable skill; host loading unverified.')
+print('Codex: 12 valid TOML profiles, full role bodies, one discoverable skill; host loading unverified.')
