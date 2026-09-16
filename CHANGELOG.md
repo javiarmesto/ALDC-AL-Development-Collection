@@ -4,9 +4,13 @@
 
 ### Added
 
+- VS Code extension 4.3.0 (distributed separately as the VSIX): the Project Manager
+  panel and Explorer view to install, update, verify, restore and run Doctor with
+  previews and confirmations; the ALDC Visor tree of plan artifacts per requirement;
+  the `AL Collection: Run Doctor` command rendering the packaged Doctor report.
 - Bilingual installation journey with a surface selector for VS Code, Copilot CLI,
   Claude Code and Codex, copyable steps and a bounded first request. Published
-  extension and source-candidate routes are explicitly separated.
+  extension and source routes are explicitly separated.
 
 - Structured installer output for hosts: `install`, `status`, `verify-install` and
   `rollback` accept `--json`. Previews carry a plan digest and `--expect-plan`

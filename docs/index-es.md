@@ -8,7 +8,7 @@ hide:
 
 <div class="hero">
 <a class="hero-banner" href="#novedades">
-  <span class="hero-banner__badge">PRÓXIMAMENTE</span>
+  <span class="hero-banner__badge">NUEVO</span>
   <span class="hero-banner__text">ALDC 4.3.0 · ya disponible</span>
   <span class="hero-banner__arrow">→</span>
 </a>
@@ -30,7 +30,7 @@ hide:
 </div>
 </div>
 
-## Novedades en preparación { #novedades .section-title }
+## Novedades de 4.3.0 { #novedades .section-title }
 
 <div class="grid cards" markdown="1">
 
@@ -57,6 +57,18 @@ hide:
     ---
 
     Revisa colisiones, verifica lo instalado y restaura la transacción anterior cuando las comprobaciones lo permitan. La recuperación protege cambios posteriores.
+
+-   **Project Manager**
+
+    ---
+
+    Un panel en VS Code, también disponible en el Explorador, para instalar, actualizar, verificar, restaurar y ejecutar Doctor sobre el proyecto elegido. Cada cambio se previsualiza y se confirma; los resultados se quedan en el panel.
+
+-   **ALDC Visor**
+
+    ---
+
+    Árbol en el Explorador con los artefactos de cada requisito: requisitos, arquitectura, especificación, plan de pruebas, informes de fase y evidencias de revisión, cada uno con su icono. Solo lectura y siempre al día.
 
 </div>
 

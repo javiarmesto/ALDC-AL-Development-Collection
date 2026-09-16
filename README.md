@@ -71,7 +71,11 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 The VS Code extension and each host plugin are separate distribution channels.
 Updating the VSIX does not refresh installed Claude Code, Copilot CLI or Codex plugins.
 
-For VS Code projects, run **AL Collection: Update Toolkit**, review file collisions,
+In VS Code, open **AL Collection: Open Project Manager** (also available as a view in
+the Explorer) to preview and confirm the update, verify the installation, restore the
+previous transaction and run Doctor without leaving the panel; the **ALDC Visor** view
+lists the plan artifacts of each requirement with template-specific icons. The palette
+command **AL Collection: Update Toolkit** remains available: review file collisions,
 verify the installation and reload the window. Existing installations retain their
 recorded profile. The extension's optional `al-collection.autoInstall` setting is
 `false` by default; when enabled, it attempts installation on AL project detection.

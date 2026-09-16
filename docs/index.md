@@ -8,7 +8,7 @@ hide:
 
 <div class="hero">
 <a class="hero-banner" href="#whats-new">
-  <span class="hero-banner__badge">UPCOMING</span>
+  <span class="hero-banner__badge">NEW</span>
   <span class="hero-banner__text">ALDC 4.3.0 · now available</span>
   <span class="hero-banner__arrow">→</span>
 </a>
@@ -30,7 +30,7 @@ hide:
 </div>
 </div>
 
-## What is coming { #whats-new .section-title }
+## What is new in 4.3.0 { #whats-new .section-title }
 
 <div class="grid cards" markdown="1">
 
@@ -57,6 +57,18 @@ hide:
     ---
 
     Review collisions, verify installed content and restore the preceding transaction when integrity checks permit it. Restoration protects later edits.
+
+-   **Project Manager**
+
+    ---
+
+    One panel in VS Code, also available in the Explorer, to install, update, verify, restore and run Doctor for the selected project. Every change is previewed and confirmed; results stay in the panel.
+
+-   **ALDC Visor**
+
+    ---
+
+    Explorer tree of the plan artifacts per requirement: requisites, architecture, specification, test plan, phase reports and review evidence, each with its own icon. Read-only and always current.
 
 </div>
 

@@ -16,7 +16,8 @@ personalized files as collisions. Replacing customizations requires explicit
 confirmation and creates a recoverable backup. Verification compares installed
 files with the receipt; restoration protects subsequent edits.
 
-The extension's Project Manager panel and Doctor command consume the installer's
+The extension's Project Manager panel (also an Explorer view), its ALDC Visor tree
+of plan artifacts and the Doctor command consume the installer's
 `--json` output (`install --dry-run`, `install --expect-plan`, `status`,
 `verify-install`, `rollback`) and the packaged Doctor's `--json` report. The panel
 adds no second installer or diagnostic engine; a plan digest binds each applied
