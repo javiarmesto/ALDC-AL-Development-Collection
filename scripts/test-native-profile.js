@@ -88,15 +88,18 @@ try {
   check(!/al_(?:incremental_publish|publish|publish_existing_extension|package|full_package)/.test(build), 'Native build has no deployment or invented packaging operations');
   check(build.includes('Stop after build/package') && build.includes('human gate'), 'Native build stops at the deployment handoff');
   const nativeBefore = agent('al-conductor');
-  const customPaths = ['aldc.yaml', 'aldc.code-workspace', '.github/copilot-instructions.md', '.github/instructions/al-guidelines.instructions.md'];
-  for (const rel of customPaths) fs.appendFileSync(path.join(fixture, rel), '\n# USER CUSTOMIZATION\n');
-  const customized = Object.fromEntries(customPaths.map(rel => [rel, read(path.join(fixture, rel))]));
+  const customPaths = ['aldc.yaml', '.github/copilot-instructions.md', '.github/instructions/al-guidelines.instructions.md'];
+  // The workspace definition is the developer's own file: seeded once, never replaced.
+  const userOwned = ['aldc.code-workspace'];
+  for (const rel of [...customPaths, ...userOwned]) fs.appendFileSync(path.join(fixture, rel), '\n# USER CUSTOMIZATION\n');
+  const customized = Object.fromEntries([...customPaths, ...userOwned].map(rel => [rel, read(path.join(fixture, rel))]));
   run = installer(fixture);
   check(run.status === 0, 'Non-force native update succeeds');
-  for (const rel of customPaths) check(read(path.join(fixture, rel)) === customized[rel], `Non-force preserves ${rel}`);
+  for (const rel of [...customPaths, ...userOwned]) check(read(path.join(fixture, rel)) === customized[rel], `Non-force preserves ${rel}`);
   run = installer(fixture, ['--force']);
   check(run.status === 0 && agent('al-conductor') === nativeBefore, 'Unspecified profile retains installed native selection');
   for (const rel of customPaths) check(!read(path.join(fixture, rel)).includes('USER CUSTOMIZATION'), `Force replaces ${rel} as documented`);
+  for (const rel of userOwned) check(read(path.join(fixture, rel)) === customized[rel], `Force preserves the developer's ${rel}`);
   const memoryPath = path.join(fixture, '.github/plans/memory.md');
   fs.writeFileSync(memoryPath, 'USER MEMORY\n');
   run = installer(fixture, ['--profile', 'bc28', '--force']);

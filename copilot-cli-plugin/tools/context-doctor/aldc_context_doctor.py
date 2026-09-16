@@ -308,6 +308,17 @@ def diagnose(workspace, host="chat", toolkit=None, runtime=None, operations=None
             except (OSError, ValueError) as exc:
                 config_errors.append({"path": rel, "problem": str(exc), "operations": affected,
                                       "blocking": not rel.endswith("mcp.json")})
+    # Manifests that declare different BC application targets cannot be built and
+    # deployed as one solution. Report it; the compiler, not Doctor, adjudicates.
+    if set(selected) & {"compile-app", "compile-test", "execute-tests"}:
+        declared = sorted((p["manifest"], p["target"]) for p in projects
+                          if p.get("configured") and isinstance(p.get("target"), str) and p["target"] != "unknown")
+        if len({target for _, target in declared}) > 1:
+            config_errors.append({"path": declared[0][0], "blocking": False,
+                                  "problem": "manifests declare different application targets ("
+                                             + ", ".join(f"{m}={t}" for m, t in declared)
+                                             + "); align them or confirm the split is intended",
+                                  "operations": ["compile-app", "compile-test", "execute-tests"]})
     observed = runtime_observations(Path(runtime) if runtime else None, root, host, projects, selected)
     result = {}
     for name in selected:

@@ -75,6 +75,28 @@ class DoctorTest(unittest.TestCase):
         runtime = self.runtime({"compile-app": {"discovered": True, "loaded": True, "provider": "native", "detail": "Compiler exposed in this session"}})
         self.assertEqual(self.report(runtime=runtime)["operations"]["compile-app"]["status"], "available-reported")
 
+    def test_mixed_application_targets_are_reported_without_blocking(self):
+        self.app("app/app.json", version="28.0.0.0")
+        self.app("test/app.json", version="27.0.0.0")
+        report = self.report()
+        mismatch = [e for e in report["configuration_errors"] if "different application targets" in e["problem"]]
+        self.assertEqual(len(mismatch), 1)
+        self.assertFalse(mismatch[0]["blocking"])
+        self.assertIn("app/app.json=BC28", mismatch[0]["problem"])
+        self.assertIn("test/app.json=BC27", mismatch[0]["problem"])
+        # Advisory: no operation is blocked and the exit code stays 0.
+        self.assertEqual(report["operations"]["compile-test"]["status"], "unobserved")
+        self.assertEqual(self.cli().returncode, 0)
+        # A manifest without an application target is not compared.
+        self.put("test/app.json", {"runtime": "17.0"})
+        self.assertEqual([e for e in self.report()["configuration_errors"] if "different application" in e["problem"]], [])
+        # Agreeing manifests report nothing.
+        self.app("test/app.json", version="28.0.0.0")
+        self.assertEqual([e for e in self.report()["configuration_errors"] if "different application" in e["problem"]], [])
+        # Selecting only specification does not raise a compilation concern.
+        self.app("test/app.json", version="27.0.0.0")
+        self.assertEqual([e for e in self.report(operations=["specify"])["configuration_errors"] if "different application" in e["problem"]], [])
+
     def test_optional_mcp_parse_error_does_not_block_native_capability(self):
         self.app(version="29.0.0.0")
         self.put(".vscode/mcp.json", "{broken")

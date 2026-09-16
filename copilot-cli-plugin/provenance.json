@@ -16,8 +16,8 @@
     "agents/al-triage.agent.md": "519e0aa3eb5cb07df6dce5d5ee12253d6636179cae9c37268efe2f1766cb8e0c",
     "agents/dredd.agent.md": "d2eafee2fa378be458a53253fa8fc8aab62ee696fc852e2164a1454011181069",
     "agents/index.md": "c039f0029f175071d9ccb0676d01388c6ba0dd8ff2b989f5104b1803b92f3da1",
-    "claude-plugin/.claude-plugin/marketplace.json": "9bf1f136bad8e4e60bb6d27cbae5b384ea12c43aacb11f629fa7d89bfa66c3c4",
-    "claude-plugin/.claude-plugin/plugin.json": "27d12e6bb7a2ca33b354f964462a7c146b8330121ade0eff488b12c15424f2ca",
+    "claude-plugin/.claude-plugin/marketplace.json": "ad02919ac1083cce9f3bed2824cb8a30ffe72dd1c188a3e3bccccfc170cb17d7",
+    "claude-plugin/.claude-plugin/plugin.json": "ac652330bf6d6f10fb8fdcae1ea58e7ea2966c745166ecbe028af473cccea562",
     "claude-plugin/.mcp.json": "0169e02ecf6d394e7d45f649ce9660e39c1cc032b03b21ead11e86208bdc2a94",
     "claude-plugin/CLAUDE.md": "318e0a6c762ca0720c17338b7fff0548073f424488a34ea7d32818815293afd4",
     "claude-plugin/README.md": "7f849cf22e486eef21d284e07e79cbcbe5707026e7ef348f2c7e2c465370a91b",
@@ -109,7 +109,7 @@
     "claude-plugin/tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "claude-plugin/tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
     "claude-plugin/tools/context-doctor/README.md": "21b9cd2cefbf161e3c54a09e6055486a6cf8062d2bf9ac9fccf447c74ea0fd15",
-    "claude-plugin/tools/context-doctor/aldc_context_doctor.py": "f204672f0fa0ff1aa7e4589d6cb806cd66fd3e0a7fa4f2b54d323da039c04f43",
+    "claude-plugin/tools/context-doctor/aldc_context_doctor.py": "4ad36e0edc51d3fd6225f20fba7e1f13070cc4e09e09ed4905a6585616622042",
     "docs/templates/architecture-template.md": "d249785873c1951de082cb4b78896d57c7fafd9d2599007dd0437c14a9746696",
     "docs/templates/bcquality-provider-contract.md": "71311a37f981811e66164996ea50acc35ea2dde2810367ad62a08ef5c0c5d73a",
     "docs/templates/bcquality-task-context.md": "df3a470b18f1e5e4fbae693d0b7801a50c30342f257ca6ead2d630344e10e252",
@@ -126,7 +126,7 @@
     "docs/templates/spec-template.md": "b95f436c8c3ce3a55b7bcd376649aba1dd49a075a8c3ce059361f2f752345530",
     "docs/templates/technical-spec-template.md": "5b9dbd9ea80e9a060965638d8be9e2594869d0fec4f2ab280307166f9e271916",
     "docs/templates/test-plan-template.md": "724882202ad91657012eb2568fe69d059634429213f92805d3a9bdfd9ce42447",
-    "plugin.json": "5d81e8e87d8dba34541f4664345de642466af2a1d62dadd72749b29b88319ba1",
+    "plugin.json": "9a58ee3c52c17ab57e6c1fa60e196a845992502f59cbb7fc5a61a727400c8776",
     "scripts/init-plugin.js": "9e50747624844a612f584650f887aa27286623bb0df93a24ef7c5d5efce86c0b",
     "scripts/install-transaction.js": "acd73e84dac73bd73c6b0fe425f530a6a7be47c19dbb8b27990c677930df94e1",
     "scripts/package-provenance.js": "53b3b5423fdea83e668561eefbc6f46f1742a3c9b386079aff50bc21323dc5f5",
@@ -142,7 +142,7 @@
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
     "tools/context-doctor/README.md": "21b9cd2cefbf161e3c54a09e6055486a6cf8062d2bf9ac9fccf447c74ea0fd15",
-    "tools/context-doctor/aldc_context_doctor.py": "f204672f0fa0ff1aa7e4589d6cb806cd66fd3e0a7fa4f2b54d323da039c04f43"
+    "tools/context-doctor/aldc_context_doctor.py": "4ad36e0edc51d3fd6225f20fba7e1f13070cc4e09e09ed4905a6585616622042"
   },
   "outputs": {
     "README.md": "905585950e149dd2094ed2b713f3b8700f5876588e5a9da89ffbfca5fefcbced",
@@ -184,7 +184,7 @@
     "docs/templates/spec-template.md": "b95f436c8c3ce3a55b7bcd376649aba1dd49a075a8c3ce059361f2f752345530",
     "docs/templates/technical-spec-template.md": "5b9dbd9ea80e9a060965638d8be9e2594869d0fec4f2ab280307166f9e271916",
     "docs/templates/test-plan-template.md": "724882202ad91657012eb2568fe69d059634429213f92805d3a9bdfd9ce42447",
-    "plugin.json": "1043715c8da3260a7dc434244ca8a2c2214159db959d9a5fe13d9d41550f1bd5",
+    "plugin.json": "0a0cc204f8dfa4d2b312ceee968d288ec0c33bb651a6a0458d55707c5b2c5dd8",
     "project-guidance.md": "3efdd286634c1452d88582aac4ca95e349a2dd55d58466a72a38e65356b4a926",
     "rules-templates/al-agent-toolkit.instructions.md": "bc3471965da67350f59862a6f125f60f26a47f030adae7a7780a92b5cafb7769",
     "rules-templates/al-code-style.instructions.md": "c43a7ad4240e0445bc3aae89dde80c2e47b33c1178d4763477ffbc01c9a19202",
@@ -233,6 +233,6 @@
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
     "tools/context-doctor/README.md": "21b9cd2cefbf161e3c54a09e6055486a6cf8062d2bf9ac9fccf447c74ea0fd15",
-    "tools/context-doctor/aldc_context_doctor.py": "f204672f0fa0ff1aa7e4589d6cb806cd66fd3e0a7fa4f2b54d323da039c04f43"
+    "tools/context-doctor/aldc_context_doctor.py": "4ad36e0edc51d3fd6225f20fba7e1f13070cc4e09e09ed4905a6585616622042"
   }
 }

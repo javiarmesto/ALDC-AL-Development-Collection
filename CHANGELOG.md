@@ -1,6 +1,8 @@
 # ALDC Changelog
 
-## [4.3.0] - 2026-09-16
+## [4.3.1] - 2026-09-16
+
+Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 
 ### Added
 
@@ -16,6 +18,9 @@
   `rollback` accept `--json`. Previews carry a plan digest and `--expect-plan`
   refuses to apply a plan that changed after the preview. Each file reports whether
   a replace overwrites a local customization. Human output is unchanged.
+- Doctor reports manifests that declare different BC application targets (for
+  example an App on BC28 next to a Test on BC27) as an advisory configuration
+  problem. The exit code is unchanged; the compiler adjudicates.
 - Read-only installation inspection (`inspect`) reporting absent, invalid, matching
   and drifted receipts and whether the last transaction can be restored. Receipts
   whose file map is not an object or contains an unsafe path are reported as
@@ -45,6 +50,11 @@
   updates that preserve existing project memory and protect subsequent edits.
 
 ### Changed
+
+- `aldc.code-workspace` is now a seeded file: the installer creates it when it is
+  missing and never replaces it afterwards, not even with `--force`. The multi-root
+  workspace definition belongs to the developer, like project memory. Previously a
+  profile switch or a replace policy overwrote a customized workspace file.
 
 - Aligned canonical package, plugin and catalog versions to 4.3.0 for the
   upcoming release; previously built artifacts remain unchanged.

@@ -268,7 +268,10 @@ async function install(opts) {
   // Keep the shared YAML reader and its declared dependency location adjacent
   // in both the toolkit target and the project-level compatibility tools.
   tree(path.join(packageDir, 'tools/aldc-validate'), path.join(projectDir, 'tools/aldc-validate'));
-  add(path.join(packageDir, 'aldc.code-workspace'), path.join(projectDir, 'aldc.code-workspace'));
+  // The multi-root workspace definition belongs to the developer: their folder list,
+  // names and settings live here. Seed it once and never replace it, not even with
+  // --force, exactly like project memory.
+  add(path.join(packageDir, 'aldc.code-workspace'), path.join(projectDir, 'aldc.code-workspace'), true);
   add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
   add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
   const relTarget = relative(targetDir) || '.';
