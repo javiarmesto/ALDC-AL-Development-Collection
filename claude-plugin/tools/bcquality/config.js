@@ -5,7 +5,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 function readConfig(workspace, configName = 'aldc.yaml') {
-  const root = fs.realpathSync(workspace);
+  // Final path name (expands Windows 8.3 short names) so Doctor can bind the snapshot.
+  const root = fs.realpathSync.native(workspace);
   const file = path.join(root, configName);
   const raw = fs.existsSync(file) ? fs.readFileSync(file) : null;
   let data = {};

@@ -220,6 +220,28 @@ class DoctorTest(unittest.TestCase):
         self.assertEqual(r.returncode, 2)
         self.assertEqual(json.loads(r.stdout)['configuration_errors'][0]['path'], '.copilot/aldc-profile.json')
 
+    def test_bcquality_snapshot_binds_by_resolved_path_not_text(self):
+        self.app()
+        self.put("aldc.yaml", "external:\n  bcquality:\n    mode: plugin\n")
+        export = subprocess.run(['node', str(ROOT / 'tools/bcquality/config.js'), str(self.root)], capture_output=True, text=True, check=True)
+        snapshot = json.loads(export.stdout)
+        # An exporter may spell the same workspace differently (short names, case, symlinks).
+        alias = Path(self.temp.name).parent / ("alias-" + Path(self.temp.name).name)
+        alias.symlink_to(self.root, target_is_directory=True)
+        self.addCleanup(alias.unlink)
+        snapshot["workspace"] = str(alias)
+        snapshot["configPath"] = str(alias / "aldc.yaml")
+        path = self.put("snapshot.json", snapshot)
+        report = self.report(bcquality_config=path)
+        self.assertEqual(report["bcquality"]["status"], "configured")
+        self.assertEqual(report["bcquality"]["configuration"]["mode"], "plugin")
+        snapshot["workspace"] = str(alias.parent)
+        with self.assertRaises(ValueError):
+            self.report(bcquality_config=self.put("snapshot.json", snapshot))
+        snapshot["workspace"] = "relative"
+        with self.assertRaises(ValueError):
+            self.report(bcquality_config=self.put("snapshot.json", snapshot))
+
     def test_real_chat_install_contains_doctor_and_rollback_removes_it(self):
         self.app()
         env = {**os.environ, 'ALDC_PACKAGE_DIR': str(ROOT)}

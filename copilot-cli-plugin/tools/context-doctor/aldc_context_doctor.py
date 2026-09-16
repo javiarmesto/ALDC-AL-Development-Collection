@@ -174,6 +174,18 @@ def runtime_observations(path, root, host, projects, selected):
     return result
 
 
+def same_path(value, expected):
+    """Compare a caller-supplied absolute path with a resolved one. Windows 8.3 short
+    names, drive-letter case and symlinked temp folders differ between exporters
+    (Node, PowerShell) and Python; resolved paths compare equal, plain text does not."""
+    if not isinstance(value, str) or not value or not Path(value).is_absolute():
+        return False
+    try:
+        return Path(value).resolve() == Path(expected).resolve()
+    except OSError:
+        return False
+
+
 def bcquality_observations(snapshot, runtime, root, host):
     """Bind explicit YAML export to source bytes; runtime is reported, not proven."""
     result = {"configured": None, "status": "configuration-uninspected",
@@ -185,8 +197,8 @@ def bcquality_observations(snapshot, runtime, root, host):
     data = load_json(Path(snapshot))
     source = root / "aldc.yaml"
     digest = hashlib.sha256(source.read_bytes()).hexdigest() if source.is_file() else None
-    if (data.get("contractVersion") != 1 or data.get("workspace") != str(root)
-            or data.get("configPath") != str(source) or data.get("configSha256") != digest):
+    if (data.get("contractVersion") != 1 or not same_path(data.get("workspace"), root)
+            or not same_path(data.get("configPath"), source) or data.get("configSha256") != digest):
         raise ValueError("BCQuality configuration snapshot is stale or belongs to another workspace")
     config = data.get("bcquality", {})
     if (not isinstance(config, dict) or config.get("mode") not in {"plugin", "external-multiroot"}
@@ -200,7 +212,7 @@ def bcquality_observations(snapshot, runtime, root, host):
     if not runtime:
         return result
     envelope = load_json(Path(runtime))
-    if envelope.get("workspace") != str(root) or envelope.get("host") != host:
+    if not same_path(envelope.get("workspace"), root) or envelope.get("host") != host:
         raise ValueError("BCQuality observations must name the current workspace and host")
     obs = envelope.get("bcquality")
     if obs is None:
