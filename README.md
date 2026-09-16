@@ -23,14 +23,15 @@ support Business Central extension development from requirements to review.
 
 **Release status:** canonical package and plugin manifests declare **4.3.0**.
 These changes remain [Unreleased](CHANGELOG.md), pending acceptance and publication.
-Previously built VSIX files and existing Marketplace/plugin installations retain
-their original version and packaged snapshot.
+Previously built VSIX files retain their original version and packaged snapshot.
+Installing newer source content does not itself publish a Marketplace update.
 
 | Capability | What it provides |
 | --- | --- |
 | Architect and Spec Agent | Approved design, bounded Specs, explicit dependencies and joint consistency review before implementation. |
 | Conductor | Planning, implementation and review coordinated through existing human gates. |
 | Doctor | Read-only diagnosis of configuration and operation-specific runtime observations. |
+| Optional BCQuality | Plugin or external multiroot reviews, with discovery, loading, execution and index evidence distinguished. |
 | BC28 / BC29-native | Explicit Chat profile selection with role-specific tools and AL18 guidance. |
 | Host adapters | Dedicated content for Copilot Chat, Copilot CLI, Claude Code and Codex. |
 | Recoverable installation | Preview, visible collisions, receipts, verification and restoration. |
@@ -64,6 +65,18 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 - **Codex** — Generated agent profiles and a local ALDC skill in `plugins/aldc-codex/`
 
 ---
+
+## Updating to 4.3.0
+
+The VS Code extension and each host plugin are separate distribution channels.
+Updating the VSIX does not refresh installed Claude Code, Copilot CLI or Codex plugins.
+
+For VS Code projects, run **AL Collection: Update Toolkit**, review file collisions,
+verify the installation and reload the window. Existing installations retain their
+recorded profile. The extension's optional `al-collection.autoInstall` setting is
+`false` by default; when enabled, it attempts installation on AL project detection.
+Toolkit restoration covers installation files, not Business Central data or all
+project history. See [installation and recovery](docs/plugin-packaging.md).
 
 ## Installation
 
