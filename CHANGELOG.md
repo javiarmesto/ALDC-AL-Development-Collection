@@ -4,6 +4,10 @@
 
 ### Added
 
+- Bilingual installation journey with a surface selector for VS Code, Copilot CLI,
+  Claude Code and Codex, copyable steps and a bounded first request. Published
+  extension and source-candidate routes are explicitly separated.
+
 - Structured installer output for hosts: `install`, `status`, `verify-install` and
   `rollback` accept `--json`. Previews carry a plan digest and `--expect-plan`
   refuses to apply a plan that changed after the preview. Each file reports whether

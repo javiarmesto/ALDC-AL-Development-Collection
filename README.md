@@ -80,6 +80,9 @@ project history. See [installation and recovery](docs/plugin-packaging.md).
 
 ## Installation
 
+[Choose your surface — installation guide](https://javiarmesto.github.io/ALDC-AL-Development-Collection/start/) · [Guía en castellano](https://javiarmesto.github.io/ALDC-AL-Development-Collection/start-es/)
+
+
 For the opt-in **BC29 / AL18 native profile in Copilot Chat**, see
 [installation, role changes and local validation](docs/native-bc29.md).
 BC28 remains the installer default. Claude Code and the dedicated `aldc-cli` plugin

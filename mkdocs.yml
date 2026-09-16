@@ -59,6 +59,9 @@ extra:
   #  provider: google
   #  property: G-XXXXXXXXXX  # Replace with your GA4 ID
 
+extra_javascript:
+  - javascripts/install-guide.js
+
 extra_css:
   - stylesheets/extra.css
 
@@ -122,6 +125,8 @@ nav:
   - Home: index.md
   - Inicio (ES): index-es.md
   - Events: events.md
+  - Install ALDC: start.md
+  - Instalar ALDC (ES): start-es.md
   - Getting Started:
     - Overview: getting-started.md
     - Quick Start (EN): quick-start-en.md

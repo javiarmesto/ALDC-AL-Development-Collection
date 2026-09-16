@@ -17,7 +17,7 @@ hide:
 <div class="hero-annotation">Engineering systems, visibly reasoned.</div>
 <p class="hero-tagline"><strong>Specialist AI agents. Human review.</strong> Design the architecture, define connected specifications, and coordinate implementation, testing and review for Business Central. You decide at key checkpoints.</p>
 <div class="hero-actions">
-  <a class="md-button md-button--primary" href="getting-started/">Start with the docs</a>
+  <a class="md-button md-button--primary" href="start/">Install ALDC</a>
   <a class="md-button" href="#whats-new">Explore what is new</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
@@ -74,13 +74,16 @@ BCQuality is optional and installed separately. Choose plugin or external-worksp
 
 [Configure BCQuality](bcquality/)
 
-## Start in your environment { .section-title }
+## Your environment. Your starting point. { #install .section-title }
 
-In VS Code, install the published ALDC extension and run **AL Collection: Install Toolkit to Workspace** in your AL project. Reload the window to discover the installed content. Installing the VSIX and updating a project's toolkit are separate operations.
-
-Claude Code, Copilot CLI and Codex have separate distributions. Updating the VSIX does not update those plugins. Follow your host's installation instructions and verify its available capabilities.
-
-[Installation and recovery by host](plugin-packaging/) · [Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) · [Public workshop](https://javiarmesto.github.io/aldc-workshop/en/)
+<p class="section-lead">Choose where you work. Get the installation steps, checks and a first request for that surface.</p>
+<div class="aldc-install-grid">
+<a class="aldc-install-card" href="start/?surface=vscode"><span class="resource-kicker">Published extension</span><h3>GitHub Copilot</h3><p>VS Code</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="start/?surface=copilot-cli"><span class="resource-kicker">Candidate source</span><h3>GitHub Copilot</h3><p>CLI</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="start/?surface=claude"><span class="resource-kicker">Candidate source</span><h3>Claude Code</h3><p>Plugin</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="start/?surface=codex"><span class="resource-kicker">Candidate source</span><h3>Codex</h3><p>Project setup</p><span class="resource-arrow">→</span></a>
+</div>
+<p class="hero-subnote">The VSIX updates the VS Code extension. Each project toolkit and each terminal plugin has its own update step.</p>
 
 ---
 
@@ -184,7 +187,7 @@ Everything ALDC-related lives here. Pick your path.
 
 <div class="cta-row">
   <a class="md-button md-button--primary" href="events/">See upcoming talks</a>
-  <a class="md-button" href="getting-started/">Start with the docs</a>
+  <a class="md-button" href="start/">Install ALDC</a>
 </div>
 
 ---
