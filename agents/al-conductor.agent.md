@@ -117,7 +117,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
 5. **Present Plan to User**: Share synopsis highlighting AL objects, event subscribers/publishers, test strategy per AL-Go, open questions.
 
-6. **🚨 HARD GATE — PLAN APPROVAL**: STOP and WAIT for explicit user approval. DO NOT start implementation until user confirms. If `test-plan.md` doesn't exist for this requirement, CREATE IT from template during planning. Verify requirement set: `.spec.md` + `.architecture.md` + `.test-plan.md`.
+6. **🚨 HARD GATE — PLAN APPROVAL**: STOP and WAIT for explicit user approval. DO NOT start implementation until user confirms. If `test-plan.md` doesn't exist for this requirement, CREATE IT from template during planning. Verify requirement set: `.spec.md` (single-spec, or the human-approved Architect-assigned unit specs for multi-spec) + `.architecture.md` + `.test-plan.md`.
 
 7. **Write Plan File**: Once approved, write `.github/plans/<task-name>/<task-name>-plan.md`.
 
@@ -649,7 +649,7 @@ ALWAYS check for existing context in `.github/plans/`:
 
 1. `.github/plans/memory.md` — global memory (decisions, context, cross-session state — append-only)
 2. `.github/plans/{req_name}/{req_name}.architecture.md` — design from `@al-architect`
-3. `.github/plans/{req_name}/{req_name}.spec.md` — specification from `al-spec.create`
+3. `.github/plans/{req_name}/{req_name}.spec.md` — specification from `al-spec.create`; for multi-spec (architecture section 14) the human-approved Architect-assigned unit specs in that same folder replace it, implemented in `implementation_depends_on` order
 4. `.github/plans/{req_name}/{req_name}.test-plan.md` — test strategy
 
 **Why**:

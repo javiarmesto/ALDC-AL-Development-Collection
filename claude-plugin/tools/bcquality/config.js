@@ -24,9 +24,10 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   const enabled = b.enabled ?? 'auto';
   if (!['plugin', 'external-multiroot'].includes(mode)) throw Error('external.bcquality.mode: expected plugin or external-multiroot');
   if (![true, false, 'auto'].includes(enabled)) throw Error('external.bcquality.enabled: expected boolean or auto');
-  const string = (v, fallback, field) => {
+  const string = (v, fallback, field, required = false) => {
     v = v ?? fallback;
     if (typeof v !== 'string' || /[\r\n\0]/.test(v)) throw Error(`${field}: expected a single-line string`);
+    if (required && !v.trim()) throw Error(`${field}: must not be empty (omit the key to use the default)`);
     return v;
   };
   const p = b.plugin ?? {};
@@ -40,11 +41,11 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   if (!plugin.id || !plugin.skill) throw Error('plugin.id and plugin.skill must not be empty');
   if (plugin.expectedVersion && !/^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(plugin.expectedVersion)) throw Error('plugin.expectedVersion: expected a semantic version');
   const config = { mode, enabled, plugin,
-    url: string(b.url, 'https://github.com/microsoft/BCQuality.git', 'url'),
-    ref: string(b.ref, 'main', 'ref'),
+    url: string(b.url, 'https://github.com/microsoft/BCQuality.git', 'url', true),
+    ref: string(b.ref, 'main', 'ref', true),
     pinnedCommit: string(b.pinnedCommit, '', 'pinnedCommit'),
-    home: string(b.home, '../bcquality', 'home'),
-    entryPoint: string(b.entryPoint, 'skills/entry.md', 'entryPoint'),
+    home: string(b.home, '../bcquality', 'home', true),
+    entryPoint: string(b.entryPoint, 'skills/entry.md', 'entryPoint', true),
     pilotSkills: b.pilotSkills ?? [],
     fallback: { mode: 'skills-mode', residual: 'A-G', neverBlock: true }
   };

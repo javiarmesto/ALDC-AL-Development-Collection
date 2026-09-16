@@ -67,6 +67,8 @@ try {
   config('plugin','true'); assert.throws(()=>readConfig(temp),/enabled/);
   config('plugin','auto',{sourceRef:'024a571e'}); assert.throws(()=>readConfig(temp),/full commit/);
   config('external-multiroot'); assert.equal(readConfig(temp).bcquality.entryPoint,'skills/entry.md');
+  for (const key of ['url','ref','home','entryPoint']) { write('aldc.yaml',{external:{bcquality:{mode:'external-multiroot',[key]:''}}}); assert.throws(()=>readConfig(temp),new RegExp(key+': must not be empty')); }
+  write('aldc.yaml',{external:{bcquality:{mode:'external-multiroot',pinnedCommit:'',plugin:{expectedVersion:'',sourceRef:''}}}}); assert.equal(readConfig(temp).bcquality.pinnedCommit,'');
   run('git',['init','--quiet']);
   config();
   const reportDir=path.join(temp,'.github/plans/test');fs.mkdirSync(reportDir,{recursive:true});
