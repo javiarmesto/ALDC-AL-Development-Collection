@@ -4,6 +4,11 @@
 
 ### Added
 
+- Structured installer output for hosts: `install`, `status`, `verify-install` and
+  `rollback` accept `--json`. Previews carry a plan digest and `--expect-plan`
+  refuses to apply a plan that changed after the preview. Human output is unchanged.
+- Read-only installation inspection (`inspect`) reporting absent, invalid, matching
+  and drifted receipts and whether the last transaction can be restored.
 - Developer Reviewer for independent direct-increment review, with a shared review
   pipeline, one bounded correction round and human approval.
 

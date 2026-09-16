@@ -6,9 +6,15 @@
  * Installs the ALDC toolkit into any AL project.
  *
  * Usage:
- *   npx aldc install [--target-dir <dir>] [--yes] [--force]
+ *   npx aldc install [--target-dir <dir>] [--yes] [--force] [--dry-run] [--json]
+ *   npx aldc status [--target-dir <dir>] [--json]
+ *   npx aldc verify-install [--json]
+ *   npx aldc rollback [--json]
  *   npx aldc validate [--target-dir <dir>]
  *   npx aldc --help
+ *
+ * --json prints one structured document on stdout for hosts such as the VS Code
+ * extension; the human output stays the default and is not part of that contract.
  */
 
 const fs = require('fs');
@@ -27,12 +33,14 @@ const C = {
   dim: '\x1b[2m',
 };
 
-const log = (msg, c = '') => console.log(`${c}${msg}${C.reset}`);
+let JSON_MODE = false;
+const out = (...args) => { if (!JSON_MODE) console.log(...args); };
+const log = (msg, c = '') => out(`${c}${msg}${C.reset}`);
 const ok = (msg) => log(`  + ${msg}`, C.green);
 const err = (msg) => log(`  x ${msg}`, C.red);
 const info = (msg) => log(msg, C.cyan);
 const header = (title) => {
-  console.log('');
+  out('');
   log('='.repeat(60), C.cyan);
   log(` ${title}`, C.bold);
   log('='.repeat(60), C.cyan);
@@ -42,21 +50,21 @@ const header = (title) => {
  * Show the ALDC banner
  */
 function banner() {
-  console.log('');
-  console.log(`${C.cyan}    ╔══════════════════════════════════════════════════════╗${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}█████╗ ██╗     ██████╗  ██████╗${C.reset}               ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}██╔══██╗██║     ██╔══██╗██╔════╝${C.reset}               ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}███████║██║     ██║  ██║██║${C.reset}                    ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}██╔══██║██║     ██║  ██║██║${C.reset}                    ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}██║  ██║███████╗██████╔╝╚██████╗${C.reset}               ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.bold}╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝${C.reset}               ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.dim}AL Development Collection${C.reset}                        ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}      ${C.green}Core v1.2${C.reset} ${C.dim}— Skills-based AI-native toolkit${C.reset}     ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
-  console.log(`${C.cyan}    ╚══════════════════════════════════════════════════════╝${C.reset}`);
-  console.log('');
+  out('');
+  out(`${C.cyan}    ╔══════════════════════════════════════════════════════╗${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.bold}█████╗ ██╗     ██████╗  ██████╗${C.reset}               ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.bold}██╔══██╗██║     ██╔══██╗██╔════╝${C.reset}               ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.bold}███████║██║     ██║  ██║██║${C.reset}                    ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.bold}██╔══██║██║     ██║  ██║██║${C.reset}                    ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.bold}██║  ██║███████╗██████╔╝╚██████╗${C.reset}               ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.bold}╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝${C.reset}               ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.dim}AL Development Collection${C.reset}                        ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}      ${C.green}Core v1.2${C.reset} ${C.dim}— Skills-based AI-native toolkit${C.reset}     ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ║${C.reset}                                                      ${C.cyan}║${C.reset}`);
+  out(`${C.cyan}    ╚══════════════════════════════════════════════════════╝${C.reset}`);
+  out('');
 }
 
 // ─── CLI argument parsing ───────────────────────────────────────────────────
@@ -68,6 +76,8 @@ function parseArgs(argv) {
     yes: false,
     force: false,
     profile: null,
+    json: false,
+    expectPlan: null,
     // withPacks removed — bc-agents components are now regular optional content
   };
 
@@ -84,6 +94,12 @@ function parseArgs(argv) {
       parsed.yes = true;
     } else if (a === '--dry-run') {
       parsed.dryRun = true;
+    } else if (a === '--json') {
+      parsed.json = true;
+      parsed.yes = true; // A structured caller never answers interactive prompts.
+    } else if (a === '--expect-plan') {
+      if (!args[i + 1] || !/^[0-9a-f]{64}$/.test(args[i + 1])) throw new Error('--expect-plan expects the SHA-256 plan digest from a --dry-run --json preview');
+      parsed.expectPlan = args[++i];
     } else if (a === '--force' || a === '-f') {
       parsed.force = true;
     } else if (a === '--help' || a === '-h') {
@@ -159,13 +175,14 @@ async function install(opts) {
   const targetDir = path.resolve(projectDir, opts.targetDir || '.github');
 
   const markerPath = path.join(targetDir, 'aldc-profile.json');
-  const previousProfile = fs.existsSync(markerPath)
-    ? JSON.parse(fs.readFileSync(markerPath, 'utf8')).profile : 'bc28';
+  const marker = readProfileMarker(markerPath);
+  if (marker.problem) throw failure(`Invalid installed profile marker (${path.relative(projectDir, markerPath)}): ${marker.problem}. Inspect it before installing.`, 'invalid-profile-marker');
+  const previousProfile = marker.profile || 'bc28';
   const profile = opts.profile || previousProfile;
-  if (!['bc28', 'bc29-native'].includes(profile)) throw new Error('Unknown installed ALDC profile');
+  if (!['bc28', 'bc29-native'].includes(profile)) throw failure('Unknown installed ALDC profile', 'unknown-profile');
   const existingPrimitives = ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir)));
   if (profile !== previousProfile && existingPrimitives && !opts.force) {
-    throw new Error('Profile switch requires --force to replace managed toolkit files coherently. Review/back up local customizations first.');
+    throw failure('Profile switch requires --force to replace managed toolkit files coherently. Review/back up local customizations first.', 'profile-switch-requires-force');
   }
   // Preflight every projection before writing any installation files.
   let transform = null;
@@ -190,7 +207,7 @@ async function install(opts) {
   for (const c of COMPONENTS) {
     log(`  ${c.name.padEnd(14)} ${c.count}`, C.blue);
   }
-  console.log('');
+  out('');
   info(`Target directory: ${targetDir}`);
   info(`Project root:     ${projectDir}`);
 
@@ -258,9 +275,16 @@ async function install(opts) {
   files.set('aldc.yaml', { content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
     .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`) });
   files.set(relative(markerPath), { content: JSON.stringify({ profile, surface: 'copilot-chat-vscode' }, null, 2) + '\n' });
-  const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun });
+  const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
   for (const file of result.files) if (file.action !== 'unchanged') log(`  ${file.action}: ${file.path}`);
-  if (opts.dryRun) { info('Dry run: no files written.'); return; }
+  const summary = {};
+  for (const file of result.files) summary[file.action] = (summary[file.action] || 0) + 1;
+  const structured = { ok: true, command: 'install', dryRun: Boolean(opts.dryRun), profile, previousProfile,
+    profileSwitch: existingPrimitives && profile !== previousProfile, existingInstallation: existingPrimitives,
+    targetDir: relTarget, force: Boolean(opts.force), digest: result.digest, transaction: result.transaction || null,
+    files: result.files, summary, collisions: result.files.filter(f => f.action === 'collision').map(f => f.path),
+    doctorScript: relative(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) };
+  if (opts.dryRun) { info('Dry run: no files written.'); return structured; }
   const totalCopied = result.files.filter(f => ['add', 'replace'].includes(f.action)).length;
   const totalSkipped = result.files.filter(f => ['preserve', 'collision'].includes(f.action)).length;
   if (result.transaction) info(`Backup transaction: ${result.transaction}; use aldc rollback to restore.`);
@@ -275,17 +299,50 @@ async function install(opts) {
   }
   log(`Location:      ${targetDir}`, C.cyan);
 
-  console.log('');
+  out('');
   log('Next steps:', C.bold);
   log('  1. Open VS Code in your AL project', C.blue);
   log('  2. Try: @al-architect to design a solution', C.blue);
   log('  3. Or:  @workspace /al-initialize to set up environment', C.blue);
-  console.log('');
+  out('');
 
   if (!opts.force && totalSkipped > 0) {
     log('Tip: Use --force to overwrite existing files on next run.', C.dim);
-    console.log('');
+    out('');
   }
+  return structured;
+}
+
+function failure(message, code) { return Object.assign(new Error(message), { code }); }
+
+function readProfileMarker(markerPath) {
+  if (!fs.existsSync(markerPath)) return { present: false, profile: null, problem: null };
+  try {
+    const value = JSON.parse(fs.readFileSync(markerPath, 'utf8'));
+    const profile = value && typeof value === 'object' && !Array.isArray(value) ? value.profile : undefined;
+    if (!['bc28', 'bc29-native'].includes(profile)) return { present: true, profile: null, problem: 'expected bc28 or bc29-native profile' };
+    return { present: true, profile, problem: null };
+  } catch (error) {
+    return { present: true, profile: null, problem: error instanceof SyntaxError ? 'malformed JSON' : error.message };
+  }
+}
+
+// Read-only installation state for hosts. Never installs, repairs or writes.
+function status(opts) {
+  const projectDir = process.cwd();
+  const targetDir = path.resolve(projectDir, opts.targetDir || '.github');
+  const state = require('./install-transaction').inspect(projectDir, 'chat');
+  const marker = readProfileMarker(path.join(targetDir, 'aldc-profile.json'));
+  const relTarget = path.relative(projectDir, targetDir).split(path.sep).join('/') || '.';
+  return { ok: state.receipt === 'valid' && state.drift.length === 0, command: 'status', targetDir: relTarget,
+    profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem,
+    toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),
+    doctorScript: fs.existsSync(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) ? relTarget + '/tools/context-doctor/aldc_context_doctor.py' : null,
+    message: state.receipt === 'absent' ? 'No installation receipt. Older toolkit copies may have no receipt; Install reviews existing-file collisions.'
+      : state.receipt === 'invalid' ? `Invalid installation receipt (${state.receiptPath}): ${state.receiptProblem}. Preserve the receipt/backups and inspect before replacing anything.`
+      : state.drift.length ? 'Drift: ' + state.drift.join(', ')
+      : 'Managed files match installation receipt; host loading remains unverified.',
+    ...state };
 }
 
 // ─── VALIDATE command ──────────────────────────────────────────────────────
@@ -296,7 +353,7 @@ async function validate(opts) {
   banner();
   header('ALDC Core v1.2 — Validation');
   info(`Checking: ${targetDir}`);
-  console.log('');
+  out('');
 
   let errors = 0;
   let warnings = 0;
@@ -350,7 +407,7 @@ async function validate(opts) {
   }
 
   // Summary
-  console.log('');
+  out('');
   if (errors === 0) {
     log('='.repeat(60), C.green);
     log(` VALID — ${totalFiles} files, ${warnings} warning(s)`, C.green);
@@ -359,16 +416,16 @@ async function validate(opts) {
     log('='.repeat(60), C.red);
     log(` INVALID — ${errors} error(s), ${warnings} warning(s)`, C.red);
     log('='.repeat(60), C.red);
-    console.log('');
+    out('');
     log('Run "npx aldc install" to fix missing components.', C.cyan);
   }
-  console.log('');
+  out('');
 }
 
 // ─── HELP ──────────────────────────────────────────────────────────────────
 function showHelp() {
   banner();
-  console.log(`
+  out(`
 ${C.bold}ALDC Core v1.2 — CLI${C.reset}
 
 ${C.cyan}Usage:${C.reset}
@@ -385,6 +442,8 @@ ${C.cyan}Options:${C.reset}
   --yes, -y           Skip confirmation prompts
   --force, -f         Replace reviewed collisions with backup
   --dry-run          Preview all file actions without writes
+  --json             Structured stdout for hosts (implies --yes); human output is the default
+  --expect-plan <d>  Apply only if the plan still matches the digest of a --dry-run --json preview
 
 ${C.cyan}Examples:${C.reset}
   ${C.green}# Install to default .github/ directory${C.reset}
@@ -395,6 +454,7 @@ ${C.cyan}Examples:${C.reset}
 
   ${C.green}# Force-update all files${C.reset}
   npx aldc install --force --yes
+  npx aldc status
   npx aldc verify-install
   npx aldc rollback
 
@@ -433,7 +493,7 @@ async function testLocal() {
   banner();
   header('ALDC Core v1.2 — Local Test');
   info(`Test directory: ${tmpProject}`);
-  console.log('');
+  out('');
 
   // Run install into temp dir
   const origCwd = process.cwd();
@@ -500,13 +560,13 @@ async function testLocal() {
           encoding: 'utf8',
           stdio: ['pipe', 'pipe', 'pipe'],
         });
-        console.log(out);
+        out(out);
       } else {
         log('  Validator not found in installed output (tools/ not copied by default)', C.dim);
       }
     } catch (e) {
       err('Validator failed:');
-      console.log(e.stdout || e.message);
+      out(e.stdout || e.message);
     }
   }
 
@@ -518,31 +578,52 @@ async function testLocal() {
   } else {
     log(`${skillErrors} error(s) found`, C.red);
   }
-  console.log('');
+  out('');
   info(`Test output preserved at: ${tmpProject}`);
   log('Delete manually when done: rm -rf "' + tmpBase + '"', C.dim);
-  console.log('');
+  out('');
 
   process.chdir(origCwd);
 }
 
 // ─── Main ──────────────────────────────────────────────────────────────────
-const opts = parseArgs(process.argv);
+let opts;
+try { opts = parseArgs(process.argv); }
+catch (e) {
+  if (process.argv.includes('--json')) console.log(JSON.stringify({ ok: false, command: null, code: 'invalid-arguments', error: e.message }));
+  else err(e.message);
+  process.exit(1);
+}
+JSON_MODE = opts.json;
+const emit = (value, exitCode = 0) => { console.log(JSON.stringify(value, null, 2)); process.exitCode = exitCode; };
+const fail = (command, e, exitCode = 1) => {
+  if (JSON_MODE) emit({ ok: false, command, code: e.code || null, error: e.message }, exitCode);
+  else { err(e.message); process.exitCode = exitCode; }
+};
 
 switch (opts.command) {
   case 'help':
     showHelp();
     break;
   case 'rollback':
-    try { console.log(require('./install-transaction').rollback(process.cwd(), 'chat')); }
-    catch (e) { err(e.message); process.exitCode = 1; }
+    try {
+      const result = require('./install-transaction').rollback(process.cwd(), 'chat');
+      if (JSON_MODE) emit({ ok: true, command: 'rollback', ...result }); else out(result);
+    } catch (e) { fail('rollback', e); }
+    break;
+  case 'status':
+    try {
+      const result = status(opts);
+      if (JSON_MODE) emit(result); else out(result.message);
+    } catch (e) { fail('status', e); }
     break;
   case 'verify-install':
     try {
+      if (JSON_MODE) { const result = status(opts); emit({ ...result, command: 'verify-install' }, result.ok ? 0 : 1); break; }
       const changed = require('./install-transaction').drift(process.cwd(), 'chat');
-      console.log(changed.length ? 'Drift: ' + changed.join(', ') : 'Managed files match installation receipt; host loading remains unverified.');
+      out(changed.length ? 'Drift: ' + changed.join(', ') : 'Managed files match installation receipt; host loading remains unverified.');
       if (changed.length) process.exitCode = 1;
-    } catch (e) { err(e.message); process.exitCode = 1; }
+    } catch (e) { fail('verify-install', e); }
     break;
   case 'validate':
     validate(opts).catch((e) => { err(e.message); process.exit(1); });
@@ -552,6 +633,7 @@ switch (opts.command) {
     break;
   case 'install':
   default:
-    install(opts).catch((e) => { err(e.message); process.exit(1); });
+    install(opts).then(result => { if (JSON_MODE) emit(result); })
+      .catch((e) => { fail('install', e); if (!JSON_MODE) process.exit(1); });
     break;
 }

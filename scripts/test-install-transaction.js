@@ -125,3 +125,39 @@ test('verify distinguishes absent and corrupt receipts without changing user fil
  assert.throws(()=>tx.drift(r,'chat'), /Invalid installation receipt/);
  assert.equal(read(r,'sentinel.al'),'existing');
 });
+
+test('inspect reports absent, invalid, valid, drifted and restorable state without writing', t => {
+ const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};
+ let s=tx.inspect(r,'fixture');assert.equal(s.receipt,'absent');assert.equal(s.restore.available,false);assert.deepEqual(fs.readdirSync(r),[]);
+ write(r,'.aldc-install/fixture.json','{broken');s=tx.inspect(r,'fixture');assert.equal(s.receipt,'invalid');assert.equal(s.receiptProblem,'malformed JSON');
+ fs.rmSync(path.join(r,'.aldc-install'),{recursive:true});
+ tx.apply(opts);s=tx.inspect(r,'fixture');assert.equal(s.receipt,'valid');assert.equal(s.managed,2);assert.deepEqual(s.drift,[]);
+ assert.equal(s.restore.available,true);assert.equal(s.restore.status,'committed');assert.ok(s.restore.changes.includes('a.md'));
+ write(r,'a.md','edited');s=tx.inspect(r,'fixture');assert.deepEqual(s.drift,['a.md']);assert.equal(s.restore.available,false);assert.deepEqual(s.restore.blocked,['a.md']);
+ assert.throws(()=>tx.rollback(r,'fixture'),/Changed since installation/);
+ write(r,'a.md','v1');tx.rollback(r,'fixture');s=tx.inspect(r,'fixture');assert.equal(s.receipt,'absent');assert.equal(s.restore.available,false);assert.equal(fs.existsSync(path.join(r,'a.md')),false);
+});
+test('preview digest binds apply to the previewed plan',t=>{
+ const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};
+ const preview=tx.apply({...opts,dryRun:true});assert.match(preview.digest,/^[0-9a-f]{64}$/);
+ write(r,'a.md','custom');assert.throws(()=>tx.apply({...opts,expectDigest:preview.digest}),/plan changed since preview/);
+ assert.equal(fs.existsSync(path.join(r,'b.md')),false);
+ const fresh=tx.apply({...opts,dryRun:true});assert.notEqual(fresh.digest,preview.digest);
+ const applied=tx.apply({...opts,expectDigest:fresh.digest});assert.equal(applied.digest,fresh.digest);assert.equal(read(r,'a.md'),'custom');
+ assert.equal(applied.files.find(f=>f.path==='a.md').before,tx.hash(Buffer.from('custom')));
+});
+test('Chat CLI --json returns structured status, preview, guarded apply, verify and rollback',t=>{
+ const r=temp(t); const run=args=>{const p=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args,'--json'],{cwd:r,encoding:'utf8'});return {status:p.status,body:JSON.parse(p.stdout)};};
+ let s=run(['status']);assert.equal(s.status,0);assert.equal(s.body.receipt,'absent');assert.equal(s.body.profileMarker,'absent');assert.equal(s.body.toolkitPresent,false);
+ const preview=run(['install','--dry-run']);assert.equal(preview.status,0);assert.equal(preview.body.dryRun,true);assert.ok(preview.body.summary.add>100);assert.deepEqual(fs.readdirSync(r),[]);
+ write(r,'.github/agents/al-developer.agent.md','custom');
+ const stale=run(['install','--expect-plan',preview.body.digest]);assert.equal(stale.status,1);assert.match(stale.body.error,/plan changed/);assert.equal(fs.existsSync(path.join(r,'aldc.yaml')),false);
+ const again=run(['install','--dry-run']);assert.deepEqual(again.body.collisions,['.github/agents/al-developer.agent.md']);
+ const applied=run(['install','--expect-plan',again.body.digest]);assert.equal(applied.status,0);assert.match(applied.body.transaction,/^[0-9a-f-]{36}$/);assert.equal(read(r,'.github/agents/al-developer.agent.md'),'custom');
+ s=run(['status']);assert.equal(s.body.receipt,'valid');assert.equal(s.body.profile,'bc28');assert.deepEqual(s.body.drift,['.github/agents/al-developer.agent.md']);assert.ok(s.body.doctorScript);
+ const verify=run(['verify-install']);assert.equal(verify.status,1);assert.equal(verify.body.command,'verify-install');
+ const rollback=run(['rollback']);assert.equal(rollback.status,0);assert.equal(rollback.body.ok,true);assert.equal(fs.existsSync(path.join(r,'aldc.yaml')),false);
+ write(r,'.github/aldc-profile.json','{"profile":"unsupported"}');s=run(['status']);assert.equal(s.body.profileMarker,'invalid');
+ const blocked=run(['install']);assert.equal(blocked.status,1);assert.equal(blocked.body.code,'invalid-profile-marker');
+ const bad=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--expect-plan','nope','--json'],{cwd:r,encoding:'utf8'});assert.equal(bad.status,1);assert.equal(JSON.parse(bad.stdout).code,'invalid-arguments');
+});

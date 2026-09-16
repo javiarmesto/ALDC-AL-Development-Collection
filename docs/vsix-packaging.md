@@ -16,6 +16,12 @@ personalized files as collisions. Replacing customizations requires explicit
 confirmation and creates a recoverable backup. Verification compares installed
 files with the receipt; restoration protects subsequent edits.
 
+The extension's Project Manager panel and Doctor command consume the installer's
+`--json` output (`install --dry-run`, `install --expect-plan`, `status`,
+`verify-install`, `rollback`) and the packaged Doctor's `--json` report. The panel
+adds no second installer or diagnostic engine; a plan digest binds each applied
+update to the preview the user confirmed.
+
 Commands depend on the installed extension version. New repository capabilities
 are available through an extension only after that content is packaged and installed.
 A source change is not an automatic Marketplace update.

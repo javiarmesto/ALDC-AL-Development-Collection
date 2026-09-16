@@ -9,7 +9,7 @@ chosen project; use separate disposable projects for host acceptance.
 
 | Surface | Preview | Apply | Inspect / restore |
 | --- | --- | --- | --- |
-| Copilot Chat | `node /path/to/aldc/scripts/install.js install --yes --dry-run` from project root | Repeat without `--dry-run`; select `--profile bc29-native` only when intended | `verify-install` / `rollback` commands from the same project root |
+| Copilot Chat | `node /path/to/aldc/scripts/install.js install --yes --dry-run` from project root | Repeat without `--dry-run`; select `--profile bc29-native` only when intended | `status` / `verify-install` / `rollback` commands from the same project root; add `--json` for structured output |
 | Claude | `node /path/to/claude-plugin/scripts/init.js --project /path/to/project` | Add `--apply` | Add `--verify` / `--rollback` |
 | Copilot CLI | `node /path/to/copilot-cli-plugin/scripts/init.js --project /path/to/project` | Add `--apply` | Add `--verify` / `--rollback` |
 | Codex local bootstrap | `node /path/to/plugins/aldc-codex/scripts/init.js --project /path/to/project` | Add `--apply` | Add `--verify` / `--rollback` |
