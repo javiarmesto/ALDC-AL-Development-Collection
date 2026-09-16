@@ -81,38 +81,42 @@ if (!fileExists(memoryPath)) {
 }
 
 // ─── 4. Requirement sets completeness ────────────────────────────
+// One folder per requirement: the folder name IS the requirement name, and its
+// contracts live inside it. A decomposed requirement replaces {req}.spec.md with the
+// Architect-assigned unit specs in that same folder, so any *.spec.md satisfies spec.
 if (fileExists(plansRoot)) {
   const contractTypes = cfg.contracts?.types || ["spec", "architecture", "test-plan"];
-  const files = fs.readdirSync(plansRoot).filter(f => f.endsWith(".md") && f !== memoryFile);
+  const archiveFolder = path.normalize(cfg.contracts?.archiveFolder || path.join(plansRoot, "archive"));
+  const entries = fs.readdirSync(plansRoot, { withFileTypes: true });
+  const requirements = entries.filter(e => e.isDirectory() && !e.name.startsWith(".") &&
+    path.normalize(path.join(plansRoot, e.name)) !== archiveFolder);
 
-  // Extract unique req_names
-  const reqNames = new Set();
-  const filesByReq = {};
-
-  for (const f of files) {
-    for (const type of contractTypes) {
-      const suffix = `.${type}.md`;
-      if (f.endsWith(suffix)) {
-        const reqName = f.slice(0, -suffix.length);
-        reqNames.add(reqName);
-        if (!filesByReq[reqName]) filesByReq[reqName] = [];
-        filesByReq[reqName].push(type);
-      }
-    }
-  }
-
-  for (const reqName of reqNames) {
-    const found = filesByReq[reqName] || [];
-    const missing = contractTypes.filter(t => !found.includes(t));
+  for (const dir of requirements) {
+    const reqName = dir.name;
+    const inside = fs.readdirSync(path.join(plansRoot, reqName)).filter(f => f.endsWith(".md"));
+    const units = inside.filter(f => f.endsWith(".spec.md"));
+    const missing = contractTypes.filter(type =>
+      !inside.includes(`${reqName}.${type}.md`) && !(type === "spec" && units.length > 0));
     if (missing.length > 0) {
       issue("incompleteRequirementSets",
-        `Requirement "${reqName}" incomplete: missing ${missing.map(t => `${reqName}.${t}.md`).join(", ")}`);
+        `Requirement "${reqName}" incomplete: missing ${missing.map(t => `${reqName}/${reqName}.${t}.md`).join(", ")}`);
+    } else if (!inside.includes(`${reqName}.spec.md`)) {
+      info(`Requirement "${reqName}" has complete set (decomposed into ${units.length} unit spec(s))`);
     } else {
       info(`Requirement "${reqName}" has complete set (${contractTypes.length}/${contractTypes.length})`);
     }
   }
 
-  if (reqNames.size === 0) {
+  // Contracts left directly in the plans root belong to the pre-folder layout. They
+  // are reported rather than ignored, because nothing else would ever check them.
+  const loose = entries.filter(e => e.isFile() && e.name !== memoryFile &&
+    contractTypes.some(type => e.name.endsWith(`.${type}.md`))).map(e => e.name);
+  if (loose.length > 0) {
+    issue("incompleteRequirementSets",
+      `Contracts outside a requirement folder (move each to ${plansRoot}/{req_name}/): ${loose.join(", ")}`);
+  }
+
+  if (requirements.length === 0 && loose.length === 0) {
     info("No requirement sets found in plans directory (may be initial setup)");
   }
 }

@@ -97,6 +97,17 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 
 ### Fixed
 
+- Requirement-set validation never ran. `tools/aldc-validate` read only the flat plans
+  root, while every agent and workflow writes `.github/plans/{req_name}/{req_name}.*.md`,
+  so `incompleteRequirementSets` reported "no requirement sets found" on every correctly
+  laid out project and a requirement missing its test-plan passed clean. The validator now
+  reads each requirement folder, treats the folder name as the requirement, accepts the
+  Architect-assigned unit specs of a decomposed requirement in place of `{req}.spec.md`,
+  skips the archive folder, and reports contracts left in the plans root instead of
+  ignoring them. The specification said flat where the contracts say folder-per-requirement;
+  it now says folder-per-requirement, and states that the plans root is host-neutral
+  (configurable under `plans.root`, the same location for every surface) unlike `toolkitRoot`.
+
 - The installer and Doctor now read the same solution. The installer walks for
   `app.json` (at most three levels, pruning hidden folders, dependencies, build
   output and symlinks) instead of probing `src`, `app`, `test` and `tests`, and both
