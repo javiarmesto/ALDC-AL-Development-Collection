@@ -134,6 +134,8 @@ nav:
     - Reproducible Example: reproducible-example.md
   - Collection Guide: al-development.md
   - BCQuality (reviews/audits): bcquality.md
+  - Doctor (diagnostics): doctor.md
+  - Doctor (diagnóstico, ES): doctor-es.md
   - Instructions:
     - Overview: instructions/index.md
     - Guidelines: instructions/al-guidelines.instructions.md

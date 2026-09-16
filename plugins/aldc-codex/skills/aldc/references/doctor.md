@@ -1,5 +1,9 @@
 # Canonical ALDC Doctor
 
+This file is the operator reference for the script. For a task-oriented manual of
+every status value, exit code and common problem, see `docs/doctor.md`
+(`docs/doctor-es.md` in Spanish).
+
 Read-only Python 3.9+ stdlib diagnostics. Use an already available interpreter
 (`python3`, `python`, or `py -3` on Windows); Doctor does not install Python or
 modify PATH. Run at session start or after an environment change. Repeat only

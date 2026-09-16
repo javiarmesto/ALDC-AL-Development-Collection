@@ -108,7 +108,7 @@
     "claude-plugin/tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "claude-plugin/tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "claude-plugin/tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
-    "claude-plugin/tools/context-doctor/README.md": "7220b39af0644719c4669cd6ba46c9902800f4281919904c321e13f4d941d983",
+    "claude-plugin/tools/context-doctor/README.md": "21b9cd2cefbf161e3c54a09e6055486a6cf8062d2bf9ac9fccf447c74ea0fd15",
     "claude-plugin/tools/context-doctor/aldc_context_doctor.py": "f204672f0fa0ff1aa7e4589d6cb806cd66fd3e0a7fa4f2b54d323da039c04f43",
     "docs/templates/architecture-template.md": "d249785873c1951de082cb4b78896d57c7fafd9d2599007dd0437c14a9746696",
     "docs/templates/bcquality-provider-contract.md": "71311a37f981811e66164996ea50acc35ea2dde2810367ad62a08ef5c0c5d73a",
@@ -141,7 +141,7 @@
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
-    "tools/context-doctor/README.md": "7220b39af0644719c4669cd6ba46c9902800f4281919904c321e13f4d941d983",
+    "tools/context-doctor/README.md": "21b9cd2cefbf161e3c54a09e6055486a6cf8062d2bf9ac9fccf447c74ea0fd15",
     "tools/context-doctor/aldc_context_doctor.py": "f204672f0fa0ff1aa7e4589d6cb806cd66fd3e0a7fa4f2b54d323da039c04f43"
   },
   "outputs": {
@@ -232,7 +232,7 @@
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
-    "tools/context-doctor/README.md": "7220b39af0644719c4669cd6ba46c9902800f4281919904c321e13f4d941d983",
+    "tools/context-doctor/README.md": "21b9cd2cefbf161e3c54a09e6055486a6cf8062d2bf9ac9fccf447c74ea0fd15",
     "tools/context-doctor/aldc_context_doctor.py": "f204672f0fa0ff1aa7e4589d6cb806cd66fd3e0a7fa4f2b54d323da039c04f43"
   }
 }
