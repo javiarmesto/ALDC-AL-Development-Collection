@@ -30,6 +30,13 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   `roots.test` declare the multi-root layout of the AL solution. The installer
   detects the folders that exist (AL-Go `appFolders` / `testFolders` first, then
   discovery) and writes them there; it never creates a folder.
+- `aldc solution` reports the declared layout against the folders on disk and, with
+  `--write`, rewrites `solution.roots` in place: the two values change and every
+  comment and every other setting in `aldc.yaml` survives, with the previous file kept
+  under `.aldc-install`. A root that still holds its `app.json` is never overridden —
+  with several apps only the developer knows which one the solution means — and a root
+  that lost its manifest is reported, never cleared. Detection used to run only at
+  installation, so a customized `aldc.yaml` froze the layout it was installed with.
 - `aldc.code-workspace` is generated from that layout at installation instead of
   copied: root, application, tests, and the BCQuality root when the configured mode
   is external-multiroot. It stays a seeded file, so it is written once and then

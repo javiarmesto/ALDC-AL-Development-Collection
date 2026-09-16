@@ -77,6 +77,7 @@ function parseArgs(argv) {
     force: false,
     profile: null,
     json: false,
+    write: false,
     expectPlan: null,
     // withPacks removed — bc-agents components are now regular optional content
   };
@@ -100,6 +101,8 @@ function parseArgs(argv) {
     } else if (a === '--expect-plan') {
       if (!args[i + 1] || !/^[0-9a-f]{64}$/.test(args[i + 1])) throw new Error('--expect-plan expects the SHA-256 plan digest from a --dry-run --json preview');
       parsed.expectPlan = args[++i];
+    } else if (a === '--write') {
+      parsed.write = true;
     } else if (a === '--force' || a === '-f') {
       parsed.force = true;
     } else if (a === '--help' || a === '-h') {
@@ -400,6 +403,104 @@ function detectSolution(projectDir) {
   return { application: declared.application || apps[0] || '', test: declared.test || tests[0] || '' };
 }
 
+// ─── SOLUTION command ──────────────────────────────────────────────────────
+// aldc.yaml is read and rewritten as text, never reserialized: only the two root
+// values change, so every comment and every other setting survives byte for byte.
+// A file whose solution block ALDC cannot recognise is reported, never reformatted.
+const ROOT_KEYS = ['application', 'test'];
+
+// The scalar after "key:", plus whatever trailing comment followed it.
+function scalar(rest) {
+  const lead = /^\s*/.exec(rest)[0];
+  const text = rest.slice(lead.length);
+  if (!text || text.startsWith('#')) return { value: '', comment: text ? rest : '' };
+  if (text[0] === '"' || text[0] === "'") {
+    const end = text.indexOf(text[0], 1);
+    if (end === -1) return null;
+    return { value: text.slice(1, end), comment: text.slice(end + 1) };
+  }
+  const comment = text.search(/\s#/);
+  return comment === -1 ? { value: text.trimEnd(), comment: '' } : { value: text.slice(0, comment).trimEnd(), comment: text.slice(comment) };
+}
+
+// Where solution.roots.application and solution.roots.test live in the file.
+function solutionRoots(text) {
+  const lines = text.split(/\r?\n/);
+  const indent = line => line.length - line.trimStart().length;
+  let i = lines.findIndex(line => /^solution:\s*(#.*)?$/.test(line));
+  if (i === -1) return { problem: 'no top-level `solution:` block' };
+  let level = null, rootsAt = -1;
+  for (i++; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    if (indent(line) === 0) break; // the solution block ended
+    if (level === null) level = indent(line);
+    if (indent(line) !== level) continue; // nested under another key
+    if (/^roots:\s*(#.*)?$/.test(line.trim())) { rootsAt = i; break; }
+  }
+  if (rootsAt === -1) return { problem: 'no `roots:` mapping inside `solution:`' };
+  const found = {};
+  for (i = rootsAt + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    if (indent(line) <= level) break;
+    const match = /^(\s+)([A-Za-z0-9_-]+):(.*)$/.exec(line);
+    if (!match) return { problem: `unrecognised line inside solution.roots: ${line.trim()}` };
+    if (!ROOT_KEYS.includes(match[2])) continue;
+    const parsed = scalar(match[3]);
+    if (!parsed) return { problem: `unreadable value for solution.roots.${match[2]}` };
+    found[match[2]] = { at: i, indent: match[1], ...parsed };
+  }
+  for (const key of ROOT_KEYS) if (!found[key]) return { problem: `solution.roots.${key} is not declared` };
+  return { roots: found };
+}
+
+function rewriteRoots(text, block, values) {
+  const lines = text.split(/\r?\n/);
+  for (const key of ROOT_KEYS) {
+    const entry = block.roots[key];
+    if (values[key] === entry.value) continue;
+    lines[entry.at] = `${entry.indent}${key}: ${JSON.stringify(values[key])}${entry.comment}`;
+  }
+  return lines.join(text.includes('\r\n') ? '\r\n' : '\n');
+}
+
+// Re-read the layout from disk. A declared root that still holds a manifest is never
+// overridden: the developer may have picked one app among several, and discovery
+// cannot know that. Only a root that is undeclared, or declared at a folder that no
+// longer holds an app.json, is proposed for replacement, and nothing is ever cleared.
+function solution(opts) {
+  const projectDir = process.cwd();
+  const configPath = path.join(projectDir, 'aldc.yaml');
+  if (!fs.existsSync(configPath)) throw failure('No aldc.yaml in this project. Install the toolkit before re-detecting the layout.', 'no-configuration');
+  const text = fs.readFileSync(configPath, 'utf8');
+  const block = solutionRoots(text);
+  if (block.problem) throw failure(`Cannot read the declared layout from aldc.yaml: ${block.problem}. Nothing was written; edit the file by hand.`, 'unreadable-solution');
+  const configured = Object.fromEntries(ROOT_KEYS.map(key => [key, block.roots[key].value]));
+  const detected = detectSolution(projectDir);
+  const holdsManifest = rel => Boolean(rel) && fs.existsSync(path.join(projectDir, rel, 'app.json'));
+  const verified = Object.fromEntries(ROOT_KEYS.map(key => [key, holdsManifest(configured[key])]));
+  const changes = ROOT_KEYS.filter(key => !verified[key] && detected[key] && detected[key] !== configured[key])
+    .map(key => ({ key, from: configured[key], to: detected[key] }));
+  const stale = ROOT_KEYS.filter(key => configured[key] && !verified[key] && !changes.some(c => c.key === key));
+  const describe = value => value ? JSON.stringify(value) : '(none)';
+  const result = { ok: true, command: 'solution', configPath: 'aldc.yaml', configured, detected, verified, changes, stale,
+    matches: changes.length === 0, written: false, backup: null,
+    message: changes.length ? 'Re-detected: ' + changes.map(c => `${c.key} ${describe(c.from)} -> ${describe(c.to)}`).join('; ')
+      : stale.length ? `Declared but no app.json found there, and nothing was discovered to replace it: ${stale.join(', ')}. Declare the folder in .AL-Go/settings.json or correct aldc.yaml by hand.`
+      : 'The declared layout already matches the folders on disk.' };
+  if (!opts.write || !changes.length) return result;
+  const applied = Object.fromEntries(ROOT_KEYS.map(key => [key, changes.find(c => c.key === key)?.to ?? configured[key]]));
+  const backup = `.aldc-install/solution/${new Date().toISOString().replace(/[:.]/g, '-')}.aldc.yaml`;
+  fs.mkdirSync(path.dirname(path.join(projectDir, backup)), { recursive: true });
+  const ignore = path.join(projectDir, '.aldc-install/.gitignore');
+  if (!fs.existsSync(ignore)) fs.writeFileSync(ignore, '*\n');
+  fs.writeFileSync(path.join(projectDir, backup), text);
+  fs.writeFileSync(configPath, rewriteRoots(text, block, applied));
+  return { ...result, written: true, backup, matches: true, configured: applied,
+    message: `solution.roots updated in aldc.yaml (${changes.map(c => c.key).join(', ')}); the previous file is kept at ${backup}. aldc.yaml now differs from the installed content, so the next update reports it as a local change and preserves it.` };
+}
+
 // Seeded once, then owned by the developer. Comments survive because the file is text.
 function workspaceSeed(projectDir, solution, bcqualityHome) {
   const folders = [{ name: path.basename(projectDir) || 'AL solution', path: '.' }];
@@ -532,6 +633,7 @@ ${C.cyan}Usage:${C.reset}
 
 ${C.cyan}Commands:${C.reset}
   install     Install ALDC toolkit into current project
+  solution    Report the declared AL layout against the folders on disk (--write to update it)
   validate    Verify installation is complete
   --help      Show this help
 
@@ -543,6 +645,7 @@ ${C.cyan}Options:${C.reset}
   --dry-run          Preview all file actions without writes
   --json             Structured stdout for hosts (implies --yes); human output is the default
   --expect-plan <d>  Apply only if the plan still matches the digest of a --dry-run --json preview
+  --write            solution: rewrite solution.roots in aldc.yaml after keeping a copy
 
 ${C.cyan}Examples:${C.reset}
   ${C.green}# Install to default .github/ directory${C.reset}
@@ -723,6 +826,12 @@ switch (opts.command) {
       out(changed.length ? 'Drift: ' + changed.join(', ') : 'Managed files match installation receipt; host loading remains unverified.');
       if (changed.length) process.exitCode = 1;
     } catch (e) { fail('verify-install', e); }
+    break;
+  case 'solution':
+    try {
+      const result = solution(opts);
+      if (JSON_MODE) emit(result); else out(result.message);
+    } catch (e) { fail('solution', e); }
     break;
   case 'validate':
     validate(opts).catch((e) => { err(e.message); process.exit(1); });

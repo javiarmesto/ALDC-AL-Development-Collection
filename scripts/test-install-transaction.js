@@ -238,6 +238,52 @@ test('an AL-Go solution named after its app is read the same way by the installe
  assert.deepEqual(JSON.parse(observed.stdout).projects.map(p=>[p.role,p.manifest]).sort(),
   [['app','MiExtension/app.json'],['test','MiExtension.Test/app.json']]);
 });
+test('the layout is re-detected on request: comments survive, a live declaration wins and nothing is cleared',t=>{
+ const r=temp(t);
+ const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
+ const solution=args=>{const p=run(['solution','--json',...(args||[])]);return {status:p.status,body:JSON.parse(p.stdout)};};
+ // Installed before the Test project existed, and then customized by the developer.
+ write(r,'MiExtension/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ assert.equal(run(['install','--yes']).status,0);
+ assert.match(read(r,'aldc.yaml'),/application: "MiExtension"/);
+ assert.match(read(r,'aldc.yaml'),/test: ""/);
+ write(r,'aldc.yaml',read(r,'aldc.yaml').replace(/^(\s+)test: ""$/m,'$1test: ""   # added later'));
+ write(r,'MiExtension.Test/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ // Reporting is read-only.
+ const before=read(r,'aldc.yaml');
+ let s=solution();
+ assert.equal(s.status,0);assert.equal(s.body.matches,false);assert.equal(s.body.written,false);
+ assert.deepEqual(s.body.changes,[{key:'test',from:'',to:'MiExtension.Test'}]);
+ assert.equal(read(r,'aldc.yaml'),before,'reporting never writes');
+ // Writing touches one value and keeps the file otherwise intact, comment included.
+ s=solution(['--write']);
+ assert.equal(s.body.written,true);assert.match(s.body.backup,/^\.aldc-install\/solution\//);
+ assert.match(read(r,'aldc.yaml'),/test: "MiExtension\.Test"\s+# added later/);
+ assert.equal(read(r,path.join('.aldc-install/solution',fs.readdirSync(path.join(r,'.aldc-install/solution'))[0])),before);
+ assert.equal(read(r,'aldc.yaml').replace(/test: "MiExtension\.Test"/,'test: ""'),before);
+ assert.equal(fs.readFileSync(path.join(r,'.aldc-install/.gitignore'),'utf8'),'*\n');
+ // The edit is a local change, exactly as if it had been typed.
+ assert.deepEqual(JSON.parse(run(['status','--json']).stdout).drift,['aldc.yaml']);
+ // Re-running changes nothing, and a declaration that still holds a manifest is never overridden.
+ assert.equal(solution(['--write']).body.written,false);
+ write(r,'Otra/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ s=solution(['--write']);
+ assert.deepEqual(s.body.changes,[]);assert.equal(s.body.detected.application,'MiExtension');
+ assert.match(read(r,'aldc.yaml'),/application: "MiExtension"/);
+ // A declared folder that lost its manifest is reported, never cleared and never guessed.
+ fs.rmSync(path.join(r,'MiExtension.Test'),{recursive:true,force:true,maxRetries:10,retryDelay:200});
+ s=solution(['--write']);
+ assert.deepEqual(s.body.stale,['test']);assert.equal(s.body.written,false);
+ assert.equal(s.body.verified.test,false);
+ assert.match(read(r,'aldc.yaml'),/test: "MiExtension\.Test"/,'a declaration discovery cannot reach is left alone');
+ // A solution block ALDC cannot recognise is reported, not reformatted.
+ write(r,'aldc.yaml','solution:\n  workspaceFile: "aldc.code-workspace"\n');
+ const broken=run(['solution','--json','--write']);
+ assert.equal(broken.status,1);assert.equal(JSON.parse(broken.stdout).code,'unreadable-solution');
+ assert.equal(read(r,'aldc.yaml'),'solution:\n  workspaceFile: "aldc.code-workspace"\n');
+ fs.rmSync(path.join(r,'aldc.yaml'));
+ assert.equal(JSON.parse(run(['solution','--json']).stdout).code,'no-configuration');
+});
 test('preview digest binds apply to the previewed plan',t=>{
  const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};
  const preview=tx.apply({...opts,dryRun:true});assert.match(preview.digest,/^[0-9a-f]{64}$/);
