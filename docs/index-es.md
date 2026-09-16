@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#novedades">
   <span class="hero-banner__badge">PRÓXIMAMENTE</span>
-  <span class="hero-banner__text">ALDC 4.3.0 · candidato en validación</span>
+  <span class="hero-banner__text">ALDC 4.3.0 · ya disponible</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="../">English</a></div>
@@ -21,12 +21,12 @@ hide:
   <a class="md-button" href="#novedades">Explora las novedades</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">Marketplace mantiene 4.2.0. Las novedades de 4.3.0 están en validación y todavía no se han publicado.</p>
+<p class="hero-subnote">La versión 4.3.0 está disponible para VS Code desde el Marketplace y para Copilot CLI, Claude Code y Codex desde el código etiquetado.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>4.3.0 candidato</b> · MIT</span>
+  <span class="pill pill--version"><b>4.3.0</b> · MIT</span>
 </div>
 </div>
 
@@ -79,9 +79,9 @@ BCQuality es opcional y se instala por separado. Elige modo plugin o workspace e
 <p class="section-lead">Elige dónde trabajas. Accede a los pasos de instalación, las comprobaciones y una primera petición para esa superficie.</p>
 <div class="aldc-install-grid">
 <a class="aldc-install-card" href="../start-es/?surface=vscode"><span class="resource-kicker">Extensión publicada</span><h3>GitHub Copilot</h3><p>VS Code</p><span class="resource-arrow">→</span></a>
-<a class="aldc-install-card" href="../start-es/?surface=copilot-cli"><span class="resource-kicker">Código candidato</span><h3>GitHub Copilot</h3><p>CLI</p><span class="resource-arrow">→</span></a>
-<a class="aldc-install-card" href="../start-es/?surface=claude"><span class="resource-kicker">Código candidato</span><h3>Claude Code</h3><p>Plugin</p><span class="resource-arrow">→</span></a>
-<a class="aldc-install-card" href="../start-es/?surface=codex"><span class="resource-kicker">Código candidato</span><h3>Codex</h3><p>Proyecto local</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="../start-es/?surface=copilot-cli"><span class="resource-kicker">Desde código</span><h3>GitHub Copilot</h3><p>CLI</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="../start-es/?surface=claude"><span class="resource-kicker">Desde código</span><h3>Claude Code</h3><p>Plugin</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="../start-es/?surface=codex"><span class="resource-kicker">Desde código</span><h3>Codex</h3><p>Proyecto local</p><span class="resource-arrow">→</span></a>
 </div>
 <p class="hero-subnote">El VSIX actualiza la extensión de VS Code. El toolkit de cada proyecto y cada plugin de terminal tienen su propio paso de actualización.</p>
 

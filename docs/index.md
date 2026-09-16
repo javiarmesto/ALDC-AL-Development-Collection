@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#whats-new">
   <span class="hero-banner__badge">UPCOMING</span>
-  <span class="hero-banner__text">ALDC 4.3.0 · candidate under validation</span>
+  <span class="hero-banner__text">ALDC 4.3.0 · now available</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="index-es/">Español</a></div>
@@ -21,12 +21,12 @@ hide:
   <a class="md-button" href="#whats-new">Explore what is new</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">Marketplace remains on 4.2.0. The 4.3.0 capabilities are under validation and have not been published yet.</p>
+<p class="hero-subnote">Version 4.3.0 is available for VS Code from the Marketplace, and for Copilot CLI, Claude Code and Codex from the tagged source.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>4.3.0 candidate</b> · MIT</span>
+  <span class="pill pill--version"><b>4.3.0</b> · MIT</span>
 </div>
 </div>
 
@@ -79,9 +79,9 @@ BCQuality is optional and installed separately. Choose plugin or external-worksp
 <p class="section-lead">Choose where you work. Get the installation steps, checks and a first request for that surface.</p>
 <div class="aldc-install-grid">
 <a class="aldc-install-card" href="start/?surface=vscode"><span class="resource-kicker">Published extension</span><h3>GitHub Copilot</h3><p>VS Code</p><span class="resource-arrow">→</span></a>
-<a class="aldc-install-card" href="start/?surface=copilot-cli"><span class="resource-kicker">Candidate source</span><h3>GitHub Copilot</h3><p>CLI</p><span class="resource-arrow">→</span></a>
-<a class="aldc-install-card" href="start/?surface=claude"><span class="resource-kicker">Candidate source</span><h3>Claude Code</h3><p>Plugin</p><span class="resource-arrow">→</span></a>
-<a class="aldc-install-card" href="start/?surface=codex"><span class="resource-kicker">Candidate source</span><h3>Codex</h3><p>Project setup</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="start/?surface=copilot-cli"><span class="resource-kicker">From source</span><h3>GitHub Copilot</h3><p>CLI</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="start/?surface=claude"><span class="resource-kicker">From source</span><h3>Claude Code</h3><p>Plugin</p><span class="resource-arrow">→</span></a>
+<a class="aldc-install-card" href="start/?surface=codex"><span class="resource-kicker">From source</span><h3>Codex</h3><p>Project setup</p><span class="resource-arrow">→</span></a>
 </div>
 <p class="hero-subnote">The VSIX updates the VS Code extension. Each project toolkit and each terminal plugin has its own update step.</p>
 

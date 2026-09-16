@@ -22,7 +22,7 @@ ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
 **Release status:** canonical package and plugin manifests declare **4.3.0**.
-These changes remain [Unreleased](CHANGELOG.md), pending acceptance and publication.
+These changes are released as [4.3.0](CHANGELOG.md).
 Previously built VSIX files retain their original version and packaged snapshot.
 Installing newer source content does not itself publish a Marketplace update.
 
@@ -532,8 +532,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 ### Planned 4.3.0 — specifications, diagnostics and host integration
 
 Dedicated Spec Agent, per-operation Doctor, BC29-native tooling, terminal adapters
-and recoverable initialization. These changes are described in [Unreleased](CHANGELOG.md)
-and are not a claim that a new Marketplace package has been published.
+and recoverable initialization. These changes are described in the [4.3.0 changelog](CHANGELOG.md).
 
 
 ### 4.2.0 — Conformance release
@@ -586,7 +585,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0 (unreleased)
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0
 
 </div>
 

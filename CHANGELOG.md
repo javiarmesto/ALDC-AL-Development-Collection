@@ -1,6 +1,6 @@
 # ALDC Changelog
 
-## [Unreleased] — 4.3.0
+## [4.3.0] - 2026-09-16
 
 ### Added
 
@@ -62,9 +62,8 @@
 
 - Node.js 20+ for command-line installation; Python 3.9+ for Doctor.
 - BC29-native selection does not upgrade BC, AL Language or project manifests.
-- This section describes unreleased source changes. Extension and registry releases
-  are separate; canonical package, plugin and catalog metadata now declare 4.3.0.
-  Existing VSIX files retain their original version; no publication is implied.
+- Extension and registry releases are separate; canonical package, plugin and catalog
+  metadata declare 4.3.0. Earlier VSIX files retain their original version.
 
 ## [4.2.0] - 2026-06-12
 
