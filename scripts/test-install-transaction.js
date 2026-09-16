@@ -147,6 +147,48 @@ test('inspect reports absent, invalid, valid, drifted and restorable state witho
  assert.throws(()=>tx.rollback(r,'fixture'),/Changed since installation/);
  write(r,'a.md','v1');tx.rollback(r,'fixture');s=tx.inspect(r,'fixture');assert.equal(s.receipt,'absent');assert.equal(s.restore.available,false);assert.equal(fs.existsSync(path.join(r,'a.md')),false);
 });
+test('content a previous release is known to have written is ours to replace, local edits are not',t=>{
+ const r=temp(t);const sha=b=>require('crypto').createHash('sha256').update(b).digest('hex');
+ const OLD='shipped by the previous release\n',MINE='edited by the developer\n',NEW='shipped now\n';
+ const prior=[sha(Buffer.from(OLD))];
+ write(r,'a.md',OLD);write(r,'b.md',MINE);write(r,'memory.md',OLD);
+ const files=new Map([['a.md',{content:NEW,prior}],['b.md',{content:NEW,prior}],['memory.md',{content:NEW,seed:true,prior}]]);
+ const byPath=p=>Object.fromEntries(tx.report(p).map(f=>[f.path,f]));
+ // No receipt: the upgrade from a release that recorded none.
+ let f=byPath(tx.plan({root:r,surface:'fixture',files}));
+ assert.equal(f['a.md'].action,'replace');assert.equal(f['a.md'].recognised,true);assert.equal(f['a.md'].customized,false);
+ assert.equal(f['b.md'].action,'collision');assert.equal(f['b.md'].recognised,false);assert.equal(f['b.md'].customized,true);
+ assert.equal(f['memory.md'].action,'preserve','a seed is never recognised away');
+ tx.apply({root:r,surface:'fixture',files});
+ assert.equal(read(r,'a.md'),NEW);assert.equal(read(r,'b.md'),MINE);assert.equal(read(r,'memory.md'),OLD);
+ // The replace went through the transaction, so it is recoverable.
+ tx.rollback(r,'fixture');assert.equal(read(r,'a.md'),OLD);
+ // With a receipt the receipt is the only authority: older content is a local change again.
+ tx.apply({root:r,surface:'fixture',files:new Map([['a.md',{content:NEW}]])});
+ write(r,'a.md',OLD);
+ f=byPath(tx.plan({root:r,surface:'fixture',files:new Map([['a.md',{content:NEW,prior}]])}));
+ assert.equal(f['a.md'].action,'collision');assert.equal(f['a.md'].recognised,false);
+ // An unknown hash is never recognised, and neither is a missing manifest entry.
+ const other=temp(t);write(other,'a.md','something else\n');
+ assert.equal(byPath(tx.plan({root:other,surface:'fixture',files:new Map([['a.md',{content:NEW,prior}]])}))['a.md'].action,'collision');
+ assert.equal(byPath(tx.plan({root:other,surface:'fixture',files:new Map([['a.md',{content:NEW}]])}))['a.md'].action,'collision');
+});
+test('the known-installation manifest is well formed and covers the previous release',()=>{
+ const manifest=JSON.parse(fs.readFileSync(path.join(root,'known-installations.json'),'utf8'));
+ assert.equal(manifest.schema,1);
+ assert.ok(manifest.releases.length>=1,'at least one release is recorded');
+ assert.ok(manifest.releases.every(r=>/^v\d+\.\d+\.\d+$/.test(r.tag)&&r.files>0));
+ const entries=Object.entries(manifest.paths);
+ assert.ok(entries.length>100,`expected a full installation, got ${entries.length} paths`);
+ for(const [rel,hashes] of entries){
+  assert.ok(!path.isAbsolute(rel)&&!rel.split('/').includes('..'),`unsafe path: ${rel}`);
+  assert.ok(Array.isArray(hashes)&&hashes.length,`no hash for ${rel}`);
+  assert.ok(hashes.every(h=>/^[0-9a-f]{64}$/.test(h)),`bad hash for ${rel}`);
+ }
+ // The paths an upgrade actually collides on must be covered.
+ for(const rel of ['.github/agents/al-conductor.agent.md','.github/instructions/al-guidelines.instructions.md','aldc.yaml'])
+  assert.ok(manifest.paths[rel],`missing from the manifest: ${rel}`);
+});
 test('the solution anchor is detected, the workspace is seeded once and the marker records the version',t=>{
  const r=temp(t);const version=require('../package.json').version;
  const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});

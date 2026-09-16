@@ -246,12 +246,14 @@ async function install(opts) {
   const { apply } = require('./install-transaction');
   const files = new Map();
   const relative = dst => path.relative(projectDir, dst).split(path.sep).join('/');
+  const known = knownInstallations(packageDir);
+  const prior = rel => Array.isArray(known[rel]) ? known[rel] : undefined;
   const add = (src, dst, seed = false) => {
     let content = fs.readFileSync(src);
     if (transform) content = transform(src, content);
     const rel = relative(dst);
     if (files.has(rel)) throw new Error(`Duplicate installation destination: ${rel}`);
-    files.set(rel, { content, seed });
+    files.set(rel, { content, seed, prior: prior(rel) });
   };
   const tree = (src, dst) => {
     if (!fs.existsSync(src)) return;
@@ -275,22 +277,23 @@ async function install(opts) {
   add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
   const relTarget = relative(targetDir) || '.';
   const solution = detectSolution(projectDir);
-  files.set('aldc.yaml', { content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
+  files.set('aldc.yaml', { prior: prior('aldc.yaml'), content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
     .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`)
     .replace(/^(\s{4}application:)\s*""/m, `$1 ${JSON.stringify(solution.application)}`)
     .replace(/^(\s{4}test:)\s*""/m, `$1 ${JSON.stringify(solution.test)}`) });
   // The developer's multi-root definition: written when absent, never replaced.
-  files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, '../bcquality'), seed: true });
-  files.set(relative(markerPath), { content: JSON.stringify({ profile, surface: 'copilot-chat-vscode', version: packageVersion(packageDir) }, null, 2) + '\n' });
+  files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, '../bcquality'), seed: true, prior: prior('aldc.code-workspace') });
+  files.set(relative(markerPath), { prior: prior(relative(markerPath)), content: JSON.stringify({ profile, surface: 'copilot-chat-vscode', version: packageVersion(packageDir) }, null, 2) + '\n' });
   const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
   for (const file of result.files) if (file.action !== 'unchanged') log(`  ${file.action}: ${file.path}`);
   const summary = {};
   for (const file of result.files) summary[file.action] = (summary[file.action] || 0) + 1;
+  const recognised = result.files.filter(f => f.recognised).map(f => f.path);
   const structured = { ok: true, command: 'install', dryRun: Boolean(opts.dryRun), profile, previousProfile,
     profileSwitch: existingPrimitives && profile !== previousProfile, existingInstallation: existingPrimitives,
     targetDir: relTarget, force: Boolean(opts.force), digest: result.digest, transaction: result.transaction || null,
     files: result.files, summary, collisions: result.files.filter(f => f.action === 'collision').map(f => f.path),
-    replaced: result.files.filter(f => f.action === 'replace' && f.customized).map(f => f.path),
+    replaced: result.files.filter(f => f.action === 'replace' && f.customized).map(f => f.path), recognised,
     doctorScript: relative(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) };
   if (opts.dryRun) { info('Dry run: no files written.'); return structured; }
   const totalCopied = result.files.filter(f => ['add', 'replace'].includes(f.action)).length;
@@ -339,6 +342,16 @@ function readProfileMarker(markerPath) {
 
 // Which folders this solution actually has. AL-Go declares them when present;
 // otherwise the conventional names are probed. Nothing is ever created here.
+// What previous releases wrote, so their untouched content is recognised instead of
+// being reported as a local change. Absent or unreadable means nothing is recognised.
+function knownInstallations(packageDir) {
+  try {
+    const data = JSON.parse(fs.readFileSync(path.join(packageDir, 'known-installations.json'), 'utf8'));
+    if (data.schema !== 1 || !data.paths || typeof data.paths !== 'object') return {};
+    return data.paths;
+  } catch { return {}; }
+}
+
 function packageVersion(packageDir) {
   try { return String(JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8')).version || ''); } catch { return ''; }
 }

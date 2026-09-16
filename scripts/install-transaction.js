@@ -66,10 +66,15 @@ function plan({ root, surface, files, force = false }) {
     seen.add(rel.toLowerCase());
     const before = read(root, rel), desired = Buffer.from(record.content);
     const oldHash = state?.files[rel];
-    const drift = before !== null && !before.equals(desired) && hash(before) !== oldHash;
+    // Bytes an earlier release of this toolkit is known to have written are ours, not a
+    // local change. Consulted only when no receipt exists, which is the upgrade from a
+    // release that recorded none: with a receipt, the receipt is the sole authority.
+    // Seeded files stay out of it, and the replace is previewed and backed up as usual.
+    const recognised = before !== null && !state && !record.seed && Array.isArray(record.prior) && record.prior.includes(hash(before));
+    const drift = before !== null && !before.equals(desired) && hash(before) !== oldHash && !recognised;
     const preserve = before !== null && (record.seed || (drift && !force && !record.merge));
     const after = preserve ? before : desired;
-    actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain), customized: Boolean(drift),
+    actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain), customized: Boolean(drift), recognised: Boolean(recognised),
       status: before === null ? 'add' : preserve ? (record.seed ? 'preserve' : 'collision') : before.equals(after) ? 'unchanged' : 'replace' });
   }
   // Never delete unknown files. A retired tracked path needs an explicit decision
@@ -85,7 +90,7 @@ function plan({ root, surface, files, force = false }) {
 }
 // customized: existing bytes match neither the receipt nor the packaged content,
 // so a replace action overwrites a local change (recoverably) rather than a tracked file.
-function report(plan) { return plan.actions.map(({ rel, status, before, after, customized }) => ({ path: rel, action: status, before: hash(before), after: hash(after), customized: Boolean(customized) })); }
+function report(plan) { return plan.actions.map(({ rel, status, before, after, customized, recognised }) => ({ path: rel, action: status, before: hash(before), after: hash(after), customized: Boolean(customized), recognised: Boolean(recognised) })); }
 // Stable identity of a planned outcome: the same files, actions and bytes.
 function digest(plan) { return hash(Buffer.from(JSON.stringify(report(plan).map(f => [f.path, f.action, f.before, f.after])))); }
 function restore(root, journal, interrupted = false, beforeWrites = () => {}) {
