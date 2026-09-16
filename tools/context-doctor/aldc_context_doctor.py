@@ -46,6 +46,12 @@ def inside(root, relative):
     return path.resolve()
 
 
+def is_test_folder(name):
+    """Conventional test folder names, including AL-Go's "<app>.Test" sibling."""
+    return (name in {"test", "tests"} or name.startswith("test-")
+            or name.endswith(".test") or name.endswith(".tests"))
+
+
 def discover_projects(root):
     """Bounded/pruned discovery; AL-Go non-empty folders override each role."""
     projects, errors, explicit, seen = [], [], set(), {}
@@ -85,7 +91,7 @@ def discover_projects(root):
         manifest = base / "app.json"
         relative = manifest.relative_to(root).as_posix()
         parts = [p.casefold() for p in base.relative_to(root).parts]
-        role = "test" if any(p in {"test", "tests"} or p.startswith("test-") for p in parts) else "app"
+        role = "test" if any(is_test_folder(p) for p in parts) else "app"
         if relative not in seen and role not in explicit:
             projects.append({"role": role, "manifest": relative, "source": "workspace-discovery"})
     for project in projects:

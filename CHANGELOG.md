@@ -28,8 +28,8 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   and every replacement is still previewed, backed up and reversible.
 - `solution` anchor in `aldc.yaml`: `workspaceFile` and `roots.application` /
   `roots.test` declare the multi-root layout of the AL solution. The installer
-  detects the folders that exist (AL-Go `appFolders` / `testFolders` first, then the
-  conventional names) and writes them there; it never creates a folder.
+  detects the folders that exist (AL-Go `appFolders` / `testFolders` first, then
+  discovery) and writes them there; it never creates a folder.
 - `aldc.code-workspace` is generated from that layout at installation instead of
   copied: root, application, tests, and the BCQuality root when the configured mode
   is external-multiroot. It stays a seeded file, so it is written once and then
@@ -89,6 +89,15 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   current artifacts; native capabilities can satisfy relevant tool requirements.
 
 ### Fixed
+
+- The installer and Doctor now read the same solution. The installer walks for
+  `app.json` (at most three levels, pruning hidden folders, dependencies, build
+  output and symlinks) instead of probing `src`, `app`, `test` and `tests`, and both
+  treat a folder ending in `.Test` or `.Tests` as the test project. AL-Go names the
+  app folder after the app, so the usual layout — `MiExtension` next to
+  `MiExtension.Test` — previously left `solution.roots` empty and the generated
+  workspace without its project folders, while Doctor classified the suite as a
+  second app.
 
 - Review coverage now distinguishes provider execution from index generation and
   incomplete audits from zero-finding completed reviews. Dredd remains advisory

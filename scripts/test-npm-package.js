@@ -26,8 +26,10 @@ try {
   // Reuse dependencies installed by npm ci from the repository lockfile. The
   // source payload is exclusively the archive; no registry resolution is needed.
   fs.cpSync(path.join(root, 'node_modules'), path.join(installed, 'node_modules'), { recursive: true });
-  for (const rel of ['tools/context-doctor/aldc_context_doctor.py', 'tools/context-doctor/README.md', 'scripts/test-doctor.py']) {
-    if (!fs.readFileSync(path.join(installed, rel)).equals(fs.readFileSync(path.join(root, rel)))) throw Error(`Doctor archive payload differs: ${rel}`);
+  // Payloads the installer and Doctor read at runtime must arrive byte for byte.
+  for (const rel of ['tools/context-doctor/aldc_context_doctor.py', 'tools/context-doctor/README.md', 'scripts/test-doctor.py',
+    'known-installations.json']) {
+    if (!fs.readFileSync(path.join(installed, rel)).equals(fs.readFileSync(path.join(root, rel)))) throw Error(`Archive payload differs: ${rel}`);
   }
   const output = npm(['run', 'validate'], installed);
   console.log(output.split('\n').filter(line => /PASS:|packaging:|generated files/.test(line)).join('\n'));

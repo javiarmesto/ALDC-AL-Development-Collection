@@ -340,8 +340,6 @@ function readProfileMarker(markerPath) {
   }
 }
 
-// Which folders this solution actually has. AL-Go declares them when present;
-// otherwise the conventional names are probed. Nothing is ever created here.
 // What previous releases wrote, so their untouched content is recognised instead of
 // being reported as a local change. Absent or unreadable means nothing is recognised.
 function knownInstallations(packageDir) {
@@ -356,6 +354,39 @@ function packageVersion(packageDir) {
   try { return String(JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8')).version || ''); } catch { return ''; }
 }
 
+const IGNORED_SCAN = new Set(['node_modules', '.git', '.alpackages', '.altestrunner', '.snapshots', 'out', 'bin', 'obj']);
+
+// Conventional test folder names, including AL-Go's "<app>.Test" sibling. Kept
+// identical to Doctor's rule so both pieces classify a solution the same way.
+function isTestFolder(name) {
+  const n = name.toLowerCase();
+  return n === 'test' || n === 'tests' || n.startsWith('test-') || n.endsWith('.test') || n.endsWith('.tests');
+}
+
+// Folders holding an app.json, at most three levels down, pruning hidden folders,
+// dependencies and build output, never following symlinks. Same reach as Doctor,
+// because AL-Go names the app folder after the app rather than src or app.
+function discoverManifests(projectDir) {
+  const found = [];
+  const walk = (dir, depth) => {
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    if (depth > 0 && entries.some(e => e.isFile() && e.name === 'app.json')) {
+      found.push(path.relative(projectDir, dir).split(path.sep).join('/'));
+      return; // a project is a leaf; nothing nested inside it is a separate root
+    }
+    if (depth >= 3) return;
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.isSymbolicLink() || entry.name.startsWith('.') || IGNORED_SCAN.has(entry.name)) continue;
+      walk(path.join(dir, entry.name), depth + 1);
+    }
+  };
+  walk(projectDir, 0);
+  return found.sort();
+}
+
+// Which folders this solution actually has. AL-Go declares them when it has them;
+// otherwise they are discovered. Nothing is ever created here.
 function detectSolution(projectDir) {
   const manifest = rel => rel && fs.existsSync(path.join(projectDir, rel, 'app.json')) ? rel.replace(/\\/g, '/') : '';
   let declared = {};
@@ -363,9 +394,10 @@ function detectSolution(projectDir) {
     const settings = JSON.parse(fs.readFileSync(path.join(projectDir, '.AL-Go/settings.json'), 'utf8'));
     declared = { application: manifest((settings.appFolders || [])[0]), test: manifest((settings.testFolders || [])[0]) };
   } catch { declared = {}; }
-  const first = names => names.map(manifest).find(Boolean) || '';
-  return { application: declared.application || first(['src', 'app', 'App']),
-    test: declared.test || first(['test', 'Test', 'tests', 'Tests']) };
+  const discovered = discoverManifests(projectDir);
+  const tests = discovered.filter(rel => rel.split('/').some(isTestFolder));
+  const apps = discovered.filter(rel => !tests.includes(rel));
+  return { application: declared.application || apps[0] || '', test: declared.test || tests[0] || '' };
 }
 
 // Seeded once, then owned by the developer. Comments survive because the file is text.

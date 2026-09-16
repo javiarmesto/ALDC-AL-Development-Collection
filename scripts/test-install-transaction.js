@@ -217,6 +217,27 @@ test('a solution without app or test folders seeds only the roots that exist',t=
  assert.match(read(r,'aldc.yaml'),/application: ""/);
  assert.equal(fs.existsSync(path.join(r,'src')),false,'no folder is ever created');
 });
+test('an AL-Go solution named after its app is read the same way by the installer and by Doctor',t=>{
+ const r=temp(t);
+ const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
+ // The usual AL-Go layout: the folder carries the app's name and the suite is its ".Test" sibling,
+ // so neither is found by probing "src" or "test", and AL-Go declares nothing.
+ write(r,'MiExtension/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ write(r,'MiExtension.Test/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
+ write(r,'.AL-Go/settings.json','{}');
+ assert.equal(run(['install','--yes']).status,0);
+ assert.match(read(r,'aldc.yaml'),/application: "MiExtension"/);
+ assert.match(read(r,'aldc.yaml'),/test: "MiExtension\.Test"/);
+ assert.deepEqual(JSON.parse(read(r,'aldc.code-workspace').replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),
+  ['.','MiExtension','MiExtension.Test','../bcquality']);
+ // Doctor walks the same solution. A layout the installer declares and Doctor cannot see is the bug.
+ const doctorScript=JSON.parse(run(['status','--json']).stdout).doctorScript;
+ assert.ok(doctorScript,'the installed toolkit ships Doctor');
+ const observed=spawnSync('python3',['-B',path.join(r,doctorScript),'--workspace',r,'--json','--toolkit',path.join(r,'.github')],{encoding:'utf8'});
+ assert.equal(observed.status,0,observed.stderr);
+ assert.deepEqual(JSON.parse(observed.stdout).projects.map(p=>[p.role,p.manifest]).sort(),
+  [['app','MiExtension/app.json'],['test','MiExtension.Test/app.json']]);
+});
 test('preview digest binds apply to the previewed plan',t=>{
  const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};
  const preview=tx.apply({...opts,dryRun:true});assert.match(preview.digest,/^[0-9a-f]{64}$/);

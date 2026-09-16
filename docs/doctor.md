@@ -38,8 +38,9 @@ Useful flags:
 
 - **AL projects.** `appFolders` and `testFolders` from `.AL-Go/settings.json` when
   present; otherwise it scans at most three folder levels, skipping hidden
-  folders, dependencies, build output and symlinks. Folders named `Test`, `Tests`
-  or `test-*` are treated as test projects. Each manifest reports its own
+  folders, dependencies, build output and symlinks. Folders named `Test`,
+  `Tests`, `test-*`, or ending in `.Test` or `.Tests` (AL-Go names the suite
+  after the app), are treated as test projects. Each manifest reports its own
   application target, separately from the installed profile.
 - **Workflow sources.** Whether the agent and workflow files exist under the
   toolkit directory, and whether a new entrypoint links to a role that is missing

@@ -160,6 +160,15 @@ class DoctorTest(unittest.TestCase):
         projects = self.report()["projects"]
         self.assertEqual([(p["role"], p["manifest"]) for p in projects], [("app", "src/a/b/c/App/app.json"), ("test", "qa/suite/app.json")])
 
+    def test_al_go_named_folders_classified_without_declaration(self):
+        """AL-Go names folders after the app, so "<app>.Test" is the test project."""
+        self.app("MiExtension/app.json")
+        self.app("MiExtension.Test/app.json")
+        projects = self.report()["projects"]
+        self.assertEqual(sorted((p["role"], p["manifest"]) for p in projects),
+                         [("app", "MiExtension/app.json"), ("test", "MiExtension.Test/app.json")])
+        self.assertEqual(self.report()["operations"]["compile-test"]["status"], "unobserved")
+
     def test_al_go_invalid_types_conflicts_and_escape_are_errors(self):
         self.app("App/app.json")
         for config in ({"appFolders": "App"}, {"appFolders": False}, {"appFolders": ["../outside"]},

@@ -40,7 +40,8 @@ Opciones útiles:
 - **Proyectos AL.** `appFolders` y `testFolders` de `.AL-Go/settings.json` si
   existe; si no, recorre como mucho tres niveles de carpetas, saltando ocultas,
   dependencias, salida de compilación y enlaces simbólicos. Las carpetas `Test`,
-  `Tests` o `test-*` cuentan como proyecto de pruebas. Cada manifiesto informa de
+  `Tests`, `test-*` o terminadas en `.Test` o `.Tests` (AL-Go nombra la suite
+  igual que la app) cuentan como proyecto de pruebas. Cada manifiesto informa de
   su propio destino de aplicación, aparte del perfil instalado.
 - **Fuentes de los flujos.** Si existen los ficheros de agentes y workflows bajo el
   directorio del toolkit, y si un punto de entrada nuevo enlaza a un rol que falta
