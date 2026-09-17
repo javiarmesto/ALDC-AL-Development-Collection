@@ -82,12 +82,26 @@ try {
   run('git',['init','--quiet']);
   config();
   const reportDir=path.join(temp,'.github/plans/test');fs.mkdirSync(reportDir,{recursive:true});
-  fs.writeFileSync(path.join(reportDir,'test-review-phase-1.json'),JSON.stringify({skill:'review',outcome:'completed',findings:[{references:[{path:'missing.md'}]}]}));
+  fs.writeFileSync(path.join(reportDir,'test-review-phase-1.json'),JSON.stringify({skill:{id:'al-review-subagent',version:1},outcome:'completed',findings:[{references:[{path:'missing.md'}]}]}));
   assert.match(run('python3',[path.join(root,'tools/bcquality/validate_evidence.py')]),/citation resolution UNVERIFIED/);
   fs.mkdirSync(path.join(temp,'corpus/skills'),{recursive:true});write('corpus/skills/entry.md','fixture');
   run('python3',[path.join(root,'tools/bcquality/validate_evidence.py'),'--bcquality-root',path.join(temp,'corpus')],false);
   fs.writeFileSync(path.join(reportDir,'bad-review-phase-2.json'), '[]');
   run('python3',[path.join(root,'tools/bcquality/validate_evidence.py')],false);
+  // Presence of the three keys was the whole gate, so a report could carry any
+  // value under them and pass. Each of these is refused for one stated reason.
+  for (const bad of [
+    {skill:123,outcome:'BANANA',findings:{}},
+    {skill:{id:'',version:1},outcome:'completed',findings:[]},
+    {skill:{id:'r',version:'one'},outcome:'completed',findings:[]},
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{references:[{path:''}]}]},
+    {skill:{id:'r',version:1},outcome:'completed',findings:[],review:{verdict:'MAGNIFICENT'}},
+    {skill:{id:'r',version:1},outcome:'completed',findings:[],review:{coverage:[{check:'x',status:'invented'}]}},
+    {skill:{id:'r',version:1},outcome:'completed',findings:[],'sub-results':[{skill:'nested',outcome:'completed',findings:[]}]},
+  ]) {
+    fs.writeFileSync(path.join(reportDir,'bad-review-phase-2.json'), JSON.stringify(bad));
+    run('python3',[path.join(root,'tools/bcquality/validate_evidence.py')],false);
+  }
   fs.unlinkSync(path.join(reportDir,'bad-review-phase-2.json'));
   write('corpus/missing.md','fixture citation');
   assert.match(run('python3',[path.join(root,'tools/bcquality/validate_evidence.py'),'--bcquality-root',path.join(temp,'corpus')]),/citation resolution CHECKED/);

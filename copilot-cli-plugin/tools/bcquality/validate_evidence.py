@@ -39,6 +39,92 @@ def collect_citations(report: dict) -> list[str]:
     return cites
 
 
+# The declared shape of a review report (docs/templates/review-report-contract.md).
+# Presence alone was the whole gate, so a report claiming `outcome: "BANANA"`
+# with a numeric `skill` passed: the evidence a human approves could be any
+# JSON carrying three keys.
+OUTCOMES = ("completed", "partial", "failed")
+VERDICTS = ("APPROVED", "APPROVED_WITH_RECOMMENDATIONS", "NEEDS_REVISION", "FAILED")
+COVERAGE_STATUS = ("completed", "not-applicable", "skipped", "partial", "failed", "pending")
+
+
+def nonempty_str(value) -> bool:
+    return isinstance(value, str) and value.strip() != ""
+
+
+def check_shape(rel: str, report: dict, errors: list[str], depth: int = 0) -> None:
+    where = f"{rel}: " if depth == 0 else f"{rel}: sub-result: "
+
+    skill = report.get("skill")
+    if not isinstance(skill, dict):
+        errors.append(f"{where}'skill' must be an object with id and version.")
+    else:
+        if not nonempty_str(skill.get("id")):
+            errors.append(f"{where}'skill.id' must be a non-empty string.")
+        version = skill.get("version")
+        if not isinstance(version, int) or isinstance(version, bool):
+            errors.append(f"{where}'skill.version' must be an integer.")
+
+    outcome = report.get("outcome")
+    if outcome not in OUTCOMES:
+        errors.append(f"{where}'outcome' must be one of {', '.join(OUTCOMES)} (got {outcome!r}).")
+
+    findings = report.get("findings")
+    if not isinstance(findings, list):
+        errors.append(f"{where}'findings' must be an array.")
+    else:
+        for i, finding in enumerate(findings):
+            if not isinstance(finding, dict):
+                errors.append(f"{where}findings[{i}] must be an object.")
+                continue
+            refs = finding.get("references")
+            if refs is None:
+                continue
+            if not isinstance(refs, list):
+                errors.append(f"{where}findings[{i}].references must be an array.")
+                continue
+            for j, ref in enumerate(refs):
+                if not isinstance(ref, dict):
+                    errors.append(f"{where}findings[{i}].references[{j}] must be an object.")
+                elif "path" in ref and not nonempty_str(ref["path"]):
+                    errors.append(f"{where}findings[{i}].references[{j}].path must be a non-empty string.")
+
+    for scope in ("review", "audit"):
+        section = report.get(scope)
+        if section is None:
+            continue
+        if not isinstance(section, dict):
+            errors.append(f"{where}'{scope}' must be an object.")
+            continue
+        verdict = section.get("verdict")
+        if verdict is not None and verdict not in VERDICTS:
+            errors.append(f"{where}'{scope}.verdict' must be one of {', '.join(VERDICTS)} (got {verdict!r}).")
+        coverage = section.get("coverage")
+        if coverage is None:
+            continue
+        if not isinstance(coverage, list):
+            errors.append(f"{where}'{scope}.coverage' must be an array.")
+            continue
+        for i, row in enumerate(coverage):
+            if not isinstance(row, dict):
+                errors.append(f"{where}'{scope}.coverage[{i}]' must be an object.")
+            elif row.get("status") not in COVERAGE_STATUS:
+                errors.append(f"{where}'{scope}.coverage[{i}].status' must be one of "
+                              f"{', '.join(COVERAGE_STATUS)} (got {row.get('status')!r}).")
+
+    subs = report.get("sub-results")
+    if subs is None:
+        return
+    if not isinstance(subs, list):
+        errors.append(f"{where}'sub-results' must be an array.")
+        return
+    for sub in subs:
+        if not isinstance(sub, dict):
+            errors.append(f"{where}each sub-result must be an object.")
+        else:
+            check_shape(rel, sub, errors, depth + 1)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Validate BCQuality evidence.")
     ap.add_argument("--plans-dir", default=".github/plans")
@@ -112,9 +198,7 @@ def main() -> int:
         if not isinstance(report, dict):
             errors.append(f"{rel}: expected a report object.")
             continue
-        for field in ("skill", "outcome", "findings"):
-            if field not in report:
-                errors.append(f"{rel}: missing required field '{field}'.")
+        check_shape(rel, report, errors)
         try:
             cites = collect_citations(report)
             if any(not isinstance(c, str) or not c for c in cites):

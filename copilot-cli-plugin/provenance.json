@@ -107,7 +107,7 @@
     "claude-plugin/tools/bcquality/install.sh": "2201e70918b7adcf52f7009e78db1da3226bf8124061c705d1721ca266afe7b8",
     "claude-plugin/tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "claude-plugin/tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
-    "claude-plugin/tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
+    "claude-plugin/tools/bcquality/validate_evidence.py": "afa28a4a8605e4c716319a24deaf8137a78732e0bdbd0d6ccc3363a480b745f9",
     "claude-plugin/tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
     "claude-plugin/tools/context-doctor/aldc_context_doctor.py": "3731f639c7688b9bc380aca0f03b6dc8c4c1af73a111e8cfb56243a4035333af",
     "docs/templates/architecture-template.md": "d249785873c1951de082cb4b78896d57c7fafd9d2599007dd0437c14a9746696",
@@ -140,7 +140,7 @@
     "tools/bcquality/install.sh": "2201e70918b7adcf52f7009e78db1da3226bf8124061c705d1721ca266afe7b8",
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
-    "tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
+    "tools/bcquality/validate_evidence.py": "afa28a4a8605e4c716319a24deaf8137a78732e0bdbd0d6ccc3363a480b745f9",
     "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
     "tools/context-doctor/aldc_context_doctor.py": "3731f639c7688b9bc380aca0f03b6dc8c4c1af73a111e8cfb56243a4035333af"
   },
@@ -231,7 +231,7 @@
     "tools/bcquality/install.sh": "2201e70918b7adcf52f7009e78db1da3226bf8124061c705d1721ca266afe7b8",
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
-    "tools/bcquality/validate_evidence.py": "1ca77ba74cf2f75c8fa80356ff1cbcdf3236c54ea64307134950cd0b3be2740f",
+    "tools/bcquality/validate_evidence.py": "afa28a4a8605e4c716319a24deaf8137a78732e0bdbd0d6ccc3363a480b745f9",
     "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
     "tools/context-doctor/aldc_context_doctor.py": "3731f639c7688b9bc380aca0f03b6dc8c4c1af73a111e8cfb56243a4035333af"
   }
