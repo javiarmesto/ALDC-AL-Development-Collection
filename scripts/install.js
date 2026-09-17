@@ -278,6 +278,14 @@ async function install(opts) {
   // --force, exactly like project memory.
   add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
   add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
+  // The extension's "Getting Started" command opens this file from the install
+  // target, so packaging it without installing it left a command that could
+  // never succeed. The VSIX flattens it to the payload root; the repo and tgz
+  // surfaces keep it under docs/.
+  for (const candidate of ['getting-started.md', 'docs/getting-started.md']) {
+    const src = path.join(packageDir, candidate);
+    if (fs.existsSync(src)) { add(src, path.join(targetDir, 'getting-started.md')); break; }
+  }
   const relTarget = relative(targetDir) || '.';
   const solution = detectSolution(projectDir);
   files.set('aldc.yaml', { prior: prior('aldc.yaml'), content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
