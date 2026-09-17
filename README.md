@@ -31,7 +31,7 @@ Installing newer source content does not itself publish a Marketplace update.
 | Architect and Spec Agent | Approved design, bounded Specs, explicit dependencies and joint consistency review before implementation. |
 | Conductor | Planning, implementation and review coordinated through existing human gates. |
 | Doctor | Read-only diagnosis of configuration and operation-specific runtime observations. |
-| Optional BCQuality | Plugin or external multiroot reviews, with discovery, loading, execution and index evidence distinguished. |
+| Recommended BCQuality | Plugin or external multiroot reviews, with discovery, loading, execution and index evidence distinguished. |
 | BC28 / BC29-native | Explicit Chat profile selection with role-specific tools and AL18 guidance. |
 | Host adapters | Dedicated content for Copilot Chat, Copilot CLI, Claude Code and Codex. |
 | Recoverable installation | Preview, visible collisions, receipts, verification and restoration. |
@@ -195,7 +195,7 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 
 al-guidelines · al-code-style · al-naming-conventions · al-performance · al-error-handling · al-events · al-testing · copilot-instructions · index
 
-### 📚 BCQuality (optional) — external, citable BC knowledge layer
+### 📚 BCQuality (recommended) — external, citable BC knowledge layer
 
 Optional cited review through an explicitly selected host plugin or external multiroot knowledge base. Agents distinguish discovery, loading, execution and best-effort index generation; unavailable providers retain native A–G coverage. See [`docs/bcquality.md`](docs/bcquality.md).
 
@@ -420,7 +420,7 @@ On first enable, the plugin prompts for optional settings:
 
 ---
 
-## Using BCQuality (optional)
+## Using BCQuality (recommended)
 
 BCQuality supports explicit `plugin` and `external-multiroot` modes in `aldc.yaml`.
 Plugin mode loads the configured skill (default `bcquality-al-review`); multiroot
@@ -551,7 +551,7 @@ The framework now enforces its own spec in CI.
 ### 4.1.0 — Lower token cost & cited audits
 
 - **⚡ Lower token / AIC cost** — trimmed always-on entrypoint (~31% lighter), narrow instruction globs (`applyTo` by object type), curated context passing, condensed primitives, BCQuality task-context built once and passed inline.
-- **📚 Cited reviews & audits with BCQuality (optional)** — agents back findings with a pinned BC knowledge base; graceful native fallback (never blocks).
+- **📚 Cited reviews & audits with BCQuality (recommended)** — agents back findings with a pinned BC knowledge base; graceful native fallback (never blocks).
 - **`@AL Triage`** and **`@Dredd`** — read-only on-demand specialists.
 - **`skill-contribution-assistant`** — guided contribution workflow.
 - Restored full architecture & spec templates with authoring guidance.
