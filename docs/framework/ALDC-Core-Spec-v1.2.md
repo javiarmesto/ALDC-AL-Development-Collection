@@ -161,7 +161,6 @@ A **skill** is a composable knowledge module that lives in `skills/skill-{domain
 
 | Skill | Content |
 |-------|---------|
-| `skill-manifest` | Extension Manifest Generator: end-of-pipeline handoff contract so sibling collections (CIRCE — Copilot Studio; DELFOS — Power BI) can consume the extension's published surface via the BC MCP server |
 | `skill-contribution-assistant` | Guided contribution workflow for the framework itself |
 
 ### Loading Mechanism

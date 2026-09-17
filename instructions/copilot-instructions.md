@@ -4,7 +4,7 @@
 
 ## Overview
 
-This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.2** skills-based architecture. The installed distribution contains **12 agents (including 3 subagents), 17 skills, 11 prompts and 8 scoped instructions**; required and optional components are defined in `aldc.yaml`.
+This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.2** skills-based architecture. The installed distribution contains **12 agents (including 3 subagents), 16 skills, 11 prompts and 8 scoped instructions**; required and optional components are defined in `aldc.yaml`.
 
 ## Core Principles
 
@@ -335,7 +335,7 @@ Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Dev
 **Version**: 1.2.0
 **Last Updated**: 2026-05-18
 **Workspace**: AL Development for Business Central
-**Primitives**: 12 agents (including 3 subagents) + 17 skills + 11 prompts + 8 scoped instructions; 6 core workflows
+**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 8 scoped instructions; 6 core workflows
 
 ## Optional BCQuality provider
 

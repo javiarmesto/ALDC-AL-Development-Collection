@@ -145,7 +145,6 @@ optional:
     - "skills/skill-agent-instructions/SKILL.md"
     - "skills/skill-agent-task-patterns/SKILL.md"
     - "skills/skill-agent-toolkit/SKILL.md"
-    - "skills/skill-manifest/SKILL.md"
     - "skills/skill-contribution-assistant/SKILL.md"
   workflows:
     - "prompts/al-agent.create.prompt.md"

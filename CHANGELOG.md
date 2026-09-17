@@ -95,6 +95,15 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 - Instruction and domain-guide references are retained for continuation from the
   current artifacts; native capabilities can satisfy relevant tool requirements.
 
+### Removed
+
+- `skill-manifest`, the end-of-pipeline handoff contract for the sibling
+  collections CIRCE (Copilot Studio) and DELFOS (Power BI). It shipped in the
+  VS Code and npm distributions and was absent from the Claude Code, Copilot CLI
+  and Codex plugins; it is now withdrawn from every surface, along with its
+  declaration in `aldc.yaml` and its row in the Core Spec. Projects that already
+  installed it keep the files on disk; the installer stops writing them.
+
 ### Fixed
 
 - Requirement-set validation never ran. `tools/aldc-validate` read only the flat plans

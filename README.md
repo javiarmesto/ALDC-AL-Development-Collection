@@ -470,7 +470,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── .mcp.json                             # MCP server configuration
 ├── .claude/
 │   ├── agents/                           # 12 agents (9 public + 3 internal)
-│   ├── skills/                           # 17 skills (composable knowledge modules)
+│   ├── skills/                           # 16 skills (composable knowledge modules)
 │   ├── rules/                            # 8 path-scoped coding standards
 │   └── settings.json                     # Hooks + permissions
 │
@@ -478,7 +478,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── claude-plugin/
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
 │   ├── agents/                           # 12 agents (auto-discovered)
-│   ├── skills/                           # 17 skills (auto-discovered)
+│   ├── skills/                           # 16 skills (auto-discovered)
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
 │   ├── rules-templates/                  # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
