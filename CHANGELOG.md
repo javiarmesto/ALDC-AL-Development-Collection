@@ -1,6 +1,6 @@
 # ALDC Changelog
 
-## [4.3.1] - 2026-09-16
+## [4.3.1] - 2026-09-17
 
 Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 
