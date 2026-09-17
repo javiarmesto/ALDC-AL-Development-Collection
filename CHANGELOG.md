@@ -117,6 +117,16 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   workspace without its project folders, while Doctor classified the suite as a
   second app.
 
+- Doctor reads the solution, not just the folder it was pointed at. A manifest was
+  classified by the path segments below the scanned root, so scanning the test folder
+  itself left no segment to judge by and its suite was reported as an application; the
+  scanned folder's own name now answers for a manifest at the root. Configuration is
+  read per project as well: the `.vscode` of every discovered project, not only the
+  root's, which is where `mcp.json`, `settings.json`, `tasks.json` and `launch.json`
+  actually live in an AL-Go layout. Pointed at `app/` or `test/` Doctor reported no
+  plans folder and no MCP servers while both existed one level up or down — a solution
+  read as three unrelated projects.
+
 - Review coverage now distinguishes provider execution from index generation and
   incomplete audits from zero-finding completed reviews. Dredd remains advisory
   and supports explicit file scope and chat-only reports when writes are forbidden.
