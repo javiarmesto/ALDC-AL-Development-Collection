@@ -60,7 +60,7 @@ Before writing any test code:
 - Create test codeunit(s) in the test project directory
 - Write `[Test]` procedures following Given/When/Then pattern
 - Tests MUST fail at this point (objects under test don't exist yet)
-- Use `Subtype = Test` and `[TestPermissions(TestPermissions::Disabled)]`
+- Use `Subtype = Test`. Set `TestPermissions = Disabled` on the codeunit for tests that are not about permissions (it runs them as SUPER); use `Restrictive` when the test exercises permissions
 
 ### Step 3: Verify Tests Exist
 - Check the test file was created correctly
@@ -354,7 +354,7 @@ Every test codeunit MUST follow this structure:
 codeunit <ID within test idRange> "<Prefix> <Name> Tests"
 {
     Subtype = Test;
-    TestPermissions = TestPermissions::Disabled;
+    TestPermissions = TestPermissions::Disabled;   // runs as SUPER; use Restrictive for permission tests
 
     var
         Assert: Codeunit "Library Assert";

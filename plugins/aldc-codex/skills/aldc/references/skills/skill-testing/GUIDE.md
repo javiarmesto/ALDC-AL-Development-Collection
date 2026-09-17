@@ -36,7 +36,7 @@ Every test follows GWT with explicit comments and a descriptive name:
 codeunit 50100 "Discount Calculation Tests"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    TestPermissions = Disabled;   // runs as SUPER; not a rollback setting
 
     var
         Assert: Codeunit Assert;
@@ -286,7 +286,7 @@ For testing Copilot capabilities (PromptDialog pages, AI-generated suggestions):
 codeunit 50210 "Copilot Suggestion Tests"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    TestPermissions = Disabled;   // runs as SUPER; not a rollback setting
 
     var
         Assert: Codeunit Assert;
@@ -425,7 +425,9 @@ begin
 end;
 ```
 
-**Transaction isolation**: AL test framework auto-rolls back after each `[Test]` procedure when `TestPermissions = Disabled`. No manual cleanup needed.
+**Transaction isolation**: rollback is controlled by `TransactionModel` on the test method — `AutoRollback`, the default, rolls back the method's own transaction — and by `TestIsolation` on the *test runner* codeunit, where `Function` and `Codeunit` roll back after each method or each codeunit while the default `Disabled` rolls back nothing. Only `TestIsolation` reverts what a test committed explicitly with `Commit`.
+
+**`TestPermissions` is not a rollback setting.** It selects the permission context: the default `Restrictive` starts each test at `D365 Full Access` and expects it to lower permissions, while `Disabled` skips that and runs every test as SUPER. Use `Disabled` only for tests that are not about permissions, and `Restrictive` when they are — see `skill-permissions`.
 
 ### Step 5: Validate and Report
 
@@ -442,6 +444,9 @@ end;
 - [Handler Functions](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-creating-handler-methods-in-tests)
 - [AI Test Toolkit](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-ai-test-toolkit)
 - [Library Assert](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-library-assert)
+- [TestIsolation Property](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/properties/devenv-testisolation-property)
+- [TestPermissions Property](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/properties/devenv-testpermissions-property)
+- [TransactionModel Attribute](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/attributes/devenv-transactionmodel-attribute)
 
 ## Constraints
 
