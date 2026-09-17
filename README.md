@@ -9,7 +9,7 @@
 _Engineering systems, visibly reasoned._
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-0891B2.svg?style=flat-square&labelColor=0F172A)](docs/framework/ALDC-Core-Spec-v1.2.md)
-[![Version](https://img.shields.io/badge/version-4.3.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
+[![Version](https://img.shields.io/github/v/release/javiarmesto/ALDC-AL-Development-Collection?style=flat-square&labelColor=0F172A&color=D946EF&label=version)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
