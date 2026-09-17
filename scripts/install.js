@@ -353,7 +353,13 @@ function knownInstallations(packageDir) {
   } catch { return {}; }
 }
 
+// The version of the payload being installed. A host that packages the payload
+// without its manifest -- the VS Code extension ships templates/ alone -- states
+// it instead, because an empty version in the receipt is worse than none: the
+// panel would report an installed toolkit it cannot name.
 function packageVersion(packageDir) {
+  const stated = String(process.env.ALDC_PACKAGE_VERSION || '').trim();
+  if (stated) return stated;
   try { return String(JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8')).version || ''); } catch { return ''; }
 }
 
@@ -618,6 +624,9 @@ async function validate(opts) {
     log('='.repeat(60), C.red);
     out('');
     log('Run "npx aldc install" to fix missing components.', C.cyan);
+    // A verdict nobody can act on is not a verdict: a script that runs this in
+    // CI reads the exit code, not the colour of the summary line.
+    process.exitCode = 1;
   }
   out('');
 }
