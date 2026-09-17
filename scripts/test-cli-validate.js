@@ -34,3 +34,24 @@ test('a missing component makes validate fail the build', t => {
     assert.match(result.stdout, /INVALID —/);
     assert.equal(result.status, 1, 'an invalid verdict must be readable from the exit code');
 });
+
+test('a missing file, not only a missing folder, fails the build', t => {
+    const dir = project(t);
+    // A component directory that still exists told validate nothing about what was
+    // inside it, so a deleted agent passed while the file count quietly dropped.
+    fs.unlinkSync(path.join(dir, '.github', 'agents', 'al-architect.agent.md'));
+    const result = validate(dir);
+    assert.match(result.stdout, /expected file\(s\) missing/);
+    assert.match(result.stdout, /al-architect\.agent\.md/);
+    assert.equal(result.status, 1, 'an incomplete installation must fail the build');
+});
+
+test('a seeded file the developer owns is reported without failing the build', t => {
+    const dir = project(t);
+    // memory.md is written once and then belongs to the project, so its absence is
+    // worth saying out loud and not worth failing on.
+    fs.unlinkSync(path.join(dir, '.github', 'plans', 'memory.md'));
+    const result = validate(dir);
+    assert.match(result.stdout, /seeded file\(s\) absent/);
+    assert.equal(result.status, 0);
+});

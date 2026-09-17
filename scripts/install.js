@@ -166,6 +166,70 @@ const COMPONENTS = [
   { name: 'BC Tools',    src: 'tools/bc-agents',    count: 'scaffolder + validator' },
 ];
 
+// What this package installs into this project: the single enumeration used both
+// to perform an installation and to validate one. `validate` asks the same question
+// the installer answers, so the two can never drift into disagreeing about what a
+// complete installation contains.
+function resolvePackageDir() {
+  // When run from scripts/install.js (repo), go up one level.
+  // When run from aldc-core-X.Y.Z/install.js (tgz), __dirname IS the package.
+  return process.env.ALDC_PACKAGE_DIR ||
+    (path.basename(__dirname) === 'scripts' ? path.resolve(__dirname, '..') : path.resolve(__dirname));
+}
+
+function plannedFiles({ packageDir, projectDir, targetDir, profile, transform = null }) {
+  const files = new Map();
+  const markerPath = path.join(targetDir, 'aldc-profile.json');
+    const relative = dst => path.relative(projectDir, dst).split(path.sep).join('/');
+    const known = knownInstallations(packageDir);
+    const prior = rel => Array.isArray(known[rel]) ? known[rel] : undefined;
+    const add = (src, dst, seed = false) => {
+      let content = fs.readFileSync(src);
+      if (transform) content = transform(src, content);
+      const rel = relative(dst);
+      if (files.has(rel)) throw new Error(`Duplicate installation destination: ${rel}`);
+      files.set(rel, { content, seed, prior: prior(rel) });
+    };
+    const tree = (src, dst) => {
+      if (!fs.existsSync(src)) return;
+      for (const e of fs.readdirSync(src, { withFileTypes: true })) {
+        if (['node_modules', 'package-lock.json', '.git', '.gitignore', '.npmignore'].includes(e.name)) continue;
+        if (e.isSymbolicLink()) throw new Error(`Symlink source: ${src}/${e.name}`);
+        if (e.isDirectory()) tree(path.join(src, e.name), path.join(dst, e.name));
+        else add(path.join(src, e.name), path.join(dst, e.name));
+      }
+    };
+    for (const comp of COMPONENTS) tree(path.join(packageDir, comp.src), path.join(targetDir, comp.src));
+    tree(path.join(packageDir, 'collections'), path.join(targetDir, 'collections'));
+    tree(path.join(packageDir, 'tools/bcquality'), path.join(projectDir, 'tools/bcquality'));
+    // Keep the shared YAML reader and its declared dependency location adjacent
+    // in both the toolkit target and the project-level compatibility tools.
+    tree(path.join(packageDir, 'tools/aldc-validate'), path.join(projectDir, 'tools/aldc-validate'));
+    // The multi-root workspace definition belongs to the developer: their folder list,
+    // names and settings live here. Seed it once and never replace it, not even with
+    // --force, exactly like project memory.
+    add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
+    add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
+    // The extension's "Getting Started" command opens this file from the install
+    // target, so packaging it without installing it left a command that could
+    // never succeed. The VSIX flattens it to the payload root; the repo and tgz
+    // surfaces keep it under docs/.
+    for (const candidate of ['getting-started.md', 'docs/getting-started.md']) {
+      const src = path.join(packageDir, candidate);
+      if (fs.existsSync(src)) { add(src, path.join(targetDir, 'getting-started.md')); break; }
+    }
+    const relTarget = relative(targetDir) || '.';
+    const solution = detectSolution(projectDir);
+    files.set('aldc.yaml', { prior: prior('aldc.yaml'), content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
+      .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`)
+      .replace(/^(\s{4}application:)\s*""/m, `$1 ${JSON.stringify(solution.application)}`)
+      .replace(/^(\s{4}test:)\s*""/m, `$1 ${JSON.stringify(solution.test)}`) });
+    // The developer's multi-root definition: written when absent, never replaced.
+    files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, '../bcquality'), seed: true, prior: prior('aldc.code-workspace') });
+    files.set(relative(markerPath), { prior: prior(relative(markerPath)), content: JSON.stringify({ profile, surface: 'copilot-chat-vscode', version: packageVersion(packageDir) }, null, 2) + '\n' });
+  return files;
+}
+
 // ─── INSTALL command ───────────────────────────────────────────────────────
 async function install(opts) {
   // When run from scripts/install.js (repo), go up one level.
@@ -247,54 +311,9 @@ async function install(opts) {
 
   // Build every destination in memory before the first project write.
   const { apply } = require('./install-transaction');
-  const files = new Map();
+  const files = plannedFiles({ packageDir, projectDir, targetDir, profile, transform });
   const relative = dst => path.relative(projectDir, dst).split(path.sep).join('/');
-  const known = knownInstallations(packageDir);
-  const prior = rel => Array.isArray(known[rel]) ? known[rel] : undefined;
-  const add = (src, dst, seed = false) => {
-    let content = fs.readFileSync(src);
-    if (transform) content = transform(src, content);
-    const rel = relative(dst);
-    if (files.has(rel)) throw new Error(`Duplicate installation destination: ${rel}`);
-    files.set(rel, { content, seed, prior: prior(rel) });
-  };
-  const tree = (src, dst) => {
-    if (!fs.existsSync(src)) return;
-    for (const e of fs.readdirSync(src, { withFileTypes: true })) {
-      if (['node_modules', 'package-lock.json', '.git', '.gitignore', '.npmignore'].includes(e.name)) continue;
-      if (e.isSymbolicLink()) throw new Error(`Symlink source: ${src}/${e.name}`);
-      if (e.isDirectory()) tree(path.join(src, e.name), path.join(dst, e.name));
-      else add(path.join(src, e.name), path.join(dst, e.name));
-    }
-  };
-  for (const comp of COMPONENTS) tree(path.join(packageDir, comp.src), path.join(targetDir, comp.src));
-  tree(path.join(packageDir, 'collections'), path.join(targetDir, 'collections'));
-  tree(path.join(packageDir, 'tools/bcquality'), path.join(projectDir, 'tools/bcquality'));
-  // Keep the shared YAML reader and its declared dependency location adjacent
-  // in both the toolkit target and the project-level compatibility tools.
-  tree(path.join(packageDir, 'tools/aldc-validate'), path.join(projectDir, 'tools/aldc-validate'));
-  // The multi-root workspace definition belongs to the developer: their folder list,
-  // names and settings live here. Seed it once and never replace it, not even with
-  // --force, exactly like project memory.
-  add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
-  add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
-  // The extension's "Getting Started" command opens this file from the install
-  // target, so packaging it without installing it left a command that could
-  // never succeed. The VSIX flattens it to the payload root; the repo and tgz
-  // surfaces keep it under docs/.
-  for (const candidate of ['getting-started.md', 'docs/getting-started.md']) {
-    const src = path.join(packageDir, candidate);
-    if (fs.existsSync(src)) { add(src, path.join(targetDir, 'getting-started.md')); break; }
-  }
   const relTarget = relative(targetDir) || '.';
-  const solution = detectSolution(projectDir);
-  files.set('aldc.yaml', { prior: prior('aldc.yaml'), content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
-    .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`)
-    .replace(/^(\s{4}application:)\s*""/m, `$1 ${JSON.stringify(solution.application)}`)
-    .replace(/^(\s{4}test:)\s*""/m, `$1 ${JSON.stringify(solution.test)}`) });
-  // The developer's multi-root definition: written when absent, never replaced.
-  files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, '../bcquality'), seed: true, prior: prior('aldc.code-workspace') });
-  files.set(relative(markerPath), { prior: prior(relative(markerPath)), content: JSON.stringify({ profile, surface: 'copilot-chat-vscode', version: packageVersion(packageDir) }, null, 2) + '\n' });
   const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
   for (const file of result.files) if (file.action !== 'unchanged') log(`  ${file.action}: ${file.path}`);
   const summary = {};
@@ -583,6 +602,48 @@ async function validate(opts) {
     } else {
       err(`${comp.src}/ — MISSING`);
       errors++;
+    }
+  }
+
+  // A directory that exists says nothing about what is inside it, which is how a
+  // deleted agent passed as VALID while the count quietly dropped by one. Ask the
+  // installer what a complete installation contains and compare file by file. The
+  // profile comes from the receipt, because a bc29-native installation projects a
+  // different set from a bc28 one.
+  const marker = readProfileMarker(path.join(targetDir, 'aldc-profile.json'));
+  let planned = null;
+  try {
+    planned = plannedFiles({ packageDir: resolvePackageDir(), projectDir, targetDir,
+      profile: marker.profile || 'bc28' });
+  } catch (error) {
+    log(`  ! expected file list unavailable (${error.message}) — presence not compared`, C.yellow);
+    warnings++;
+  }
+  if (planned) {
+    if (!marker.profile) {
+      log('  ! no installed profile recorded; comparing against the default profile', C.yellow);
+      warnings++;
+    }
+    const absent = [], absentSeeds = [];
+    for (const [rel, entry] of planned) {
+      if (fs.existsSync(path.join(projectDir, rel))) continue;
+      (entry.seed ? absentSeeds : absent).push(rel);
+    }
+    const list = names => names.slice(0, 10).map(n => `      ${n}`).join('\n') +
+      (names.length > 10 ? `\n      … and ${names.length - 10} more` : '');
+    if (absent.length) {
+      err(`${absent.length} expected file(s) missing:`);
+      out(list(absent));
+      errors += absent.length;
+    } else {
+      ok(`every expected file is present (${planned.size - absentSeeds.length} checked)`);
+    }
+    // Seeds are written once and then belong to the developer, so their absence is
+    // reported without failing the build.
+    if (absentSeeds.length) {
+      log(`  ! ${absentSeeds.length} seeded file(s) absent (created at install, never replaced):`, C.yellow);
+      out(list(absentSeeds));
+      warnings += absentSeeds.length;
     }
   }
 
