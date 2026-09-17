@@ -8,7 +8,7 @@ description: "AL Error handling patterns, debugging techniques, and troubleshoot
 Hard error handling rules for codeunits. Depth, patterns and examples in `skill-debug` and related skills.
 
 1. **TryFunction mandatory** when the operation can fail due to external causes (HTTP services, parsing, calls to another app). Retrieve the text with `GetLastErrorText()`.
-2. **TryFunction is not a rollback mechanism.** Database changes made inside a try method are **not** rolled back, so keep write transactions out of it — on-premises the server rejects them by default. When an operation must be all-or-nothing, let the error propagate: an uncaught error aborts and rolls back the write transaction, and catching it is what prevents that.
+2. **TryFunction is not a rollback mechanism.** Database changes made inside a try method are **not** rolled back on any deployment, so keep write transactions out of it. Only the enforcement differs: on-premises the server rejects a write inside a try method by default (`DisableWriteInsideTryFunctions`), while **online nothing stops you** and the partial writes simply stay — the rule matters more there, not less. When an operation must be all-or-nothing, let the error propagate: an uncaught error aborts and rolls back the write transaction, and catching it is what prevents that.
 3. **Every error/warning/user message string goes in a `Label`** with `Comment` for translators. No inline `Error('...')` or `Message('...')` literals.
 4. **Technical labels** (telemetry, keys, non-translatable identifiers): `Locked = true`.
 5. **Custom telemetry** (`Session.LogMessage`) **only if the user explicitly requests it**. Do not add it on your own initiative.

@@ -12,7 +12,7 @@ Robust error handling and effective troubleshooting practices are essential for 
 ### Intent
 Implement proper error handling using TryFunctions to manage exceptions gracefully and provide meaningful user feedback. Use TryFunctions when an operation can fail for external reasons — calls to external services, parsing, calls to another app — retrieve the text with `GetLastErrorText()`, provide meaningful error messages to users, and log errors appropriately for debugging purposes.
 
-**A TryFunction is not a rollback mechanism.** Database changes made inside a try method are **not** rolled back, so keep write transactions out of it; on-premises the server rejects them by default. When an operation must be all-or-nothing, let the error propagate: an uncaught error aborts and rolls back the write transaction, and catching it is what prevents that. See [Handling errors using try methods](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-handling-errors-using-try-methods).
+**A TryFunction is not a rollback mechanism.** Database changes made inside a try method are **not** rolled back on any deployment, so keep write transactions out of it. Only the enforcement differs: on-premises the server rejects a write inside a try method by default (`DisableWriteInsideTryFunctions`), while **online nothing stops you** and the partial writes simply stay — the rule matters more there, not less. When an operation must be all-or-nothing, let the error propagate: an uncaught error aborts and rolls back the write transaction, and catching it is what prevents that. See [Handling errors using try methods](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-handling-errors-using-try-methods).
 
 ### Examples
 
