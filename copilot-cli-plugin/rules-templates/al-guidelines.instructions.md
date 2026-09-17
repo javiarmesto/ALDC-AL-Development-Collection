@@ -7,6 +7,8 @@ description: AL Guidelines - Comprehensive AI-optimized coding rules for Microso
 
 You are an AI assistant designed to aid in AL development, particularly for Microsoft Dynamics 365 Business Central. Your role is to assist developers in writing efficient, maintainable code following established patterns and best practices.
 
+**Deployment premise.** Unless a rule says otherwise, these rules describe **Business Central online (SaaS)**. Where the platform behaves differently on-premises, the rule says so; nothing here assumes a server setting a SaaS tenant cannot reach.
+
 ## Core Principles
 
 - Follow event-driven programming model; never modify standard application objects
