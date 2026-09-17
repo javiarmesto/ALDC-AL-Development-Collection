@@ -90,7 +90,9 @@ def discover_projects(root):
             continue
         manifest = base / "app.json"
         relative = manifest.relative_to(root).as_posix()
-        parts = [p.casefold() for p in base.relative_to(root).parts]
+        # Scanning the test folder itself leaves no segment to classify by, so the
+        # scanned folder's own name answers for a manifest sitting at the root.
+        parts = [p.casefold() for p in base.relative_to(root).parts] or [root.name.casefold()]
         role = "test" if any(is_test_folder(p) for p in parts) else "app"
         if relative not in seen and role not in explicit:
             projects.append({"role": role, "manifest": relative, "source": "workspace-discovery"})
@@ -294,6 +296,11 @@ def diagnose(workspace, host="chat", toolkit=None, runtime=None, operations=None
         if not layout["configured"] and toolkit == root and not marker.exists():
             marker = root / ".github/aldc-profile.json"
         paths.append(str(marker.relative_to(root)) if marker.is_relative_to(root) else str(marker))
+        # A solution keeps its host configuration inside each project folder, so a report
+        # from the solution root has to read those too. Reading only the root's .vscode
+        # describes a folder, not the solution the projects belong to.
+        for folder in sorted({m.rsplit("/", 1)[0] for m in (p["manifest"] for p in projects) if "/" in m}):
+            paths.extend(f"{folder}/.vscode/{name}" for name in ("settings.json", "tasks.json", "launch.json", "mcp.json"))
     profile = None
     for rel in paths:
         p = root / rel

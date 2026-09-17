@@ -169,6 +169,36 @@ class DoctorTest(unittest.TestCase):
                          [("app", "MiExtension/app.json"), ("test", "MiExtension.Test/app.json")])
         self.assertEqual(self.report()["operations"]["compile-test"]["status"], "unobserved")
 
+    def test_scanning_the_test_folder_itself_still_knows_it_is_the_test_project(self):
+        """From inside test/ no path segment says "test"; the folder's own name does."""
+        self.app("app.json")
+        with tempfile.TemporaryDirectory(suffix=".Test") as suite:
+            Path(suite, "app.json").write_text(json.dumps({"application": "28.0.0.0", "runtime": "17.0"}))
+            report = doctor.diagnose(Path(suite))
+            self.assertEqual([(p["role"], p["manifest"]) for p in report["projects"]], [("test", "app.json")])
+            self.assertEqual(report["operations"]["compile-test"]["status"], "unobserved")
+            # A folder holding only the suite has no App project, which is reported as
+            # the configuration problem it is; before this it claimed an App and no Test.
+            self.assertEqual(report["operations"]["compile-app"]["status"], "configuration-blocked")
+            self.assertIn("no App app.json found", report["operations"]["compile-app"]["problems"][0])
+
+    def test_host_configuration_of_each_project_folder_is_inspected(self):
+        """The solution keeps .vscode inside app/ and test/, not at its root."""
+        self.app("app/app.json")
+        self.app("test/app.json")
+        self.put("app/.vscode/mcp.json", {"servers": {}})
+        self.put("app/.vscode/tasks.json", {"tasks": []})
+        self.put("test/.vscode/launch.json", {"configurations": []})
+        config = self.report()["configuration"]
+        for rel in ("app/.vscode/mcp.json", "app/.vscode/tasks.json", "test/.vscode/launch.json"):
+            self.assertIn(rel, config, f"{rel} belongs to the solution")
+        # A broken one is reported against the operations it affects, wherever it lives.
+        self.put("test/.vscode/launch.json", "{broken")
+        report = self.report()
+        self.assertEqual([e["path"] for e in report["configuration_errors"]], ["test/.vscode/launch.json"])
+        self.assertEqual(report["operations"]["execute-tests"]["status"], "configuration-blocked")
+        self.assertEqual(report["operations"]["compile-app"]["status"], "unobserved")
+
     def test_al_go_invalid_types_conflicts_and_escape_are_errors(self):
         self.app("App/app.json")
         for config in ({"appFolders": "App"}, {"appFolders": False}, {"appFolders": ["../outside"]},
