@@ -14,9 +14,11 @@ manual patch.
 Exactly four things:
 
 1. **Frontmatter.** The host schema, plus the permission surface frozen in the
-   generator's `AGENTS` table (`tools`, `model`, `color`, `maxTurns`). Those are
-   Claude Code host facts and are not derivable from a contract that declares
-   Copilot tool identifiers and a Copilot model name.
+   generator's `AGENTS` table (`tools`, `model`, `color`). Those are Claude Code
+   host facts and are not derivable from a contract that declares Copilot tool
+   identifiers and a Copilot model name. No `maxTurns`: a turn cap is a budget,
+   not a contract, and a role that stops mid-gate because it ran out of turns is
+   worse than one that runs long.
 2. **Paths.** The Copilot deployment layout rewritten to the plugin layout
    (`${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_PROJECT_DIR}`, `plans.root`).
 3. **Tool vocabulary.** Copilot surfaces named as their Claude Code equivalent.
@@ -130,3 +132,7 @@ npm test
 `claude-plugin/`, so they move with it. Both strip the Claude Code adapter
 preamble — a table mapping Copilot surfaces onto themselves would be circular —
 and restate the terminal-host contract in their own host's terms.
+
+Codex has no `handoffs:` either, so it loses the same human gate for the same
+reason, and its own host preface carries it. Copilot CLI does not need it: a
+handoff there is still the button the host draws.

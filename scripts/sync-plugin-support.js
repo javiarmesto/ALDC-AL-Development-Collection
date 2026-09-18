@@ -11,7 +11,7 @@
  *
  * The adapter may change exactly four things:
  *   1. frontmatter — the host schema, plus the permission surface frozen in
- *      AGENTS below (tools/model/color/maxTurns are host facts, not canonical);
+ *      AGENTS below (tools/model/color are host facts, not canonical);
  *   2. paths — the Copilot deployment layout rewritten to the plugin layout;
  *   3. tool vocabulary — Copilot surfaces named as their Claude Code equivalent;
  *   4. the binding Copilot -> Claude Code mapping preamble.
@@ -46,11 +46,16 @@ const DEST = 'claude-plugin';
 /**
  * Every ALDC agent, with the host permission surface the plugin declares.
  *
- * `tools`, `model`, `color` and `maxTurns` are NOT derivable from the canonical
- * contract: the canonical declares Copilot tool identifiers and a Copilot model
- * name. These values are the Claude Code host surface, frozen from the plugin
- * files they were maintained in, and they are the plugin's own permission
- * boundary — never widen one to make a body compile.
+ * `tools`, `model` and `color` are NOT derivable from the canonical contract:
+ * the canonical declares Copilot tool identifiers and a Copilot model name.
+ * These values are the Claude Code host surface, frozen from the plugin files
+ * they were maintained in, and they are the plugin's own permission boundary —
+ * never widen one to make a body compile.
+ *
+ * No `maxTurns`: a turn cap is a budget, not a contract, and the hand-written
+ * plugin's caps (50 for a role, 30 for a subagent) were never canonical. A
+ * contract that stops mid-gate because it ran out of turns is worse than one
+ * that runs long, so the plugin declares none.
  *
  * `mode` selects the adapter preamble: `main` roles run in the main session and
  * own the human gates; `subagent` roles are launched stateless by the Conductor.
@@ -60,17 +65,17 @@ const READ_ONLY = `Read, Glob, Grep, ${MCP_ALL}`;
 const FULL = `Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch, ${MCP_ALL}`;
 
 const AGENTS = [
-  { id: 'al-agent-builder', mode: 'main', model: 'sonnet', color: 'cyan', maxTurns: 50, tools: `Read, Glob, Grep, Write, Edit, Bash, Task, ${MCP_ALL}` },
-  { id: 'al-architect', mode: 'main', model: 'sonnet', color: 'blue', maxTurns: 50, tools: FULL },
-  { id: 'al-conductor', mode: 'main', model: 'haiku', color: 'purple', maxTurns: 50, tools: 'Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch' },
-  { id: 'al-developer', mode: 'main', model: 'sonnet', color: 'green', maxTurns: 50, tools: FULL },
+  { id: 'al-agent-builder', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, Write, Edit, Bash, Task, ${MCP_ALL}` },
+  { id: 'al-architect', mode: 'main', model: 'sonnet', color: 'blue', tools: FULL },
+  { id: 'al-conductor', mode: 'main', model: 'haiku', color: 'purple', tools: 'Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch' },
+  { id: 'al-developer', mode: 'main', model: 'sonnet', color: 'green', tools: FULL },
   { id: 'al-developer-reviewer', mode: 'main', model: 'sonnet', color: 'yellow', tools: READ_ONLY },
-  { id: 'al-implement-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', maxTurns: 30, tools: `Read, Glob, Grep, Write, Edit, Bash, Task, ${MCP_ALL}` },
-  { id: 'al-planning-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', maxTurns: 30, tools: FULL },
-  { id: 'al-presales', mode: 'main', model: 'sonnet', color: 'red', maxTurns: 50, tools: FULL },
+  { id: 'al-implement-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `Read, Glob, Grep, Write, Edit, Bash, Task, ${MCP_ALL}` },
+  { id: 'al-planning-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: FULL },
+  { id: 'al-presales', mode: 'main', model: 'sonnet', color: 'red', tools: FULL },
   { id: 'al-review-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: READ_ONLY },
   { id: 'al-spec-agent', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, ${MCP_ALL}` },
-  { id: 'al-triage', mode: 'main', model: 'sonnet', color: 'orange', maxTurns: 50, tools: `Read, Glob, Grep, Bash, Write, Task, ${MCP_ALL}` },
+  { id: 'al-triage', mode: 'main', model: 'sonnet', color: 'orange', tools: `Read, Glob, Grep, Bash, Write, Task, ${MCP_ALL}` },
   { id: 'dredd', mode: 'auditor', model: 'sonnet', color: 'yellow', tools: `${READ_ONLY}, Write` },
 ];
 
@@ -299,7 +304,6 @@ function buildAgent(agent, ctx, plansRoot) {
     model: agent.model,
     color: agent.color,
   };
-  if (agent.maxTurns) fm.maxTurns = agent.maxTurns;
   ctx.put(`agents/${agent.id}.md`,
     `---\n${yaml.dump(fm, { lineWidth: -1 })}---\n\n${adapterPreamble(agent, sourceRel, hash, plansRoot)}\n${rewritePaths(body, plansRoot)}`);
 }
