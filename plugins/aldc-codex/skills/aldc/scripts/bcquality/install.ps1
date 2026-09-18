@@ -56,6 +56,25 @@ function Say  ($m) { Write-Host "==> $m" -ForegroundColor Cyan }
 function Warn ($m) { Write-Host "[!] $m"  -ForegroundColor Yellow }
 function Die  ($m) { Write-Host "[x] $m"  -ForegroundColor Red; exit 1 }
 
+function Normalize-GitUrl ($u) { ("$u".Trim() -replace '\.git$', '').TrimEnd('/').ToLowerInvariant() }
+
+# `ref` promises the clone tracks a branch, and fetching alone never delivered it:
+# `checkout main` while already on main is a no-op, so a clone created once stayed at
+# that commit forever while origin/main moved on. Fast-forward only, so a branch that
+# carries local work is reported rather than rewritten, and a pin (detached HEAD) has
+# nothing to track and is left exactly where the checkout put it.
+function Advance-Branch ($repo) {
+    $branch = git -C $repo symbolic-ref --quiet --short HEAD 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $branch) { return }
+    $branch = "$branch".Trim()
+    $upstream = git -C $repo rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $upstream) { Warn "Branch '$branch' tracks no upstream; leaving it at its current commit."; return }
+    $upstream = "$upstream".Trim()
+    git -C $repo merge --ff-only $upstream 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) { Warn "'$branch' has diverged from $upstream; leaving it untouched. Reconcile it yourself, or set pinnedCommit for a reproducible checkout." }
+    else { Say "Tracking '$branch': fast-forwarded to $upstream" }
+}
+
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Die 'git is required but was not found on PATH.'
 }
@@ -71,9 +90,17 @@ if (-not ($BcqualityHome -match '^([A-Za-z]:[\\/]|/|\.\.[\\/])')) {
 
 if (Test-Path (Join-Path $BcqualityHome '.git')) {
     Say "$BcqualityHome exists; fetching and checking out $Target"
+    # The configured source and the clone's own remote can disagree, because aldc.yaml
+    # may have been repointed long after this folder was created. Say so instead of
+    # quietly fetching from somewhere else; repointing a developer's remote is not ours.
+    $originUrl = git -C $BcqualityHome remote get-url origin 2>$null
+    if ($LASTEXITCODE -eq 0 -and $originUrl -and (Normalize-GitUrl $originUrl) -ne (Normalize-GitUrl $BcqualityUrl)) {
+        Warn "This clone's origin is '$("$originUrl".Trim())', not the configured '$BcqualityUrl'. Fetching from the clone's own remote; repoint it or remove the folder to clone the configured source."
+    }
     git -C $BcqualityHome fetch origin --tags --prune
     git -C $BcqualityHome checkout --quiet $Target
     if ($LASTEXITCODE -ne 0) { Die "Could not checkout '$Target' inside $BcqualityHome." }
+    Advance-Branch $BcqualityHome
 }
 else {
     Say "Cloning BCQuality ($BcqualityUrl) into $BcqualityHome (outside the AL project)"

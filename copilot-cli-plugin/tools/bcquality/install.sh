@@ -46,6 +46,28 @@ say()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[!]\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[1;31m[x]\033[0m %s\n' "$*" >&2; exit 1; }
 
+normalize_url() { printf '%s' "$1" | sed -e 's/[[:space:]]*$//' -e 's/\.git$//' -e 's#/*$##' | tr '[:upper:]' '[:lower:]'; }
+
+# `ref` promises the clone tracks a branch, and fetching alone never delivered it:
+# `checkout main` while already on main is a no-op, so a clone created once stayed at that
+# commit forever while origin/main moved on. Fast-forward only, so a branch carrying local
+# work is reported rather than rewritten, and a pin (detached HEAD) has nothing to track.
+advance_branch() {
+  ab_repo="$1"
+  ab_branch="$(git -C "$ab_repo" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  [ -n "$ab_branch" ] || return 0
+  ab_upstream="$(git -C "$ab_repo" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+  if [ -z "$ab_upstream" ]; then
+    warn "Branch '$ab_branch' tracks no upstream; leaving it at its current commit."
+    return 0
+  fi
+  if git -C "$ab_repo" merge --ff-only "$ab_upstream" >/dev/null 2>&1; then
+    say "Tracking '$ab_branch': fast-forwarded to $ab_upstream"
+  else
+    warn "'$ab_branch' has diverged from $ab_upstream; leaving it untouched. Reconcile it yourself, or set pinnedCommit for a reproducible checkout."
+  fi
+}
+
 command -v git >/dev/null 2>&1 || die "git is required but was not found on PATH."
 
 # --- Sanity: does this look like the root of an ALDC workspace? ---
@@ -63,9 +85,17 @@ esac
 if [ -d "$BCQUALITY_HOME/.git" ]; then
   # --- Already cloned -> fetch + check out TARGET ---
   say "$BCQUALITY_HOME exists; fetching and checking out $TARGET"
+  # The configured source and the clone's own remote can disagree, because aldc.yaml may
+  # have been repointed long after this folder was created. Say so instead of quietly
+  # fetching from somewhere else; repointing a developer's remote is not ours to do.
+  ORIGIN_URL="$(git -C "$BCQUALITY_HOME" remote get-url origin 2>/dev/null || true)"
+  if [ -n "$ORIGIN_URL" ] && [ "$(normalize_url "$ORIGIN_URL")" != "$(normalize_url "$BCQUALITY_URL")" ]; then
+    warn "This clone's origin is '$ORIGIN_URL', not the configured '$BCQUALITY_URL'. Fetching from the clone's own remote; repoint it or remove the folder to clone the configured source."
+  fi
   git -C "$BCQUALITY_HOME" fetch origin --tags --prune
   git -C "$BCQUALITY_HOME" checkout --quiet "$TARGET" \
     || die "Could not checkout '$TARGET' inside $BCQUALITY_HOME."
+  advance_branch "$BCQUALITY_HOME"
 else
   # --- Fresh clone + check out TARGET (a plain clone, NOT a submodule of this repo) ---
   say "Cloning BCQuality ($BCQUALITY_URL) into $BCQUALITY_HOME (outside the AL project)"

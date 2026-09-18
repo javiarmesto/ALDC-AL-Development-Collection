@@ -148,6 +148,66 @@ try {
         {id:'agent:multi-turn',domain:'Agents',severity:'minor',confidence:'medium'}]},
     ]}));
   assert.match(run('python3',[path.join(root,'tools/bcquality/validate_evidence.py'),'--bcquality-root',path.join(temp,'corpus')]),/citation resolution CHECKED/);
+  // --- `ref` has to actually track its branch ------------------------------
+  // The promise of `ref` is that the clone follows it. Fetching alone never delivered
+  // that: `checkout main` while already on main is a no-op, so a clone created once sat
+  // at that commit while origin/main moved on. A real remote, no network.
+  const bare = path.join(temp, 'corpus.git');
+  const seed = path.join(temp, 'seed');
+  const clone = path.join(temp, 'corpus-clone');
+  const proj = path.join(temp, 'tracking-project');
+  const git = (cwd, ...args) => {
+    const r = spawnSync('git', args, { cwd, encoding: 'utf8' });
+    if (r.status !== 0) throw new Error('git ' + args.join(' ') + ': ' + r.stderr);
+    return r.stdout.trim();
+  };
+  fs.mkdirSync(proj, { recursive: true });
+  fs.mkdirSync(path.join(seed, 'skills'), { recursive: true });
+  spawnSync('git', ['init', '--bare', '--initial-branch=main', bare], { encoding: 'utf8' });
+  fs.writeFileSync(path.join(seed, 'skills', 'entry.md'), 'v1\n');
+  git(seed, 'init', '--quiet', '--initial-branch=main');
+  git(seed, 'config', 'user.email', 'fixture@example.invalid');
+  git(seed, 'config', 'user.name', 'fixture');
+  git(seed, 'remote', 'add', 'origin', bare);
+  git(seed, 'add', '-A'); git(seed, 'commit', '--quiet', '-m', 'v1'); git(seed, 'push', '--quiet', 'origin', 'main');
+
+  const yamlFor = url => `external:\n  bcquality:\n    mode: "external-multiroot"\n    enabled: "auto"\n    url: "${url}"\n    ref: "main"\n    pinnedCommit: ""\n    home: "../corpus-clone"\n`;
+  fs.writeFileSync(path.join(proj, 'aldc.yaml'), yamlFor(bare));
+  const runInstall = () => {
+    const r = spawnSync('bash', [path.join(root, 'tools/bcquality/install.sh')],
+      { cwd: proj, encoding: 'utf8', env: { ...process.env, BCQUALITY_HOME: clone } });
+    if (r.status !== 0) throw new Error('installer failed: ' + r.stdout + r.stderr);
+    checks++;
+    return r.stdout + r.stderr;
+  };
+  runInstall();
+  assert.equal(fs.readFileSync(path.join(clone, 'skills/entry.md'), 'utf8'), 'v1\n');
+
+  fs.writeFileSync(path.join(seed, 'skills', 'entry.md'), 'v2\n');
+  git(seed, 'add', '-A'); git(seed, 'commit', '--quiet', '-m', 'v2'); git(seed, 'push', '--quiet', 'origin', 'main');
+  const tracked = runInstall();
+  assert.equal(fs.readFileSync(path.join(clone, 'skills/entry.md'), 'utf8'), 'v2\n',
+    'a configured ref must actually track its branch, not freeze at the first clone');
+  assert.match(tracked, /fast-forwarded/);
+
+  // Local work is reported, never rewritten: a diverged branch keeps its commit.
+  fs.writeFileSync(path.join(clone, 'skills', 'entry.md'), 'local\n');
+  git(clone, 'config', 'user.email', 'fixture@example.invalid');
+  git(clone, 'config', 'user.name', 'fixture');
+  git(clone, 'add', '-A'); git(clone, 'commit', '--quiet', '-m', 'local work');
+  fs.writeFileSync(path.join(seed, 'skills', 'entry.md'), 'v3\n');
+  git(seed, 'add', '-A'); git(seed, 'commit', '--quiet', '-m', 'v3'); git(seed, 'push', '--quiet', 'origin', 'main');
+  const diverged = runInstall();
+  assert.match(diverged, /diverged/);
+  assert.equal(fs.readFileSync(path.join(clone, 'skills/entry.md'), 'utf8'), 'local\n', 'local work survives');
+
+  // A clone whose origin is not the configured source is reported, never repointed.
+  fs.writeFileSync(path.join(proj, 'aldc.yaml'), yamlFor(bare + '-elsewhere'));
+  const mismatched = runInstall();
+  assert.match(mismatched, /origin is/);
+  assert.match(mismatched, /not the configured/);
+  assert.equal(git(clone, 'remote', 'get-url', 'origin'), bare, 'the developer’s remote is left alone');
+
   // aldc.yaml is not only this project's configuration: the installer writes it into
   // every consumer project, from the VSIX templates and from the npm package alike. A
   // fork or a pin committed here silently becomes everyone's provider by default, which
