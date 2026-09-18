@@ -7,7 +7,10 @@ Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
 new discoverable skills must still be created with SKILL.md.
 
-Use only tools actually exposed by this session. Model, reasoning and approval
+Read the terminal-host contract at
+`.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
+before choosing AL tools, changing dependencies or reporting BC29 / AL18
+validation. Use only tools actually exposed by this session. Model, reasoning and approval
 settings inherit from the parent; this profile grants no extra tools. Its
 `sandbox_mode` is derived from the write scope the canonical contract grants this
 role, and the session's own permission profile is reapplied over it, so that key

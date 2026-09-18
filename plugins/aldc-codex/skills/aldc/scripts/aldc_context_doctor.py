@@ -123,8 +123,10 @@ def inspect_layout(root, host):
     layouts = {
         "chat": [("agents/al-architect.agent.md", "prompts/al-spec.create.prompt.md"),
                  (".github/agents/al-architect.agent.md", ".github/prompts/al-spec.create.prompt.md")],
-        "claude": [("agents/al-architect.md", "commands/al-spec-create.md"),
-                   (".claude/agents/al-architect.md", ".claude/commands/al-spec-create.md")],
+        # Claude Code workflows are skills, not commands: a slash command there would
+        # be model-invocable, and a workflow is explicit. commands/ no longer exists.
+        "claude": [("agents/al-architect.md", "skills/al-spec-create/SKILL.md"),
+                   (".claude/agents/al-architect.md", ".claude/skills/al-spec-create/SKILL.md")],
         "cli": [("agents/al-architect.agent.md", "commands/al-spec-create.md")],
         "codex": [("skills/aldc/references/agents/al-architect.md", "skills/aldc/references/commands/al-spec-create.md"),
                   (".agents/skills/aldc/references/agents/al-architect.md", ".agents/skills/aldc/references/commands/al-spec-create.md")],

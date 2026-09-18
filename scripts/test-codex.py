@@ -39,12 +39,14 @@ for path in roles:
     names.add(data['name'])
     body = (root / f"skills/aldc/references/agents/{path.stem}.md").read_text()
     assert data['developer_instructions'].endswith(body), path
-    assert '../skills/skill-migrate/references/cli-al-tools.md' in body, path
+    # Every surface points at the terminal-host contract it ships, at its own path;
+    # the relative form this used to assert was retired when paths became rooted.
+    assert '.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md' in body, path
 contribution = (root / 'skills/aldc/references/skills/skill-contribution-assistant/GUIDE.md').read_text()
 assert 'skills/<skill-name>/SKILL.md' in contribution
 assert 'Step 3: Author SKILL.md' in contribution
 spec = (root / 'skills/aldc/references/commands/al-spec-create.md').read_text()
-assert '../agents/al-spec-agent.md' in spec
+assert '.agents/skills/aldc/references/agents/al-spec-agent.md' in spec
 assert (root / 'skills/aldc/references/agents/al-spec-agent.md').is_file()
 for file in ['agent-simple-instructions.txt', 'agent-advanced-instructions.txt']:
     assert (root / 'skills/aldc/references/skills/skill-agent-instructions/examples' / file).is_file()

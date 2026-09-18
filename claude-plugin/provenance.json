@@ -103,7 +103,7 @@
     "tools/claude-hooks/hooks.json": "75262d29677e687948954f34c66dc1d4df1f30f1282aec127e0ea4fe6e3213c8",
     "tools/claude-hooks/session-context.js": "5067af0d821b89d2a21418c27b9f28429e65d60e6cc3c59e6fb27021916d88c8",
     "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
-    "tools/context-doctor/aldc_context_doctor.py": "e9c71861fb2e647d1c8fb0c0773ce87446f23c5fa92a9129f2e090e559c37b4d"
+    "tools/context-doctor/aldc_context_doctor.py": "8792be3dd86d3716c5fe08afc6477e21bed90f4855828046f1b11e5915660d5a"
   },
   "outputs": {
     ".claude-plugin/marketplace.json": "83a66ea8b0641cbbc909b78fb8ae14d78a15683c3f7abf362e0203820d39b6af",
@@ -220,6 +220,6 @@
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "10c02f21042b30b8ad7b24a6f38005e64baadcd1a1020472768dc7f7dddaaff7",
     "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
-    "tools/context-doctor/aldc_context_doctor.py": "e9c71861fb2e647d1c8fb0c0773ce87446f23c5fa92a9129f2e090e559c37b4d"
+    "tools/context-doctor/aldc_context_doctor.py": "8792be3dd86d3716c5fe08afc6477e21bed90f4855828046f1b11e5915660d5a"
   }
 }
