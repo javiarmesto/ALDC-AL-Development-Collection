@@ -943,8 +943,20 @@ switch (opts.command) {
     testLocal().catch((e) => { err(e.message); process.exit(1); });
     break;
   case 'install':
-  default:
+  default: {
+    // A bare `npx aldc` installs, which is the documented shorthand. A MISTYPED
+    // command used to install too, because this default case was the installer:
+    // `npx aldc bcq-idnex` would start writing files into the project. A typo is
+    // not consent to write anything.
+    const known = ['install', 'status', 'verify-install', 'rollback', 'solution', 'validate', 'bcq-index', 'test-local', 'help'];
+    if (opts.command !== null && opts.command !== 'install') {
+      fail(opts.command, Object.assign(
+        new Error(`Unknown command "${opts.command}". Known commands: ${known.join(', ')}. Run "npx aldc --help".`),
+        { code: 'unknown-command' }));
+      break;
+    }
     install(opts).then(result => { if (JSON_MODE) emit(result); })
       .catch((e) => { fail('install', e); if (!JSON_MODE) process.exit(1); });
     break;
+  }
 }

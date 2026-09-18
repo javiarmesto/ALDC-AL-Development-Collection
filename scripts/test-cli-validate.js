@@ -55,3 +55,25 @@ test('a seeded file the developer owns is reported without failing the build', t
     assert.match(result.stdout, /seeded file\(s\) absent/);
     assert.equal(result.status, 0);
 });
+
+test('a mistyped command is refused instead of installing', t => {
+    // The switch default used to be the installer, so `bcq-idnex` wrote a whole
+    // toolkit into the project. Nothing may be created before the name is known.
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ALDC typo '));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }));
+    const result = spawnSync(process.execPath, [CLI, 'bcq-idnex', '--yes'], { cwd: dir, encoding: 'utf8' });
+    assert.equal(result.status, 1);
+    assert.match(result.stdout + result.stderr, /Unknown command "bcq-idnex"/);
+    assert.deepEqual(fs.readdirSync(dir), [], 'a typo wrote nothing into the project');
+});
+
+test('a bare invocation still installs, and every named command is reachable', t => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ALDC commands '));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }));
+    // `status` answers on an empty folder, which is enough to prove the case is wired.
+    const status = spawnSync(process.execPath, [CLI, 'status', '--json'], { cwd: dir, encoding: 'utf8' });
+    assert.equal(JSON.parse(status.stdout).command, 'status');
+    // And the shorthand is untouched: no command at all is an install, not a refusal.
+    execFileSync(process.execPath, [CLI, '--profile', 'bc28', '--yes'], { cwd: dir, stdio: 'ignore' });
+    assert.ok(fs.existsSync(path.join(dir, '.github', 'agents')), 'the bare form installed');
+});
