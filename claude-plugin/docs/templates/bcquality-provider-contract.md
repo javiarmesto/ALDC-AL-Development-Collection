@@ -22,13 +22,13 @@ code defect. ALDC's hard rules, extensions-only boundary and human gates remain.
 ## Plugin identity and invocation
 
 `plugin.id` defaults to `bcquality`; `plugin.skill` defaults to `al-code-review`
-(BCQuality >= 0.2.0; the earlier `bcquality-al-review` name was removed upstream).
+(BCQuality >= 0.2.0; the pre-0.2.0 review skill name was removed upstream).
 `expectedVersion` and `sourceRef` are optional **expected**
 identity, not installation commands or observed facts. A renamed skill requires
 explicit configuration; never infer equivalence by name. In particular a package
 exposing a differently named review skill does not establish
 that the configured skill is loaded: match the configured identity exactly, and treat
-a legacy `bcquality-al-review` installation as an incompatible, unverified provider.
+an installation exposing the pre-0.2.0 name as an incompatible, unverified provider.
 An observed version/revision mismatch is incompatible; an unavailable revision
 is unverified. If a configured expectation cannot be checked, keep native review
 active and report that limitation rather than certifying the provider.

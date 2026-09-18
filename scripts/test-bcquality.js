@@ -35,7 +35,7 @@ try {
   assert.equal(doctor(observed({discovered:false})).bcquality.native_fallback, true);
   doctor(observed({loaded:true}), false);
   doctor(observed({discovered:true,loaded:true,executed:true}), false);
-  doctor(observed({skill:'bcquality-al-review',discovered:true}), false); // legacy name is an incompatible provider, not an alias
+  doctor(observed({skill:'al-quality-review',discovered:true}), false); // a differently named review skill, the pre-0.2.0 one included, is an incompatible provider and never an alias
   let full = observed({discovered:true,loaded:true,executed:true,outcome:'completed', index:{status:'not-attempted',detail:'No PowerShell in this fixture'}});
   assert.equal(doctor(full).bcquality.status, 'executed-reported');
   assert.equal(doctor(full).bcquality.index.status, 'not-attempted');
