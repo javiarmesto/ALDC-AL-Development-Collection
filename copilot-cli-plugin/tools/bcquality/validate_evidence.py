@@ -23,6 +23,26 @@ def provider_config(root):
     return json.loads(subprocess.check_output(["node", script, root], text=True))["bcquality"]
 
 
+def primary_citations(report: dict) -> set[str]:
+    """Each retained finding's PRIMARY knowledge path, recursively.
+
+    Declared review criteria are keyed on `references[0].path`, and the findings
+    that answer them usually live in the provider's sub-results rather than at the
+    top level, so a top-level-only lookup would call every criterion uncited.
+    """
+    paths: set[str] = set()
+    for finding in report.get("findings") or []:
+        if not isinstance(finding, dict):
+            continue
+        refs = finding.get("references") or []
+        if refs and isinstance(refs[0], dict) and refs[0].get("path"):
+            paths.add(refs[0]["path"])
+    for sub in report.get("sub-results") or []:
+        if isinstance(sub, dict):
+            paths |= primary_citations(sub)
+    return paths
+
+
 def collect_citations(report: dict) -> list[str]:
     """All knowledge-file paths cited anywhere in a findings-report (recursive)."""
     cites: list[str] = []
@@ -53,6 +73,63 @@ CAPPED_CONFIDENCES = ("medium", "low")   # native/agent findings
 
 def nonempty_str(value) -> bool:
     return isinstance(value, str) and value.strip() != ""
+
+
+def check_criteria(where: str, scope: str, section: dict, report: dict, errors: list[str]) -> None:
+    """Declared review criteria are bookkeeping over findings that already exist.
+
+    So the only two things that can be wrong are arithmetic (the buckets do not add
+    up to what was declared) and an unmet criterion that no retained finding cites.
+    Neither produces a finding or touches the verdict; both mean the table lies.
+    """
+    criteria = section.get("criteria")
+    if criteria is None:
+        return
+    if not isinstance(criteria, dict):
+        errors.append(f"{where}'{scope}.criteria' must be an object.")
+        return
+
+    counts = {}
+    for key in ("declared", "met", "house-rules-unmet"):
+        value = criteria.get(key)
+        if not isinstance(value, int) or isinstance(value, bool):
+            errors.append(f"{where}'{scope}.criteria.{key}' must be an integer (got {value!r}).")
+        else:
+            counts[key] = value
+
+    unmet = criteria.get("unmet")
+    unmet_paths: list[str] = []
+    if not isinstance(unmet, list):
+        errors.append(f"{where}'{scope}.criteria.unmet' must be an array.")
+        unmet = None
+    else:
+        for i, row in enumerate(unmet):
+            if not isinstance(row, dict):
+                errors.append(f"{where}'{scope}.criteria.unmet[{i}]' must be an object.")
+            elif not nonempty_str(row.get("path")):
+                errors.append(f"{where}'{scope}.criteria.unmet[{i}].path' must be a non-empty string.")
+            else:
+                unmet_paths.append(row["path"])
+
+    not_evaluated = criteria.get("not-evaluated")
+    if not isinstance(not_evaluated, list):
+        errors.append(f"{where}'{scope}.criteria.not-evaluated' must be an array.")
+        not_evaluated = None
+    elif any(not nonempty_str(p) for p in not_evaluated):
+        errors.append(f"{where}'{scope}.criteria.not-evaluated' entries must be non-empty strings.")
+
+    if "declared" in counts and "met" in counts and unmet is not None and not_evaluated is not None:
+        total = counts["met"] + len(unmet) + len(not_evaluated)
+        if counts["declared"] != total:
+            errors.append(f"{where}'{scope}.criteria': declared {counts['declared']} \u2260 "
+                          f"met {counts['met']} + unmet {len(unmet)} + not-evaluated "
+                          f"{len(not_evaluated)} = {total}.")
+
+    cited = primary_citations(report)
+    for path in unmet_paths:
+        if path not in cited:
+            errors.append(f"{where}'{scope}.criteria': unmet criterion {path!r} is cited by no "
+                          f"retained finding (match is on references[0].path).")
 
 
 def check_shape(rel: str, report: dict, errors: list[str], depth: int = 0) -> None:
@@ -133,6 +210,7 @@ def check_shape(rel: str, report: dict, errors: list[str], depth: int = 0) -> No
         verdict = section.get("verdict")
         if verdict is not None and verdict not in VERDICTS:
             errors.append(f"{where}'{scope}.verdict' must be one of {', '.join(VERDICTS)} (got {verdict!r}).")
+        check_criteria(where, scope, section, report, errors)
         coverage = section.get("coverage")
         if coverage is None:
             continue

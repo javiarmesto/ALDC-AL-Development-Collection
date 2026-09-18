@@ -177,6 +177,7 @@ Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
 - Phase objective and acceptance criteria
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.github/plans/` files only if a detail is missing.
 - **BCQuality selection + task-context inline.** Pass the current mode, enabled value, exact plugin ID/skill or external root, expected identity and scoped observations. Build task-context only for an applicable review. The reviewer loads its own instructions and records actual results; disabled/unavailable uses native A–G.
+- **Declared review criteria.** Pass `.github/plans/<req>/<req>.bcq-criteria.json` inline when it exists. The reviewer reports each criterion as met, unmet or not evaluated; the Conductor renders that as the criteria delta in the phase-complete document. Absent file: no delta, nothing else changes.
 - Modified/created files
 - **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events by `al_symbolsearch` (a measured token sink — trial-and-error symbol searches). Tell it to symbol-search only to spot-confirm a signature it cannot resolve from the list.
 - AL validation requirements:
@@ -228,12 +229,13 @@ Act on the resulting verdict:
 
 #### 2C. Phase Completion & Commit
 
-1. **Render the Checkpoint card** for the user from the Review-Report JSON — completion slots, short, for the HITL gate. The `🔎` row consumes the BCQuality one-liner + the implementer's symbolic skills line; surface the top gating finding inline so the user can decide without opening the JSON:
+1. **Render the Checkpoint card** for the user from the Review-Report JSON — completion slots, short, for the HITL gate. The `🔎` row consumes the BCQuality one-liner + the implementer's symbolic skills line; surface the top gating finding inline so the user can decide without opening the JSON. The `📋` row is rendered only when the Review-Report carries `review.criteria`:
    ```
    🚦 **Checkpoint — Phase {N}/{Total}: {Phase Name}**   `▰▰▰▰▱▱ {N}/{Total}`
    📦 {AL objects} · 🔌 {event subscribers} · 🧪 {X/X ✅ | n/a}
    🔎 {BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
    ✅ {verdict} — {gating} gating · {blocker}/{major}/{minor}{ · ⚠️ {top gating finding}}
+   📋 Criteria: {met}/{declared} met · {unmet} unmet{ · ⚠️ {house-rules-unmet} house rule(s)}
    💾 Commit msg in {req_name}-phase-{N}-complete.md → **commit & {start Phase {N+1} | finalize}?**   (or ⏸️ revise)
    ```
 

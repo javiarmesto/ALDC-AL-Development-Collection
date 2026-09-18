@@ -26,6 +26,9 @@ Return one fenced JSON block headed `### Review-Report (JSON)`:
 - `review.skills-compliance`: `[{domain, status}]`: `✓` native check completed,
   `↗bcq` provider completed, `∅` not applicable. Uncovered domains belong in coverage
   as pending/partial, never a pass. Do not infer compliance from an implementer claim.
+- `review.criteria` (only when criteria were supplied): `{declared, met, unmet:
+  [{path, findings: [ids]}], not-evaluated: [paths], house-rules-unmet}`. Derived
+  from retained findings and coverage; never a source of findings or verdict.
 - `summary.counts`: `{blocker, major, minor, info}` across all retained findings.
 - `findings`: `[{id, source, domain, severity, actionable, message,
   location: {file, line, range}, references: [{path, sha}], confidence,

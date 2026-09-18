@@ -88,8 +88,10 @@ documentation. Create or revise the assigned `.spec.md` only. Do not modify AL,
 app.json, approved architecture, shared memory, permissions or host configuration.
 Do not compile, execute tests, install providers, publish or deploy. Tool edit
 permissions are broader than this behavioral write scope; they do not authorize
-other edits. Do not execute or emulate BCQuality before code exists; define
-downstream review criteria and leave actual code review to Reviewer/Dredd.
+other edits. Do not execute or emulate BCQuality before code exists. Define
+downstream review criteria that cite BCQuality knowledge paths — read path, per
+[the design guidance](../docs/templates/bcquality-design-guidance.md) — and leave
+actual code review to Reviewer/Dredd.
 Do not approve your own spec or start implementation.
 
 ## Load the sources that govern this unit
@@ -115,6 +117,14 @@ Do not approve your own spec or start implementation.
    paths before changing technical decisions. Re-evaluate matching when planned
    files change. If a needed source cannot be loaded, identify the affected
    contract and limitation rather than claiming it was applied.
+5. Follow the design guidance for stage `spec`. Start from the architect's
+   `{req_name}.bcq-selection.json` and `{req_name}.bcq-constraints.md` when they
+   exist; add domains from the objects this unit declares: tableextension →
+   `data-modeling`, `privacy`, `upgrade` · pageextension → `ui`, `style` ·
+   permissionset → `security`, `appsource` · API page → `web-services` · test
+   codeunit → `testing` · publisher/subscriber → `events` · report → `reporting` ·
+   query → `query`. House rules apply to every object they name. Not mounted: skip
+   and say so.
 
 Instruction directory: `../rules-templates/`. Domain entrypoints:
 `../skills/skill-events/SKILL.md`, `../skills/skill-permissions/SKILL.md`,
@@ -172,6 +182,15 @@ current app.json and code, not memory alone. Do not invent IDs when the allowed
 range is unknown. Trace each contract/test to approved decisions and acceptance;
 leave unbound implementation mechanics to Implementer. Record residual questions
 and required downstream compiler/runtime/review checks in the same `.spec.md`.
+
+Under section 11, add the table **Review criteria (BCQuality)**: one row per
+object → cited `path` → what the reviewer will check → layer. Write the same rows to
+`{req_name}.bcq-criteria.json` (`[{object, path, layer, domain, check}]`), and the
+spec-stage selection file the guidance defines. Every cited path must exist in the
+corpus (`<home>/<path>` readable); a path that resolves nowhere is the one defect
+this table can have, and it is fixed before approval. The table declares what will
+be reviewed; it does not judge the spec and never blocks it. Carry the
+`> **BCQuality**:` evidence line from the design guidance in the header.
 
 ## Review, approval and continuation
 

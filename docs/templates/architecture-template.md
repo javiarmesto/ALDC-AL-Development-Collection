@@ -11,6 +11,7 @@
 
 > **Skills applied**: {list skills loaded during design — e.g. `skill-api, skill-events, skill-performance` — or write "None (general architecture patterns only)"}
 > *(List only skills actually loaded. The Conductor and Review Subagent use this for downstream traceability.)*
+> **BCQuality**: {loaded · bcq@<sha> · <n> articles (<m> house rules) · selection: manual — or "not consulted (<reason>)"}
 
 ---
 

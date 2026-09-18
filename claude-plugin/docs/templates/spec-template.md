@@ -97,6 +97,15 @@ Functional business outcomes, technical contracts and downstream quality/review
 criteria, with references to tests and pending proof. Include negative cases and
 unchanged behavior where they matter.
 
+### Review criteria (BCQuality)
+
+| Object | Knowledge path | What the reviewer checks | Layer |
+|---|---|---|---|
+| {type id name} | {exact path under the corpus} | {one line} | custom / community / microsoft |
+
+Declared, not evaluated. Paths must resolve in the corpus. The review phase reports
+these criteria as met, unmet or not evaluated.
+
 ## 12. Human Review and Next Step
 
 What is complete; unresolved material decisions; affected changes since previous

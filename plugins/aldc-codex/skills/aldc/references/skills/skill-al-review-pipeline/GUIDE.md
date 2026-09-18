@@ -99,3 +99,11 @@ analysis and Problems are not a build or a runtime test. For an explicitly stati
 review, absence of a build is a limitation, not an invented AL defect. For a delivery
 gate requiring build/tests, missing evidence keeps that gate pending.
 A partial/failed review never becomes approval merely because finding counts are zero.
+
+When declared review criteria were supplied (`<req>.bcq-criteria.json`), report them
+in `review.criteria` after the findings are final: a criterion is **unmet** when a
+retained finding cites its `path` (match on `references[0].path`), **met** when its
+domain was completed by the provider and no retained finding cites it, and
+**not-evaluated** when that domain's check did not complete. Count house rules
+(`layer: custom`) separately. This is bookkeeping over findings that already exist;
+it adds no finding, changes no severity and never alters the verdict.

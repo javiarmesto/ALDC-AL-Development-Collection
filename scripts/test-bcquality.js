@@ -127,6 +127,13 @@ try {
     {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'missing.md',references:[{path:'missing.md'}],severity:'BANANA'}]},
     // Neither a citation, a native check nor an agent finding.
     {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'something-invented'}]},
+    // Declared criteria are bookkeeping over findings that already exist, so the
+    // buckets have to add up to what the spec declared...
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'missing.md',references:[{path:'missing.md'}]}],
+     review:{criteria:{declared:3,met:1,unmet:[{path:'missing.md',findings:['missing.md']}],'not-evaluated':[],'house-rules-unmet':0}}},
+    // ...and an unmet criterion has to be one a retained finding actually cites.
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'missing.md',references:[{path:'missing.md'}]}],
+     review:{criteria:{declared:1,met:0,unmet:[{path:'never-cited.md'}],'not-evaluated':[],'house-rules-unmet':0}}},
   ]) {
     fs.writeFileSync(path.join(reportDir,'bad-review-phase-2.json'), JSON.stringify(bad));
     run('python3',[path.join(root,'tools/bcquality/validate_evidence.py')],false);
@@ -139,8 +146,13 @@ try {
   assert.deepEqual(readConfig(temp).bcquality.pilotSkills, []);
   fs.writeFileSync(path.join(reportDir,'two-review-phase-3.json'), JSON.stringify({
     skill:{id:'al-review-subagent',version:1}, outcome:'completed', findings:[],
+    // The spec declared two review criteria; one is answered by a finding, one is not.
+    // The finding that answers it lives in a sub-result, which is where provider findings
+    // actually are - a top-level-only lookup would call every criterion uncited.
     review:{verdict:'APPROVED_WITH_RECOMMENDATIONS', coverage:[
-      {check:'al-code-review',status:'completed'},{check:'al-agents-review',status:'completed'}]},
+      {check:'al-code-review',status:'completed'},{check:'al-agents-review',status:'completed'}],
+      criteria:{declared:2,met:1,unmet:[{path:'missing.md',findings:['missing.md']}],
+        'not-evaluated':[],'house-rules-unmet':0}},
     'sub-results':[
       {skill:{id:'al-code-review',version:1},outcome:'completed',findings:[
         {id:'missing.md',domain:'Accessibility',severity:'minor',confidence:'high',references:[{path:'missing.md'}]}]},

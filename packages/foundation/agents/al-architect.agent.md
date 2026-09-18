@@ -188,6 +188,27 @@ Load relevant domain skills based on requirements:
 - **Event-driven** → `skill-events` for publishers/subscribers
 - **UX/pages** → `skill-pages` for layout patterns
 
+### Step 5: BCQuality design constraints (read path, non-blocking)
+
+Read [the BCQuality design guidance](../docs/templates/bcquality-design-guidance.md)
+and follow its selection procedure for stage `design`: house rules first, then
+these domains by Step 2 area — Object Model → `data-modeling`, `interfaces` ·
+Integration → `events`, `web-services` · Data → `data-modeling`, `upgrade`,
+`breaking-changes` · Security → `security`, `privacy` · Performance →
+`performance` (keys, FlowFields, batch — not loop-level rules).
+
+Write `.github/plans/{req_name}/{req_name}.bcq-constraints.md` with two blocks:
+
+- **House rules** — every custom-layer article, first, uncapped. One line each: the
+  rule, the design decision it touches, the cited `path`, any displaced path.
+- **Platform constraints** — the rest, grouped by area, same one-line shape. Name the
+  unknown dimension for a conditional article.
+
+Write the selection file the guidance defines (`{req_name}.bcq-selection.json`,
+stage `design`). Nothing here gates approval. When you deviate from a house rule,
+record the deviation and reason in the architecture document's decisions. Not
+mounted: skip, say so in the evidence line, continue.
+
 For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer` directly.
 </workflow>
 
@@ -223,7 +244,7 @@ This agent draws on these skills from `.github/skills/`. They are **not** auto-l
 
 ## Skills Evidencing
 
-The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `.github/docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream.
+The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `.github/docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream. Next to it, the `> **BCQuality**:` evidence line defined in the design guidance is mandatory whenever the corpus was read, and states `loaded`, never `executed`. Write `> **BCQuality**: not consulted (<reason>)` otherwise.
 
 <stopping_rules>
 ## Stopping Rules
@@ -351,6 +372,8 @@ Execute the sequence in **§🚨 Critical: Automatic Architecture Document Creat
 2. `.github/plans/*/*.spec.md` — existing technical specifications
 3. `.github/plans/*/*.architecture.md` — previous architecture decisions
 4. `.github/plans/*/*.test-plan.md` — test strategies
+5. `.github/plans/*/*.bcq-constraints.md` — house rules and platform constraints
+   already recorded for sibling requirements; reuse citations, do not re-derive them.
 
 **Why**: ensures your architecture aligns with project conventions, previous decisions, known constraints, and team standards.
 
