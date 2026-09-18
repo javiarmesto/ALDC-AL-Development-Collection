@@ -7,7 +7,7 @@ Read the relevant role or workflow below in full before acting. Resolve these
 links from this skill directory, including when a plugin cache holds it. Load
 applicable rules from references/rules/ and domain guidance from
 references/skills/ (GUIDE.md) on demand. These domain references are not duplicate
-discoverable skills. Recover approved work from .github/plans/ and memory.md.
+discoverable skills. Recover approved work from .agents/plans/ and memory.md.
 
 For MEDIUM/HIGH work, preserve architecture → specification → Conductor order.
 The al-spec-create workflow loads the same al-spec-agent contract as direct role invocation.

@@ -44,6 +44,13 @@ function initialize({ project, pluginRoot, apply = false, force = false, rollbac
   if (surface !== 'codex') for (const rel of walk(pluginRoot, ruleSource)) copy(rel, `${ruleDest}/${path.basename(rel)}`);
   copy('templates/memory-template.md', `${plansRoot}/memory.md`, { seed: true });
   if (surface === 'codex') {
+    // Codex is the one surface whose plans root is neither the consumers' default
+    // (.github/plans, as in the CLI) nor resolvable from an installed package dir
+    // (as install.js does for Claude Code via plansRootOf). Local bootstrap is its
+    // only path, so it declares the root in the project: without this, the project's
+    // own bcquality/config.js and aldc-validate would look under .github/plans.
+    // Seeded, so a project that already has an aldc.yaml keeps it.
+    copy('aldc.yaml', 'aldc.yaml', { seed: true });
     for (const rel of walk(pluginRoot, 'skills')) copy(rel, '.agents/' + rel);
     for (const rel of walk(pluginRoot, 'agents')) copy(rel, '.codex/' + rel);
   }

@@ -105,4 +105,15 @@ test('plansRootOf walks the candidate directories in order', (t) => {
 test('the shipped configurations resolve to their surface root', () => {
   assert.equal(plansRootOf(root), '.github/plans', 'canonical: Copilot and the VSIX');
   assert.equal(plansRootOf(path.join(root, 'claude-plugin')), '.claude/plans', 'Claude Code plugin');
+  assert.equal(plansRootOf(path.join(root, 'plugins/aldc-codex')), '.agents/plans', 'Codex plugin');
+});
+
+// The Codex surface reaches a project only through its local bootstrap, so the
+// declaration has to travel in the package: surface.json places the artifacts and
+// aldc.yaml is what the project's own consumers read back.
+test('the Codex package declares its plans root in both places it is read', () => {
+  const codex = path.join(root, 'plugins/aldc-codex');
+  const surface = JSON.parse(fs.readFileSync(path.join(codex, 'surface.json'), 'utf8'));
+  assert.equal(surface.plansRoot, '.agents/plans', 'surface.json drives where init.js writes');
+  assert.equal(plansRootOf(codex), surface.plansRoot, 'aldc.yaml and surface.json must not disagree');
 });

@@ -228,14 +228,14 @@ If you can't find something or aren't sure, document it:
 
 ### Context Files to Read Before Research
 
-Before starting your research, **ALWAYS check for existing context** in `.github/plans/`:
+Before starting your research, **ALWAYS check for existing context** in `.agents/plans/`:
 
 ```
 Checking for context:
-1. .github/plans/memory.md → Global memory (decisions, context, cross-session state — append-only)
-2. .github/plans/*.architecture.md → Architectural designs (from @al-architect)
-3. .github/plans/*.spec.md → Technical specifications
-4. .github/plans/*.test-plan.md → Test strategies
+1. .agents/plans/memory.md → Global memory (decisions, context, cross-session state — append-only)
+2. .agents/plans/*.architecture.md → Architectural designs (from @al-architect)
+3. .agents/plans/*.spec.md → Technical specifications
+4. .agents/plans/*.test-plan.md → Test strategies
 ```
 
 **Why this matters**:
@@ -267,7 +267,7 @@ Checking for context:
 **Integration Pattern:**
 ```markdown
 1. @al-conductor delegates research task → You receive objective
-2. Check .github/plans/ for existing context → Read *.architecture.md, *.spec.md, memory.md
+2. Check .agents/plans/ for existing context → Read *.architecture.md, *.spec.md, memory.md
 3. Conduct AL-specific research → Objects, events, structure
 4. Stop at 90% confidence → Don't over-research
 5. Return structured findings → Conductor creates plan

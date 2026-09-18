@@ -264,7 +264,7 @@ Document and prepare rollback before executing migration:
 2. **Download current symbols**: `al_downloadsymbols`
 3. **Document dependencies**: `al_packages` — list loaded packages with current versions
 4. **Review release notes**: Check BC target version breaking changes
-5. **Create migration plan** in `.github/plans/{project}-migration.md`
+5. **Create migration plan** in `.agents/plans/{project}-migration.md`
 
 **PAUSE — wait for user approval before modifying files.**
 
