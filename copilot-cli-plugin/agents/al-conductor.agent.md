@@ -276,6 +276,7 @@ Build success ≠ review approval. NEVER skip review.
    - Files that were modified/created
    - **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events via **al-symbols-mcp** (a measured token sink — trial-and-error symbol searches). Tell it to query symbols only to spot-confirm a single signature it cannot resolve from the list.
    - **The BCQuality task-context, built inline.** You already hold `app.json` and this phase's changed objects, so build the task-context (per the BCQuality task-context template; OMIT unknown dimensions; pilot skills from `aldc.yaml`) and pass it — the review subagent consumes it instead of re-deriving `bc-version`/`application-area`. It still reads the selected BCQuality provider itself for the knowledge files.
+   - **The declared review criteria, when the spec left any.** Pass `.github/plans/<req>/<req>.bcq-criteria.json` inline if it exists. The reviewer reports each criterion as met, unmet or not evaluated in `review.criteria`; you render that as the criteria delta. It is bookkeeping over findings that already exist — it adds no finding, changes no severity and never alters the verdict. No file: no delta, nothing else changes.
    - AL-specific validation requirements:
      - Event-driven patterns (no base modifications)
      - Naming conventions (26-char limit)
@@ -297,6 +298,7 @@ Build success ≠ review approval. NEVER skip review.
 📦 {AL objects} · 🔌 {event subscribers} · 🧪 {X/X ✅ | n/a}
 🔎 {BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
 ✅ {verdict} — {blocker}/{major}/{minor}{ · ⚠️ {top actionable finding}}
+📋 Criteria: {met}/{declared} met · {unmet} unmet{ · ⚠️ {house-rules-unmet} house rule(s)}   (omit the row when the review returned no `review.criteria`)
 💾 Commit msg in {req_name}-phase-{N}-complete.md → commit & {start Phase {N+1} | finalize}?   (or ⏸️ revise)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

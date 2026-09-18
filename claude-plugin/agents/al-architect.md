@@ -286,6 +286,7 @@ When generating `{req_name}.architecture.md`, include at the TOP of the document
 - If no domain skills were loaded: `> **Skills applied**: None (general architecture patterns only)`
 - This declaration is MANDATORY — the Conductor and Review Subagent use it to verify skill coverage downstream
 - The skills applied line is already included in the architecture template (`<response_style>` section) — ensure you populate it accurately
+- Next to it, the `> **BCQuality**:` evidence line defined in the design guidance is MANDATORY whenever the corpus was read, and states `loaded`, never `executed`. Write `> **BCQuality**: not consulted (<reason>)` otherwise
 
 <stopping_rules>
 ## Stopping Rules - When to Stop or Escalate
@@ -381,6 +382,33 @@ skill-api, skill-copilot, skill-performance, skill-events, skill-testing
 - **AI/Copilot design** → load `skill-copilot` for capability design
 - **Performance analysis** → load `skill-performance` for optimization strategy
 - **LOW complexity** → skip architect, use `al-spec.create` → `agent al-developer` directly
+
+### Step 5: BCQuality design constraints (read path, non-blocking)
+
+Read [the BCQuality design guidance](../docs/templates/bcquality-design-guidance.md)
+and follow its selection procedure for stage `design`. This is the **read path**: you
+list directories and read articles as context. Never invoke Entry, never run a review
+skill, never produce a findings-report. Nothing here gates approval.
+
+House rules first (`<home>/custom/knowledge/`, all of them, uncapped), then the domains
+your design actually enters:
+
+- **Object Model** → `data-modeling`, `interfaces`
+- **Integration** → `events`, `web-services`
+- **Data** → `data-modeling`, `upgrade`, `breaking-changes`
+- **Security** → `security`, `privacy`
+- **Performance** → `performance` (keys, FlowFields, batch — not loop-level rules)
+
+Write `.github/plans/{req_name}/{req_name}.bcq-constraints.md` with two blocks:
+**House rules** — every custom-layer article, first and uncapped, one line each with the
+rule, the design decision it touches, the cited `path` and any displaced path — and
+**Platform constraints** — the rest, grouped by area, same shape, naming the unknown
+dimension for a conditional article. Write the selection file the guidance defines
+(`{req_name}.bcq-selection.json`, stage `design`).
+
+Deviating from a house rule is allowed: record the deviation and its reason in the
+architecture decisions, where the existing human gate will see it. BCQuality not
+mounted: skip, say so in the evidence line, continue.
 
 ---
 
@@ -815,6 +843,7 @@ The `{req_name}.architecture.md` MUST include all 14 sections:
 2. `.github/plans/*/*.spec.md` - Existing technical specifications
 3. `.github/plans/*/*.architecture.md` - Previous architecture decisions
 4. `.github/plans/*/*.test-plan.md` - Test strategies
+5. `.github/plans/*/*.bcq-constraints.md` - House rules and platform constraints already recorded for sibling requirements; reuse citations, do not re-derive them
 ```
 
 **How to check**:

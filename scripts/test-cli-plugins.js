@@ -43,7 +43,7 @@ for (const [file, content] of generated) {
 }
 const conductor = split(read('claude-plugin/agents/al-conductor.md'));
 const originalBody = conductor.body.slice(conductor.body.indexOf('\n# AL Conductor Agent'));
-check(crypto.createHash('sha256').update(originalBody).digest('hex') === '810a81c82cdf716e21cdc8caa31d4e6ce11f52b540eb026e311a4276f36cfd56', 'Claude Conductor workflow baseline, including explicit BCQuality provider contract, preserved byte for byte');
+check(crypto.createHash('sha256').update(originalBody).digest('hex') === '78c25bb0a3972cf1b6448203dfedbf38583de3aac03ac89e1ecf16f43c1ee42d', 'Claude Conductor workflow baseline, including explicit BCQuality provider contract, preserved byte for byte');
 check(conductor.data.model === 'haiku', 'Claude Conductor model unchanged');
 check(!conductor.data.tools.includes('mcp__'), 'Conductor does not acquire AL MCP execution');
 for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {

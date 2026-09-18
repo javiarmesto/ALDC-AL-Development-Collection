@@ -148,6 +148,33 @@ if (exists('claude-plugin/agents')) {
   }
 }
 
+// ── 7b: el contrato que las dos estirpes comparten ──────────────────────────
+// claude-plugin/agents/ NO se genera desde agents/ para al-architect ni al-conductor:
+// son documentos distintos y más largos, y sync-plugin-support solo regenera
+// spec-agent, review-subagent, developer-reviewer y dredd. Comprobar que existe la
+// contraparte era todo el control, así que una regla podía entrar en una estirpe y
+// faltar en la otra — y con ella en .claude/, Copilot CLI y Codex, que son espejos de
+// claude-plugin. Estos marcadores son lo que ambas copias deben declarar.
+const CROSS_SURFACE = [
+  ['al-architect', 'bcquality-design-guidance', 'the BCQuality design read path'],
+  ['al-architect', 'bcq-constraints', 'the design constraints artifact'],
+  ['al-architect', '> **BCQuality**:', 'the design evidence line'],
+  ['al-conductor', 'bcq-criteria', 'the declared review criteria'],
+  ['al-conductor', 'review.criteria', 'the criteria delta'],
+  ['al-spec-agent', 'bcq-criteria', 'the declared review criteria'],
+];
+for (const [name, marker, what] of CROSS_SURFACE) {
+  const canonical = `agents/${name}.agent.md`;
+  const plugin = `claude-plugin/agents/${name}.md`;
+  if (!exists(canonical) || !exists(plugin)) continue;
+  const inCanonical = read(canonical).includes(marker);
+  const inPlugin = read(plugin).includes(marker);
+  if (inCanonical && !inPlugin)
+    errors.push(`${name}: ${what} está en el canónico y falta en claude-plugin (y por tanto en .claude, Copilot CLI y Codex)`);
+  if (inPlugin && !inCanonical)
+    errors.push(`${name}: ${what} está en claude-plugin y falta en el canónico`);
+}
+
 // ── 8: frontmatter ──────────────────────────────────────────────────────────
 const checkFm = (files, required) => {
   for (const f of files) {
