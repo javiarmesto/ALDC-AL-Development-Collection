@@ -95,7 +95,7 @@
     "docs/templates/spec-template.md": "7b60a20b9b57b19f0bdb558e4f7064135459505abf1974e8d0c89426e35b16d5",
     "docs/templates/technical-spec-template.md": "5b9dbd9ea80e9a060965638d8be9e2594869d0fec4f2ab280307166f9e271916",
     "docs/templates/test-plan-template.md": "724882202ad91657012eb2568fe69d059634429213f92805d3a9bdfd9ce42447",
-    "package.json": "e9ea82e49baad439aac09251e33524e515971a094caeb11faea8f21640280739",
+    "package.json": "6f726a2e6dfba9a045f83090e70544d22b5c21f4b5ba3d02602c72b913105185",
     "scripts/init-plugin.js": "a674d880f00890f74d8805d8328f538d37ddfa9e59f082a4f0add742855f27db",
     "scripts/install-transaction.js": "581fcb928c0c2d72d6cd4849f9e394be5037c1115dd39a51f0ca0c61c904dca3",
     "scripts/package-provenance.js": "ebe10ba86d44f2e552e3cc08683be32f52c2bbc4a2615201351721349c309f4e",
@@ -116,7 +116,7 @@
     "tools/context-doctor/aldc_context_doctor.py": "e9c71861fb2e647d1c8fb0c0773ce87446f23c5fa92a9129f2e090e559c37b4d"
   },
   "outputs": {
-    ".codex-plugin/plugin.json": "bda3dde4de15ef2242a250b98795186a18cb38f8381ca36847b6c183df6a2dd9",
+    ".codex-plugin/plugin.json": "b7a18d03b910bb0e13ab3a412f1bfaed0b5a24d6ca86a10ea4367e1c9ddd8b13",
     "README.md": "c3583b40242b3068bc1341e8c9878ed46c7a55061acd6b73570e04a2e926bf4b",
     "agents/al-agent-builder.toml": "a3139ac81d15c6b7066aa76cee91cba58e23638e8459e4644c580078e61f431a",
     "agents/al-architect.toml": "6aed8ca6947dce29adf11e130aaa89a95f56682348504fa5e149d385a2697a8c",

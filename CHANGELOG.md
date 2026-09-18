@@ -1,56 +1,29 @@
 # ALDC Changelog
 
-## [4.4.0] - 2026-09-18
+## [5.0.0] - 2026-09-18
 
-### Added
+Supersedes the unreleased 4.3.1 and 4.4.0: neither was ever tagged or published,
+the Marketplace still carries 4.2.0, and this release contains every commit of
+both. One delivery, one changelog entry, one tag. The major is for the plugin
+layout and the per-surface artifact roots below; everything else is additive.
 
-- BCQuality in the design phases. Until now the knowledge layer was reachable only
-  during review, so an architect could contradict a house rule and learn about it
-  from a finding two phases later, and a spec could declare acceptance criteria
-  unrelated to the knowledge the reviewer would judge against. Architect and Spec
-  Agent now read the corpus as context.
-- `docs/templates/bcquality-design-guidance.md` is the single source of the read
-  path: where the corpus lives, which frontmatter filters decide inclusion, layer
-  precedence (custom over community over microsoft, recording the displaced path),
-  how to select without loading the index, the selection file to write and the
-  evidence line to carry. Both roles link it; neither copies it. Every step is a
-  directory listing or a file read, so it works on hosts where a role cannot
-  execute anything, and it needs no PowerShell, no Node and no index.
-- The architect writes `{req}.bcq-constraints.md` — house rules first and
-  uncapped, then platform constraints by design area — and `{req}.bcq-selection.json`.
-  Deviating from a house rule is allowed and recorded with its reason in the
-  architecture decisions; it reaches the human gate that already exists.
-- The spec declares, under section 11, a **Review criteria (BCQuality)** table:
-  one row per object with the cited knowledge path, what the reviewer will check
-  and the layer, mirrored to `{req}.bcq-criteria.json`. The table states what will
-  be reviewed; it does not judge the spec.
-- `review.criteria` in the review report: each declared criterion comes back met,
-  unmet or not evaluated, with house rules counted separately, and the Conductor
-  renders the delta in the Checkpoint card and the phase-complete document.
+### Breaking Changes
 
-### Changed
-
-- The review phase closes that loop without gaining authority over it. Reporting
-  the criteria is bookkeeping over findings that already exist: it adds no finding,
-  changes no severity and never alters the verdict, which still depends only on
-  `findings[]`.
-- `validate_evidence.py` checks the two things a criteria block can get wrong: the
-  buckets must add up to what was declared, and an unmet criterion must be cited by
-  a finding that actually exists — matched across sub-results, where provider
-  findings live.
-
-### Fixed
-
-- Package provenance no longer lists derived build artifacts as sources. Python
-  writes `__pycache__` the first time a shipped script is imported, so it exists on
-  a developer's disk and in a real installation but never in a clean checkout;
-  listing one made the Copilot CLI, Claude and Codex `sync --check` runs drift on
-  CI while passing locally, and would make a user's own installation look tampered
-  with. Shipped sources are still hash-checked individually.
-
-## [4.3.1] - 2026-09-17
-
-Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
+- **The Claude Code plugin is generated, and its layout changed.** `commands/` no
+  longer exists: the ten slash commands are skills with `disable-model-invocation`,
+  and `/aldc:al-agent-instructions-create` is now `/aldc:al-agent-instructions`.
+  `rules-templates/` is now `rules/`. Agent frontmatter no longer declares
+  `maxTurns`. Re-run `/aldc:al-initialize` after upgrading.
+- **Requirement artifacts follow the surface.** A project worked from Claude Code
+  keeps its plans under `.claude/plans`, and one worked from Codex under
+  `.agents/plans`, with audits alongside them. Copilot and the VS Code extension
+  keep `.github/plans`. Every consumer now reads `plans.root` and `audits.root`
+  from `aldc.yaml`, so a project that wants the old location sets it there and
+  nothing else changes. Move the folder or declare the root; the shipped
+  `aldc.yaml` is seeded and never overwrites a project's own.
+- **The VS Code extension's Viewer reads `.github/plans`**, so it does not yet see
+  plans written from Claude Code or Codex. That is tracked in the extension
+  repository and is not addressed here.
 
 ### Added
 
@@ -134,6 +107,48 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   receipt's generator, index path, SHA-256 and corpus revision. Missing PowerShell 7
   is never fatal — reviewers fall back to path-based discovery.
 
+- BCQuality in the design phases. Until now the knowledge layer was reachable only
+  during review, so an architect could contradict a house rule and learn about it
+  from a finding two phases later, and a spec could declare acceptance criteria
+  unrelated to the knowledge the reviewer would judge against. Architect and Spec
+  Agent now read the corpus as context.
+- `docs/templates/bcquality-design-guidance.md` is the single source of the read
+  path: where the corpus lives, which frontmatter filters decide inclusion, layer
+  precedence (custom over community over microsoft, recording the displaced path),
+  how to select without loading the index, the selection file to write and the
+  evidence line to carry. Both roles link it; neither copies it. Every step is a
+  directory listing or a file read, so it works on hosts where a role cannot
+  execute anything, and it needs no PowerShell, no Node and no index.
+- The architect writes `{req}.bcq-constraints.md` — house rules first and
+  uncapped, then platform constraints by design area — and `{req}.bcq-selection.json`.
+  Deviating from a house rule is allowed and recorded with its reason in the
+  architecture decisions; it reaches the human gate that already exists.
+- The spec declares, under section 11, a **Review criteria (BCQuality)** table:
+  one row per object with the cited knowledge path, what the reviewer will check
+  and the layer, mirrored to `{req}.bcq-criteria.json`. The table states what will
+  be reviewed; it does not judge the spec.
+- `review.criteria` in the review report: each declared criterion comes back met,
+  unmet or not evaluated, with house rules counted separately, and the Conductor
+  renders the delta in the Checkpoint card and the phase-complete document.
+
+- One author for every surface. `claude-plugin/` was the only place in the
+  repository with hand-written primitives, and `.claude/`, the Copilot CLI plugin
+  and the Codex plugin are generated from it — so all three inherited its drift
+  from the canonical trees that ship in the VSIX. The generator now emits every
+  file of all three packages, and the line that adopted anything it did not produce
+  is gone: delete a package, regenerate, and it returns byte-identical.
+- Each adapted file carries the path and SHA-256 of its canonical source, plus a
+  binding table translating every Copilot surface to its host equivalent. The
+  adapter may change four things — frontmatter, paths, tool vocabulary and that
+  preamble — and nothing else.
+- Role entry skills for the nine user-invocable roles (`/aldc:architect`, `:spec`,
+  `:conduct`, `:develop`, `:review`, `:triage`, `:presales`, `:agent-builder`,
+  `:audit`). The three TDD subagents are `user-invocable: false` in the canonical
+  and get none; only the Conductor launches them.
+- `al-agent-build-instructions` exists as a workflow on Claude Code for the first
+  time, and the twelve Codex role profiles declare `sandbox_mode`, derived from the
+  tool grant each canonical contract already makes.
+
 ### Changed
 
 - `aldc.code-workspace` is now a seeded file: the installer creates it when it is
@@ -170,6 +185,29 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 - The evidence validator checks what it previously only carried: `severity` and
   `confidence` against their vocabularies, a cited finding's `id` against
   `references[0].path`, and the advisory caps on `native:`/`agent:` findings.
+
+- The review phase closes that loop without gaining authority over it. Reporting
+  the criteria is bookkeeping over findings that already exist: it adds no finding,
+  changes no severity and never alters the verdict, which still depends only on
+  `findings[]`.
+- `validate_evidence.py` checks the two things a criteria block can get wrong: the
+  buckets must add up to what was declared, and an unmet criterion must be cited by
+  a finding that actually exists — matched across sub-results, where provider
+  findings live.
+
+- Four of the eight always-on AL rules had been widened to every `.al` file in the
+  Claude Code plugin, applying Codeunit- and Query-scoped guidance where it does not
+  hold. Each generated rule now declares exactly the globs its canonical `applyTo`
+  declares. `al-agent-toolkit` had also lost its description and its four specific
+  globs.
+- The human gate that Copilot's `handoffs:` button supplied has no equivalent in
+  Claude Code or Codex, where an agent delegates through a tool with no click. It is
+  carried as an adapter concern — a row in the mapping table, a line in the Codex
+  host preface — rather than as canonical text that would restate for Copilot what
+  its own host already enforces.
+- Six agent descriptions gained the sentence that says when to use them, and
+  `al-developer`'s was corrected: it claimed the agent builds via the terminal and
+  validates with tests, which stopped being true.
 
 ### Removed
 
@@ -219,6 +257,13 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 - Profile projection with CRLF files, packaged template references and cross-host
   role links.
 - Incomplete payloads, installation recovery edge cases and inconsistent role counts.
+
+- Package provenance no longer lists derived build artifacts as sources. Python
+  writes `__pycache__` the first time a shipped script is imported, so it exists on
+  a developer's disk and in a real installation but never in a clean checkout;
+  listing one made the Copilot CLI, Claude and Codex `sync --check` runs drift on
+  CI while passing locally, and would make a user's own installation look tampered
+  with. Shipped sources are still hash-checked individually.
 
 ### Compatibility
 

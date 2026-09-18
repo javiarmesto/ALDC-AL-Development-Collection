@@ -12,13 +12,13 @@
       "name": "aldc",
       "source": ".",
       "description": "AL agents (incl. on-demand triage + dredd audit) + TDD subagents, skills, and workflows for BC extension development with TDD, BCQuality-cited review, event-driven architecture, and HITL gates.",
-      "version": "4.4.0"
+      "version": "5.0.0"
     },
     {
       "name": "aldc-cli",
       "source": "./copilot-cli-plugin",
       "description": "ALDC adapted for Copilot CLI: terminal tools, full canonical workflows, and conditional BC29/AL18 checks.",
-      "version": "4.4.0"
+      "version": "5.0.0"
     }
   ]
 }
