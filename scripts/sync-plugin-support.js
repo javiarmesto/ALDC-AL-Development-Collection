@@ -192,6 +192,7 @@ function mappingTable(plansRoot) {
 > | --- | --- |
 > | \`#runSubagent\` / \`runSubagent\` / \`agents:\` | The \`Task\` tool with \`subagent_type: "${PLUGIN}:<agent>"\`; one invocation carries everything inline (subagents are stateless) |
 > | \`#askQuestions\` / \`vscode/askQuestions\` | \`AskUserQuestion\` (main session only; a subagent returns its questions in its structured output) |
+> | \`handoffs:\` entries, and \`send: false\` on one | **No equivalent — the gate is yours to keep.** In Copilot a handoff is a button the human clicks, and \`send: false\` additionally hands them the prompt to review before it is sent; the host supplies the approval. Claude Code delegates through the \`Task\` tool, with no click and no review step. So never auto-delegate: present your output, get explicit approval, and only then delegate or route to another role. The handoff's routing is carried by the plugin's role entry skills; its human gate is carried by this rule |
 > | ${mentions} | ${roles} (or \`claude --agent ${PLUGIN}:<agent>\`) |
 > | \`@workspace use <workflow>\` | \`/${PLUGIN}:<workflow>\` with dots replaced by dashes (\`al-spec.create\` -> \`/${PLUGIN}:al-spec-create\`); already rewritten below |
 > | \`\${input:Name}\` prompt variables | Take the value from \`$ARGUMENTS\`; ask through \`AskUserQuestion\` when missing. Already rewritten below as \`<Name from $ARGUMENTS>\` |
@@ -225,8 +226,9 @@ function adapterPreamble(agent, sourceRel, sourceHash, plansRoot) {
 ${mappingTable(plansRoot)}
 >
 > ${HOST_CONTRACT}
-> The Copilot \`tools:\`/\`model:\`/\`handoffs:\`/\`agents:\` declarations of the source
-> are superseded by this file's frontmatter and by the plugin's role entry skills.
+> The Copilot \`tools:\`/\`model:\`/\`agents:\` declarations of the source are superseded
+> by this file's frontmatter; the routing in \`handoffs:\` is carried by the plugin's
+> role entry skills and the human gate it relied on by the mapping row above.
 > Role write scopes are behavioral limits, not filesystem sandboxes. Human gates,
 > evidence semantics and the "never simulate a capability" rule do not change
 > with the harness.`;

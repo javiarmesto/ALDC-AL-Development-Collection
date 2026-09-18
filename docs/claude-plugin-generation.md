@@ -88,13 +88,30 @@ All of them have an owner there **except one**:
 > **CRITICAL: NEVER auto-delegate. Always present your output to the user and wait
 > for explicit approval before delegating. This is a HITL gate.**
 
-It was in the hand-written `al-developer`, `al-presales` and `al-conductor`. The
-canonical `al-conductor` has its own Human Validation Gates, which cover approval
-before implementation but not delegation to another top-level role; `al-developer`
-says only "delegate quickly when outside tactical scope"; `al-presales` says
-nothing about it. The adapter deliberately did **not** carry the rule over —
-inventing contract text is not an adapter transform. Adding it to the canonical
-`agents/*.agent.md` is a separate, canonical decision.
+It was in the hand-written `al-developer`, `al-presales` and `al-conductor`, and
+it turned out not to be a missing canonical rule at all. The canonical declares
+delegation in frontmatter:
+
+```yaml
+handoffs:
+  - label: Request Architecture Design
+    agent: AL Architecture & Design Specialist
+```
+
+In Copilot a handoff is **a button the human clicks**, and `send: false` — which
+four of them carry — additionally hands the human the prompt to review before it
+is sent. The approval is supplied by the host, so the contract never had to write
+it down. Claude Code has no `handoffs:`: an agent delegates through the `Task`
+tool, with no click and no review step, and the gate disappears with the
+mechanism.
+
+That makes it an adapter concern, not a canonical one, so it is carried as a row
+in the mapping table rather than as invented contract text: `handoffs:` and
+`send: false` have no equivalent, therefore present your output, get explicit
+approval, and only then delegate. The row reaches all twelve agents and all
+eleven workflows at once, and the canonical is left alone — writing the rule
+there would restate, for Copilot and the VSIX, something their own host already
+enforces.
 
 ## Regenerating
 
