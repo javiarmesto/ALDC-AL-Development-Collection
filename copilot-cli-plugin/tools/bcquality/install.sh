@@ -90,7 +90,7 @@ say "BCQuality ready at $BCQUALITY_HOME (HEAD = $ACTUAL)"
 # `ConvertFrom-Json -AsHashtable` (PowerShell 7 only), so it is always run through
 # `pwsh` and never through a 5.x `powershell`.
 GENERATOR="$BCQUALITY_HOME/tools/Build-KnowledgeIndex.ps1"
-INDEX_PATH="$BCQUALITY_HOME/knowledge-index.json"
+INDEX_PATH="$(cd "$BCQUALITY_HOME" && pwd -P)/knowledge-index.json"
 RECEIPT="$PWD/.github/aldc-bcquality-index.json"
 if ! command -v pwsh >/dev/null 2>&1; then
   warn "PowerShell 7 (pwsh) not found; skipping the knowledge index. Reviewers will use path-based discovery."

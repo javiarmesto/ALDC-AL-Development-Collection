@@ -39,6 +39,8 @@ function fixture(t, { mode = 'external-multiroot', enabled = 'auto', corpus = tr
     }
     return { ws, home, head };
 }
+const fixtureHead = home =>
+    execFileSync('git', ['-C', home, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const writeIndex = (home, body = '{"articles":[],"articleCount":0}') => {
     fs.writeFileSync(path.join(home, 'knowledge-index.json'), body);
     return crypto.createHash('sha256').update(Buffer.from(body)).digest('hex');
@@ -46,7 +48,7 @@ const writeIndex = (home, body = '{"articles":[],"articleCount":0}') => {
 const writeReceipt = (ws, receipt, { bom = false } = {}) => {
     const file = path.join(ws, RECEIPT);
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, (bom ? '﻿' : '') + JSON.stringify(receipt, null, 2) + '\n');
+    fs.writeFileSync(file, (bom ? '\uFEFF' : '') + JSON.stringify(receipt, null, 2) + '\n');
 };
 // BCQUALITY_HOME outranks the configured home, so a stray one would silently
 // redirect every case below.
@@ -154,14 +156,41 @@ test('a build this machine could never attempt does not fail the caller', t => {
     assert.equal(idx.ok(result), true, 'a machine without pwsh must not fail the build that asked');
 });
 
-test('a missing index on a capable machine stays actionable', t => {
+test('the exit rule separates nothing-to-do from something-to-fix', t => {
     withoutEnvHome(t);
-    const { ws } = fixture(t);
-    // Whatever this machine can do, an absent index is never "nothing to do".
-    assert.equal(idx.ok(idx.status(ws)), false);
+    // Read as a rule, independent of the machine running the suite.
     assert.equal(idx.ok({ status: 'unobserved' }), true);
     assert.equal(idx.ok({ status: 'prebuilt' }), true);
+    assert.equal(idx.ok({ status: 'generated' }), true);
     assert.equal(idx.ok({ status: 'failed' }), false);
+    assert.equal(idx.ok({ status: 'not-attempted' }), false, 'a buildable gap is actionable');
+    assert.equal(idx.ok({ status: 'not-attempted', attemptable: false }), true, 'an unbuildable one is not');
+
+    // And on a machine that can build, an absent index really is actionable.
+    const { ws } = fixture(t);
+    const observed = idx.status(ws);
+    if (observed.attemptable === false) return t.skip('PowerShell 7 is unavailable here');
+    assert.equal(idx.ok(observed), false);
+});
+
+test('status and build agree about what this machine can do', t => {
+    withoutEnvHome(t);
+    const { ws, home } = fixture(t);
+    const observed = idx.status(ws);
+    const attempted = idx.build(ws);
+    if (attempted.attemptable !== false) return t.skip('PowerShell 7 is available here');
+    // Telling the user to run --build on a machine where --build cannot work was the
+    // one place the two commands contradicted each other.
+    assert.equal(observed.attemptable, false, 'status must reach the same conclusion as build');
+    assert.equal(idx.ok(observed), true, 'an unreachable index is not an actionable failure');
+
+    // A fresh index needs no probe and carries no such flag: it is simply the answer.
+    const sha = writeIndex(home);
+    const head = fixtureHead(home);
+    writeReceipt(ws, { status: 'prebuilt', indexSha256: sha, corpusSha: head });
+    const ready = idx.status(ws);
+    assert.equal(ready.status, 'prebuilt');
+    assert.equal('attemptable' in ready, false);
 });
 
 test('build refuses to invent an index it could not generate', t => {

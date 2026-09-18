@@ -575,7 +575,8 @@ function status(opts) {
   try { bcqIndex = require('../tools/bcquality/index-state').status(projectDir); } catch { /* non-fatal */ }
   const bcqIcon = { prebuilt: '🟢', generated: '🟢', 'not-attempted': '⚪', failed: '🔴', unobserved: '⚪' }[bcqIndex.status] || '⚪';
   const bcqLine = `${bcqIcon} BCQuality index: ${bcqIndex.status} — ${bcqIndex.detail}`
-    + (bcqIndex.status === 'not-attempted' ? '\n   run: npx aldc bcq-index --build' : '');
+    + (bcqIndex.status === 'not-attempted' && bcqIndex.attemptable !== false
+        ? '\n   run: npx aldc bcq-index --build' : '');
   return { ok: state.receipt === 'valid' && state.drift.length === 0 && targetMismatch === null, command: 'status', targetDir: relTarget, receiptTarget, targetMismatch,
     profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem, installedVersion: marker.version,
     toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),

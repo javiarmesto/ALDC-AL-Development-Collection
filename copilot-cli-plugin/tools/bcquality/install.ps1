@@ -100,7 +100,7 @@ Say "BCQuality ready at $BcqualityHome (HEAD = $actual)"
 # `ConvertFrom-Json -AsHashtable` (PowerShell 7 only). This installer may be running
 # under Windows PowerShell 5, so the generator is always launched through `pwsh`.
 $generator = Join-Path $BcqualityHome 'tools/Build-KnowledgeIndex.ps1'
-$indexPath = Join-Path $BcqualityHome 'knowledge-index.json'
+$indexPath = Join-Path (Resolve-Path -LiteralPath $BcqualityHome).Path 'knowledge-index.json'
 $receipt   = Join-Path (Get-Location).Path '.github/aldc-bcquality-index.json'
 $pwsh      = Get-Command pwsh -ErrorAction SilentlyContinue
 if (-not $pwsh) {

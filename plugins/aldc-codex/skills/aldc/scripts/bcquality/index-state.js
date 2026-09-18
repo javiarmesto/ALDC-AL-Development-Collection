@@ -33,7 +33,7 @@ function sha256(file) {
 
 function readJson(file) {
   // Tolerate a UTF-8 BOM: a receipt written by Windows PowerShell may carry one.
-  return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, ''));
+  return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
 }
 
 function corpusRevision(home) {
@@ -45,6 +45,14 @@ function resolveHome(workspace, b) {
   return path.resolve(workspace, process.env.BCQUALITY_HOME || b.home);
 }
 
+// Only PowerShell 7 can run the generator. Probing costs a process, so it is asked
+// only where the answer changes what the caller should do: when there is no usable
+// index. A fresh one is already the answer and never pays for it.
+function pwshAvailable() {
+  const probe = spawnSync('pwsh', ['-NoProfile', '-Command', 'exit 0'], { encoding: 'utf8' });
+  return !probe.error && probe.status === 0;
+}
+
 function status(workspace = '.') {
   const b = readConfig(workspace).bcquality;
   if (b.mode !== 'external-multiroot' || b.enabled === false) {
@@ -53,10 +61,14 @@ function status(workspace = '.') {
   const home = resolveHome(workspace, b);
   const indexPath = path.join(home, 'knowledge-index.json');
   const receiptPath = path.resolve(workspace, RECEIPT);
+  // `attemptable: false` says the gap cannot be closed on this machine, so reporting it
+  // is informative rather than actionable - and the caller must not be told to run
+  // --build, which would only repeat the same answer.
+  const reachable = () => (pwshAvailable() ? {} : { attemptable: false });
 
-  if (!fs.existsSync(home)) return { status: 'not-attempted', home, detail: 'corpus not installed' };
+  if (!fs.existsSync(home)) return { status: 'not-attempted', home, ...reachable(), detail: 'corpus not installed' };
   const corpus = corpusRevision(home);
-  if (!fs.existsSync(indexPath)) return { status: 'not-attempted', home, corpus, detail: 'no knowledge-index.json' };
+  if (!fs.existsSync(indexPath)) return { status: 'not-attempted', home, corpus, ...reachable(), detail: 'no knowledge-index.json' };
 
   let receipt = null;
   try { receipt = readJson(receiptPath); } catch { /* absent or unreadable */ }
@@ -67,6 +79,7 @@ function status(workspace = '.') {
     status: fresh ? 'prebuilt' : 'not-attempted',
     home, indexPath, corpus, indexSha256: hash,
     generatedAt: receipt?.generatedAt ?? null,
+    ...(fresh ? {} : reachable()),
     detail: fresh ? 'receipt matches the observed corpus revision'
                   : receipt ? 'receipt is stale or does not match this corpus' : 'no receipt'
   };
