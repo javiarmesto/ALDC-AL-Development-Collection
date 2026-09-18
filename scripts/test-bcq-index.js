@@ -142,6 +142,28 @@ test('an unreadable receipt is reported, not thrown', t => {
     assert.equal(idx.status(ws).status, 'not-attempted');
 });
 
+test('a build this machine could never attempt does not fail the caller', t => {
+    withoutEnvHome(t);
+    const { ws, home } = fixture(t);
+    // The generator has to exist, or the run stops earlier for a different reason.
+    fs.mkdirSync(path.join(home, 'tools'), { recursive: true });
+    fs.writeFileSync(path.join(home, 'tools', 'Build-KnowledgeIndex.ps1'), '# fixture');
+    const result = idx.build(ws);
+    if (result.attemptable !== false) return t.skip('PowerShell 7 is available here');
+    assert.equal(result.status, 'not-attempted');
+    assert.equal(idx.ok(result), true, 'a machine without pwsh must not fail the build that asked');
+});
+
+test('a missing index on a capable machine stays actionable', t => {
+    withoutEnvHome(t);
+    const { ws } = fixture(t);
+    // Whatever this machine can do, an absent index is never "nothing to do".
+    assert.equal(idx.ok(idx.status(ws)), false);
+    assert.equal(idx.ok({ status: 'unobserved' }), true);
+    assert.equal(idx.ok({ status: 'prebuilt' }), true);
+    assert.equal(idx.ok({ status: 'failed' }), false);
+});
+
 test('build refuses to invent an index it could not generate', t => {
     withoutEnvHome(t);
     const { ws } = fixture(t);

@@ -54,7 +54,8 @@ approve code generated in your own context as an independent review.
    path-based lookup.
    When the project carries an installer receipt (`.github/aldc-bcquality-index.json`) whose
    `corpusSha` matches the observed corpus revision, report `provider.index.status:
-   prebuilt` with that receipt's hash and use the provider's index-backed retrieval —
+   prebuilt` with the receipt's generator, index path, SHA-256 and corpus revision —
+   a bare status is refused — and use the provider's index-backed retrieval —
    including its bounded pagination and per-article content-hash validation. A mismatched
    or absent receipt is `not-attempted`, not a failure.
    A missing fresh index alone does not cancel code review.

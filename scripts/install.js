@@ -725,7 +725,8 @@ ${C.cyan}Commands:${C.reset}
   install     Install ALDC toolkit into current project
   solution    Report the declared AL layout against the folders on disk (--write to update it)
   validate    Verify installation is complete
-  bcq-index   Report the BCQuality knowledge-index state (--build to create it)
+  bcq-index   Report the BCQuality knowledge-index state (--build to create it).
+              Exit 1 means a usable index is missing on a machine that could build one.
   --help      Show this help
 
 ${C.cyan}Options:${C.reset}
@@ -930,8 +931,8 @@ switch (opts.command) {
       // absent, and that belongs in fail(), not in an uncaught stack trace.
       const idx = require('../tools/bcquality/index-state');
       const result = opts.build ? idx.build(process.cwd()) : idx.status(process.cwd());
-      if (JSON_MODE) emit(result, idx.OK_STATES.has(result.status) ? 0 : 1);
-      else { out(`BCQuality index: ${result.status} — ${result.detail}`); process.exitCode = idx.OK_STATES.has(result.status) ? 0 : 1; }
+      if (JSON_MODE) emit(result, idx.ok(result) ? 0 : 1);
+      else { out(`BCQuality index: ${result.status} — ${result.detail}`); process.exitCode = idx.ok(result) ? 0 : 1; }
     } catch (e) { fail('bcq-index', e); }
     break;
   case 'validate':

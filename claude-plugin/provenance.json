@@ -84,19 +84,19 @@
     "scripts/sync-plugin-support.js": "fee8cc9f5eb2f82c5315dd44eba367156483ec65c0e5ee71167a64b4b61c4307",
     "skills/skill-agent-instructions/examples/agent-advanced-instructions.txt": "f9938f734399e9ec2ad01186dbc761030dd815a1595b813e028c9914a10d9eba",
     "skills/skill-agent-instructions/examples/agent-simple-instructions.txt": "4ad7eb9e8e961f179664118c37ab58c1734be60295bb69e78929cc765b6c98c1",
-    "skills/skill-al-review-pipeline/SKILL.md": "4fb1901a5c10f6dae3e1ce640fbe8263d60f1169b72115076f4be9a1038808a4",
+    "skills/skill-al-review-pipeline/SKILL.md": "71b4991f85082d99e71ff7dbf15d3e94d163bcc0492fa2f9b214ee84dc31ffb8",
     "tools/aldc-validate/index.js": "05325558ecfce79cbd2ce3688cbd528d494fcb45d162c5d21fdcd289c1285b77",
     "tools/aldc-validate/package.json": "a5446551001b8d5738441e4781a960e85770e9f708a3ac9fd97e1e5da61e806e",
     "tools/bcquality/README.md": "c36a0ea38d40225168e3b556b619acd51abe941cafdf4dc4451726969021b9d8",
     "tools/bcquality/config.js": "74b3744e21582433b913cc8879b488b4c3347c726b81f0537b0ed94182fb3b76",
-    "tools/bcquality/index-state.js": "7c0eccbd016c022fefa16e1ff77026c4cdc82167bb814e8772d52557d6ee93d5",
+    "tools/bcquality/index-state.js": "30ccc048519ccc76a575bc0f2752824f0ac7f75895180ae092c5cff8a3a37f1b",
     "tools/bcquality/install.ps1": "651c393e1b29559bcc53634db1e7b6319c1f3a9be5daf2f643e4f1232a381353",
     "tools/bcquality/install.sh": "365a334b7e2c9e62d24eaade967708c75b0f95e33360964301b04689bf635684",
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "50bbfdd56aeb3c670e22e2fb5d5569b8dd43e6b4c53cb6352da377bb71d5310e",
     "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
-    "tools/context-doctor/aldc_context_doctor.py": "5ef56f800fef51db3f96e9a8490e9ca7ac92e272068897dc92539564e5c975e3"
+    "tools/context-doctor/aldc_context_doctor.py": "e9c71861fb2e647d1c8fb0c0773ce87446f23c5fa92a9129f2e090e559c37b4d"
   },
   "outputs": {
     ".claude-plugin/marketplace.json": "ad02919ac1083cce9f3bed2824cb8a30ffe72dd1c188a3e3bccccfc170cb17d7",
@@ -162,7 +162,7 @@
     "skills/skill-agent-instructions/references/agent-keywords-reference.md": "9b15534aca3c701b57cb6859a4152d291edcba0fd7bdf499e9b062849b4b1c33",
     "skills/skill-agent-task-patterns/SKILL.md": "71ad73bad0490fdf7c93975a9f469470c5401e492e4f8c228802bfedee25a732",
     "skills/skill-agent-toolkit/SKILL.md": "b5fe8664fd7bd31f9a901ed4229f66fa1a9d0a887cf5faf05f2778614003d571",
-    "skills/skill-al-review-pipeline/SKILL.md": "4fb1901a5c10f6dae3e1ce640fbe8263d60f1169b72115076f4be9a1038808a4",
+    "skills/skill-al-review-pipeline/SKILL.md": "71b4991f85082d99e71ff7dbf15d3e94d163bcc0492fa2f9b214ee84dc31ffb8",
     "skills/skill-api/SKILL.md": "503116c0303375e575fd3e87333ff2c5ada7a6cc4d5509cb50da5a08fbab2469",
     "skills/skill-contribution-assistant/SKILL.md": "541ba11eee93a945c303701755af8a93984f1f82ddf6698de6e001067055bbdb",
     "skills/skill-contribution-assistant/references/onboarding-questionnaire.md": "9be6e317d94580cba924b5621d8bd1812905ec87ca759afae1e63b9486e7cbb6",
@@ -186,13 +186,13 @@
     "tools/aldc-validate/index.js": "05325558ecfce79cbd2ce3688cbd528d494fcb45d162c5d21fdcd289c1285b77",
     "tools/aldc-validate/package.json": "a5446551001b8d5738441e4781a960e85770e9f708a3ac9fd97e1e5da61e806e",
     "tools/bcquality/config.js": "74b3744e21582433b913cc8879b488b4c3347c726b81f0537b0ed94182fb3b76",
-    "tools/bcquality/index-state.js": "7c0eccbd016c022fefa16e1ff77026c4cdc82167bb814e8772d52557d6ee93d5",
+    "tools/bcquality/index-state.js": "30ccc048519ccc76a575bc0f2752824f0ac7f75895180ae092c5cff8a3a37f1b",
     "tools/bcquality/install.ps1": "651c393e1b29559bcc53634db1e7b6319c1f3a9be5daf2f643e4f1232a381353",
     "tools/bcquality/install.sh": "365a334b7e2c9e62d24eaade967708c75b0f95e33360964301b04689bf635684",
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "50bbfdd56aeb3c670e22e2fb5d5569b8dd43e6b4c53cb6352da377bb71d5310e",
     "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
-    "tools/context-doctor/aldc_context_doctor.py": "5ef56f800fef51db3f96e9a8490e9ca7ac92e272068897dc92539564e5c975e3"
+    "tools/context-doctor/aldc_context_doctor.py": "e9c71861fb2e647d1c8fb0c0773ce87446f23c5fa92a9129f2e090e559c37b4d"
   }
 }

@@ -21,6 +21,12 @@ const { readConfig } = require('./config');
 const RECEIPT = '.github/aldc-bcquality-index.json';
 const OK_STATES = new Set(['prebuilt', 'generated', 'unobserved']); // unobserved = not applicable, not a failure
 
+// Exit 0 when there is nothing for the caller to do: a usable index, a mode that has
+// none, or a machine that cannot run the generator at all. A missing or stale index on
+// a machine that COULD build one is the single actionable case, and keeps exit 1 so a
+// script can branch on it (`aldc bcq-index || aldc bcq-index --build`).
+const ok = result => OK_STATES.has(result.status) || result.attemptable === false;
+
 function sha256(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 }
@@ -78,7 +84,10 @@ function build(workspace = '.') {
   // Only pwsh (PowerShell 7). `powershell.exe` (5.x) cannot run the generator.
   const probe = spawnSync('pwsh', ['-NoProfile', '-Command', 'exit 0'], { encoding: 'utf8' });
   if (probe.error || probe.status !== 0) {
-    return { status: 'not-attempted', detail: 'PowerShell 7 (pwsh) unavailable; reviewers use path-based discovery' };
+    // Not a failure and not fixable here: without PowerShell 7 no run of this command
+    // could ever build the index, so it must not fail the build that asked for it.
+    return { status: 'not-attempted', attemptable: false,
+             detail: 'PowerShell 7 (pwsh) unavailable; reviewers use path-based discovery' };
   }
 
   const indexPath = path.join(home, 'knowledge-index.json');
@@ -109,6 +118,6 @@ if (require.main === module) {
   const result = cmd === 'build' ? build(ws) : status(ws);
   if (process.argv.includes('--json')) process.stdout.write(JSON.stringify(result, null, 2) + '\n');
   else console.log(`BCQuality index: ${result.status} — ${result.detail}`);
-  process.exitCode = OK_STATES.has(result.status) ? 0 : 1;
+  process.exitCode = ok(result) ? 0 : 1;
 }
-module.exports = { status, build, OK_STATES };
+module.exports = { status, build, ok, OK_STATES };

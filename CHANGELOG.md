@@ -77,6 +77,14 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   integrity checks and project initialization.
 - Installation previews, collision reporting, verification receipts and recoverable
   updates that preserve existing project memory and protect subsequent edits.
+- BCQuality knowledge index. The multiroot installers build it through PowerShell 7
+  right after the pinned checkout and record a receipt naming the corpus revision it
+  was built over; `aldc bcq-index [--build]` reports that state and builds it on
+  request, and `aldc status` shows it with the command to fix it. This earns a new
+  index state, `prebuilt`: weaker than `generated`, because it asserts a prior
+  authorized build rather than one in this invocation, and claimable only with the
+  receipt's generator, index path, SHA-256 and corpus revision. Missing PowerShell 7
+  is never fatal — reviewers fall back to path-based discovery.
 
 ### Changed
 
@@ -94,6 +102,26 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
   to Conductor or Developer according to complexity.
 - Instruction and domain-guide references are retained for continuation from the
   current artifacts; native capabilities can satisfy relevant tool requirements.
+- The configured BCQuality skill is `al-code-review` at 0.2.0. The previous default
+  named a skill upstream had removed, so plugin mode looked for something that no
+  longer existed, found nothing, reported nothing and silently reviewed with native
+  rules only. An installation exposing the pre-0.2.0 name is now an incompatible
+  provider, never a renamed match.
+- `pilotSkills` is empty, which means the full corpus. It previously pinned the run to
+  three review leaves, so fifteen never executed; Entry's own relevance decides now,
+  and a leaf whose domain the diff does not touch returns not-applicable cheaply.
+  Entry can also dispatch more than one first-level skill, so every returned report is
+  retained instead of only the first.
+- Review findings gate on evidence, not severity alone. A finding gates when it is
+  `blocker`/`major` **and** either knowledge-backed at `confidence: high` or a native
+  check with an applicable rule; native checks gate on severity alone, because their
+  capped confidence records the absence of a citable article, not doubt. Agent
+  findings never gate. Only gating findings and non-gating findings carrying
+  `suggested-code` become implementer work; the rest are recorded as recommendations.
+  Conductor recomputes this from `findings[]`, since `summary.counts` cannot express it.
+- The evidence validator checks what it previously only carried: `severity` and
+  `confidence` against their vocabularies, a cited finding's `id` against
+  `references[0].path`, and the advisory caps on `native:`/`agent:` findings.
 
 ### Removed
 
@@ -150,6 +178,15 @@ Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.
 - BC29-native selection does not upgrade BC, AL Language or project manifests.
 - Extension and registry releases are separate; canonical package, plugin and catalog
   metadata declare 4.3.0. Earlier VSIX files retain their original version.
+- Persisted BCQuality evidence written before this release may now fail the
+  `bcquality-evidence` workflow: reports carrying an invalid `severity`, a cited
+  finding whose `id` is not its knowledge path, or an `agent:` finding at
+  `blocker`/`major` were always outside the contract and were simply not checked.
+  Re-run the review to regenerate the report; the reports themselves are evidence and
+  are not edited by hand.
+- `aldc bcq-index` exits 1 when a usable index is missing on a machine that could
+  build one, so a script can branch on it. It exits 0 when there is nothing to do,
+  including on a machine without PowerShell 7, where no run could build one.
 
 ## [4.2.0] - 2026-06-12
 

@@ -253,14 +253,25 @@ def bcquality_observations(snapshot, runtime, root, host):
         raise ValueError("BCQuality index status is invalid")
     if index["status"] != "unobserved" and (not isinstance(index.get("detail"), str) or not index["detail"].strip()):
         raise ValueError("BCQuality index observation needs detail")
-    if index["status"] == "generated":
-        if (index.get("exitCode") != 0 or isinstance(index.get("exitCode"), bool)
-                or not all(isinstance(index.get(k), str) and index[k].strip() for k in ("command", "path", "freshness"))
+    if index["status"] in {"prebuilt", "generated"}:
+        # Both states name a real index file, so both are checked against its bytes.
+        # What they additionally assert differs: `generated` ran the generator in this
+        # invocation and carries its command, exit code and freshness; `prebuilt`
+        # inherits a prior authorized build, so it carries that build's generator and
+        # the corpus revision it was built over. Neither is claimable on a detail
+        # string alone - that was the one index state with no evidence behind it.
+        required = ("command", "path", "freshness") if index["status"] == "generated" else ("generator", "path")
+        if (not all(isinstance(index.get(k), str) and index[k].strip() for k in required)
                 or not re.fullmatch(r"[0-9a-f]{64}", str(index.get("sha256", "")))):
-            raise ValueError("BCQuality generated index requires command, exitCode 0, path, SHA-256 and freshness evidence")
+            raise ValueError(f"BCQuality {index['status']} index requires "
+                             f"{', '.join(required)} and SHA-256 evidence")
+        if index["status"] == "generated" and (index.get("exitCode") != 0 or isinstance(index.get("exitCode"), bool)):
+            raise ValueError("BCQuality generated index requires the generator's exitCode 0")
+        if index["status"] == "prebuilt" and not re.fullmatch(r"[0-9a-f]{40}", str(index.get("corpusSha", ""))):
+            raise ValueError("BCQuality prebuilt index requires the corpus revision recorded in its receipt")
         index_path = Path(index["path"])
         if not index_path.is_absolute() or not index_path.is_file():
-            raise ValueError("BCQuality generated index must identify a readable absolute file")
+            raise ValueError(f"BCQuality {index['status']} index must identify a readable absolute file")
         load_json(index_path)
         if hashlib.sha256(index_path.read_bytes()).hexdigest() != index["sha256"]:
             raise ValueError("BCQuality index SHA-256 differs from the observed file")

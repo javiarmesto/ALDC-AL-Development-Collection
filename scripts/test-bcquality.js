@@ -47,6 +47,24 @@ try {
   full.index = {status:'generated', detail:'Synthetic output observation',exitCode:0,command:'fixture generator',path:path.join(temp,'knowledge-index.json'),sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(temp,'knowledge-index.json'))).digest('hex'),freshness:'Fixture trace; not a real BCQuality invocation'};
   assert.equal(doctor(full).bcquality.index.status,'generated');
   full.index.sha256='0'.repeat(64); doctor(full,false);
+  // `prebuilt` is the one index state a reviewer may report without running anything,
+  // so it carries the receipt's evidence instead of an invocation's: the generator, the
+  // file, its hash, and the corpus revision it was built over. A detail string alone
+  // used to be enough, which made it the cheapest status to claim and the least earned.
+  const indexSha = crypto.createHash('sha256').update(fs.readFileSync(path.join(temp,'knowledge-index.json'))).digest('hex');
+  const receipt = {status:'prebuilt',detail:'Installer receipt',generator:'tools/Build-KnowledgeIndex.ps1',path:path.join(temp,'knowledge-index.json'),sha256:indexSha,corpusSha:'b91443beec785606e08274dea3f402a99aaec7bd'};
+  full.index = {status:'prebuilt',detail:'Claimed with no receipt behind it'};
+  doctor(full, false);
+  full.index = {...receipt, corpusSha:undefined};
+  doctor(full, false);
+  full.index = {...receipt, generator:undefined};
+  doctor(full, false);
+  full.index = {...receipt};
+  assert.equal(doctor(full).bcquality.index.status,'prebuilt');
+  full.index = {...receipt, sha256:'0'.repeat(64)};
+  doctor(full, false);
+  full.index = {...receipt, corpusSha:'not-a-sha'};
+  doctor(full, false);
   config('plugin','auto',{expectedVersion:'0.1.0'});
   assert.equal(doctor(observed({discovered:true,observedVersion:'0.2.0'})).bcquality.status,'incompatible-reported');
   assert.equal(doctor(observed({discovered:true})).bcquality.status,'identity-unverified');
