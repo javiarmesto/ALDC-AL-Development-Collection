@@ -391,6 +391,7 @@ File name: `.github/plans/<plan-name>/<plan-name>-phase-<N>-complete.md` (kebab-
 - Skills run: {actual completed dispatches, not a fixed pilot list}
 - Outcome: {completed | no-knowledge | not-applicable | partial | failed}
 - Findings: {N} (blocker/major/minor/info) — citations: {N}
+- 📋 Criteria: {met}/{declared} met · {unmet} unmet{ · ⚠️ {house-rules-unmet} house rule(s)} (omit when the review returned no `review.criteria`)
 - Raw report: `.github/plans/<plan>/<plan>-bcquality-phase-<N>.json`
 
 **Review Status:** {APPROVED / APPROVED with minor recommendations / NEEDS_REVISION}

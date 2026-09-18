@@ -58,7 +58,7 @@ layers are the same rule; keep the highest layer and record the displaced path.
 
     {
       "stage": "design" | "spec",
-      "corpus": { "home": "<path>", "sha": "<git rev-parse HEAD if readable, else null>" },
+      "corpus": { "home": "<path>", "sha": "<from <home>/.git, else null>" },
       "target": { "bcVersion": 29 },
       "selected": [
         { "path": "custom/knowledge/events/integrations-go-through-hub.md",

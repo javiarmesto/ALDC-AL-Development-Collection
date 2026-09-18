@@ -1,5 +1,53 @@
 # ALDC Changelog
 
+## [4.4.0] - 2026-09-18
+
+### Added
+
+- BCQuality in the design phases. Until now the knowledge layer was reachable only
+  during review, so an architect could contradict a house rule and learn about it
+  from a finding two phases later, and a spec could declare acceptance criteria
+  unrelated to the knowledge the reviewer would judge against. Architect and Spec
+  Agent now read the corpus as context.
+- `docs/templates/bcquality-design-guidance.md` is the single source of the read
+  path: where the corpus lives, which frontmatter filters decide inclusion, layer
+  precedence (custom over community over microsoft, recording the displaced path),
+  how to select without loading the index, the selection file to write and the
+  evidence line to carry. Both roles link it; neither copies it. Every step is a
+  directory listing or a file read, so it works on hosts where a role cannot
+  execute anything, and it needs no PowerShell, no Node and no index.
+- The architect writes `{req}.bcq-constraints.md` — house rules first and
+  uncapped, then platform constraints by design area — and `{req}.bcq-selection.json`.
+  Deviating from a house rule is allowed and recorded with its reason in the
+  architecture decisions; it reaches the human gate that already exists.
+- The spec declares, under section 11, a **Review criteria (BCQuality)** table:
+  one row per object with the cited knowledge path, what the reviewer will check
+  and the layer, mirrored to `{req}.bcq-criteria.json`. The table states what will
+  be reviewed; it does not judge the spec.
+- `review.criteria` in the review report: each declared criterion comes back met,
+  unmet or not evaluated, with house rules counted separately, and the Conductor
+  renders the delta in the Checkpoint card and the phase-complete document.
+
+### Changed
+
+- The review phase closes that loop without gaining authority over it. Reporting
+  the criteria is bookkeeping over findings that already exist: it adds no finding,
+  changes no severity and never alters the verdict, which still depends only on
+  `findings[]`.
+- `validate_evidence.py` checks the two things a criteria block can get wrong: the
+  buckets must add up to what was declared, and an unmet criterion must be cited by
+  a finding that actually exists — matched across sub-results, where provider
+  findings live.
+
+### Fixed
+
+- Package provenance no longer lists derived build artifacts as sources. Python
+  writes `__pycache__` the first time a shipped script is imported, so it exists on
+  a developer's disk and in a real installation but never in a clean checkout;
+  listing one made the Copilot CLI, Claude and Codex `sync --check` runs drift on
+  CI while passing locally, and would make a user's own installation look tampered
+  with. Shipped sources are still hash-checked individually.
+
 ## [4.3.1] - 2026-09-17
 
 Supersedes the unreleased 4.3.0: a single delivery carrying the whole increment.

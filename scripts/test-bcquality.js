@@ -230,6 +230,29 @@ try {
   assert.equal(shipped.pinnedCommit, '',
     'a pin committed here ships as every consumer default; pin in your own project instead');
 
+  // A provenance source must be content, never something a run leaves behind. Python
+  // writes __pycache__ the first time a shipped script is imported, so it exists on a
+  // developer's disk and in a real installation but never in a clean checkout, where
+  // .gitignore excludes it: listing one made all three sync --check drift on CI while
+  // passing locally, and would make a user's own installation look tampered with.
+  for (const p of ['claude-plugin/provenance.json','copilot-cli-plugin/provenance.json','plugins/aldc-codex/provenance.json']) {
+    assert.doesNotMatch(fs.readFileSync(path.join(root,p),'utf8'), /__pycache__|\.py[co]\b/,
+      `${p} lists a derived build artifact as a source`);
+  }
+  // And it stays out even when it is sitting right there: --check writes nothing, so a
+  // clean run here is proof the provenance would not have changed.
+  const pycache = path.join(root,'tools/bcquality/__pycache__');
+  const strayCache = !fs.existsSync(pycache);
+  fs.mkdirSync(pycache,{recursive:true});
+  fs.writeFileSync(path.join(pycache,'aldc-probe.cpython-311.pyc'),'not bytecode, just in the way');
+  try {
+    for (const s of ['sync-plugin-support','sync-codex','sync-copilot-cli'])
+      run('node',[path.join(root,`scripts/${s}.js`),'--check']);
+  } finally {
+    fs.rmSync(path.join(pycache,'aldc-probe.cpython-311.pyc'),{force:true});
+    if (strayCache) fs.rmSync(pycache,{recursive:true,force:true});
+  }
+
   // Generated surfaces carry the same normalizer and exact provider contract.
   for (const base of ['claude-plugin','copilot-cli-plugin','plugins/aldc-codex']) {
     const codex=base.includes('codex');
