@@ -97,3 +97,7 @@ PUSH.ps1
 
 # BCQuality knowledge-index receipt (local accelerator state, per machine)
 .github/aldc-bcquality-index.json
+
+# Temporary package roots built by scripts/test-packaged-layout.js. They live inside
+# the repository so the packaged installer can resolve js-yaml the way a VSIX does.
+.aldc-packaged-layout-*/

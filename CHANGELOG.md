@@ -220,6 +220,15 @@ layout and the per-surface artifact roots below; everything else is additive.
 
 ### Fixed
 
+- **The BCQuality index was invisible from every package.** `aldc status` reported it
+  `unobserved` whatever its real state and `aldc bcq-index` could not load at all,
+  because the installer required `../tools/bcquality/index-state` literally — a path
+  that exists only in this repository. Packaged, `install.js` sits at the package root
+  with the toolkit trees wherever `ALDC_PACKAGE_DIR` points, which is how the payload
+  it copies was already resolved; the index now resolves the same way. The gap was that
+  nothing ever ran the installer from that shape, so a new test does, and a require
+  written against `__dirname` now fails there instead of in someone's editor.
+
 - Requirement-set validation never ran. `tools/aldc-validate` read only the flat plans
   root, while every agent and workflow writes `.github/plans/{req_name}/{req_name}.*.md`,
   so `incompleteRequirementSets` reported "no requirement sets found" on every correctly
