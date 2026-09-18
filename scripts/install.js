@@ -40,6 +40,19 @@ const C = {
 // with confidence — a wrong plans root is a silent failure in someone's project.
 const { plansRootOf } = require('./plans-root');
 
+// Where the toolkit trees live. In this repository they sit beside scripts/; in the
+// packaged extension install.js is at the package root and they are under templates/,
+// which is why the host passes ALDC_PACKAGE_DIR. `install()` already resolved this
+// for the payload it copies — the BCQuality index did not, and required
+// '../tools/bcquality/index-state' literally, a path that only ever existed in this
+// repository. From a VSIX the require failed, so `aldc status` reported the index
+// unobserved whatever its real state and `aldc bcq-index` could not run at all.
+function packageRoot() {
+  return process.env.ALDC_PACKAGE_DIR ||
+    (path.basename(__dirname) === 'scripts' ? path.resolve(__dirname, '..') : path.resolve(__dirname));
+}
+const indexState = () => require(path.join(packageRoot(), 'tools', 'bcquality', 'index-state.js'));
+
 let JSON_MODE = false;
 const out = (...args) => { if (!JSON_MODE) console.log(...args); };
 const log = (msg, c = '') => out(`${c}${msg}${C.reset}`);
@@ -242,12 +255,7 @@ function plannedFiles({ packageDir, projectDir, targetDir, profile, transform = 
 
 // ─── INSTALL command ───────────────────────────────────────────────────────
 async function install(opts) {
-  // When run from scripts/install.js (repo), go up one level.
-  // When run from aldc-core-X.Y.Z/install.js (tgz), __dirname IS the package.
-  const packageDir = process.env.ALDC_PACKAGE_DIR ||
-    (path.basename(__dirname) === 'scripts'
-      ? path.resolve(__dirname, '..')
-      : path.resolve(__dirname));
+  const packageDir = packageRoot();
   const projectDir = process.cwd();
   const targetDir = path.resolve(projectDir, opts.targetDir || '.github');
 
@@ -578,7 +586,7 @@ function status(opts) {
   const targetMismatch = receiptTarget !== null && receiptTarget !== relTarget ? receiptTarget : null;
   // BCQuality knowledge index — observation only, never a probe of the provider.
   let bcqIndex = { status: 'unobserved', detail: 'not evaluated' };
-  try { bcqIndex = require('../tools/bcquality/index-state').status(projectDir); } catch { /* non-fatal */ }
+  try { bcqIndex = indexState().status(projectDir); } catch { /* non-fatal */ }
   const bcqIcon = { prebuilt: '🟢', generated: '🟢', 'not-attempted': '⚪', failed: '🔴', unobserved: '⚪' }[bcqIndex.status] || '⚪';
   const bcqLine = `${bcqIcon} BCQuality index: ${bcqIndex.status} — ${bcqIndex.detail}`
     + (bcqIndex.status === 'not-attempted' && bcqIndex.attemptable !== false
@@ -937,7 +945,7 @@ switch (opts.command) {
     try {
       // Inside the try: config.js throws a stated error when the YAML reader is
       // absent, and that belongs in fail(), not in an uncaught stack trace.
-      const idx = require('../tools/bcquality/index-state');
+      const idx = indexState();
       const result = opts.build ? idx.build(process.cwd()) : idx.status(process.cwd());
       if (JSON_MODE) emit(result, idx.ok(result) ? 0 : 1);
       else { out(`BCQuality index: ${result.status} — ${result.detail}`); process.exitCode = idx.ok(result) ? 0 : 1; }
