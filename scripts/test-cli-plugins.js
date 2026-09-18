@@ -4,8 +4,8 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { expected, split, bodyFor, toolsFor, agentBody } = require('./sync-copilot-cli');
-const { build: buildPlugin, rewritePaths, plansRootFor } = require('./sync-plugin-support');
+const { expected, split, bodyFor, toolsFor, agentBody, stripAdapterPreamble } = require('./sync-copilot-cli');
+const { build: buildPlugin, rewritePaths, plansRootFor, AGENTS, WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
 const ROOT = path.resolve(__dirname, '..');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 let checks = 0;
@@ -54,6 +54,21 @@ for (const [file, content] of generated) {
 const pluginFiles = buildPlugin().files;
 const handEdited = [...pluginFiles].filter(([rel, content]) => read('claude-plugin/' + rel) !== content).map(([rel]) => rel);
 check(handEdited.length === 0, `claude-plugin is generated, not hand-edited: ${handEdited.join(', ')}`);
+// The adapter preamble is a leading block quote, and the Copilot CLI and Codex
+// generators remove it by exactly that shape. A canonical body that opened with a
+// quote would be eaten silently, so pin that none does.
+for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.map(w => `prompts/${w}.prompt.md`)]) {
+  check(!/^\s*>/.test(split(read(rel)).body), `${rel}: canonical body must not open with a block quote`);
+}
+// `${input:Name}` is a Copilot prompt variable with no Claude Code equivalent; the
+// adapter rewrites every one, including inside fenced blocks and directory trees.
+// The mapping table names the Copilot surface it maps, so the check is on the body
+// the preamble introduces — which also exercises the strip on every real file.
+for (const rel of [...AGENTS.map(a => `agents/${a.id}.md`), ...WORKFLOWS.map(w => `skills/${workflowSkillName(w)}/SKILL.md`)]) {
+  const body = stripAdapterPreamble(split(pluginFiles.get(rel)).body);
+  check(!/^\s*>/.test(body), `claude-plugin/${rel}: the adapter preamble strips cleanly`);
+  check(!body.includes('${input:'), `claude-plugin/${rel}: no Copilot input variable survives the adapter`);
+}
 const conductor = split(read('claude-plugin/agents/al-conductor.md'));
 const canonicalConductor = rewritePaths(split(read('agents/al-conductor.agent.md')).body, plansRootFor(ROOT));
 check(conductor.body.endsWith(canonicalConductor), 'Claude Conductor workflow, including the explicit BCQuality provider contract, carried from the canonical contract without edits');

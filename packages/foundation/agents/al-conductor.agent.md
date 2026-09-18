@@ -1,6 +1,6 @@
 ---
 name: AL Development Conductor
-description: 'AL Conductor Agent - Orchestrates Planning → Implementation → Review → Commit cycle for AL Development. Enforces TDD and quality gates for Business Central extensions.'
+description: 'AL Conductor Agent - Orchestrates Planning → Implementation → Review → Commit cycle for AL Development. Enforces TDD and quality gates for Business Central extensions. Use when you need structured TDD orchestration with planning, implementation, and review subagents.'
 tools: [vscode/memory, vscode/resolveMemoryFileUri, vscode/askQuestions, read/problems, read/readFile, read/skill, agent, edit, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/searchSubagent, search/usages, todo]
 agents: ['AL Planning Subagent', 'AL Code Review Subagent', 'AL Implementation Subagent']
 model: Claude Sonnet 4.6 (copilot)

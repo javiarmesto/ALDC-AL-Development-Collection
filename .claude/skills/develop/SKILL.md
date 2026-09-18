@@ -1,6 +1,6 @@
 ---
 name: develop
-description: AL Developer - Tactical implementation specialist for Business Central extensions. Edits AL, builds via the terminal, and validates with tests. Implements features following specifications without making architectural decisions.
+description: AL Developer - Tactical implementation specialist for Business Central extensions. Edits AL, builds via the terminal, and validates with tests. Implements features following specifications without making architectural decisions. Use when you need to implement, code, debug, or fix AL code directly.
 argument-hint: Implementation task, bug fix, or feature to code (e.g., "Add email validation field to Customer table")
 ---
 

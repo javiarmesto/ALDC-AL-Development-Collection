@@ -1,6 +1,6 @@
 ---
 name: conduct
-description: AL Conductor Agent - Orchestrates Planning → Implementation → Review → Commit cycle for AL Development. Enforces TDD and quality gates for Business Central extensions.
+description: AL Conductor Agent - Orchestrates Planning → Implementation → Review → Commit cycle for AL Development. Enforces TDD and quality gates for Business Central extensions. Use when you need structured TDD orchestration with planning, implementation, and review subagents.
 argument-hint: Feature description or requirements for TDD orchestration (e.g., "Add customer loyalty points system")
 ---
 

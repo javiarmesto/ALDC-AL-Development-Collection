@@ -84,6 +84,14 @@ says more precisely. Two examples:
   preamble's host-contract line plus the mapping table, which states the same
   boundaries once and declares them binding.
 
+One thing the plugin had and the canonical genuinely lacked went **up**, not
+across: six agents (`al-agent-builder`, `al-architect`, `al-conductor`,
+`al-developer`, `al-presales`, `al-triage`) carried a `Use when …` sentence in
+their plugin `description` that the canonical did not have. `description` governs
+agent selection on every surface, Copilot included, so the sentence belongs in
+`agents/*.agent.md` — promoting it is not invention, and from there it reaches all
+four distributions and the VSIX through `packages/foundation`.
+
 Every rule-like line that disappeared was checked against the canonical corpus.
 All of them have an owner there **except one**:
 
@@ -114,6 +122,18 @@ approval, and only then delegate. The row reaches all twelve agents and all
 eleven workflows at once, and the canonical is left alone — writing the rule
 there would restate, for Copilot and the VSIX, something their own host already
 enforces.
+
+## Reading `plans.root` on a user's machine
+
+`scripts/plans-root.js` parses the one knob the installer needs without a YAML
+dependency, because `scripts/install.js` also runs from payloads that carry no
+`node_modules`. Parsing narrowly is not a licence to guess: the wrong folder
+would seed `memory.md` in one place and report another as missing, silently, in
+someone's project rather than in CI. So the default applies **only** when there
+is nothing to read — no `aldc.yaml`, or no `plans:` block in it. A block that
+cannot be read with confidence (a shape the parser does not cover, an
+unterminated quote, an absolute or escaping path) throws and names the file.
+`scripts/test-plans-root.js` pins that contract.
 
 ## Regenerating
 

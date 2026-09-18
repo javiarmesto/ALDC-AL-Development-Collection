@@ -34,21 +34,11 @@ const C = {
   dim: '\x1b[2m',
 };
 
-// ─── plans.root ─────────────────────────────────────────────────────────────
 // Requirement artifacts live where aldc.yaml says, not where this file guesses.
-// Read without a YAML dependency: the installer also runs from payloads that do
-// not carry node_modules. The fallback is the canonical Copilot/VSIX default.
-function plansRootOf(...dirs) {
-  for (const dir of dirs) {
-    if (!dir) continue;
-    const file = path.join(dir, 'aldc.yaml');
-    if (!fs.existsSync(file)) continue;
-    const match = fs.readFileSync(file, 'utf8')
-      .match(/^plans:[ \t]*\r?\n(?:[ \t]*#[^\n]*\r?\n)*[ \t]+root:[ \t]*["']?([^"'\s#]+)/m);
-    if (match) return match[1].replace(/[\\/]+$/, '');
-  }
-  return '.github/plans';
-}
+// The reader has no YAML dependency (this runs from payloads without
+// node_modules) and refuses rather than defaulting when it cannot read the key
+// with confidence — a wrong plans root is a silent failure in someone's project.
+const { plansRootOf } = require('./plans-root');
 
 let JSON_MODE = false;
 const out = (...args) => { if (!JSON_MODE) console.log(...args); };

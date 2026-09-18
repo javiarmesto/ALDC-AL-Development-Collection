@@ -1,6 +1,6 @@
 ---
 name: al-agent-builder
-description: Agent Toolkit Builder — specialist in designing and coding Business Central agents using the AI Development Toolkit and Agent SDK. Follows the official Agent Template project structure. Handles both Designer (no-code) and SDK (pro-code) paths.
+description: Agent Toolkit Builder — specialist in designing and coding Business Central agents using the AI Development Toolkit and Agent SDK. Follows the official Agent Template project structure. Handles both Designer (no-code) and SDK (pro-code) paths. Use when building BC agents or agent SDK integrations.
 tools:
   - read
   - search

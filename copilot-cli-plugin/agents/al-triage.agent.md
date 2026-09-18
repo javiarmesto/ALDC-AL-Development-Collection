@@ -1,6 +1,6 @@
 ---
 name: al-triage
-description: 'Reactive support for EXISTING Business Central AL code — reproduce, localize, root-cause, and recommend a minimal fix for bugs, regressions, and incidents. Read-only on code: produces a diagnosis and hands the fix to @al-developer. The dynamic counterpart to Dredd (static audit).'
+description: 'Reactive support for EXISTING Business Central AL code — reproduce, localize, root-cause, and recommend a minimal fix for bugs, regressions, and incidents. Read-only on code: produces a diagnosis and hands the fix to @al-developer. The dynamic counterpart to Dredd (static audit). Use when you start from a symptom ("this throws", "this is slow", "broke after the last change").'
 tools:
   - read
   - search
