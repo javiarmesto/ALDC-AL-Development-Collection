@@ -37,9 +37,27 @@ approve code generated in your own context as an independent review.
    as completed, not applicable, skipped with reason, partial, failed or pending.
    Follow provider relevance rules; do not execute irrelevant checks merely to
    fill a table. Reuse already-read knowledge within this invocation.
+   Entry may return **more than one top-level skill** in `dispatch[]` — for example the
+   `al-code-review` super-skill plus the Community `al-agents-review` leaf, which is a
+   first-level peer and not one of the super-skill's children. Execute every dispatched
+   entry and retain **every** resulting findings-report; never treat the first report as
+   the whole run. Roll each one into `sub-results` and account for it in coverage under
+   its own domain label.
+   When the provider documents bounded retrieval helpers (BCQuality: `tools/Search-Knowledge.ps1`
+   for the catalog and `tools/Get-KnowledgeArticles.ps1` for bodies), prefer them over ad-hoc
+   reads where an execution capability exists: they page deterministically, cap each response,
+   and return per-article SHA-256 so a cited body is provably the one that was read. Without
+   that capability, use the provider's native bounded reads through EOF and never treat a
+   retrieval failure as an empty result.
 4. Index refresh is independent. If writes/PowerShell are unavailable or forbidden,
    record `provider.index.status: not-attempted` and use the provider's documented
-   path-based lookup. A missing fresh index alone does not cancel code review.
+   path-based lookup.
+   When the project carries an installer receipt (`.github/aldc-bcquality-index.json`) whose
+   `corpusSha` matches the observed corpus revision, report `provider.index.status:
+   prebuilt` with that receipt's hash and use the provider's index-backed retrieval —
+   including its bounded pagination and per-article content-hash validation. A mismatched
+   or absent receipt is `not-attempted`, not a failure.
+   A missing fresh index alone does not cancel code review.
    If lookup fails, name the exact resource, attempted operation and observed error.
 5. Retain actual sub-results and references. Reading a leaf or describing its
    intended behavior is not a completed check. An executed attempt can fail or be

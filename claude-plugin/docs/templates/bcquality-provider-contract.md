@@ -21,11 +21,14 @@ code defect. ALDC's hard rules, extensions-only boundary and human gates remain.
 
 ## Plugin identity and invocation
 
-`plugin.id` defaults to `bcquality`; `plugin.skill` defaults to
-`bcquality-al-review`. `expectedVersion` and `sourceRef` are optional **expected**
+`plugin.id` defaults to `bcquality`; `plugin.skill` defaults to `al-code-review`
+(BCQuality >= 0.2.0; the earlier `bcquality-al-review` name was removed upstream).
+`expectedVersion` and `sourceRef` are optional **expected**
 identity, not installation commands or observed facts. A renamed skill requires
 explicit configuration; never infer equivalence by name. In particular a package
-exposing `al-code-review` does not establish that `bcquality-al-review` is loaded.
+exposing a differently named review skill does not establish
+that the configured skill is loaded: match the configured identity exactly, and treat
+a legacy `bcquality-al-review` installation as an incompatible, unverified provider.
 An observed version/revision mismatch is incompatible; an unavailable revision
 is unverified. If a configured expectation cannot be checked, keep native review
 active and report that limitation rather than certifying the provider.
@@ -61,9 +64,9 @@ Record `provider` inside `review.bcquality` (or `audit.bcquality`):
 {
   "mode": "plugin",
   "id": "bcquality",
-  "skill": "bcquality-al-review",
+  "skill": "al-code-review",
   "configured": true,
-  "expectedVersion": "0.1.0",
+  "expectedVersion": "0.2.0",
   "expectedSourceRef": null,
   "observedVersion": null,
   "observedSourceRef": null,
@@ -99,7 +102,15 @@ at the actual provider root. ALDC Doctor never runs it. Read-only reviewers must
 report `not-attempted` with the missing capability and use the provider's path-based
 fallback. No PowerShell, a read-only cache or a build failure does not block review.
 
-Index states: `unobserved`, `not-attempted`, `failed`, `generated`.
+Index states: `unobserved`, `not-attempted`, `failed`, `prebuilt`, `generated`.
+
+Claim `prebuilt` only with a receipt written by the ALDC installer for **this** corpus
+revision: it records the generator path, the index file's SHA-256 and the corpus SHA the
+index was built over. `prebuilt` is weaker than `generated` — it asserts the index was
+built over this exact revision by a prior authorized run, not during this invocation. A
+receipt whose `corpusSha` differs from the observed corpus revision is stale: report
+`not-attempted` and use path-based lookup. A read-only reviewer never upgrades
+`prebuilt` to `generated`.
 Claim `generated` only with an observed successful generator command, valid output
 JSON read at that root, and output SHA-256 plus freshness evidence tied to this run
 (before/after metadata or generator trace). A pre-existing file, catalog listing,

@@ -34,7 +34,7 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   if (typeof p !== 'object' || Array.isArray(p)) throw Error('external.bcquality.plugin must be an object');
   const plugin = {
     id: string(p.id, 'bcquality', 'plugin.id'),
-    skill: string(p.skill, 'bcquality-al-review', 'plugin.skill'),
+    skill: string(p.skill, 'al-code-review', 'plugin.skill'),
     expectedVersion: string(p.expectedVersion, '', 'plugin.expectedVersion'),
     sourceRef: string(p.sourceRef, '', 'plugin.sourceRef')
   };

@@ -31,17 +31,17 @@ external:
     # (microsoft/BCQuality). Override `url` to point at your own fork. The install
     # scripts read `url` / `ref` / `pinnedCommit` from here — this file is the single
     # source of truth.
-    url: "https://github.com/microsoft/BCQuality.git"
+    url: "https://github.com/javiarmesto/BCQuality.git"   # fork; upstream: microsoft/BCQuality
     ref: "main"                           # branch/tag to track when pinnedCommit is empty
-    pinnedCommit: ""                       # optional: set a 40-hex SHA for reproducible, pinned evidence
+    pinnedCommit: "b91443beec785606e08274dea3f402a99aaec7bd"  # without a pin the evidence is not reproducible
     home: "../bcquality"                  # external clone location (override: $BCQUALITY_HOME); 2nd workspace root
     entryPoint: "skills/entry.md"         # relative to `home`
     workspace: "aldc.code-workspace"      # multi-root workspace (this repo root + ../bcquality); see docs/bcquality.md
     # Used only with mode: plugin. Expectations do not install or prove identity.
     plugin:
       id: "bcquality"
-      skill: "bcquality-al-review"
-      expectedVersion: ""
+      skill: "al-code-review"          # BCQuality >= 0.2.0 (renamed upstream in #150)
+      expectedVersion: "0.2.0"
       sourceRef: ""
     consumedBy: ["agents/al-review-subagent.agent.md", "agents/dredd.agent.md", "agents/al-triage.agent.md"]
     # Missing/incompatible provider: native review, never an AL code defect.
@@ -50,10 +50,10 @@ external:
       residual: "A-G"            # expand the native checklist from A/C/F/G to full A-G
       outcome: "not-applicable"  # the bcquality.outcome the agents record
       neverBlock: true           # a missing layer never fails/aborts the review
-    pilotSkills:
-      - "microsoft/skills/review/al-performance-review.md"
-      - "microsoft/skills/review/al-security-review.md"
-      - "microsoft/skills/review/al-style-review.md"
+    # Empty = full corpus. Entry's own relevance/worklist decides what runs; a leaf
+    # whose domain the diff does not touch returns not-applicable/no-knowledge cheaply.
+    # Populate ONLY to exclude a leaf deliberately (multiroot policy; never a plugin denylist).
+    pilotSkills: []
     evidence:
       persistedReportGlob: ".github/plans/**/*-bcquality-phase-*.json"
       validator: "tools/bcquality/validate_evidence.py"

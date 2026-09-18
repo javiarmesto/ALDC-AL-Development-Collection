@@ -85,7 +85,7 @@ The 11 core knowledge modules below are part of the 16 shipped skills, including
 BCQuality is an optional citable review provider. Follow the shared
 `docs/templates/bcquality-provider-contract.md`: `external.bcquality.mode` selects
 `plugin` or `external-multiroot`, and `enabled: false` skips every probe. Plugin
-mode loads the exact configured skill (default `bcquality-al-review`); multiroot
+mode loads the exact configured skill (default `al-code-review`); multiroot
 reads the configured external Entry. Keep full native A–G until actual results
 establish domain coverage. Track discovery, loading, execution and best-effort
 index generation separately. Expected versions/revisions are not observed facts.

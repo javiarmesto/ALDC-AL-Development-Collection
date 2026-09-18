@@ -6,7 +6,7 @@ opt-in. No provider is installed or invoked simply by declaring it in `aldc.yaml
 
 | Mode | Source | Entry | When unavailable |
 |---|---|---|---|
-| `plugin` | Host-installed plugin with the configured identity | Configured skill, default `bcquality-al-review` | Full native A–G; no automatic clone substitution |
+| `plugin` | Host-installed plugin with the configured identity | Configured skill, default `al-code-review` | Full native A–G; no automatic clone substitution |
 | `external-multiroot` | External folder configured by `home` | `entryPoint`, default `skills/entry.md` | Full native A–G |
 | Either with `enabled: false` | None read | No probe or invocation | Full native A–G |
 
@@ -22,15 +22,15 @@ external:
     enabled: auto
     plugin:
       id: bcquality
-      skill: bcquality-al-review
-      expectedVersion: "0.1.0"
+      skill: al-code-review
+      expectedVersion: "0.2.0"
       sourceRef: "" # Optional full commit SHA; verify against the actual installation.
 ```
 
 This selects a compatible adapter exposing that skill; it does not imply that
 current upstream supplies it. Inspect the installed manifest and skill body.
-If a different release exposes `al-code-review`, configure that exact skill and
-its actual expected version explicitly. A renamed skill is not a discovery alias.
+If a release exposes a differently named review skill, configure that exact skill
+and its actual expected version explicitly. A renamed skill is not a discovery alias.
 An expected revision/version that cannot be observed remains unverified; an
 observed mismatch uses native fallback. Do not copy consumer fork layers or pins
 into shared defaults.
@@ -53,6 +53,15 @@ bash tools/bcquality/install.sh
 # Windows alternative:
 pwsh -File tools/bcquality/install.ps1
 ```
+
+### Using an organization fork
+
+Point `url` at the fork and set `pinnedCommit`. The `/custom/` layer then carries
+organization rules with precedence over Community and Microsoft, and the evidence CI
+resolves those citations because it clones from the same configured `url`. Keep the
+upstream as a second remote in the fork and merge deliberately; never overwrite the fork
+with an upstream snapshot — that discards the custom layer. Authoring rules for that
+layer live in the provider's own WRITE contract, not here.
 
 These commands clone/update only in enabled multiroot mode. In plugin mode or
 when disabled, they exit before any Git/provider operation. YAML is parsed by the

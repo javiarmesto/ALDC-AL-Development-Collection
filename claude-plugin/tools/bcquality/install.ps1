@@ -91,6 +91,47 @@ if (-not (Test-Path $entry)) {
 $actual = (git -C $BcqualityHome rev-parse HEAD).Trim()
 Say "BCQuality ready at $BcqualityHome (HEAD = $actual)"
 
+# --- Knowledge index (best-effort accelerator) ---------------------------------
+# BCQuality's Entry preparation step rebuilds this over the live clone. Building it
+# here, right after a pinned checkout, means every read-only reviewer finds a fresh
+# index without needing a shell. Never fatal: READ falls back to path discovery.
+#
+# The generator dot-sources Knowledge-Retrieval.ps1, which uses
+# `ConvertFrom-Json -AsHashtable` (PowerShell 7 only). This installer may be running
+# under Windows PowerShell 5, so the generator is always launched through `pwsh`.
+$generator = Join-Path $BcqualityHome 'tools/Build-KnowledgeIndex.ps1'
+$indexPath = Join-Path $BcqualityHome 'knowledge-index.json'
+$receipt   = Join-Path (Get-Location).Path '.github/aldc-bcquality-index.json'
+$pwsh      = Get-Command pwsh -ErrorAction SilentlyContinue
+if (-not $pwsh) {
+    Warn 'PowerShell 7 (pwsh) not found; skipping the knowledge index. Reviewers will use path-based discovery.'
+} elseif (-not (Test-Path $generator)) {
+    Warn "Generator not found at $generator; skipping the knowledge index."
+} else {
+    # Remove any stale index first, so a failed build can never leave an old file
+    # that looks fresh. `pwsh` is a native executable, so $LASTEXITCODE is reliable.
+    Remove-Item -LiteralPath $indexPath -ErrorAction SilentlyContinue
+    & $pwsh.Source -NoProfile -File $generator -BCQualityRoot (Resolve-Path $BcqualityHome).Path
+    if ($LASTEXITCODE -eq 0 -and (Test-Path $indexPath)) {
+        $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $indexPath).Hash.ToLower()
+        New-Item -ItemType Directory -Force -Path (Split-Path $receipt) | Out-Null
+        $json = [ordered]@{
+            status      = 'prebuilt'
+            indexPath   = $indexPath
+            indexSha256 = $hash
+            corpusSha   = $actual
+            generatedAt = (Get-Date).ToUniversalTime().ToString('o')
+            generator   = 'tools/Build-KnowledgeIndex.ps1'
+        } | ConvertTo-Json
+        # UTF-8 WITHOUT BOM. Windows PowerShell's `-Encoding utf8` writes a BOM and
+        # Node's JSON.parse rejects it, which would make the receipt unreadable.
+        [IO.File]::WriteAllText($receipt, $json, [Text.UTF8Encoding]::new($false))
+        Say "Knowledge index built (sha256 $($hash.Substring(0,12))...)."
+    } else {
+        Warn 'Knowledge index build failed; reviewers will use path-based discovery.'
+    }
+}
+
 if ($BcqualityPin) {
     Say "Pinned to $BcqualityPin (aldc.yaml)."
 } else {

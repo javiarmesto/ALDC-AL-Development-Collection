@@ -35,9 +35,12 @@ confidence. The contract caps findings derived from an `unknown` dimension at
 ## Provider routing and scope
 
 Apply [the provider contract](bcquality-provider-contract.md) before constructing
-this context. Preserve the real request and actual paths. For multiroot, derive
-pilot exclusions from the configured `pilotSkills` and the available Entry
-contract; never assume a fixed list of leaves. For plugin mode, load the configured
+this context. Preserve the real request and actual paths. For multiroot, derive exclusions
+from the configured `pilotSkills`. **An empty `pilotSkills` means the full corpus:
+omit `disabled-skills` entirely** rather than sending an empty array, and never
+assume a fixed list of leaves. Omit `enabled-layers` too unless the project
+configures it — Entry's own default is all three layers (microsoft, community,
+custom), which is what a fork with `/custom/` rules needs. For plugin mode, load the configured
 skill and use its supported inputs/layer controls; do not copy a multiroot denylist
 or custom consumer layer. If a requested restriction cannot be expressed, state
 that limitation and continue native checks for that scope.

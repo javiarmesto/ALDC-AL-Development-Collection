@@ -11,6 +11,7 @@
  *   npx aldc verify-install [--json]
  *   npx aldc rollback [--json]
  *   npx aldc validate [--target-dir <dir>]
+ *   npx aldc bcq-index [--build] [--json]
  *   npx aldc --help
  *
  * --json prints one structured document on stdout for hosts such as the VS Code
@@ -79,6 +80,7 @@ function parseArgs(argv) {
     json: false,
     write: false,
     expectPlan: null,
+    build: false,          // bcq-index --build
     // withPacks removed — bc-agents components are now regular optional content
   };
 
@@ -103,6 +105,8 @@ function parseArgs(argv) {
       parsed.expectPlan = args[++i];
     } else if (a === '--write') {
       parsed.write = true;
+    } else if (a === '--build') {
+      parsed.build = true;
     } else if (a === '--force' || a === '-f') {
       parsed.force = true;
     } else if (a === '--help' || a === '-h') {
@@ -566,15 +570,23 @@ function status(opts) {
   const markerKey = state.receipt === 'valid' ? (state.paths || []).find(p => p === 'aldc-profile.json' || p.endsWith('/aldc-profile.json')) : null;
   const receiptTarget = markerKey ? (markerKey.includes('/') ? markerKey.slice(0, markerKey.lastIndexOf('/')) : '.') : null;
   const targetMismatch = receiptTarget !== null && receiptTarget !== relTarget ? receiptTarget : null;
+  // BCQuality knowledge index — observation only, never a probe of the provider.
+  let bcqIndex = { status: 'unobserved', detail: 'not evaluated' };
+  try { bcqIndex = require('../tools/bcquality/index-state').status(projectDir); } catch { /* non-fatal */ }
+  const bcqIcon = { prebuilt: '🟢', generated: '🟢', 'not-attempted': '⚪', failed: '🔴', unobserved: '⚪' }[bcqIndex.status] || '⚪';
+  const bcqLine = `${bcqIcon} BCQuality index: ${bcqIndex.status} — ${bcqIndex.detail}`
+    + (bcqIndex.status === 'not-attempted' ? '\n   run: npx aldc bcq-index --build' : '');
   return { ok: state.receipt === 'valid' && state.drift.length === 0 && targetMismatch === null, command: 'status', targetDir: relTarget, receiptTarget, targetMismatch,
     profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem, installedVersion: marker.version,
     toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),
     doctorScript: fs.existsSync(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) ? relTarget + '/tools/context-doctor/aldc_context_doctor.py' : null,
-    message: state.receipt === 'absent' ? 'No installation receipt. Older toolkit copies may have no receipt; Install reviews existing-file collisions.'
+    bcqIndex,
+    message: (state.receipt === 'absent' ? 'No installation receipt. Older toolkit copies may have no receipt; Install reviews existing-file collisions.'
       : state.receipt === 'invalid' ? `Invalid installation receipt (${state.receiptPath}): ${state.receiptProblem}. Preserve the receipt/backups and inspect before replacing anything.`
       : targetMismatch ? `Installation receipt records target "${targetMismatch}", not "${relTarget}". Verify and restore apply to the recorded target; install to "${relTarget}" only after moving or rolling back the recorded installation.`
       : state.drift.length ? 'Drift: ' + state.drift.join(', ')
-      : 'Managed files match installation receipt; host loading remains unverified.',
+      : 'Managed files match installation receipt; host loading remains unverified.')
+      + '\n' + bcqLine,
     ...state };
 }
 
@@ -713,6 +725,7 @@ ${C.cyan}Commands:${C.reset}
   install     Install ALDC toolkit into current project
   solution    Report the declared AL layout against the folders on disk (--write to update it)
   validate    Verify installation is complete
+  bcq-index   Report the BCQuality knowledge-index state (--build to create it)
   --help      Show this help
 
 ${C.cyan}Options:${C.reset}
@@ -910,6 +923,16 @@ switch (opts.command) {
       const result = solution(opts);
       if (JSON_MODE) emit(result); else out(result.message);
     } catch (e) { fail('solution', e); }
+    break;
+  case 'bcq-index':
+    try {
+      // Inside the try: config.js throws a stated error when the YAML reader is
+      // absent, and that belongs in fail(), not in an uncaught stack trace.
+      const idx = require('../tools/bcquality/index-state');
+      const result = opts.build ? idx.build(process.cwd()) : idx.status(process.cwd());
+      if (JSON_MODE) emit(result, idx.OK_STATES.has(result.status) ? 0 : 1);
+      else { out(`BCQuality index: ${result.status} — ${result.detail}`); process.exitCode = idx.OK_STATES.has(result.status) ? 0 : 1; }
+    } catch (e) { fail('bcq-index', e); }
     break;
   case 'validate':
     validate(opts).catch((e) => { err(e.message); process.exit(1); });

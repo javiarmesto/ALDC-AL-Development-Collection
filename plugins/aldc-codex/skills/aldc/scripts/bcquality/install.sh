@@ -81,6 +81,41 @@ fi
 ACTUAL="$(git -C "$BCQUALITY_HOME" rev-parse HEAD)"
 say "BCQuality ready at $BCQUALITY_HOME (HEAD = $ACTUAL)"
 
+# --- Knowledge index (best-effort accelerator) ---------------------------------
+# BCQuality's Entry preparation step rebuilds this over the live clone. Building it
+# here, right after a pinned checkout, means every read-only reviewer finds a fresh
+# index without needing a shell. Never fatal: READ falls back to path discovery.
+#
+# The generator dot-sources Knowledge-Retrieval.ps1, which uses
+# `ConvertFrom-Json -AsHashtable` (PowerShell 7 only), so it is always run through
+# `pwsh` and never through a 5.x `powershell`.
+GENERATOR="$BCQUALITY_HOME/tools/Build-KnowledgeIndex.ps1"
+INDEX_PATH="$BCQUALITY_HOME/knowledge-index.json"
+RECEIPT="$PWD/.github/aldc-bcquality-index.json"
+if ! command -v pwsh >/dev/null 2>&1; then
+  warn "PowerShell 7 (pwsh) not found; skipping the knowledge index. Reviewers will use path-based discovery."
+elif [ ! -f "$GENERATOR" ]; then
+  warn "Generator not found at $GENERATOR; skipping the knowledge index."
+else
+  # Remove any stale index first, so a failed build can never leave an old file
+  # that looks fresh.
+  rm -f "$INDEX_PATH"
+  if pwsh -NoProfile -File "$GENERATOR" -BCQualityRoot "$BCQUALITY_HOME" && [ -f "$INDEX_PATH" ]; then
+    if command -v sha256sum >/dev/null 2>&1; then
+      INDEX_SHA="$(sha256sum "$INDEX_PATH" | cut -d" " -f1)"
+    else
+      INDEX_SHA="$(shasum -a 256 "$INDEX_PATH" | cut -d" " -f1)"   # macOS
+    fi
+    # Written by Node, which this installer already requires: it escapes the path
+    # correctly and never emits a BOM, which JSON.parse would reject.
+    node -e 'const fs=require("fs"),path=require("path");const[i,s,c,r]=process.argv.slice(1);fs.mkdirSync(path.dirname(r),{recursive:true});fs.writeFileSync(r,JSON.stringify({status:"prebuilt",indexPath:i,indexSha256:s,corpusSha:c,generatedAt:new Date().toISOString(),generator:"tools/Build-KnowledgeIndex.ps1"},null,2)+"\n")' \
+      "$INDEX_PATH" "$INDEX_SHA" "$ACTUAL" "$RECEIPT"
+    say "Knowledge index built (sha256 $(printf %.12s "$INDEX_SHA")...)."
+  else
+    warn "Knowledge index build failed; reviewers will use path-based discovery."
+  fi
+fi
+
 if [ -n "$BCQUALITY_PIN" ]; then
   say "Pinned to $BCQUALITY_PIN (aldc.yaml)."
 else

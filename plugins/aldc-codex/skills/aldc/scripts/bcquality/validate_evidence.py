@@ -46,6 +46,9 @@ def collect_citations(report: dict) -> list[str]:
 OUTCOMES = ("completed", "partial", "failed")
 VERDICTS = ("APPROVED", "APPROVED_WITH_RECOMMENDATIONS", "NEEDS_REVISION", "FAILED")
 COVERAGE_STATUS = ("completed", "not-applicable", "skipped", "partial", "failed", "pending")
+SEVERITIES = ("blocker", "major", "minor", "info")
+CONFIDENCES = ("high", "medium", "low")
+CAPPED_CONFIDENCES = ("medium", "low")   # native/agent findings
 
 
 def nonempty_str(value) -> bool:
@@ -77,17 +80,48 @@ def check_shape(rel: str, report: dict, errors: list[str], depth: int = 0) -> No
             if not isinstance(finding, dict):
                 errors.append(f"{where}findings[{i}] must be an object.")
                 continue
+            severity = finding.get("severity")
+            if severity is not None and severity not in SEVERITIES:
+                errors.append(f"{where}findings[{i}].severity must be one of "
+                              f"{', '.join(SEVERITIES)} (got {severity!r}).")
+            confidence = finding.get("confidence")
+            if confidence is not None and confidence not in CONFIDENCES:
+                errors.append(f"{where}findings[{i}].confidence must be one of "
+                              f"{', '.join(CONFIDENCES)} (got {confidence!r}).")
             refs = finding.get("references")
-            if refs is None:
-                continue
-            if not isinstance(refs, list):
+            if refs is not None and not isinstance(refs, list):
                 errors.append(f"{where}findings[{i}].references must be an array.")
                 continue
+            # An absent citation list is an empty one, not a reason to stop checking:
+            # native and agent findings are exactly the ones that carry no references,
+            # and they are the ones the identity and cap rules below are about.
+            refs = refs or []
             for j, ref in enumerate(refs):
                 if not isinstance(ref, dict):
                     errors.append(f"{where}findings[{i}].references[{j}] must be an object.")
                 elif "path" in ref and not nonempty_str(ref["path"]):
                     errors.append(f"{where}findings[{i}].references[{j}].path must be a non-empty string.")
+
+            # DO: a citation-based finding's id IS its primary knowledge path.
+            fid = finding.get("id")
+            paths = [r.get("path") for r in refs if isinstance(r, dict) and r.get("path")]
+            if paths:
+                if fid != paths[0]:
+                    errors.append(f"{where}findings[{i}].id must equal references[0].path "
+                                  f"(id={fid!r}, references[0].path={paths[0]!r}).")
+            elif nonempty_str(fid):
+                # Native and agent findings carry no citation and are advisory-capped.
+                if fid.startswith(("agent:", "native:")):
+                    if confidence is not None and confidence not in CAPPED_CONFIDENCES:
+                        errors.append(f"{where}findings[{i}]: {fid.split(':', 1)[0]} findings "
+                                      f"cap confidence at medium (got {confidence!r}).")
+                    if fid.startswith("agent:") and severity in ("blocker", "major"):
+                        errors.append(f"{where}findings[{i}]: agent findings are advisory; "
+                                      f"severity caps at minor (got {severity!r}).")
+                else:
+                    errors.append(f"{where}findings[{i}].id {fid!r} has no references and no "
+                                  f"native:/agent: prefix; it is neither a citation, a native "
+                                  f"check nor an agent finding.")
 
     for scope in ("review", "audit"):
         section = report.get(scope)

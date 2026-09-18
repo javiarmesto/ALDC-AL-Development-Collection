@@ -74,7 +74,7 @@ At **checkpoints / milestones** (HITL pauses, phase gates) render the **Checkpoi
 🚦 **Checkpoint — Phase {N}/{Total}: {Phase Name}**   `▰▰▰▰▱▱ {N}/{Total}`
 📦 {deliverables} · 🔌 {event subscribers} · 🧪 {tests X/X ✅ | n/a}
 🔎 {BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
-✅ {verdict} — {b}/{M}/{m}{ · ⚠️ {top actionable finding}}
+✅ {verdict} — {gating} gating · {b}/{M}/{m}{ · ⚠️ {top gating finding}}
 💾 {next-step question}   (or ⏸️ revise)
 ```
 
@@ -203,28 +203,37 @@ implementer. Do not send an empty code-correction loop for a provider limitation
 Keep the human gate pending when the required evidence cannot be obtained.
 
 **Gate on the JSON (defense in depth — Q4):**
-1. Parse the `### Review-Report (JSON)` block; read `summary.counts` and `review.verdict`.
-2. **Recompute the baseline** yourself from `summary.counts` (do not just trust the reported verdict):
-   - any `blocker` → **NEEDS_REVISION** (or **FAILED** if `review.notes` flags it fundamental/unfixable)
-   - else any `major` → **NEEDS_REVISION**
-   - else any `minor` → **APPROVED_WITH_RECOMMENDATIONS**
+1. Parse the `### Review-Report (JSON)` block; read `findings[]`, `outcome` and `review.verdict`.
+2. **Recompute the baseline** yourself from `findings[]` — not from `summary.counts`,
+   which carries no confidence or source and therefore cannot express the gating
+   predicate. Apply the predicate in the review-report contract (§Verdict):
+   - any **gating** finding → **NEEDS_REVISION** (or **FAILED** if `review.notes` flags
+     it fundamental/unfixable)
+   - else any other actionable finding → **APPROVED_WITH_RECOMMENDATIONS**
    - else → **APPROVED**
+   A `partial`/`failed` outcome is a coverage result: take it to the human gate with the
+   uncovered domains named; never convert it into implementer work.
 3. Compare your baseline against `review.verdict`. If they match, use it. If they diverge, accept the reviewer's verdict **only** when `review.notes` carries an explicit override reason; otherwise take your (stricter) baseline and record the discrepancy in the phase-complete file.
 4. If the `### Review-Report (JSON)` block is missing or unparseable, treat the phase as **FAILED** and consult the user — there is no markdown fallback now that the JSON is the subagent's only output.
 
 Act on the resulting verdict:
 - **APPROVED / APPROVED_WITH_RECOMMENDATIONS** → proceed to commit (2C).
-- **NEEDS_REVISION** → return to 2A. Build the revision task from `findings[]` where `actionable: true` (this **includes `minor`** — Q1), authoring it for the implement-subagent from each finding's `message`, `location`, `fix-hint`, and `references`. The implementer's contract is unchanged — you still author the task; you now author it from the structured findings instead of re-parsed prose.
+- **NEEDS_REVISION** → return to 2A. Build the revision task from the **gating** findings
+  plus any non-gating finding carrying `suggested-code` (a mechanical fix is cheap and
+  closes itself). Every other actionable finding — advisory minors and all agent findings —
+  is recorded as a recommendation in the phase-complete document, not sent to the
+  implementer. Author the task from each selected finding's `message`, `location`,
+  `fix-hint` and `references`. The implementer's contract is unchanged.
 - **FAILED** → stop and consult user.
 
 #### 2C. Phase Completion & Commit
 
-1. **Render the Checkpoint card** for the user from the Review-Report JSON — completion slots, short, for the HITL gate. The `🔎` row consumes the BCQuality one-liner + the implementer's symbolic skills line; surface the top actionable finding inline so the user can decide without opening the JSON:
+1. **Render the Checkpoint card** for the user from the Review-Report JSON — completion slots, short, for the HITL gate. The `🔎` row consumes the BCQuality one-liner + the implementer's symbolic skills line; surface the top gating finding inline so the user can decide without opening the JSON:
    ```
    🚦 **Checkpoint — Phase {N}/{Total}: {Phase Name}**   `▰▰▰▰▱▱ {N}/{Total}`
    📦 {AL objects} · 🔌 {event subscribers} · 🧪 {X/X ✅ | n/a}
    🔎 {BCQuality <observed-stage/outcome> <observed-sha-or-unknown> | ⚪ native} · 📐 instr ✓ · 🧠 {skill·tag, …}
-   ✅ {verdict} — {blocker}/{major}/{minor}{ · ⚠️ {top actionable finding}}
+   ✅ {verdict} — {gating} gating · {blocker}/{major}/{minor}{ · ⚠️ {top gating finding}}
    💾 Commit msg in {req_name}-phase-{N}-complete.md → **commit & {start Phase {N+1} | finalize}?**   (or ⏸️ revise)
    ```
 

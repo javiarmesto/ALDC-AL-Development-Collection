@@ -249,7 +249,7 @@ def bcquality_observations(snapshot, runtime, root, host):
     mismatch = [key for key, value in expected.items() if value and obs.get(key) and obs[key] != value]
     unverified = [key for key, value in expected.items() if value and not obs.get(key)]
     index = obs.get("index", {"status": "unobserved"})
-    if not isinstance(index, dict) or index.get("status") not in {"unobserved", "not-attempted", "failed", "generated"}:
+    if not isinstance(index, dict) or index.get("status") not in {"unobserved", "not-attempted", "failed", "prebuilt", "generated"}:
         raise ValueError("BCQuality index status is invalid")
     if index["status"] != "unobserved" and (not isinstance(index.get("detail"), str) or not index["detail"].strip()):
         raise ValueError("BCQuality index observation needs detail")

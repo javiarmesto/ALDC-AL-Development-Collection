@@ -25,7 +25,7 @@ function doctor(obs, ok = true, snapshot = true) {
   return JSON.parse(run('python3', [path.join(root, 'tools/context-doctor/aldc_context_doctor.py'), '--workspace',temp,'--host','claude','--operation','compile-app','--bcquality-config',path.join(temp,'config.json'),'--runtime',path.join(temp,'runtime.json'),'--json'], ok));
 }
 const config = (mode = 'plugin', enabled = 'auto', plugin = {}) => write('aldc.yaml', {external:{other:{url:'WRONG',ref:'WRONG',home:'WRONG'},bcquality:{mode,enabled,plugin}}});
-const observed = extra => ({mode:'plugin',id:'bcquality',skill:'bcquality-al-review', detail:'Fixture only: not a live host execution', ...extra});
+const observed = extra => ({mode:'plugin',id:'bcquality',skill:'al-code-review', detail:'Fixture only: not a live host execution', ...extra});
 try {
   write('app.json', {application:'29.0.0.0',runtime:'18.0'});
   config();
@@ -35,7 +35,7 @@ try {
   assert.equal(doctor(observed({discovered:false})).bcquality.native_fallback, true);
   doctor(observed({loaded:true}), false);
   doctor(observed({discovered:true,loaded:true,executed:true}), false);
-  doctor(observed({skill:'al-code-review',discovered:true}), false);
+  doctor(observed({skill:'bcquality-al-review',discovered:true}), false); // legacy name is an incompatible provider, not an alias
   let full = observed({discovered:true,loaded:true,executed:true,outcome:'completed', index:{status:'not-attempted',detail:'No PowerShell in this fixture'}});
   assert.equal(doctor(full).bcquality.status, 'executed-reported');
   assert.equal(doctor(full).bcquality.index.status, 'not-attempted');
@@ -82,7 +82,7 @@ try {
   run('git',['init','--quiet']);
   config();
   const reportDir=path.join(temp,'.github/plans/test');fs.mkdirSync(reportDir,{recursive:true});
-  fs.writeFileSync(path.join(reportDir,'test-review-phase-1.json'),JSON.stringify({skill:{id:'al-review-subagent',version:1},outcome:'completed',findings:[{references:[{path:'missing.md'}]}]}));
+  fs.writeFileSync(path.join(reportDir,'test-review-phase-1.json'),JSON.stringify({skill:{id:'al-review-subagent',version:1},outcome:'completed',findings:[{id:'missing.md',references:[{path:'missing.md'}]}]}));
   assert.match(run('python3',[path.join(root,'tools/bcquality/validate_evidence.py')]),/citation resolution UNVERIFIED/);
   fs.mkdirSync(path.join(temp,'corpus/skills'),{recursive:true});write('corpus/skills/entry.md','fixture');
   run('python3',[path.join(root,'tools/bcquality/validate_evidence.py'),'--bcquality-root',path.join(temp,'corpus')],false);
@@ -98,12 +98,37 @@ try {
     {skill:{id:'r',version:1},outcome:'completed',findings:[],review:{verdict:'MAGNIFICENT'}},
     {skill:{id:'r',version:1},outcome:'completed',findings:[],review:{coverage:[{check:'x',status:'invented'}]}},
     {skill:{id:'r',version:1},outcome:'completed',findings:[],'sub-results':[{skill:'nested',outcome:'completed',findings:[]}]},
+    // A cited finding's id IS its primary knowledge path; anything else breaks
+    // occurrence identity across passes.
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'wrong.md',references:[{path:'missing.md'}]}]},
+    // Agent findings are advisory: they never carry blocker/major.
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'agent:multi-turn',severity:'major'}]},
+    // Native findings have no article to cite, so their confidence is capped.
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'native:events:isolated-storage',confidence:'high'}]},
+    // severity/confidence are closed vocabularies, not free text.
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'missing.md',references:[{path:'missing.md'}],severity:'BANANA'}]},
+    // Neither a citation, a native check nor an agent finding.
+    {skill:{id:'r',version:1},outcome:'completed',findings:[{id:'something-invented'}]},
   ]) {
     fs.writeFileSync(path.join(reportDir,'bad-review-phase-2.json'), JSON.stringify(bad));
     run('python3',[path.join(root,'tools/bcquality/validate_evidence.py')],false);
   }
   fs.unlinkSync(path.join(reportDir,'bad-review-phase-2.json'));
   write('corpus/missing.md','fixture citation');
+  // B: with the full corpus enabled, Entry can dispatch more than one FIRST-LEVEL
+  // skill - the al-code-review super-skill plus the Community al-agents-review leaf.
+  // Both reports have to survive in sub-results, with their display domains intact.
+  assert.deepEqual(readConfig(temp).bcquality.pilotSkills, []);
+  fs.writeFileSync(path.join(reportDir,'two-review-phase-3.json'), JSON.stringify({
+    skill:{id:'al-review-subagent',version:1}, outcome:'completed', findings:[],
+    review:{verdict:'APPROVED_WITH_RECOMMENDATIONS', coverage:[
+      {check:'al-code-review',status:'completed'},{check:'al-agents-review',status:'completed'}]},
+    'sub-results':[
+      {skill:{id:'al-code-review',version:1},outcome:'completed',findings:[
+        {id:'missing.md',domain:'Accessibility',severity:'minor',confidence:'high',references:[{path:'missing.md'}]}]},
+      {skill:{id:'al-agents-review',version:1},outcome:'completed',findings:[
+        {id:'agent:multi-turn',domain:'Agents',severity:'minor',confidence:'medium'}]},
+    ]}));
   assert.match(run('python3',[path.join(root,'tools/bcquality/validate_evidence.py'),'--bcquality-root',path.join(temp,'corpus')]),/citation resolution CHECKED/);
   // Generated surfaces carry the same normalizer and exact provider contract.
   for (const base of ['claude-plugin','copilot-cli-plugin','plugins/aldc-codex']) {

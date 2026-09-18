@@ -423,7 +423,7 @@ On first enable, the plugin prompts for optional settings:
 ## Using BCQuality (recommended)
 
 BCQuality supports explicit `plugin` and `external-multiroot` modes in `aldc.yaml`.
-Plugin mode loads the configured skill (default `bcquality-al-review`); multiroot
+Plugin mode loads the configured skill (default `al-code-review`); multiroot
 retains the external Entry workflow. An expected version or commit is not proof of
 the installed identity, and catalog discovery is not execution. When unavailable,
 native review continues. See [configuration and evidence](docs/bcquality.md).

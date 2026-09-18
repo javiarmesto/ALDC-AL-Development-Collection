@@ -146,7 +146,7 @@ No npm/yarn build steps. AL compilation is handled by the AL Language VS Code ex
 ```
 instructions/          # Auto-applied instruction files (9)
 agents/                # Agent definitions (5 core + 3 on-demand + 3 subagents + 1 extension)
-skills/                # Composable knowledge modules (17 skill directories)
+skills/                # Composable knowledge modules (16 skill directories)
 prompts/               # Workflow definitions (11 prompt files)
 docs/framework/        # Normative spec (ALDC-Core-Spec-v1.2.md)
 docs/templates/        # Immutable templates

@@ -42,11 +42,34 @@ path where available. Symbol/tool evidence is separate from knowledge references
 Small mechanical fixes can include literal suggested replacement text, without
 editing the source. Every actionable finding, including minor, has `actionable: true`.
 
+Preserve each provider finding's `domain` display label verbatim, including labels that
+do not match the folder name: the UI leaf emits `"Accessibility"` (not "UI"), the
+Community Agent SDK leaf emits `"Agents"`, and a super-skill's own cross-cutting
+findings emit `"Agent"`. Treat `domain` as display text, never as an identifier: do not
+lowercase, slugify or tokenize it for deduplication keys.
+
 ## Verdict
 
-For a completed review: blocker/major → NEEDS_REVISION; minor →
-APPROVED_WITH_RECOMMENDATIONS; otherwise APPROVED. A fundamental defect may be FAILED
-with explanation. For a partial review use NEEDS_REVISION with the missing review
-work in notes/coverage, not fabricated code findings; a failed review is FAILED.
-Missing required build/test evidence keeps delivery approval pending. An explicitly
-static verdict applies only to that scope. Human approval remains separate.
+A finding is **gating** when its severity is `blocker` or `major` **and** it is either
+knowledge-backed with `confidence: high` (non-empty `references`) or a native check with
+an applicable `native-rule`. Native checks gate on severity alone: their capped
+confidence reflects the absence of citable authority, not doubt. Agent findings
+(`agent:` id, no `references`, no `native-rule`) are advisory and **never** gate.
+
+For a completed review: any gating finding → NEEDS_REVISION; otherwise, any
+non-gating actionable finding → APPROVED_WITH_RECOMMENDATIONS; otherwise APPROVED.
+A fundamental defect may be FAILED with explanation.
+
+`actionable: true` marks a finding the implementer can act on. Only gating findings and
+non-gating findings carrying `suggested-code` are routed as revision work; every other
+finding is recorded as a recommendation in the phase-complete document and is not a task.
+
+A partial or failed review is about **coverage**, not code: never fabricate code findings
+for it. Retry only the missing checks once; if the gap persists, return the review with
+the uncovered domains named explicitly and take it to the human gate. Do not send the
+implementer work for a provider failure. Missing required build/test evidence keeps
+delivery approval pending. An explicitly static verdict applies only to that scope.
+Human approval remains separate.
+
+State the applied predicate in `review.verdict-basis`, e.g.
+`"2 gating (1 blocker knowledge-backed high, 1 major native:A); 7 recommendations"`.

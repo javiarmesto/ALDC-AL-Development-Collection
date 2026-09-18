@@ -94,3 +94,6 @@ PUSH.ps1
 /ALDC-Evidencias*.zip
 /docs/worklogs/
 /TEST-VSIX.md
+
+# BCQuality knowledge-index receipt (local accelerator state, per machine)
+.github/aldc-bcquality-index.json

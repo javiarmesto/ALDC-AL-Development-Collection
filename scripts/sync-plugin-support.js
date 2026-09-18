@@ -43,7 +43,7 @@ function support(surface, rootDir = root) {
     if (surface === 'codex' && rel === 'README.md') body = body.replaceAll('../../docs/templates/', 'templates/');
     files.set(dest, body);
   }
-  for (const rel of ['bcquality/precondition_hook.sh', 'bcquality/precondition_hook.ps1', 'bcquality/config.js', 'bcquality/validate_evidence.py', 'bcquality/install.sh', 'bcquality/install.ps1', 'aldc-validate/package.json', 'aldc-validate/index.js']) {
+  for (const rel of ['bcquality/precondition_hook.sh', 'bcquality/precondition_hook.ps1', 'bcquality/config.js', 'bcquality/index-state.js', 'bcquality/validate_evidence.py', 'bcquality/install.sh', 'bcquality/install.ps1', 'aldc-validate/package.json', 'aldc-validate/index.js']) {
     const dest = surface === 'codex' ? 'skills/aldc/scripts/' + rel : 'tools/' + rel;
     files.set(dest, fs.readFileSync(path.join(rootDir, 'tools', rel), 'utf8'));
   }
