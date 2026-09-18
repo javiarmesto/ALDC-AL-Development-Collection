@@ -253,6 +253,25 @@ try {
     if (strayCache) fs.rmSync(pycache,{recursive:true,force:true});
   }
 
+  // A surface that relocates its work products must not leave the validator globbing
+  // the canonical folder: finding nothing there reads as a pass, so a silently
+  // ignored audit report would be reported as evidence validated.
+  const relocated = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-relocated-'));
+  try {
+    fs.mkdirSync(path.join(relocated, '.agents/audits'), { recursive: true });
+    fs.writeFileSync(path.join(relocated, 'aldc.yaml'),
+      'toolkitRoot: "."\nplans:\n  root: ".agents/plans"\naudits:\n  root: ".agents/audits"\n');
+    assert.equal(readConfig(relocated).audits.root, '.agents/audits', 'audits.root is normalized like plans.root');
+    fs.writeFileSync(path.join(relocated, '.agents/audits/dredd-audit-2026-01-01-0000.json'),
+      JSON.stringify({ skill: { id: 'dredd', version: 1 }, outcome: 'completed', findings: [] }));
+    spawnSync('git', ['init', '--quiet'], { cwd: relocated });
+    const out = spawnSync('python3', [path.join(root, 'tools/bcquality/validate_evidence.py')],
+      { cwd: relocated, encoding: 'utf8' });
+    assert.equal(out.status, 0, out.stderr);
+    assert.match(out.stdout, /across 1 file\(s\)/, 'the audit report at the declared root is found');
+    assert.doesNotMatch(out.stdout, /no evidence files/, 'a relocated root must not read as no evidence');
+  } finally { fs.rmSync(relocated, { recursive: true, force: true }); }
+
   // Generated surfaces carry the same normalizer and exact provider contract.
   for (const base of ['claude-plugin','copilot-cli-plugin','plugins/aldc-codex']) {
     const codex=base.includes('codex');

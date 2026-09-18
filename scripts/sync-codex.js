@@ -6,13 +6,14 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const { split, stripAdapterPreamble } = require('./sync-copilot-cli');
-const { support, plansRootFor } = require('./sync-plugin-support');
+const { support, plansRootFor, auditsRootFor } = require('./sync-plugin-support');
 const { walk, provenance, normalized } = require('./package-provenance');
 const ROOT = path.resolve(__dirname,'..'), DEST = 'plugins/aldc-codex';
 const REF = '.agents/skills/aldc/references';
 // Requirement artifacts follow the surface, beside the `.agents/skills/aldc` tree.
 // The Claude adapter is this adapter's input, so both spellings reach us here.
 const PLANS = plansRootFor(ROOT, 'codex');
+const AUDITS = auditsRootFor(ROOT, 'codex');
 const toPlansRoot = (text) => text.split('.claude/plans').join(PLANS).split('.github/plans').join(PLANS);
 // Codex's permission surface, and the closest thing it has to the `tools` grant the
 // canonical contract already carries. Legal values are read-only, workspace-write and
@@ -40,6 +41,7 @@ function bodyFor(text) {
     .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\//g, '.agents/skills/aldc/')
     .replace(/\$\{CLAUDE_PROJECT_DIR\}\//g, '')
     .replace(/\.claude\/plans/g, PLANS).replace(/\.github\/plans/g, PLANS)
+    .replace(/\.github\/audits/g, AUDITS)
     .replaceAll('../../docs/templates/', '../../templates/').replaceAll('../docs/templates/', '../templates/').replaceAll('../rules-templates/', '../rules/').replace(/Claude Code/g,'Codex')
     .replace(/`?\bTodoWrite\b`?/g,'the available planning tool (or the plan document)')
     .replace(/\bTask tool\b/g,'subagent delegation tool').replace(/`Task`/g,'subagent delegation')

@@ -67,6 +67,12 @@ external:
 plans:
   root: ".github/plans"
 
+# Where Dredd persists its audit reports. The second work-product folder, read the
+# same way as plans.root so a surface that relocates one can relocate the other:
+# the Codex package ships .agents/audits beside its .agents/plans.
+audits:
+  root: ".github/audits"
+
 contracts:
   globalMemory: "memory.md"
   namingConvention: "{req_name}.{type}.md"

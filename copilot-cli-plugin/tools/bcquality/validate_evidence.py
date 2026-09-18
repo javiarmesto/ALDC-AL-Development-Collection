@@ -18,9 +18,10 @@ def repo_root() -> str:
     return subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
 
 
-def provider_config(root):
+def workspace_config(root):
+    """The whole normalized snapshot: the work-product roots as well as the provider."""
     script = os.path.join(os.path.dirname(__file__), "config.js")
-    return json.loads(subprocess.check_output(["node", script, root], text=True))["bcquality"]
+    return json.loads(subprocess.check_output(["node", script, root], text=True))
 
 
 def primary_citations(report: dict) -> set[str]:
@@ -239,8 +240,12 @@ def check_shape(rel: str, report: dict, errors: list[str], depth: int = 0) -> No
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Validate BCQuality evidence.")
-    ap.add_argument("--plans-dir", default=".github/plans")
-    ap.add_argument("--audits-dir", default=".github/audits")
+    # Both default to the configured roots rather than the canonical folder names: a
+    # surface that relocates its work products (the Codex package uses .agents/plans and
+    # .agents/audits) would otherwise leave this validator globbing an empty directory
+    # and reporting no evidence, which reads as a pass.
+    ap.add_argument("--plans-dir", default=None, help="default: aldc.yaml plans.root")
+    ap.add_argument("--audits-dir", default=None, help="default: aldc.yaml audits.root")
     ap.add_argument("--bcquality-root", default=None,
                     help="path to the external BCQuality clone "
                          "(default: $BCQUALITY_HOME or aldc.yaml external.bcquality.home)")
@@ -256,10 +261,13 @@ def main() -> int:
     notes: list[str] = []
 
     try:
-        config = provider_config(root)
+        snapshot = workspace_config(root)
     except (OSError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"setup error: BCQuality configuration unavailable: {exc}", file=sys.stderr)
         return 2
+    config = snapshot["bcquality"]
+    plans_dir = args.plans_dir or snapshot["plans"]["root"]
+    audits_dir = args.audits_dir or snapshot["audits"]["root"]
     plugin = config["mode"] == "plugin"
     pinned = config["plugin"]["sourceRef"] if plugin else config["pinnedCommit"]
     # An explicit corpus may validate historical reports even when disabled.
@@ -292,8 +300,8 @@ def main() -> int:
     # superset/audit report covers its BCQuality citations too.
     evidence = []
     for suffix in ("*-review-phase-*.json", "*-bcquality-*.json"):
-        evidence.extend(glob.glob(os.path.join(root, args.plans_dir, "**", suffix), recursive=True))
-    evidence.extend(glob.glob(os.path.join(root, args.audits_dir, "**", "*-audit-*.json"), recursive=True))
+        evidence.extend(glob.glob(os.path.join(root, plans_dir, "**", suffix), recursive=True))
+    evidence.extend(glob.glob(os.path.join(root, audits_dir, "**", "*-audit-*.json"), recursive=True))
     evidence = sorted(set(evidence))
     if not evidence:
         notes.append("no evidence files (review-phase / bcquality / audit) found — nothing to validate.")

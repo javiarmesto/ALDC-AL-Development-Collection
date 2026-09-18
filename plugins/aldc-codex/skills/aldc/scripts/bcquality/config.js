@@ -68,6 +68,12 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   const pl = data.plans ?? {};
   if (typeof pl !== 'object' || Array.isArray(pl)) throw Error('plans must be an object');
   const plansRoot = string(pl.root, '.github/plans', 'plans.root', true);
+  // Dredd's audit reports are the other work product, and move with their surface the
+  // same way. validate_evidence.py takes its --audits-dir default from here rather than
+  // hard-coding the folder, so relocating it does not leave the validator looking elsewhere.
+  const au = data.audits ?? {};
+  if (typeof au !== 'object' || Array.isArray(au)) throw Error('audits must be an object');
+  const auditsRoot = string(au.root, '.github/audits', 'audits.root', true);
   const relative = (v, field) => {
     if (path.isAbsolute(v) || v.split(/[\\/]/).includes('..')) throw Error(`${field}: expected a relative path inside the workspace`);
     return v.split('\\').join('/').replace(/\/+$/, '');
@@ -79,9 +85,10 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   const plans = { root: plansPath, globalMemory: string(c.globalMemory, 'memory.md', 'contracts.globalMemory', true),
     // A legacy value already anchored at the plans root stays as written.
     archiveFolder: archive.startsWith(`${plansPath}/`) ? archive : `${plansPath}/${archive}` };
+  const audits = { root: relative(auditsRoot, 'audits.root') };
   return { contractVersion: 1, workspace: root, configPath: file,
     configSha256: raw ? crypto.createHash('sha256').update(raw).digest('hex') : null,
-    toolkitRoot, solution, plans, bcquality: config };
+    toolkitRoot, solution, plans, audits, bcquality: config };
 }
 if (require.main === module) {
   try { process.stdout.write(JSON.stringify(readConfig(process.argv[2] || '.'), null, 2) + '\n'); }
