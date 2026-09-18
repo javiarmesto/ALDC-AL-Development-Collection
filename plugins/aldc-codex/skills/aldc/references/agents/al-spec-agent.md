@@ -14,12 +14,6 @@ providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
-
-## Terminal host contract
-
-Read [the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md) before capability decisions. Resolve packaged rules from rules-templates/ or project rules from .agents/skills/aldc/references/rules; read only matching full bodies. The Spec write scope is the assigned .spec.md, regardless of broader editor permissions.
-
-
 # AL Spec Agent — canonical specification contract
 
 This role is the single behavioral contract for direct invocation and
@@ -52,7 +46,7 @@ family or an automatic decomposition/scheduling system.
 
 ## Assigned units, dependencies and parallel authoring
 
-Read [section 14 of the architecture template](../templates/architecture-template.md)
+Read [section 14 of the architecture template](.agents/skills/aldc/references/templates/architecture-template.md)
 for the shared decomposition rules, then resolve the assignment from the actual
 approved architecture. For multi-spec, require one unambiguous SPEC-ID and its
 unique output path in the same requirement folder; do not guess a unit, create
@@ -93,7 +87,7 @@ Do not compile, execute tests, install providers, publish or deploy. Tool edit
 permissions are broader than this behavioral write scope; they do not authorize
 other edits. Do not execute or emulate BCQuality before code exists. Define
 downstream review criteria that cite BCQuality knowledge paths — read path, per
-[the design guidance](../templates/bcquality-design-guidance.md) — and leave
+[the design guidance](.agents/skills/aldc/references/templates/bcquality-design-guidance.md) — and leave
 actual code review to Reviewer/Dredd.
 Do not approve your own spec or start implementation.
 
@@ -129,11 +123,11 @@ Do not approve your own spec or start implementation.
    query → `query`. House rules apply to every object they name. Not mounted: skip
    and say so.
 
-Instruction directory: `../rules/`. Domain entrypoints:
-`../skills/skill-events/GUIDE.md`, `../skills/skill-permissions/GUIDE.md`,
-`../skills/skill-testing/GUIDE.md`, `../skills/skill-pages/GUIDE.md`,
-`../skills/skill-performance/GUIDE.md`, `../skills/skill-api/GUIDE.md`,
-`../skills/skill-copilot/GUIDE.md`.
+Instruction directory: `.agents/skills/aldc/references/rules/`. Domain entrypoints:
+`.agents/skills/aldc/references/skills/skill-events/GUIDE.md`, `.agents/skills/aldc/references/skills/skill-permissions/GUIDE.md`,
+`.agents/skills/aldc/references/skills/skill-testing/GUIDE.md`, `.agents/skills/aldc/references/skills/skill-pages/GUIDE.md`,
+`.agents/skills/aldc/references/skills/skill-performance/GUIDE.md`, `.agents/skills/aldc/references/skills/skill-api/GUIDE.md`,
+`.agents/skills/aldc/references/skills/skill-copilot/GUIDE.md`.
 
 ## Ground only the material claim
 
@@ -167,7 +161,7 @@ inferred from documentation.
 
 ## Depth and output
 
-Use [the spec template](../templates/spec-template.md) as the section scaffold.
+Use [the spec template](.agents/skills/aldc/references/templates/spec-template.md) as the section scaffold.
 The role contract governs authoring; the template is not another workflow.
 
 - LOW: omit inapplicable sections, retain concrete acceptance and relevant checks.

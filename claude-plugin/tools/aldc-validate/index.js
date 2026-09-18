@@ -5,7 +5,7 @@
  *
  * Checks:
  *   1. aldc.yaml exists and parses correctly
- *   2. .github/plans/ directory exists
+ *   2. the configured plans root (aldc.yaml -> plans.root) exists
  *   3. memory.md (global) exists
  *   4. Requirement sets are complete ({req_name}.spec.md + .architecture.md + .test-plan.md)
  *   5. Templates exist and are unmodified (optional hash check)
@@ -86,7 +86,13 @@ if (!fileExists(memoryPath)) {
 // Architect-assigned unit specs in that same folder, so any *.spec.md satisfies spec.
 if (fileExists(plansRoot)) {
   const contractTypes = cfg.contracts?.types || ["spec", "architecture", "test-plan"];
-  const archiveFolder = path.normalize(cfg.contracts?.archiveFolder || path.join(plansRoot, "archive"));
+  // archiveFolder is relative to plans.root. A legacy value that already starts at
+  // the plans root (".github/plans/archive") is honoured as written, so a project
+  // that has not migrated its aldc.yaml keeps working.
+  const configuredArchive = cfg.contracts?.archiveFolder || "archive";
+  const startsAtPlansRoot = path.normalize(configuredArchive).startsWith(path.normalize(plansRoot) + path.sep);
+  const archiveFolder = path.normalize(startsAtPlansRoot || path.isAbsolute(configuredArchive)
+    ? configuredArchive : path.join(plansRoot, configuredArchive));
   const entries = fs.readdirSync(plansRoot, { withFileTypes: true });
   const requirements = entries.filter(e => e.isDirectory() && !e.name.startsWith(".") &&
     path.normalize(path.join(plansRoot, e.name)) !== archiveFolder);

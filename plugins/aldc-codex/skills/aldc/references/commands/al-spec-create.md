@@ -14,11 +14,10 @@ providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
-
 # AL specification entrypoint
 
 Use `al-spec-agent` with the requirement, complexity and scope supplied in the current request.
-Read and follow [the canonical specification contract](../agents/al-spec-agent.md)
+Read and follow [the canonical specification contract](.agents/skills/aldc/references/agents/al-spec-agent.md)
 in full before authoring. This entrypoint does not define another specification
 workflow. Resolve the role link from this installed prompt's directory.
 

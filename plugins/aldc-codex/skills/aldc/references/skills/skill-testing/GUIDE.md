@@ -1,6 +1,6 @@
 ---
 name: skill-testing
-description: "AL test development patterns for Business Central. Use when creating test codeunits, writing Given/When/Then test procedures, using Library Assert, configuring test projects, or implementing TDD workflows."
+description: AL test development patterns for Business Central. Use when creating test codeunits, writing Given/When/Then test procedures, using Library Assert, configuring test projects, or implementing TDD workflows.
 ---
 
 # Skill: AL Testing & Test Strategy
@@ -371,8 +371,8 @@ Create `.github/plans/{req_name}.test-plan.md` using `.agents/skills/aldc/refere
 ```
 RED phase:
   1. Write failing test(s) for the current requirement
-  2. Run: al compile → verify compilation
-  3. Run test (VS Code `AL: Run Tests` or the AL-Go/CI test runner) → confirm it FAILS (no implementation yet)
+  2. Run: al_build → verify compilation
+  3. Run test → confirm it FAILS (no implementation yet)
 
 GREEN phase:
   4. Implement minimum code to make test(s) pass
@@ -388,7 +388,7 @@ REFACTOR phase:
 2. Create library codeunit per domain: `"Library - Feature Name"`
 3. Implement tests following GWT pattern (Pattern 1)
 4. Add handlers (Pattern 4) for any dialogs
-5. Run: `shell: al compile` + test execution (VS Code `AL: Run Tests` or the AL-Go/CI test runner)
+5. Run: `al_build` + test execution
 
 ### Step 4: Test Isolation
 
@@ -450,7 +450,7 @@ end;
 
 ## Constraints
 
-- This skill covers **active test design, patterns, and TDD integration** — it does NOT duplicate passive rules in `al-testing.md` (auto-applied to `**/test/**/*.al`)
+- This skill covers **active test design, patterns, and TDD integration** — it does NOT duplicate passive rules in `al-testing.instructions.md` (auto-applied to `**/test/**/*.al`)
 - Tests MUST live in the Test project, NEVER in the App folder (per AL-Go structure)
 - Do NOT generate tests without explicit user request
 - Do NOT create interdependent tests that rely on execution order

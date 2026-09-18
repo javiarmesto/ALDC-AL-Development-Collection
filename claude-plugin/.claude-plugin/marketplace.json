@@ -5,14 +5,36 @@
     "url": "https://github.com/javiarmesto"
   },
   "metadata": {
-    "description": "ALDC — AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents, skills, workflows, and coding standards for extension-only development."
+    "description": "AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents (architect, developer, conductor, pre-sales, agent-builder, triage, dredd) + TDD subagents, skills, and workflows for extension-only development with TDD, BCQuality-cited review/audit, event-driven architecture, and HITL gates."
   },
   "plugins": [
     {
       "name": "aldc",
+      "displayName": "ALDC for Claude Code",
       "source": "./",
-      "description": "AL agents (incl. on-demand triage + dredd audit) + TDD subagents, skills, and workflows for BC extension development with TDD, BCQuality-cited review, event-driven architecture, and HITL gates.",
-      "version": "4.4.0"
+      "description": "AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents (architect, developer, conductor, pre-sales, agent-builder, triage, dredd) + TDD subagents, skills, and workflows for extension-only development with TDD, BCQuality-cited review/audit, event-driven architecture, and HITL gates.",
+      "version": "4.4.0",
+      "author": {
+        "name": "javiarmesto",
+        "url": "https://github.com/javiarmesto"
+      },
+      "homepage": "https://github.com/javiarmesto/ALDC-AL-Development-Collection",
+      "repository": "https://github.com/javiarmesto/ALDC-AL-Development-Collection",
+      "category": "development",
+      "keywords": [
+        "AL",
+        "Business Central",
+        "Dynamics 365",
+        "ERP",
+        "extension-development",
+        "TDD",
+        "event-driven",
+        "Microsoft",
+        "architecture",
+        "testing",
+        "API",
+        "debugging"
+      ]
     }
   ]
 }

@@ -1,3 +1,4 @@
 {
-  "surface": "cli"
+  "surface": "cli",
+  "plansRoot": ".github/plans"
 }

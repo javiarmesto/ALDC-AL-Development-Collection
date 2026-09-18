@@ -3,7 +3,10 @@
     "al-symbols-mcp": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@nicholasglazer/al-symbols-mcp"]
+      "args": [
+        "-y",
+        "@nicholasglazer/al-symbols-mcp"
+      ]
     },
     "context7": {
       "type": "http",

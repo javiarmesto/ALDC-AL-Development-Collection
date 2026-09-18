@@ -34,6 +34,22 @@ const C = {
   dim: '\x1b[2m',
 };
 
+// ─── plans.root ─────────────────────────────────────────────────────────────
+// Requirement artifacts live where aldc.yaml says, not where this file guesses.
+// Read without a YAML dependency: the installer also runs from payloads that do
+// not carry node_modules. The fallback is the canonical Copilot/VSIX default.
+function plansRootOf(...dirs) {
+  for (const dir of dirs) {
+    if (!dir) continue;
+    const file = path.join(dir, 'aldc.yaml');
+    if (!fs.existsSync(file)) continue;
+    const match = fs.readFileSync(file, 'utf8')
+      .match(/^plans:[ \t]*\r?\n(?:[ \t]*#[^\n]*\r?\n)*[ \t]+root:[ \t]*["']?([^"'\s#]+)/m);
+    if (match) return match[1].replace(/[\\/]+$/, '');
+  }
+  return '.github/plans';
+}
+
 let JSON_MODE = false;
 const out = (...args) => { if (!JSON_MODE) console.log(...args); };
 const log = (msg, c = '') => out(`${c}${msg}${C.reset}`);
@@ -213,7 +229,7 @@ function plannedFiles({ packageDir, projectDir, targetDir, profile, transform = 
     // names and settings live here. Seed it once and never replace it, not even with
     // --force, exactly like project memory.
     add(path.join(packageDir, '.github/copilot-instructions.md'), path.join(projectDir, '.github/copilot-instructions.md'));
-    add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, '.github/plans/memory.md'), true);
+    add(path.join(packageDir, 'docs/templates/memory-template.md'), path.join(projectDir, plansRootOf(projectDir, packageDir), 'memory.md'), true);
     // The extension's "Getting Started" command opens this file from the install
     // target, so packaging it without installing it left a command that could
     // never succeed. The VSIX flattens it to the payload root; the repo and tgz
@@ -678,19 +694,20 @@ async function validate(opts) {
     warnings++;
   }
 
-  // Check plans directory and memory
-  const plansDir = path.join(projectDir, '.github', 'plans');
+  // Check plans directory and memory (location from aldc.yaml -> plans.root)
+  const plansRel = plansRootOf(projectDir);
+  const plansDir = path.join(projectDir, plansRel);
   if (fs.existsSync(plansDir)) {
-    ok('.github/plans/');
+    ok(`${plansRel}/`);
     const memory = path.join(plansDir, 'memory.md');
     if (fs.existsSync(memory)) {
-      ok('.github/plans/memory.md');
+      ok(`${plansRel}/memory.md`);
     } else {
-      log(`  ! .github/plans/memory.md — missing (recommended)`, C.yellow);
+      log(`  ! ${plansRel}/memory.md — missing (recommended)`, C.yellow);
       warnings++;
     }
   } else {
-    err('.github/plans/ — MISSING');
+    err(`${plansRel}/ — MISSING`);
     errors++;
   }
 
@@ -774,7 +791,7 @@ ${C.cyan}What gets installed:${C.reset}
   <project-root>/
     aldc.yaml         ALDC Core configuration
     .github/copilot-instructions.md   Copilot entrypoint
-    .github/plans/memory.md           Global memory template
+    <plans.root>/memory.md            Global memory template (default .github/plans)
 `);
 }
 

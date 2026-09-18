@@ -1,6 +1,6 @@
 ---
 name: skill-permissions
-description: "AL permission set design for Business Central. Use when creating PermissionSets, implementing least-privilege access, or designing security models for extensions."
+description: AL permission set design for Business Central. Use when creating PermissionSets, implementing least-privilege access, or designing security models for extensions.
 ---
 
 # Skill: AL Permission Management
@@ -22,7 +22,7 @@ This skill should be loaded when:
 
 ### Pattern 1: AL Permission Set Object (Preferred)
 
-Write the `permissionset` object as AL code with Write/Edit (in VS Code, `AL: Generate permission set` scaffolds one for a human to start from), then refine:
+Generate with the VS Code permission-set generation command (not an agent tool), then refine:
 
 ```al
 permissionset 50100 "Contoso Sales"
@@ -140,7 +140,7 @@ permissionsetextension 50101 "Contoso D365 Read Ext" extends "D365 READ"
 
 ### Pattern 4: XML Permission Set (Legacy Format)
 
-Write the XML permission set directly with Write (in VS Code, `AL: Generate permission set (as XML)` scaffolds one for a human) when:
+Generate the XML format via the VS Code permission-set command (not an agent tool) when:
 - Targeting older BC versions (< BC 20)
 - Import via BC admin UI is required
 - Customer tooling only supports XML format
@@ -232,11 +232,11 @@ Justify each permission and confirm the principle of least privilege is respecte
 
 ### Step 3: Generate and Refine
 
-1. Write the initial full `permissionset` covering all new objects (VS Code `AL: Generate permission set` can scaffold one for a human)
+1. Generate the initial full set via the VS Code permission-set command (not an agent tool)
 2. Split into role-based layers (Pattern 2)
 3. Create `permissionsetextension` for standard BC roles if needed (Pattern 3)
 4. Add indirect permissions to codeunits (Pattern 5)
-5. Build: `shell: al compile` — verify no errors in the compiler output
+5. Build: `al_build` — verify no errors
 
 ### Step 4: Test with Restrictive Permissions
 

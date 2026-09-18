@@ -62,9 +62,26 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   if (typeof r !== 'object' || Array.isArray(r)) throw Error('solution.roots must be an object');
   const solution = { workspaceFile: string(s.workspaceFile, 'aldc.code-workspace', 'solution.workspaceFile', true),
     roots: { application: string(r.application, '', 'solution.roots.application'), test: string(r.test, '', 'solution.roots.test') } };
+  // Where requirement artifacts live. Normalized here so every Node consumer and
+  // the Doctor snapshot read one source instead of hard-coding .github/plans: a
+  // Claude Code deployment relocates them to .claude/plans through this knob.
+  const pl = data.plans ?? {};
+  if (typeof pl !== 'object' || Array.isArray(pl)) throw Error('plans must be an object');
+  const plansRoot = string(pl.root, '.github/plans', 'plans.root', true);
+  const relative = (v, field) => {
+    if (path.isAbsolute(v) || v.split(/[\\/]/).includes('..')) throw Error(`${field}: expected a relative path inside the workspace`);
+    return v.split('\\').join('/').replace(/\/+$/, '');
+  };
+  const c = data.contracts ?? {};
+  if (typeof c !== 'object' || Array.isArray(c)) throw Error('contracts must be an object');
+  const archive = relative(string(c.archiveFolder, 'archive', 'contracts.archiveFolder', true), 'contracts.archiveFolder');
+  const plansPath = relative(plansRoot, 'plans.root');
+  const plans = { root: plansPath, globalMemory: string(c.globalMemory, 'memory.md', 'contracts.globalMemory', true),
+    // A legacy value already anchored at the plans root stays as written.
+    archiveFolder: archive.startsWith(`${plansPath}/`) ? archive : `${plansPath}/${archive}` };
   return { contractVersion: 1, workspace: root, configPath: file,
     configSha256: raw ? crypto.createHash('sha256').update(raw).digest('hex') : null,
-    toolkitRoot, solution, bcquality: config };
+    toolkitRoot, solution, plans, bcquality: config };
 }
 if (require.main === module) {
   try { process.stdout.write(JSON.stringify(readConfig(process.argv[2] || '.'), null, 2) + '\n'); }

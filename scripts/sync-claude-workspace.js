@@ -22,7 +22,16 @@ const CHECK = process.argv.includes('--check');
 const MAP = [
   ['claude-plugin/agents', '.claude/agents'],
   ['claude-plugin/skills', '.claude/skills'],
-  ['claude-plugin/rules-templates', '.claude/rules'],
+  ['claude-plugin/rules', '.claude/rules'],
+];
+
+// El plugin resuelve sus rutas con ${CLAUDE_PLUGIN_ROOT}; en ESTE workspace no hay
+// plugin instalado, así que las reglas y skills espejadas apuntan a .claude/ y el
+// resto del árbol del plugin a claude-plugin/ dentro del propio proyecto.
+const WORKSPACE_PATHS = [
+  [/\$\{CLAUDE_PLUGIN_ROOT\}\/rules\//g, '${CLAUDE_PROJECT_DIR}/.claude/rules/'],
+  [/\$\{CLAUDE_PLUGIN_ROOT\}\/skills\//g, '${CLAUDE_PROJECT_DIR}/.claude/skills/'],
+  [/\$\{CLAUDE_PLUGIN_ROOT\}\//g, '${CLAUDE_PROJECT_DIR}/claude-plugin/'],
 ];
 
 let synced = 0, removed = 0, identical = 0;
@@ -47,14 +56,14 @@ for (const [srcRel, dstRel] of MAP) {
   for (const src of walk(srcRoot)) {
     const rel = path.relative(srcRoot, src);
     const dst = path.join(dstRoot, rel);
-    // Workspace rules are renamed and templates remain at the repository root.
-    // Keep the new shared Spec contract intact except for these host paths.
+    // Los cuerpos llegan ya adaptados por sync-plugin-support.js; aquí solo se
+    // reancla ${CLAUDE_PLUGIN_ROOT} al layout de este repositorio.
     let content = fs.readFileSync(src);
-    if (srcRel === 'claude-plugin/agents' && ['al-spec-agent.md', 'al-architect.md', 'al-review-subagent.md', 'al-developer-reviewer.md', 'dredd.md'].includes(rel)) {
-      content = Buffer.from(content.toString('utf8').replaceAll('../rules-templates/', '../rules/')
-        .replaceAll('../docs/templates/', '../../docs/templates/'));
+    if (rel.endsWith('.md')) {
+      let text = content.toString('utf8');
+      for (const [pattern, replacement] of WORKSPACE_PATHS) text = text.replace(pattern, replacement);
+      content = Buffer.from(text);
     }
-    if (srcRel === 'claude-plugin/skills' && rel.startsWith('skill-al-review-pipeline')) content = Buffer.from(content.toString('utf8').replaceAll('../../docs/templates/', '../../../docs/templates/'));
     const same = fs.existsSync(dst) && content.equals(fs.readFileSync(dst));
     if (same) { identical++; continue; }
     drift.push(`${dstRel}/${rel.split(path.sep).join('/')} (desactualizado)`);

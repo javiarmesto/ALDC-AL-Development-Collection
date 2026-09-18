@@ -363,7 +363,7 @@ ALDC is available as a native **Claude Code** integration in two forms:
 | --------- | ------------------- | ---------------- | ----- |
 | Agents | `.claude/agents/` | `agents/` | 8 public + 3 internal |
 | Skills | `.claude/skills/` | `skills/` | 16 composable knowledge modules |
-| Rules | `.claude/rules/` | `rules-templates/` (injected via `al-initialize`) | 8 coding standards |
+| Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 8 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
 | Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
 | Instructions | `CLAUDE.md` | `CLAUDE.md` | Agent routing, workflows |
@@ -375,7 +375,7 @@ GitHub Copilot              →  Claude Code (Direct)         →  Claude Code (
 ──────────────────────────────────────────────────────────────────────────────────────
 agents/*.agent.md           →  .claude/agents/*.md          →  agents/*.md
 skills/*/SKILL.md           →  .claude/skills/*/SKILL.md    →  skills/*/SKILL.md
-instructions/*.md           →  .claude/rules/*.md           →  rules-templates/*.md
+instructions/*.md           →  .claude/rules/*.md           →  rules/*.md
 prompts/*.prompt.md         →  .claude/skills/ (workflows)  →  skills/ (workflows)
 .github/copilot-instructions.md → CLAUDE.md                 →  plugin.json + CLAUDE.md
 ```
@@ -475,12 +475,12 @@ AL-Development-Collection-for-GitHub-Copilot/
 │   └── settings.json                     # Hooks + permissions
 │
 │── Claude Code Plugin ─────────────────────────────────
-├── claude-plugin/
+├── claude-plugin/                        # generado: scripts/sync-plugin-support.js
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
 │   ├── agents/                           # 12 agents (auto-discovered)
-│   ├── skills/                           # 16 skills (auto-discovered)
+│   ├── skills/                           # 9 role entries + 11 workflows + 16 knowledge
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
-│   ├── rules-templates/                  # 8 rules (injected via al-initialize)
+│   ├── rules/                            # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
 │   └── README.md                         # Plugin documentation
 │

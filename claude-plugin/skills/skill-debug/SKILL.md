@@ -1,6 +1,6 @@
 ---
 name: skill-debug
-description: "AL debugging and diagnostics for Business Central. Use when performing snapshot debugging, CPU profiling, analyzing telemetry, or troubleshooting runtime issues."
+description: AL debugging and diagnostics for Business Central. Use when performing snapshot debugging, CPU profiling, analyzing telemetry, or troubleshooting runtime issues.
 ---
 
 # Skill: AL Debugging & Diagnostics
@@ -31,11 +31,11 @@ Select the right tool before starting:
 
 | Issue Type | Strategy | Tool |
 |---|---|---|
-| Consistent runtime error | Standard debugger | VS Code AL debugger (attach, no publish) — human step |
-| Already deployed code | Debug without publish | VS Code AL debugger (attach, no publish) — human step |
-| Rapid dev cycle | Incremental publish | VS Code RAD publish (`AL: Publish without Debugging`) — human step |
-| Intermittent / hard-to-reproduce | Snapshot debugging | VS Code snapshot debugging — human step |
-| Slow performance | CPU profiling | VS Code CPU profiler — human step |
+| Consistent runtime error | Standard debugger | `al_debug` |
+| Already deployed code | Debug without publish | `al_debug` |
+| Rapid dev cycle | Incremental publish | `al_publish` (incremental) |
+| Intermittent / hard-to-reproduce | Snapshot debugging | `al_snapshotdebugging` |
+| Slow performance | CPU profiling | VS Code command (not an agent tool) |
 | Auth / symbols / build | Configuration troubleshoot | See Workflow Step 2b |
 | Copilot AI feature | Agent session debug | `launch.json` with `clientType: Agent` |
 
@@ -46,7 +46,7 @@ Scenario: "Value is wrong after posting"
 
 1. Set breakpoint at final location (where value is wrong)
 2. Work backwards to find where value is set
-3. Use al-symbols-mcp `al_find_references` (or `Grep` for text search) to find all assignments
+3. Use `usages` tool to find all assignments
 4. Set breakpoints at each assignment point
 5. Step through to find which execution path is taken
 6. Inspect conditions and variable states at each point
@@ -98,13 +98,11 @@ Before initializing:
 2. Security review for sensitive information
 3. Obtain explicit user approval
 
-Snapshot debugging is a VS Code / human step (no agent tool here).
-Ask the human to drive it in VS Code:
-  AL: Initialize Snapshot Debugging   ← start capture session
+Commands (one tool — `al_snapshotdebugging` — covers initialize / finish / view):
+  al_snapshotdebugging (initialize)   ← start capture session
   [reproduce scenario 10-20 times]
-  AL: Finish Snapshot Debugging       ← end capture
-  AL: Show snapshots                  ← view and compare
-then share the snapshots with you for analysis.
+  al_snapshotdebugging (finish)       ← end capture
+  al_snapshotdebugging (view)         ← view and compare
 
 Compare snapshots between success and failure cases:
 - Variable values at failure point
@@ -119,8 +117,8 @@ Compare snapshots between success and failure cases:
 
 Read existing plans context first:
 ```
-.github/plans/memory.md              ← project state and recent decisions
-.github/plans/*-diagnosis.md         ← previous debug sessions (similar issues)
+.claude/plans/memory.md              ← project state and recent decisions
+.claude/plans/*-diagnosis.md         ← previous debug sessions (similar issues)
 ```
 
 Gather issue information:
@@ -134,7 +132,7 @@ Gather issue information:
 
 ### Step 2a: Isolate the Problem (Runtime / Logic)
 
-1. Narrow down scope with `Grep`/`Glob` and al-symbols-mcp `al_find_references`
+1. Narrow down scope with `search` and `usages` tools
 2. Identify suspect objects (tables, pages, codeunits, event subscribers)
 3. Attach debugger with selected strategy (Pattern 1)
 4. Set strategic breakpoints:
@@ -149,17 +147,16 @@ Gather issue information:
 **Authentication failures** (401/403, cannot download symbols):
 ```
 ⚠️ HUMAN GATE: Clearing credentials disconnects active sessions.
-Clearing the credentials cache is a VS Code action (AL: Clear credentials cache),
-not an agent tool here. Confirm impact and obtain approval first,
-then ask the human to clear it, re-authenticate, and verify the
-launch.json authentication method.
+Confirm impact and obtain approval before clearing the credentials cache
+(a VS Code command, not an agent tool).
+Then re-authenticate and verify launch.json authentication method.
 ```
 
 **Missing symbols** (unresolved references, red squiggles):
 ```
-VS Code AL: Download Symbols   ← first attempt (human step; or restore the symbol cache in CI)
-VS Code AL: Download Source    ← if symbols persist (human step)
-al compile                     ← verify compilation
+al_downloadsymbols                      ← first attempt
+al_downloadsymbols (globalSourcesOnly)  ← if no BC server connection is available
+al_build                                ← verify compilation
 ```
 Check `app.json` dependencies version alignment.
 
@@ -168,7 +165,7 @@ Check `app.json` dependencies version alignment.
 - `AL0185` — Object ID conflict: check ID range in `app.json`, no duplicates
 - `AL0118` — Field length mismatch: align extension field length with base table
 
-**Publishing failures**: check environment connectivity, extension version increment, dependency resolution via `app.json` `dependencies` plus **al-symbols-mcp** `al_packages`.
+**Publishing failures**: check environment connectivity, extension version increment, dependency resolution via `al_packages`.
 
 ### Step 3: Diagnose Root Cause
 
@@ -187,7 +184,7 @@ Common AL root causes by scenario:
 
 ### Step 4: Document Diagnosis (MANDATORY)
 
-Create `.github/plans/<issue-kebab-case>-diagnosis.md` before proposing any fix:
+Create `.claude/plans/<issue-kebab-case>-diagnosis.md` before proposing any fix:
 
 ```markdown
 # Debug Session: <Issue Title>

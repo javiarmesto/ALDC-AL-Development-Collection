@@ -14,19 +14,6 @@ providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
-
 # AL Context File Generator
 
 Generate a comprehensive `context.md` file that serves as the **master context document** for AI assistants and developers working on this AL/Business Central project.
@@ -47,33 +34,33 @@ This enables AI assistants to load complete project context quickly and make inf
 ### 1. Analyze Project Structure
 
 **Load project metadata:**
-```
+```powershell
 # Get app.json configuration
-Read app.json
+@read_file app.json
 
-# Understand dependencies (app.json `dependencies` + al-symbols-mcp al_packages)
-al-symbols-mcp: al_packages
+# Understand dependencies
+@al_get_package_dependencies
 
 # Map directory structure
-Glob src/**
+@list_dir src/
 ```
 
 **Identify key patterns:**
-```
+```powershell
 # Find all table extensions
-Grep "tableextension" --glob *.al
+@search "tableextension" *.al
 
 # Find all page extensions
-Grep "pageextension" --glob *.al
+@search "pageextension" *.al
 
 # Find event subscribers
-Grep "EventSubscriber" --glob *.al
+@search "EventSubscriber" *.al
 
 # Find published integration events
-Grep "IntegrationEvent" --glob *.al
+@search "IntegrationEvent" *.al
 
 # Find API pages
-Grep "APIPublisher|APIVersion" --glob *.al
+@search "APIPublisher\|APIVersion" *.al
 ```
 
 ### 2. Analyze Business Domain
@@ -310,15 +297,18 @@ src/
 
 ## 15. Useful Commands
 
-```
+```powershell
 # Build project
-shell: al compile
+al_build
 
-# Download symbols (VS Code AL: Download Symbols, or restore the symbol cache in CI)
+# Download symbols
+al_downloadsymbols
 
-# Run tests (VS Code AL: Run Tests, or the AL-Go/CI test runner)
+# Run tests
+@workspace /al-test
 
-# Generate permissions (write the permissionset object as AL code)
+# Generate permissions
+al_generatepermissionset
 ```
 
 ## 16. References
@@ -327,7 +317,6 @@ shell: al compile
 - **Wiki**: [Link to wiki if exists]
 - **Related Extensions**: [Dependencies or companion extensions]
 
----
 ---
 
 **Maintenance**: Update this file when:

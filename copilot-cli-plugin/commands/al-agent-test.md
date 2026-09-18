@@ -1,27 +1,15 @@
 ---
-description: |
-  Generate comprehensive test codeunits for Business Central Agent SDK integrations. Covers 6 categories with correct interface signatures. Use when creating tests for BC agents or agent SDK code.
+description: 'Generate comprehensive test codeunits for Business Central Agent SDK integrations. Covers 6 categories: Registration, Factory, Metadata, TaskExecution, TaskIntegration, AgentSession. ALDC workflow (Copilot prompt al-agent.test); invoke explicitly.'
 ---
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
-
 # Workflow: Test Agent SDK Integration
 
-You are an expert AL test developer. Generate tests for all Agent SDK layers.
+Generates tests for all Agent SDK layers. Interface signatures come from `skill-agent-toolkit`; task pattern verification rules come from `skill-agent-task-patterns`.
 
-## 6 Required Test Categories
+**Load skills**: `skill-agent-toolkit` (interface signatures), `skill-agent-task-patterns` (Pattern C/D/H rules for integration tests).
 
-### 1. Registration Tests
+## 6 required test categories
+
+### 1. Registration tests
 
 ```al
 [Test]
@@ -45,7 +33,7 @@ begin
 end;
 ```
 
-### 2. Factory Tests (IAgentFactory)
+### 2. Factory tests (IAgentFactory)
 
 ```al
 [Test]
@@ -96,7 +84,7 @@ begin
 end;
 ```
 
-### 3. Metadata Tests (IAgentMetadata)
+### 3. Metadata tests (IAgentMetadata)
 
 ```al
 [Test]
@@ -127,7 +115,7 @@ begin
 end;
 ```
 
-### 4. Task Execution Tests (IAgentTaskExecution)
+### 4. Task Execution tests (IAgentTaskExecution)
 
 ```al
 [Test]
@@ -143,14 +131,17 @@ begin
 end;
 ```
 
-### 5. Task Integration Tests
+### 5. Task Integration tests
 
-- Task created with correct External ID format
+Apply Pattern C rules from `skill-agent-task-patterns`:
+
+- Task created with correct ExternalId format
 - Task NOT created when business condition is false
 - Message contains all required context fields
-- TryFunction does not block business events on failure
+- `[TryFunction]` does not block business events on failure
+- Telemetry logged via `Session.LogMessage` on failure
 
-### 6. Agent Session Tests
+### 6. Agent Session tests
 
 ```al
 [Test]
@@ -163,7 +154,7 @@ begin
 end;
 ```
 
-## Coverage Matrix
+## Coverage matrix
 
 | Category        | Test                     | Status |
 | --------------- | ------------------------ | ------ |
@@ -182,9 +173,20 @@ end;
 | TaskExecution   | InputValidation          |        |
 | TaskExecution   | OutputPostProcess        |        |
 | TaskExecution   | Suggestions              |        |
-| TaskExecution   | PageContext               |        |
+| TaskExecution   | PageContext              |        |
 | TaskIntegration | Creation                 |        |
 | TaskIntegration | ConditionFilter          |        |
 | TaskIntegration | MessageContent           |        |
 | TaskIntegration | ErrorHandling            |        |
 | AgentSession    | Detection                |        |
+
+## Skills Evidencing
+
+End with:
+
+```
+**Skills loaded**: skill-agent-toolkit, skill-agent-task-patterns
+**Patterns applied**:
+- Interface signatures verified against skill-agent-toolkit
+- Pattern C TryFunction + telemetry rules verified in integration tests
+```

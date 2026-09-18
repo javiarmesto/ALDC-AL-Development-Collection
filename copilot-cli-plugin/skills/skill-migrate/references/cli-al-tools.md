@@ -6,8 +6,9 @@ contract takes precedence over older examples of tool availability in their bodi
 it does not replace the Conductor workflow or its human gates.
 
 Resolve references to canonical `instructions/al-*.instructions.md` against this
-plugin's sibling `rules-templates/` when those files are not in the project. Claude
-templates use `.md` and `paths`; the generated CLI templates use `.instructions.md`
+plugin's sibling rules folder when those files are not in the project: `rules/` in
+the Claude Code plugin, `rules-templates/` in the generated Copilot CLI distribution.
+Claude rules use `.md` and `paths`; the generated CLI templates use `.instructions.md`
 and `applyTo`. Codex keeps its readable AL rules in the ALDC skill under
 `references/rules/`, without an auto-apply claim. Read the matching rules and pass the relevant content to subagents;
 do not assume editor auto-attachment or a plugin-root CLAUDE.md has loaded them.

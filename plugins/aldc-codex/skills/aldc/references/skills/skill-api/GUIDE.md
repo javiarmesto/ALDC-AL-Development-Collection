@@ -1,6 +1,6 @@
 ---
 name: skill-api
-description: "AL API development patterns for Business Central. Use when creating OData/REST API pages, HttpClient integrations, webhook implementations, or any external system integration via API."
+description: AL API development patterns for Business Central. Use when creating OData/REST API pages, HttpClient integrations, webhook implementations, or any external system integration via API.
 ---
 
 # Skill: AL API Development
@@ -294,136 +294,30 @@ page 50102 "Contoso Utility API"
 }
 ```
 
-### Pattern 5: API Versioning and Deprecation
+**When you need versioning/deprecation, webhooks, or trigger-level error handling, load** `references/api-advanced-patterns.md`.
 
-Maintain backward compatibility while evolving the API:
+## XML Documentation for Public Procedures
 
-```al
-// v1.0 — deprecated, keep running for existing consumers
-page 50100 "Contoso Sales Orders API v1"
-{
-    APIVersion = 'v1.0';
-    APIPublisher = 'contoso';
-    APIGroup = 'sales';
-    EntityName = 'salesOrder';
-    EntitySetName = 'salesOrders';
-    PageType = API;
-    SourceTable = "Sales Header";
-    ObsoleteState = Pending;
-    ObsoleteReason = 'Use v2.0. Will be removed in 2027.';
-    // ... limited field set from original v1 design ...
-}
-
-// v2.0 — current stable version
-page 50110 "Contoso Sales Orders API"
-{
-    APIVersion = 'v2.0';
-    APIPublisher = 'contoso';
-    APIGroup = 'sales';
-    EntityName = 'salesOrder';
-    EntitySetName = 'salesOrders';
-    PageType = API;
-    SourceTable = "Sales Header";
-    // ... full field set, navigation properties, actions ...
-}
-
-// beta — preview of next breaking change
-page 50120 "Contoso Sales Orders API v3"
-{
-    APIVersion = 'beta';
-    APIPublisher = 'contoso';
-    APIGroup = 'sales';
-    EntityName = 'salesOrder';
-    EntitySetName = 'salesOrders';
-    PageType = API;
-    SourceTable = "Sales Header";
-    // ... new structure, breaking changes ...
-}
-```
-
-**Versioning rules:**
-- Same `EntityName`/`EntitySetName` across versions — only `APIVersion` and page ID differ
-- Mark deprecated versions with `ObsoleteState = Pending` + `ObsoleteReason`
-- Use `beta` version for preview of breaking changes before promoting to stable
-- Never break an existing stable version — add new fields, don't rename or remove
-
-### Pattern 6: Webhooks (Subscription Notifications)
-
-BC supports webhook subscriptions for entity change notifications:
-
-```http
-# Register a webhook subscription
-POST /api/v2.0/subscriptions
-Content-Type: application/json
-
-{
-    "resource": "companies({companyId})/salesOrders",
-    "notificationUrl": "https://yourapp.com/webhook/bc-sales-orders",
-    "clientState": "your-secret-state-token"
-}
-```
-
-BC sends POST to `notificationUrl` when `salesOrders` are created, modified, or deleted:
-```json
-{
-    "value": [
-        {
-            "subscriptionId": "...",
-            "clientState": "your-secret-state-token",
-            "changeType": "updated",
-            "resource": "companies({companyId})/salesOrders({id})"
-        }
-    ]
-}
-```
-
-**Webhook design considerations:**
-- `notificationUrl` must be HTTPS and publicly accessible
-- BC sends a validation request on subscription creation (return 200 with the same body)
-- Subscriptions expire after 3 days — implement renewal logic in the consumer
-- Use `clientState` to validate incoming notifications are from BC
-- Webhooks provide notification only — consumer must call the API to get the actual data
-- Use `$filter` on subscription `resource` to limit scope: `salesOrders?$filter=status eq 'Released'`
-
-### Pattern 7: Error Handling in API Triggers
-
-Validate data and return meaningful error messages:
+Any `public` procedure that other modules call carries XML doc comments. This covers API pages (above), and equally the **library codeunits** invoked by API logic or by other codeunits — anything outside the unit's own boundary.
 
 ```al
-trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+/// <summary>
+/// Evaluates whether the customer qualifies as VIP based on sales volume
+/// and persists the result on Customer."VIP Customer".
+/// </summary>
+/// <param name="CustomerNo">The customer number to evaluate. Exits silently if blank or not found.</param>
+procedure EvaluateCustomer(CustomerNo: Code[20])
 begin
-    if Rec."Sell-to Customer No." = '' then
-        Error('Field "customerNumber" is required.');
-
-    ValidateCustomerIsActive(Rec."Sell-to Customer No.");
-    exit(true);
-end;
-
-trigger OnModifyRecord(): Boolean
-begin
-    if Rec.Status = Rec.Status::Released then
-        Error('Cannot modify a released order. Call .../Microsoft.NAV.reopen first.');
-    exit(true);
-end;
-
-trigger OnDeleteRecord(): Boolean
-begin
-    Rec.TestField(Status, Rec.Status::Open);
-    if HasPostedDocuments(Rec) then
-        Error('Cannot delete order %1: posted documents exist.', Rec."No.");
-    exit(true);
-end;
-
-local procedure ValidateCustomerIsActive(CustomerNo: Code[20])
-var
-    Customer: Record Customer;
-begin
-    if not Customer.Get(CustomerNo) then
-        Error('Customer %1 does not exist.', CustomerNo);
-    if Customer.Blocked <> Customer.Blocked::" " then
-        Error('Customer %1 is blocked.', CustomerNo);
+    // ...
 end;
 ```
+
+- `<summary>` (required) — what the procedure does and why a caller would invoke it.
+- `<param name="...">` (required for each non-trivial parameter) — what value to pass and constraints.
+- `<returns>` (required when there is a return value) — what the value means.
+- `local` and `internal` procedures: doc is optional.
+
+This surface is what IntelliSense presents to consumers and what AL's missing-documentation diagnostics flag.
 
 ## Workflow
 
@@ -447,7 +341,7 @@ Document in `.github/plans/{req_name}.architecture.md` or a dedicated API design
 3. Add bound actions for entity operations (Pattern 3)
 4. Add unbound actions if needed (Pattern 4)
 5. Add error handling triggers (Pattern 7)
-6. Build: `shell: al compile` (`al workspace compile` for a multi-project workspace)
+6. Build: `al_build`
 
 ### Step 3: Optimize for Performance
 

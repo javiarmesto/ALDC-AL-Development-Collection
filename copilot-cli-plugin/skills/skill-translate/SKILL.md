@@ -1,6 +1,6 @@
 ---
 name: skill-translate
-description: "AL translation and localization for Business Central. Use when working with XLF files, NAB tools, or implementing multi-language support in extensions."
+description: AL translation and localization for Business Central. Use when working with XLF files, NAB tools, or implementing multi-language support in extensions.
 ---
 
 # Skill: AL Translation Management
@@ -197,7 +197,7 @@ getTranslatedTextsMap
 
 ### Step 1: Setup
 
-1. Build the extension to generate the `.g.xlf` file: `execute: al compile`
+1. Build the extension to generate the `.g.xlf` file: `al_build`
 2. Create language file for each target locale (Pattern 1)
 3. If language files already exist, refresh them (Pattern 2)
 
@@ -222,7 +222,7 @@ getTranslatedTextsMap
 
 1. Verify no untranslated texts remain: `getTextsToTranslate` with `limit: 0`
 2. Promote all `final` texts to `signed-off`
-3. Build the extension to verify XLF integration: `execute: al compile`
+3. Build the extension to verify XLF integration: `al_build`
 4. Test the UI in the target language
 
 ## Common Language Codes

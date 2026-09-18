@@ -1,6 +1,6 @@
 ---
 name: skill-migrate
-description: "AL version migration for Business Central. Use when upgrading extensions between BC versions, handling breaking changes, or implementing rollback strategies."
+description: AL version migration for Business Central. Use when upgrading extensions between BC versions, handling breaking changes, or implementing rollback strategies.
 ---
 
 # Skill: AL Project Migration
@@ -52,7 +52,7 @@ Update the three version-sensitive properties in `app.json`:
 - `platform` — target BC platform version (major.minor.0.0)
 - `runtime` — AL runtime version matching the target (see [runtime matrix](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-choosing-runtime))
 - `application` — must match or be compatible with target platform
-- Update all `dependencies` versions to match the target release
+- Resolve each dependency by identity, minimum version, target runtime and required APIs; do not require every library version to numerically match the application version.
 - Add new `features` flags required by the target runtime (e.g., `NoImplicitWith` from runtime 11.0+)
 
 ### Pattern 2: Deprecated Code Replacement
@@ -128,10 +128,10 @@ end;
 ```
 
 **Migration steps:**
-1. Build with `Bash: al compile` — signature mismatches produce `AL0482` errors
+1. Build with `al_build` — signature mismatches produce `AL0482` errors
 2. Use `al_get_object_definition` to inspect the new publisher signature
 3. Update parameter list to match exactly (name, type, order)
-4. Re-verify with `Bash: al compile`
+4. Re-verify with `al_build`
 
 ### Pattern 4: Obsolete Object Handling
 
@@ -261,10 +261,10 @@ Document and prepare rollback before executing migration:
 ### Step 1: Pre-Migration Assessment
 
 1. **Backup**: Ensure source control is up to date (`git status` clean)
-2. **Download current symbols**: VS Code `AL: Download Symbols` (or `AL: Download Source` for full base/app source) — a human step
-3. **Document dependencies**: read `app.json` `dependencies` plus **al-symbols-mcp** `al_packages` — list all with current versions
+2. **Download current symbols**: `al_downloadsymbols`
+3. **Document dependencies**: `al_packages` — list loaded packages with current versions
 4. **Review release notes**: Check BC target version breaking changes
-5. **Create migration plan** in `.github/plans/{project}-migration.md`
+5. **Create migration plan** in `.claude/plans/{project}-migration.md`
 
 **PAUSE — wait for user approval before modifying files.**
 
@@ -272,7 +272,7 @@ Document and prepare rollback before executing migration:
 
 1. Update `app.json` (Pattern 1) — platform, runtime, application, dependencies, features
 2. Download new symbols for target version
-3. Build: `Bash: al compile` — collect all errors
+3. Build: `al_build` — collect all errors
 
 ### Step 3: Fix Compilation Errors
 
@@ -286,10 +286,9 @@ For each fix, verify with incremental build.
 
 ### Step 4: Regenerate and Validate
 
-1. Update the manifest: edit `app.json` directly (it *is* the manifest)
-2. Full build: `Bash: al compile` — zero errors, zero new warnings (produces the `.app`)
-3. Bundle-with-dependencies packaging is an AL-Go/CI pipeline concern, not an ALTool verb
-4. Run existing tests (VS Code `AL: Run Tests` or CI) to verify no regressions
+1. Update the manifest (`app.json`) — no agent tool; edit directly (or via the VS Code command)
+2. Full build: `al_build` — zero errors, zero new warnings; `al_build` also produces the `.app` package
+4. Run existing tests to verify no regressions
 
 ### Step 5: Post-Migration
 

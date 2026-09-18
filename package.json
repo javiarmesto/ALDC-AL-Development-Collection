@@ -53,6 +53,7 @@
     "tools/aldc-validate/package.json",
     "tools/bc-agents/",
     "tools/bcquality/",
+    "tools/claude-hooks/",
     "docs/",
     "aldc.yaml",
     "aldc.code-workspace",

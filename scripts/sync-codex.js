@@ -5,12 +5,23 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { split } = require('./sync-copilot-cli');
+const { split, stripAdapterPreamble } = require('./sync-copilot-cli');
 const { support } = require('./sync-plugin-support');
 const { walk, provenance, normalized } = require('./package-provenance');
 const ROOT = path.resolve(__dirname,'..'), DEST = 'plugins/aldc-codex';
+const REF = '.agents/skills/aldc/references';
 function bodyFor(text) {
-  return text.replaceAll('../../docs/templates/', '../../templates/').replaceAll('../docs/templates/', '../templates/').replaceAll('../rules-templates/', '../rules/').replace(/Claude Code/g,'Codex')
+  // Plugin-layout paths first: the Claude Code adapter emits ${CLAUDE_PLUGIN_ROOT}.
+  return text
+    .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/rules\//g, `${REF}/rules/`)
+    .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/skills\//g, `${REF}/skills/`)
+    .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/docs\/templates\//g, `${REF}/templates/`)
+    .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/agents\//g, `${REF}/agents/`)
+    .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/tools\//g, '.agents/skills/aldc/scripts/')
+    .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\//g, '.agents/skills/aldc/')
+    .replace(/\$\{CLAUDE_PROJECT_DIR\}\//g, '')
+    .replace(/\.claude\/plans/g, '.github/plans')
+    .replaceAll('../../docs/templates/', '../../templates/').replaceAll('../docs/templates/', '../templates/').replaceAll('../rules-templates/', '../rules/').replace(/Claude Code/g,'Codex')
     .replace(/`?\bTodoWrite\b`?/g,'the available planning tool (or the plan document)')
     .replace(/\bTask tool\b/g,'subagent delegation tool').replace(/`Task`/g,'subagent delegation')
     .replace(/\bBash\b/g,'shell').replace(/`Read`/g,'Read').replace(/`(?:Glob|Grep)`/g,'Search')
@@ -42,16 +53,18 @@ function expected(root = ROOT) {
     const src = split(read(p)), name = path.basename(p,'.md');
     if (!fs.existsSync(path.join(root,`agents/${name}.agent.md`))) throw Error(`Noncanonical role: ${name}`);
     sources.push(`agents/${name}.agent.md`);
-    const body = preface + bodyFor(src.body);
+    const body = preface + bodyFor(stripAdapterPreamble(src.body));
     files.set(`skills/aldc/references/agents/${name}.md`,body);
     const instructions = 'Resolve relative links in this profile from .agents/skills/aldc/references/agents/.\n\n' + body;
     // JSON basic strings are TOML-compatible for these strings; validate with tomllib.
     files.set(`agents/${name}.toml`,`name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(bodyFor(src.data.description))}\ndeveloper_instructions = ${JSON.stringify(instructions)}\n`);
     roles.push([name,bodyFor(src.data.description).trim()]);
   }
-  for (const p of walk(root,'claude-plugin/commands')) {
-    const src = split(read(p)), name = path.basename(p,'.md');
-    let body = bodyFor(src.body);
+  const { WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
+  for (const prompt of WORKFLOWS) {
+    const name = workflowSkillName(prompt);
+    const src = split(read(`claude-plugin/skills/${name}/SKILL.md`));
+    let body = bodyFor(stripAdapterPreamble(src.body));
     if (name === 'al-spec-create') body = body.replace('with the requirement, complexity and scope in `$ARGUMENTS`', 'with the requirement, complexity and scope supplied in the current request');
     if (name === 'al-initialize') {
       const a=body.indexOf('## Phase 0:'), b=body.indexOf('## Phase 1:');
@@ -63,12 +76,14 @@ function expected(root = ROOT) {
   }
   for (const p of walk(root,'claude-plugin/skills')) {
     const rel = p.slice('claude-plugin/skills/'.length).replace(/SKILL\.md$/,'GUIDE.md');
+    // Workflow skills become commands above; role entry skills are Claude-only.
+    if (!rel.startsWith('skill-')) continue;
     const neutral = ['cli-al-tools.md','al18-capabilities.md'].includes(path.basename(p));
     files.set(`skills/aldc/references/skills/${rel}`,neutral ? read(p) : bodyFor(read(p)));
   }
-  for (const p of walk(root,'claude-plugin/rules-templates')) {
+  for (const p of walk(root,'claude-plugin/rules')) {
     const src = split(read(p));
-    const content = `Applies to: ${src.data.paths.join(', ')}\n` + bodyFor(src.body);
+    const content = `Applies to: ${src.data.paths.join(', ')}\n` + bodyFor(stripAdapterPreamble(src.body));
     files.set(`rules-templates/${path.basename(p)}`,content);
     files.set(`skills/aldc/references/rules/${path.basename(p)}`,content);
   }

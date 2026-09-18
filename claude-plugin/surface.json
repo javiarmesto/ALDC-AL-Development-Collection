@@ -1,3 +1,4 @@
 {
-  "surface": "claude"
+  "surface": "claude",
+  "plansRoot": ".claude/plans"
 }

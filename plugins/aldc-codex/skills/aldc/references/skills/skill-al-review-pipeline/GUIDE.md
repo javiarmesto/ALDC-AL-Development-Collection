@@ -4,8 +4,8 @@ description: Review an AL increment or audit scope using the configured BCQualit
 ---
 # AL review pipeline
 
-Read [the provider contract](../../templates/bcquality-provider-contract.md)
-and [task-context guidance](../../templates/bcquality-task-context.md).
+Read [the provider contract](.agents/skills/aldc/references/templates/bcquality-provider-contract.md)
+and [task-context guidance](.agents/skills/aldc/references/templates/bcquality-task-context.md).
 Resolve these links from this installed skill, not a sibling repository.
 This procedure supplements the caller's write scope, report format and human gate;
 it grants no extra tools and never authorizes changes to the provider or AL code.
@@ -84,7 +84,7 @@ resolve or retract it based on evidence, not because another provider found noth
 
 ## Return an honest result
 
-Use [the shared review report](../../templates/review-report-contract.md)
+Use [the shared review report](.agents/skills/aldc/references/templates/review-report-contract.md)
 for direct/Conductor reviews; Dredd keeps its advisory Audit-Report format.
 In either format include a compact coverage list with domain/check, status,
 source and evidence/reason, plus the provider identity and independent index state.

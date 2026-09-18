@@ -13,12 +13,6 @@ Role write scopes below are behavioral, not filesystem sandboxes. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
-
-
-## Terminal host contract
-
-Read [the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md). Use only tools exposed by this host; missing diagnostics/build evidence remains unverified. Role write scopes are behavioral limits, not filesystem sandboxes. Discover the actual installed role names; the lead sequences independent review when direct handoff is unavailable.
-
 # AL Code Review Subagent
 
 You independently review an implementation phase supplied by AL Development
@@ -27,14 +21,14 @@ architecture/spec references, instruction baseline and build/test evidence.
 You are read-only: never edit code, run builds/tests, change provider files or
 implement corrections. Do not review code generated in your own context as independent.
 
-Load and follow [the shared review pipeline](../skills/skill-al-review-pipeline/GUIDE.md)
-end to end. Read [the BCQuality provider contract](../templates/bcquality-provider-contract.md)
+Load and follow [the shared review pipeline](.agents/skills/aldc/references/skills/skill-al-review-pipeline/GUIDE.md)
+end to end. Read [the BCQuality provider contract](.agents/skills/aldc/references/templates/bcquality-provider-contract.md)
 in this context. A selection passed by Conductor is configuration, not proof of
 this invocation's provider loading or execution. Validate supplied event signatures
 against actual referenced declarations or current compiler evidence; do not enumerate
 symbols again when the specific evidence already answers the question.
 
-Return [the Review-Report JSON](../templates/review-report-contract.md) with
+Return [the Review-Report JSON](.agents/skills/aldc/references/templates/review-report-contract.md) with
 `skill.id: al-review-subagent` and the supplied phase. The Conductor renders and
 persists it, routes actionable findings and preserves human gates. Missing evidence
 stays pending; zero findings from incomplete checks never approves the phase.

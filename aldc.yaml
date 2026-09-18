@@ -55,10 +55,15 @@ external:
     # Populate ONLY to exclude a leaf deliberately (multiroot policy; never a plugin denylist).
     pilotSkills: []
     evidence:
-      persistedReportGlob: ".github/plans/**/*-bcquality-phase-*.json"
+      # Resolved against plans.root, so a surface that relocates plans (the Claude
+      # Code plugin uses .claude/plans) keeps its evidence with them.
+      persistedReportGlob: "**/*-bcquality-phase-*.json"
       validator: "tools/bcquality/validate_evidence.py"
       ciWorkflow: ".github/workflows/bcquality-evidence.yaml"
 
+# Where requirement artifacts live. Every consumer reads this knob instead of
+# hard-coding the folder: the Copilot deployment and the VS Code extension keep
+# .github/plans, and the Claude Code plugin ships .claude/plans in its own copy.
 plans:
   root: ".github/plans"
 
@@ -69,7 +74,8 @@ contracts:
     - "spec"
     - "architecture"
     - "test-plan"
-  archiveFolder: ".github/plans/archive"
+  # Relative to plans.root (an absolute-looking legacy value is still honoured).
+  archiveFolder: "archive"
 
 copilotEntrypoint: ".github/copilot-instructions.md"
 copilotSource: "instructions/copilot-instructions.md"

@@ -56,12 +56,14 @@ test('managed block preserves CRLF surrounding text and rejects malformed marker
 });
 for(const [surface,dir] of [['claude','claude-plugin'],['cli','copilot-cli-plugin'],['codex','plugins/aldc-codex']])test(`${surface}: locked payload, initialization, customized rules, memory and rollback`,t=>{
  const r=temp(t),pluginRoot=path.join(root,dir);verify(pluginRoot);
- write(r,'App/app.json','{"application":"29.0.0.0"}');write(r,'App/Main.al','// project source');write(r,'Test/app.json','{"runtime":"18.0"}');write(r,'.github/plans/memory.md','decisions');
+ // Requirement artifacts live where the distribution's surface.json says.
+ const plansRoot=JSON.parse(read(pluginRoot,'surface.json')).plansRoot;
+ write(r,'App/app.json','{"application":"29.0.0.0"}');write(r,'App/Main.al','// project source');write(r,'Test/app.json','{"runtime":"18.0"}');write(r,`${plansRoot}/memory.md`,'decisions');
  const guidance=surface==='claude'?'CLAUDE.md':'AGENTS.override.md';write(r,guidance,'Project instruction\r\n');
  if(surface==='codex')write(r,'AGENTS.md','Shadowed instructions preserved');
  initialize({project:r,pluginRoot});assert.equal(fs.existsSync(path.join(r,'.aldc-install')),false);
  const result=initialize({project:r,pluginRoot,apply:true});assert.equal(result.guidance,guidance);
- assert.equal(read(r,guidance).startsWith('Project instruction\r\n'),true);assert.equal(read(r,'.github/plans/memory.md'),'decisions');
+ assert.equal(read(r,guidance).startsWith('Project instruction\r\n'),true);assert.equal(read(r,`${plansRoot}/memory.md`),'decisions');
  assert.equal(initialize({project:r,pluginRoot,apply:true}).transaction,null);
  const rule=surface==='claude'?'.claude/rules/al-guidelines.md':surface==='cli'?'.github/instructions/al-guidelines.instructions.md':'.agents/skills/aldc/references/rules/al-guidelines.md';
  write(r,rule,'custom rule');assert.deepEqual(initialize({project:r,pluginRoot,check:true}).drift,[rule]);
@@ -73,7 +75,7 @@ for(const [surface,dir] of [['claude','claude-plugin'],['cli','copilot-cli-plugi
 });
 test('tampered plugin fails before creating project files; CRLF locked checkout is accepted',t=>{
  const r=temp(t),pluginRoot=path.join(r,'plugin'),project=path.join(r,'project');fs.cpSync(path.join(root,'claude-plugin'),pluginRoot,{recursive:true});
- const p='rules-templates/al-guidelines.md',text=read(pluginRoot,p);write(pluginRoot,p,text.replace(/\n/g,'\r\n'));verify(pluginRoot);
+ const p='rules/al-guidelines.md',text=read(pluginRoot,p);write(pluginRoot,p,text.replace(/\n/g,'\r\n'));verify(pluginRoot);
  write(pluginRoot,p,'tampered');assert.throws(()=>initialize({project,pluginRoot,apply:true}),/integrity/);assert.equal(fs.existsSync(project),false);
 });
 test('Claude session hook is silent outside AL and read-only in an AL project',t=>{

@@ -3,22 +3,26 @@
 // Static installation contracts; this does not simulate model compliance.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {split}=require('./sync-copilot-cli');
+const {resolveRef,refsIn}=require('./surface-refs');
 const root=path.resolve(__dirname,'..');
+// Each surface reaches the shared procedure through its own anchor; what matters is
+// that the reference resolves inside that distribution, not how it is spelled.
 const surfaces=[['agents','.agent.md','../skills/skill-al-review-pipeline/SKILL.md'],
  ['packages/foundation/agents','.agent.md','../skills/skill-al-review-pipeline/SKILL.md'],
- ['claude-plugin/agents','.md','../skills/skill-al-review-pipeline/SKILL.md'],
- ['copilot-cli-plugin/agents','.agent.md','../skills/skill-al-review-pipeline/SKILL.md'],
- ['.claude/agents','.md','../skills/skill-al-review-pipeline/SKILL.md'],
- ['plugins/aldc-codex/skills/aldc/references/agents','.md','../skills/skill-al-review-pipeline/GUIDE.md']];
+ ['claude-plugin/agents','.md','${CLAUDE_PLUGIN_ROOT}/skills/skill-al-review-pipeline/SKILL.md'],
+ ['copilot-cli-plugin/agents','.agent.md','${PLUGIN_ROOT}/skills/skill-al-review-pipeline/SKILL.md'],
+ ['.claude/agents','.md','${CLAUDE_PROJECT_DIR}/.claude/skills/skill-al-review-pipeline/SKILL.md'],
+ ['plugins/aldc-codex/skills/aldc/references/agents','.md','.agents/skills/aldc/references/skills/skill-al-review-pipeline/GUIDE.md']];
 for(const [dir,ext,skill] of surfaces){
  if(!fs.existsSync(path.join(root,dir)))continue;
  for(const name of ['al-review-subagent','al-developer-reviewer','dredd']){
-  const file=path.join(root,dir,name+ext),body=fs.readFileSync(file,'utf8');
+  const rel=path.posix.join(dir,name+ext),file=path.join(root,rel),body=fs.readFileSync(file,'utf8');
   assert.ok(body.includes(skill),file+' must reach its bundled procedure');
-  const guide=path.resolve(path.dirname(file),skill);
-  for(const doc of [file,guide]){
-   for(const [,ref] of fs.readFileSync(doc,'utf8').matchAll(/\]\((\.\.\/[^)]+\.md)\)/g))
-    assert.ok(fs.existsSync(path.resolve(path.dirname(doc),ref)),doc+': missing '+ref);
+  const guideRel=resolveRef(rel,skill);
+  assert.ok(fs.existsSync(path.join(root,guideRel)),file+': bundled procedure '+guideRel);
+  for(const doc of [rel,guideRel]){
+   for(const ref of refsIn(fs.readFileSync(path.join(root,doc),'utf8')))
+    assert.ok(fs.existsSync(path.join(root,resolveRef(doc,ref))),doc+': missing '+ref);
   }
   if(!dir.includes('aldc-codex')&&name!=='dredd'){
    const tools=split(body).data.tools;

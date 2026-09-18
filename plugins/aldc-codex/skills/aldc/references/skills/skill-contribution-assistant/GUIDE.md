@@ -75,11 +75,11 @@ If answers are incomplete, ask focused follow-up questions until scope is clear.
 
 Create and maintain this structure:
 
-- `skills/<skill-name>/SKILL.md`
-- `skills/<skill-name>/AUTHORS.md`
-- `skills/<skill-name>/CHANGELOG.md`
-- `skills/<skill-name>/references/` (optional, preferred for long content)
-- `skills/<skill-name>/scripts/` (optional, only when deterministic automation helps)
+- `.agents/skills/aldc/references/skills/<skill-name>/SKILL.md`
+- `.agents/skills/aldc/references/skills/<skill-name>/AUTHORS.md`
+- `.agents/skills/aldc/references/skills/<skill-name>/CHANGELOG.md`
+- `.agents/skills/aldc/references/skills/<skill-name>/references/` (optional, preferred for long content)
+- `.agents/skills/aldc/references/skills/<skill-name>/scripts/` (optional, only when deterministic automation helps)
 
 ### Step 3: Author SKILL.md
 
@@ -129,7 +129,9 @@ A skill is considered ready when:
 
 ## References
 
-- `references/onboarding-questionnaire.md`
-- `references/opportunity-detection.md`
-- `references/pr-readiness-checklist.md`
-- `references/quality-gate.md`
+Load each reference only when its phase applies:
+
+- When scoping a new skill, read `references/onboarding-questionnaire.md` before validating scope.
+- If you suspect a reusable pattern exists, read `references/opportunity-detection.md` to confirm.
+- Before opening a PR, read `references/pr-readiness-checklist.md`.
+- When validating the final deliverable, read `references/quality-gate.md`.

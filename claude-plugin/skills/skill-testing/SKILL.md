@@ -1,6 +1,6 @@
 ---
 name: skill-testing
-description: "AL test development patterns for Business Central. Use when creating test codeunits, writing Given/When/Then test procedures, using Library Assert, configuring test projects, or implementing TDD workflows."
+description: AL test development patterns for Business Central. Use when creating test codeunits, writing Given/When/Then test procedures, using Library Assert, configuring test projects, or implementing TDD workflows.
 ---
 
 # Skill: AL Testing & Test Strategy
@@ -333,10 +333,10 @@ codeunit 50210 "Copilot Suggestion Tests"
 
 Read the requirement contracts before creating any tests:
 ```
-.github/plans/{req_name}.spec.md          ← acceptance criteria to test
-.github/plans/{req_name}.architecture.md   ← components to cover
-.github/plans/{req_name}.test-plan.md      ← existing plan (if any)
-.github/plans/memory.md                    ← context and conventions
+.claude/plans/{req_name}.spec.md          ← acceptance criteria to test
+.claude/plans/{req_name}.architecture.md   ← components to cover
+.claude/plans/{req_name}.test-plan.md      ← existing plan (if any)
+.claude/plans/memory.md                    ← context and conventions
 ```
 
 Categorize test scenarios:
@@ -357,7 +357,7 @@ Coverage targets:
 
 ### Step 2: Create Test Plan Document
 
-Create `.github/plans/{req_name}.test-plan.md` using `docs/templates/test-plan-template.md`:
+Create `.claude/plans/{req_name}.test-plan.md` using `${CLAUDE_PLUGIN_ROOT}/docs/templates/test-plan-template.md`:
 - List every scenario as Given/When/Then with a test method name
 - Group by unit / integration / UI / edge case
 - Define library codeunits needed
@@ -371,8 +371,8 @@ Create `.github/plans/{req_name}.test-plan.md` using `docs/templates/test-plan-t
 ```
 RED phase:
   1. Write failing test(s) for the current requirement
-  2. Run: al compile → verify compilation
-  3. Run test (VS Code `AL: Run Tests` or the AL-Go/CI test runner) → confirm it FAILS (no implementation yet)
+  2. Run: al_build → verify compilation
+  3. Run test → confirm it FAILS (no implementation yet)
 
 GREEN phase:
   4. Implement minimum code to make test(s) pass
@@ -388,7 +388,7 @@ REFACTOR phase:
 2. Create library codeunit per domain: `"Library - Feature Name"`
 3. Implement tests following GWT pattern (Pattern 1)
 4. Add handlers (Pattern 4) for any dialogs
-5. Run: `Bash: al compile` + test execution (VS Code `AL: Run Tests` or the AL-Go/CI test runner)
+5. Run: `al_build` + test execution
 
 ### Step 4: Test Isolation
 
@@ -433,7 +433,7 @@ end;
 
 1. Run full test suite
 2. Verify all tests pass — zero tolerance for flaky tests
-3. Update coverage metrics in `.github/plans/{req_name}.test-plan.md`
+3. Update coverage metrics in `.claude/plans/{req_name}.test-plan.md`
 4. Update `memory.md` with test results summary
 
 ## References
@@ -450,7 +450,7 @@ end;
 
 ## Constraints
 
-- This skill covers **active test design, patterns, and TDD integration** — it does NOT duplicate passive rules in `al-testing.md` (auto-applied to `**/test/**/*.al`)
+- This skill covers **active test design, patterns, and TDD integration** — it does NOT duplicate passive rules in `al-testing.instructions.md` (auto-applied to `**/test/**/*.al`)
 - Tests MUST live in the Test project, NEVER in the App folder (per AL-Go structure)
 - Do NOT generate tests without explicit user request
 - Do NOT create interdependent tests that rely on execution order
