@@ -57,6 +57,10 @@ Each terminal package has provenance.json with source and output SHA-256 digests
 The complete source set records generator dependencies; output hashes verify the
 actual packaged payload before initialization. Hashes normalize LF/CRLF only;
 other modifications fail. This is drift/integrity evidence, not a publisher signature.
+Provenance detects accidental drift; it is not tamper-proofing. The lock is unsigned,
+so whoever can write to an installation can rewrite the lock with it. Derived build
+artifacts a run leaves behind, such as `__pycache__`, are excluded from both the source
+set and the payload listing for that reason: they appear in a correct installation.
 Regenerate with `npm run sync:plugins`; npm validation checks drift and exercises
 initialization from the extracted archive. No second Copilot command generator
 was introduced.
