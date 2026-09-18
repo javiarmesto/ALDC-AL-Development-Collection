@@ -14,6 +14,21 @@ const REF = '.agents/skills/aldc/references';
 // The Claude adapter is this adapter's input, so both spellings reach us here.
 const PLANS = plansRootFor(ROOT, 'codex');
 const toPlansRoot = (text) => text.split('.claude/plans').join(PLANS).split('.github/plans').join(PLANS);
+// Codex's permission surface, and the closest thing it has to the `tools` grant the
+// canonical contract already carries. Legal values are read-only, workspace-write and
+// danger-full-access (codex-rs/protocol/src/config_types.rs); nothing here needs the
+// third. Derive the value from that grant rather than from the role's prose: a role
+// that holds `edit` or `execute` writes in the workspace even when it calls itself
+// read-only on code, which is exactly how dredd and al-triage persist their report.
+// An absent key inherits from the parent; the session's own permission profile is
+// reapplied over the role config, so this declaration narrows and never grants.
+const WRITE_TOOLS = ['edit', 'execute'];
+function sandboxModeFor(tools) {
+  const granted = (Array.isArray(tools) ? tools : String(tools ?? '').split(','))
+    .map((tool) => String(tool).trim())
+    .some((tool) => WRITE_TOOLS.some((write) => tool === write || tool.startsWith(`${write}/`)));
+  return granted ? 'workspace-write' : 'read-only';
+}
 function bodyFor(text) {
   // Plugin-layout paths first: the Claude Code adapter emits ${CLAUDE_PLUGIN_ROOT}.
   return text
@@ -65,16 +80,19 @@ function expected(root = ROOT) {
     files.set('skills/aldc/references/templates/' + p.slice('docs/templates/'.length), read(p));
     files.delete(p); // Codex has one reference tree; no extra discovery roots.
   }
-  const preface = `## Codex host contract\n\nResolve .agents/skills/aldc paths below against the installed ALDC skill root\nif using plugin discovery instead of local bootstrap. Workflow names below are\nreference files in commands/, not automatically registered slash commands.\nPackaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md\nunder references/skills/. This alias applies only when reading packaged guidance;\nnew discoverable skills must still be created with SKILL.md.\n\nUse only tools actually exposed by this session. Model, reasoning, sandbox and\napproval settings inherit from the parent; this profile grants no extra tools.\nRole write scopes below are behavioral, not filesystem sandboxes. Discover MCP\nproviders before using their examples; none are installed by this package.\nIf delegation is unavailable, report that the affected independent review or\nConductor workflow is pending; do not certify self-review as independent review.\n\nThe \`handoffs:\` entries of the canonical contract, and the \`send: false\` on some\nof them, have no equivalent here. In Copilot a handoff is a button the human\nclicks, and \`send: false\` additionally hands them the prompt to review before it\nis sent: the host supplies the approval. Codex has no such step, so the gate is\nyours to keep — never auto-delegate. Present your output, get explicit approval,\nand only then delegate or switch role.\n`;
+  const preface = `## Codex host contract\n\nResolve .agents/skills/aldc paths below against the installed ALDC skill root\nif using plugin discovery instead of local bootstrap. Workflow names below are\nreference files in commands/, not automatically registered slash commands.\nPackaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md\nunder references/skills/. This alias applies only when reading packaged guidance;\nnew discoverable skills must still be created with SKILL.md.\n\nUse only tools actually exposed by this session. Model, reasoning and approval\nsettings inherit from the parent; this profile grants no extra tools. Its\n\`sandbox_mode\` is derived from the write scope the canonical contract grants this\nrole, and the session's own permission profile is reapplied over it, so that key\nnarrows and never grants. The narrower role write scopes stated below are still\nbehavioral: \`sandbox_mode\` cannot express them, and honouring them is yours. Discover MCP\nproviders before using their examples; none are installed by this package.\nIf delegation is unavailable, report that the affected independent review or\nConductor workflow is pending; do not certify self-review as independent review.\n\nThe \`handoffs:\` entries of the canonical contract, and the \`send: false\` on some\nof them, have no equivalent here. In Copilot a handoff is a button the human\nclicks, and \`send: false\` additionally hands them the prompt to review before it\nis sent: the host supplies the approval. Codex has no such step, so the gate is\nyours to keep — never auto-delegate. Present your output, get explicit approval,\nand only then delegate or switch role.\n`;
   for (const p of walk(root,'claude-plugin/agents')) {
     const src = split(read(p)), name = path.basename(p,'.md');
     if (!fs.existsSync(path.join(root,`agents/${name}.agent.md`))) throw Error(`Noncanonical role: ${name}`);
-    sources.push(`agents/${name}.agent.md`);
+    // sandbox_mode is derived from the canonical tool grant, not from the adapter's
+    // frontmatter: the Claude adapter has already rewritten `tools` into Claude Code's
+    // vocabulary, where the `edit`/`execute` grant this reads no longer exists.
+    const canonical = split(read(`agents/${name}.agent.md`));
     const body = preface + bodyFor(stripAdapterPreamble(src.body));
     files.set(`skills/aldc/references/agents/${name}.md`,body);
     const instructions = 'Resolve relative links in this profile from .agents/skills/aldc/references/agents/.\n\n' + body;
     // JSON basic strings are TOML-compatible for these strings; validate with tomllib.
-    files.set(`agents/${name}.toml`,`name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(bodyFor(src.data.description))}\ndeveloper_instructions = ${JSON.stringify(instructions)}\n`);
+    files.set(`agents/${name}.toml`,`name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(bodyFor(src.data.description))}\nsandbox_mode = ${JSON.stringify(sandboxModeFor(canonical.data.tools))}\ndeveloper_instructions = ${JSON.stringify(instructions)}\n`);
     roles.push([name,bodyFor(src.data.description).trim()]);
   }
   const { WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');

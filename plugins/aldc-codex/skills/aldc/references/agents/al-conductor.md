@@ -7,9 +7,12 @@ Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
 new discoverable skills must still be created with SKILL.md.
 
-Use only tools actually exposed by this session. Model, reasoning, sandbox and
-approval settings inherit from the parent; this profile grants no extra tools.
-Role write scopes below are behavioral, not filesystem sandboxes. Discover MCP
+Use only tools actually exposed by this session. Model, reasoning and approval
+settings inherit from the parent; this profile grants no extra tools. Its
+`sandbox_mode` is derived from the write scope the canonical contract grants this
+role, and the session's own permission profile is reapplied over it, so that key
+narrows and never grants. The narrower role write scopes stated below are still
+behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
