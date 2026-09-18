@@ -52,7 +52,7 @@ try {
   // file, its hash, and the corpus revision it was built over. A detail string alone
   // used to be enough, which made it the cheapest status to claim and the least earned.
   const indexSha = crypto.createHash('sha256').update(fs.readFileSync(path.join(temp,'knowledge-index.json'))).digest('hex');
-  const receipt = {status:'prebuilt',detail:'Installer receipt',generator:'tools/Build-KnowledgeIndex.ps1',path:path.join(temp,'knowledge-index.json'),sha256:indexSha,corpusSha:'b91443beec785606e08274dea3f402a99aaec7bd'};
+  const receipt = {status:'prebuilt',detail:'Installer receipt',generator:'tools/Build-KnowledgeIndex.ps1',path:path.join(temp,'knowledge-index.json'),sha256:indexSha,corpusSha:'a'.repeat(40)};
   full.index = {status:'prebuilt',detail:'Claimed with no receipt behind it'};
   doctor(full, false);
   full.index = {...receipt, corpusSha:undefined};
@@ -148,6 +148,16 @@ try {
         {id:'agent:multi-turn',domain:'Agents',severity:'minor',confidence:'medium'}]},
     ]}));
   assert.match(run('python3',[path.join(root,'tools/bcquality/validate_evidence.py'),'--bcquality-root',path.join(temp,'corpus')]),/citation resolution CHECKED/);
+  // aldc.yaml is not only this project's configuration: the installer writes it into
+  // every consumer project, from the VSIX templates and from the npm package alike. A
+  // fork or a pin committed here silently becomes everyone's provider by default, which
+  // is how a personal clone nearly shipped as the 4.3.1 default. Pin per project.
+  const shipped = readConfig(root).bcquality;
+  assert.equal(shipped.url, 'https://github.com/microsoft/BCQuality.git',
+    'the shipped provider default must be the upstream, never a fork');
+  assert.equal(shipped.pinnedCommit, '',
+    'a pin committed here ships as every consumer default; pin in your own project instead');
+
   // Generated surfaces carry the same normalizer and exact provider contract.
   for (const base of ['claude-plugin','copilot-cli-plugin','plugins/aldc-codex']) {
     const codex=base.includes('codex');

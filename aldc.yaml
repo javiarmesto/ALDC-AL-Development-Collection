@@ -31,9 +31,9 @@ external:
     # (microsoft/BCQuality). Override `url` to point at your own fork. The install
     # scripts read `url` / `ref` / `pinnedCommit` from here — this file is the single
     # source of truth.
-    url: "https://github.com/javiarmesto/BCQuality.git"   # fork; upstream: microsoft/BCQuality
+    url: "https://github.com/microsoft/BCQuality.git"
     ref: "main"                           # branch/tag to track when pinnedCommit is empty
-    pinnedCommit: "b91443beec785606e08274dea3f402a99aaec7bd"  # without a pin the evidence is not reproducible
+    pinnedCommit: ""                       # optional: set a 40-hex SHA for reproducible, pinned evidence
     home: "../bcquality"                  # external clone location (override: $BCQUALITY_HOME); 2nd workspace root
     entryPoint: "skills/entry.md"         # relative to `home`
     workspace: "aldc.code-workspace"      # multi-root workspace (this repo root + ../bcquality); see docs/bcquality.md
