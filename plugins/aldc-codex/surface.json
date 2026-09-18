@@ -1,3 +1,4 @@
 {
-  "surface": "codex"
+  "surface": "codex",
+  "plansRoot": ".agents/plans"
 }

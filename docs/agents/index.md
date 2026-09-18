@@ -50,34 +50,36 @@ I need to build a sales forecasting system...
 
 **Customization Tip**: You can adjust these complexity definitions by editing this file in your repository. For example, if your team typically works with smaller changes, you might redefine MEDIUM as "1-2 phases" instead of "2-3 phases". The framework adapts to your workflow.
 
-### 📦 Available Agents (11 total)
+### 📦 Available Agents (12 total)
 
 ### 🏗️ Implementation Agents (Complexity-Driven)
 
-| Mode | Role | Complejidad Target | Best For |
+| Mode | Role | Complexity Target | Best For |
 |------|------|-------------------|----------|
-| **al-architect** | Solution Architecture & Design | 🔴 HIGH | **Start here** - Design phase for new features, architectural decisions, pattern evaluation |
+| **al-architect** | Solution Architecture & Design | 🟡 MEDIUM / 🔴 HIGH | **Start here** - Design phase, specification boundaries, shared contracts and dependencies |
+| **al-spec-agent** | Specification Owner | Any complexity | Technical contracts and acceptance criteria from an approved design, before implementation ([details](al-spec-agent.agent.md)) |
 | **al-conductor** | TDD Orchestra Coordinator | 🟡 MEDIUM / 🔴 HIGH | Multi-phase implementation with enforced TDD and quality gates |
 | **al-developer** | Tactical Implementation Specialist | 🟢 LOW / 🟡 MEDIUM | Direct implementation when design is clear and scope is limited |
+| **al-developer-reviewer** | Independent Increment Review | 🟢 LOW / 🟡 MEDIUM | Read-only review of a direct Developer increment before human approval ([details](al-developer-reviewer.agent.md)) |
 
 ### 🎭 Orchestra Subagents (Invoked by al-conductor)
 
-| Mode | Role | Model | Purpose |
-|------|------|-------|---------|
-| **AL Planning Subagent** | AL-aware Research Specialist | Sonnet 4.6 | Analyzes codebase, gathers context for planning |
-| **AL Implementation Subagent** | TDD Implementation Executor | Sonnet 4.6 | Executes RED→GREEN→REFACTOR cycle |
-| **AL Code Review Subagent** | Quality Assurance Validator | Sonnet 4.6 | Reviews code against AL best practices |
+| Mode | Role | Purpose |
+|------|------|---------|
+| **AL Planning Subagent** | AL-aware Research Specialist | Analyzes codebase, gathers context for planning |
+| **AL Implementation Subagent** | TDD Implementation Executor | Executes RED→GREEN→REFACTOR cycle |
+| **AL Code Review Subagent** | Quality Assurance Validator | Reviews each phase against the specification and AL best practices |
 
-> 💡 **Note**: Subagents are automatically invoked by `al-conductor` via `runSubagent` tool. You don't invoke them directly.
+> 💡 **Note**: Subagents are invoked by `al-conductor`. You don't invoke them directly.
 
 ### 🔎 On-demand Specialists (user-invocable)
 
 Invoked directly when you start from a **symptom** or want an **independent audit** — outside the TDD loop.
 
-| Mode | Role | Model | Best For |
-|------|------|-------|----------|
-| **AL Triage** | Reactive Diagnosis Specialist | Claude Sonnet 4.6 | Reproduce → localize → root-cause an existing bug/regression/incident; recommends the minimal fix (read-only on code) |
-| **Dredd** | Independent AL Auditor | Claude Sonnet 4.6 | On-demand static audit against BCQuality + native checks; advisory verdict written to `.github/audits/` (read-only on code) |
+| Mode | Role | Best For |
+|------|------|----------|
+| **AL Triage** | Reactive Diagnosis Specialist | Reproduce → localize → root-cause an existing bug/regression/incident; recommends the minimal fix (read-only on code) |
+| **Dredd** | Independent AL Auditor | On-demand static audit against BCQuality + native checks; advisory verdict, incomplete coverage reported as such (read-only on code) |
 
 > 💡 Both are read-only on AL code and hand fixes to `@AL Developer`. Triage is the *dynamic* counterpart (reproduce & trace); Dredd is the *static* one (judge the artifact).
 
@@ -85,11 +87,10 @@ Invoked directly when you start from a **symptom** or want an **independent audi
 
 | Mode | Role | Works With | Best For |
 |------|------|-----------|----------|
-| **al-debugger** | Systematic Debugging Specialist | Any complexity | Root cause analysis, performance bottlenecks, execution flow |
-| **al-tester** | Testing Strategy & TDD Expert | Any complexity | Test design, TDD strategy, coverage planning |
-| **al-api** | RESTful API Design Specialist | 🟡 MEDIUM / 🔴 HIGH | API contracts, endpoint design, external integrations |
-| **al-copilot** | AI-Powered Features Expert | 🟡 MEDIUM / 🔴 HIGH | Copilot experiences, prompt engineering, Azure OpenAI integration |
 | **al-presales** | Pre-Sales & Project Estimation | Any complexity | Project planning, cost estimation, feasibility analysis, SWOT |
+| **al-agent-builder** | Business Central Agent Toolkit Builder | Any complexity | Designing and coding BC agents with the AI Development Toolkit and Agent SDK (optional pack) |
+
+Domain expertise for API, Copilot, debugging, testing, performance, events, permissions, pages, migration and translation is provided by the 17 composable **skills** that agents load on demand, not by separate agents.
 
 ## 🏗️ Tool Boundaries (MCP Model)
 

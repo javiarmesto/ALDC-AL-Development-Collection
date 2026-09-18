@@ -1,52 +1,13 @@
 ---
-applyTo: '**/*.al,**/*.json'
-description: AL Guidelines - Comprehensive AI-optimized coding rules for Microsoft Dynamics 365 Business Central development
----
+applyTo: '**/*.al'
+description: AL Core principles — transversal rules for Microsoft Dynamics 365 Business Central development. ALDC always-on AL micro-rules (instruction al-guidelines); path-scoped.
+---# AL Core Principles
 
-# AL Guidelines - Vibe Coding Rules
+Transversal framework principles. Concrete rules for style, naming, performance, errors, events and testing live in their own micro-instructions.
 
-You are an AI assistant designed to aid in AL development, particularly for Microsoft Dynamics 365 Business Central. Your role is to assist developers in writing efficient, maintainable code following established patterns and best practices.
+**Deployment premise.** Unless a rule says otherwise, these rules describe **Business Central online (SaaS)**. Where the platform behaves differently on-premises, the rule says so; nothing here assumes a server setting a SaaS tenant cannot reach.
 
-## Core Principles
-
-- Follow event-driven programming model; never modify standard application objects
-- Use clear, meaningful names and maintain consistent code structure
-- Prioritize performance optimization and proper error handling
-- Focus on main application implementation by default
-- Only generate test code when explicitly requested
-- Maintain proper AL-Go workspace structure separation
-
-## Context Loading
-
-Before implementing AL code, review the following domain-specific guidelines that apply to your current file context:
-
-- [AL Code Style Guidelines](./al-code-style.instructions.md) - Code structure and formatting
-- [AL Naming Conventions](./al-naming-conventions.instructions.md) - Consistent naming patterns
-- [AL Performance Guidelines](./al-performance.instructions.md) - Optimization best practices
-- [AL Error Handling](./al-error-handling.instructions.md) - Error patterns and telemetry
-- [AL Events Guidelines](./al-events.instructions.md) - Event-driven development
-- [AL Testing Guidelines](./al-testing.instructions.md) - Test implementation patterns
-
-## Key Guidelines Summary
-
-- **File Naming**: Use `<ObjectName>.<ObjectType>.al` pattern consistently
-- **Code Style**: Use two space indentation and PascalCase for variables, PascalCase for objects
-- **Folder Structure**: Organize by feature (`src/feature/subfeature/`) not by object type
-- **Performance**: Filter data early, use temporary tables, avoid unnecessary loops
-- **Events**: Prefer integration events over direct modifications for extensibility
-- **Testing**: Separate App and Test projects, generate tests only when requested
-- **Error Handling**: Use TryFunctions, provide meaningful error messages, implement telemetry
-
-## AL-Go Workspace Structure
-
-When working in AL-Go environments:
-- **App project**: Contains all application logic (tables, pages, codeunits, reports)
-- **Test project**: Contains all test code and references App project as dependency
-- **Never mix**: Application code stays in App, test code stays in Test project
-
-## AI Response Behavior
-
-- Provide concise, actionable advice with specific AL method references
-- Always explain the reasoning behind recommendations
-- Reference Business Central architecture patterns and established best practices
-- Focus on practical implementation guidance that can be immediately applied
+1. **Event-driven model**. Never modify Business Central base objects; extend via event subscribers or table/page extensions.
+2. **App focus by default**. Main implementation in `App/`; tests **are only generated if the user explicitly requests them**.
+3. **AL-Go App/Test separation**. The `Test/` project depends on `App/`; never the other way around. Do not mix application logic with tests.
+4. **Naming is infrastructure**. The pattern `<ObjectName>.<ObjectType>.al` is not aesthetic: the narrow globs in other instructions depend on it. A misnamed file silently misses its rules.

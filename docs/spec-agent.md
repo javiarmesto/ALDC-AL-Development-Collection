@@ -40,3 +40,25 @@ In Copilot Chat, prompt files require a session type that supports them. If the 
 does not expose the prompt, use its supported direct custom-agent entrypoint and
 verify discovery. Do not infer host loading from file presence. Doctor recognizes
 legacy installations and reports a missing role linked by a newer entrypoint.
+
+## Architecture-led specification decomposition
+
+Architect chooses a single specification or bounded units according to capability
+and contract boundaries. Each unit has a stable SPEC-ID, unique output path and
+explicit ownership. Shared contracts and resource allocations belong to architecture.
+
+| Dependency | Effect |
+| --- | --- |
+| `generation_depends_on` | Requires a completed, human-approved predecessor contract before the dependent specification can be finalized. |
+| `implementation_depends_on` | Constrains implementation order; does not block authoring from stable approved contracts. |
+
+Architect validates dependency references, cycles, resource allocations and authoring
+groups. Parallel authoring is eligible only when required contracts are available
+and ownership does not conflict. Eligibility does not prove concurrent execution
+or authorize parallel implementation; actual host capabilities govern execution.
+
+Each Spec Agent writes only its assigned file and returns conflicts to Architect.
+Architect reviews the actual returned revisions together before the user approves
+specific specifications. A changed shared contract reopens affected consumers and
+review status, while unrelated approved work is preserved. Conductor's planning
+and approval responsibilities remain unchanged.

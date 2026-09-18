@@ -1,6 +1,6 @@
 {
   "name": "al-development-collection",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "AI Native AL Development toolkit for Microsoft Dynamics 365 Business Central with GitHub Copilot integration",
   "main": "scripts/install.js",
   "bin": {
@@ -8,10 +8,11 @@
     "aldc": "./scripts/install.js"
   },
   "scripts": {
-    "test": "node scripts/validate-al-collection.js && node scripts/test-native-profile.js && node scripts/test-cli-plugins.js && node scripts/test-spec-contract.js && node scripts/sync-copilot-cli.js --check && node scripts/sync-plugin-support.js --check && node scripts/sync-codex.js --check && node --test scripts/test-install-transaction.js",
-    "validate": "node scripts/validate-al-collection.js && node scripts/test-native-profile.js && node scripts/test-cli-plugins.js && node scripts/test-spec-contract.js && node scripts/sync-copilot-cli.js --check && node scripts/sync-plugin-support.js --check && node scripts/sync-codex.js --check && node --test scripts/test-install-transaction.js",
+    "test": "node scripts/validate-al-collection.js && node scripts/test-native-profile.js && node scripts/test-cli-plugins.js && node scripts/test-spec-contract.js && node scripts/test-review-contract.js && node scripts/test-bcquality.js && node scripts/sync-copilot-cli.js --check && node scripts/sync-plugin-support.js --check && node scripts/sync-codex.js --check && node --test scripts/test-install-transaction.js scripts/test-plans-validator.js scripts/test-cli-validate.js scripts/test-bcq-index.js scripts/test-plans-root.js",
+    "validate": "node scripts/validate-al-collection.js && node scripts/test-native-profile.js && node scripts/test-cli-plugins.js && node scripts/test-spec-contract.js && node scripts/test-review-contract.js && node scripts/test-bcquality.js && node scripts/sync-copilot-cli.js --check && node scripts/sync-plugin-support.js --check && node scripts/sync-codex.js --check && node --test scripts/test-install-transaction.js scripts/test-plans-validator.js scripts/test-cli-validate.js scripts/test-bcq-index.js scripts/test-plans-root.js",
     "sync:copilot-cli": "node scripts/sync-copilot-cli.js",
     "test:package": "node scripts/test-npm-package.js",
+    "build:known-hashes": "node scripts/build-known-hashes.js",
     "sync:plugins": "node scripts/sync-plugin-support.js && node scripts/sync-copilot-cli.js && node scripts/sync-codex.js && node scripts/sync-claude-workspace.js"
   },
   "dependencies": {
@@ -52,9 +53,11 @@
     "tools/aldc-validate/package.json",
     "tools/bc-agents/",
     "tools/bcquality/",
+    "tools/claude-hooks/",
     "docs/",
     "aldc.yaml",
     "aldc.code-workspace",
+    "known-installations.json",
     ".github/",
     "README.md",
     "LICENSE",

@@ -19,8 +19,15 @@ function overlaps(project, pluginRoot, platform = process.platform) {
 function initialize({ project, pluginRoot, apply = false, force = false, rollback = false, check = false }) {
   project = path.resolve(project); pluginRoot = path.resolve(pluginRoot);
   if (overlaps(project, pluginRoot)) throw Error('Choose a project outside the plugin source tree');
-  const surface = JSON.parse(fs.readFileSync(path.join(pluginRoot, 'surface.json'), 'utf8')).surface;
+  const descriptor = JSON.parse(fs.readFileSync(path.join(pluginRoot, 'surface.json'), 'utf8'));
+  const surface = descriptor.surface;
   if (!['claude', 'cli', 'codex'].includes(surface)) throw Error('Unsupported plugin surface');
+  // plans.root travels with the distribution: the generator resolves it from
+  // aldc.yaml once and records it here, so no YAML reader is needed at install time.
+  const plansRoot = descriptor.plansRoot || '.github/plans';
+  if (typeof plansRoot !== 'string' || !plansRoot || path.isAbsolute(plansRoot) || plansRoot.split(/[\\/]/).includes('..')) {
+    throw Error('surface.json: plansRoot must be a relative path inside the project');
+  }
   if (rollback) return tx.rollback(project, surface);
   if (check) return { drift: tx.drift(project, surface), hostLoading: 'unverified' };
   verify(pluginRoot); // Check all locked payloads before planning a project write.
@@ -31,9 +38,19 @@ function initialize({ project, pluginRoot, apply = false, force = false, rollbac
   };
   const copy = (src, dst, opts) => put(dst, normalized(fs.readFileSync(path.join(pluginRoot, src))), opts);
   const ruleDest = surface === 'claude' ? '.claude/rules' : surface === 'cli' ? '.github/instructions' : '.agents/skills/aldc/references/rules';
-  if (surface !== 'codex') for (const rel of walk(pluginRoot, 'rules-templates')) copy(rel, `${ruleDest}/${path.basename(rel)}`);
-  copy('templates/memory-template.md', '.github/plans/memory.md', { seed: true });
+  // The Claude Code plugin ships its rules as `rules/`; the CLI distribution keeps
+  // `rules-templates/`, which is the folder name its own generator writes.
+  const ruleSource = surface === 'claude' ? 'rules' : 'rules-templates';
+  if (surface !== 'codex') for (const rel of walk(pluginRoot, ruleSource)) copy(rel, `${ruleDest}/${path.basename(rel)}`);
+  copy('templates/memory-template.md', `${plansRoot}/memory.md`, { seed: true });
   if (surface === 'codex') {
+    // Codex is the one surface whose plans root is neither the consumers' default
+    // (.github/plans, as in the CLI) nor resolvable from an installed package dir
+    // (as install.js does for Claude Code via plansRootOf). Local bootstrap is its
+    // only path, so it declares the root in the project: without this, the project's
+    // own bcquality/config.js and aldc-validate would look under .github/plans.
+    // Seeded, so a project that already has an aldc.yaml keeps it.
+    copy('aldc.yaml', 'aldc.yaml', { seed: true });
     for (const rel of walk(pluginRoot, 'skills')) copy(rel, '.agents/' + rel);
     for (const rel of walk(pluginRoot, 'agents')) copy(rel, '.codex/' + rel);
   }

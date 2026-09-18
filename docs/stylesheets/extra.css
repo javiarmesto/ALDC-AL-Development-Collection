@@ -988,3 +988,54 @@ body,
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Installation journey — the same ALDC notebook, one surface at a time. */
+.aldc-install-grid, .aldc-surface-picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; }
+.aldc-install-card { position: relative; padding: 1.25rem 1rem; border: 1px solid var(--oe-line-strong); border-top: 3px solid var(--oe-cyan); background: var(--oe-surface); box-shadow: var(--oe-shadow-sm); color: var(--oe-navy) !important; }
+.md-typeset .aldc-install-card h3 { margin: .65rem 0 .2rem; font-size: 1rem; }
+.aldc-install-card p { margin: 0; color: var(--oe-muted); }
+.aldc-install-card:hover { border-color: var(--oe-magenta); box-shadow: var(--oe-shadow-cyan); }
+.aldc-start { max-width: 1040px; margin: 1rem auto 3rem; }
+.aldc-start [hidden] { display: none !important; }
+.aldc-start__eyebrow { display: flex; justify-content: space-between; gap: 1rem; font: 600 .64rem "JetBrains Mono", monospace; letter-spacing: .1em; color: var(--oe-cyan); }
+.md-typeset .aldc-start h1 { max-width: 820px; margin: 1rem 0; color: var(--oe-navy); font-size: clamp(2rem, 4vw, 3rem); font-weight: 750; line-height: 1.12; letter-spacing: -.035em; }
+.aldc-start__lead { max-width: 720px; font-size: .95rem; color: var(--oe-muted); }
+.aldc-start__annotation { color: var(--oe-magenta-deep); font-style: italic; transform: rotate(-1deg); transform-origin: left; margin-bottom: 1.6rem; }
+.aldc-surface-picker { padding: 1rem 0 0; margin: 0; border: 0; }
+.aldc-surface-picker legend { color: var(--oe-navy); font: 600 .7rem "JetBrains Mono", monospace; }
+.aldc-surface-choice { position: relative; cursor: pointer; }
+.aldc-surface-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.aldc-surface-choice span { display: flex; flex-direction: column; gap: .35rem; min-height: 5rem; padding: 1rem; border: 1px solid var(--oe-line-strong); border-top: 3px solid var(--oe-line-strong); background: var(--oe-surface); color: var(--oe-navy); }
+.aldc-surface-choice strong { font-size: .86rem; }
+.aldc-surface-choice small { font: .62rem "JetBrains Mono", monospace; }
+.aldc-surface-choice input:checked + span { background: var(--oe-navy); color: var(--oe-paper); border-color: var(--oe-navy); border-top-color: var(--oe-cyan-bright); box-shadow: 3px 3px 0 var(--oe-cyan-bright); }
+.aldc-surface-choice input:focus-visible + span, .aldc-install-card:focus-visible, .aldc-start button:focus-visible { outline: 3px solid var(--oe-magenta); outline-offset: 4px; }
+.aldc-channel-note { margin: 1.4rem 0; padding: .8rem 1rem; border-left: 3px solid var(--oe-magenta); background: var(--oe-magenta-soft); font-size: .73rem; }
+.aldc-source-setup { padding: 1rem 1.3rem; border: 1px dashed var(--oe-cyan); margin-bottom: 1.2rem; background: var(--oe-cyan-soft); }
+.md-typeset .aldc-source-setup h2 { margin-top: 0; font-size: 1.1rem; }
+.aldc-source-setup p, .aldc-source-setup a { font-size: .76rem; }
+.aldc-install-panel { padding: 1.3rem; border: 1px solid var(--oe-line-strong); background: var(--oe-surface); box-shadow: var(--oe-shadow-md); }
+.aldc-install-panel__heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem; padding-bottom: .8rem; border-bottom: 2px solid var(--oe-navy); }
+.md-typeset .aldc-install-panel__heading h2 { margin: 0; font-size: 1.3rem; color: var(--oe-navy); }
+.aldc-install-panel__heading h2 span { font-weight: 400; color: var(--oe-muted); font-size: .8rem; }
+.aldc-channel-badge { padding: .25rem .5rem; background: var(--oe-cyan-soft); font: .6rem "JetBrains Mono", monospace; color: var(--oe-navy); }
+.aldc-step { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .6rem; padding: 1.2rem 0; border-bottom: 1px solid var(--oe-line); }
+.aldc-step:last-child { border-bottom: 0; }
+.aldc-step__number { color: var(--oe-magenta); font: 500 1rem "JetBrains Mono", monospace; padding-top: .1rem; }
+.md-typeset .aldc-step h3 { margin: 0 0 .55rem; font-size: .98rem; color: var(--oe-navy); }
+.aldc-step p { font-size: .78rem; margin: .5rem 0; }
+.aldc-command { position: relative; min-width: 0; margin: .65rem 0; }
+.aldc-command pre { margin: 0; padding-top: 1.8rem; background: var(--oe-paper-deep); border: 1px solid var(--oe-line-strong); }
+.md-typeset .aldc-command code { display: block; padding: .6rem .8rem; white-space: pre; overflow-x: auto; font-size: .66rem; color: var(--oe-navy); background: transparent; }
+.aldc-command button { position: absolute; right: .4rem; top: .3rem; z-index: 1; padding: .2rem .55rem; font: 600 .6rem "JetBrains Mono", monospace; color: var(--oe-navy); border: 1px solid var(--oe-line-strong); background: var(--oe-surface); cursor: pointer; }
+.md-typeset .aldc-route-note { margin: 1rem 0 0; border-color: var(--oe-cyan); font-size: .75rem; }
+.aldc-first-task { padding: 1.4rem; margin: 1.5rem 0; border-top: 3px solid var(--oe-magenta); background: var(--oe-surface); box-shadow: var(--oe-shadow-sm); }
+.md-typeset .aldc-first-task h2 { margin: .65rem 0; color: var(--oe-navy); }
+.aldc-first-task p, .aldc-install-footnotes p { font-size: .78rem; }
+.aldc-first-task .aldc-command code { white-space: pre-wrap; }
+.aldc-guide-links { display: flex; flex-wrap: wrap; gap: 1rem; font-size: .75rem; }
+.aldc-copy-status { min-height: 1.4rem; font-size: .75rem; color: var(--oe-success); }
+@media (max-width: 760px) { .aldc-install-grid, .aldc-surface-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); } .aldc-start { margin-top: .5rem; } }
+@media (max-width: 430px) { .aldc-install-panel, .aldc-first-task, .aldc-source-setup { padding: .9rem; } .aldc-step { grid-template-columns: 1.5rem minmax(0, 1fr); gap: .3rem; } .aldc-surface-choice span { padding: .7rem; } }
+/* These snippets supply localized copy feedback; suppress Material's second button. */
+.aldc-command .md-code__button { display: none; }

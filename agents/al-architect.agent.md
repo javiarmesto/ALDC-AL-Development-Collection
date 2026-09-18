@@ -1,13 +1,13 @@
 ---
 name: AL Architecture & Design Specialist
-description: 'AL Architecture and Design assistant for Business Central extensions. Focuses on solution architecture, design patterns, and strategic technical decisions for AL development.'
+description: 'AL Architecture and Design assistant for Business Central extensions. Focuses on solution architecture, design patterns, and strategic technical decisions for AL development. Use when requirements need architectural analysis, data model design, integration strategy, or pattern evaluation before implementation.'
 tools: [vscode/memory, vscode/runCommand, vscode/switchAgent, vscode/extensions, vscode/askQuestions, vscode/toolSearch, execute/getTerminalOutput, read/readFile, read/problems, read/skill, edit, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, 'al-symbols-mcp/*', 'upstash/context7/*', 'microsoft-learn/*', vscode.mermaid-chat-features/renderMermaidDiagram, todo]
 model: Claude Sonnet 4.6 (copilot)
 argument-hint: 'Feature or system to design architecture for (e.g., "customer loyalty points system", "API integration with external CRM")'
 handoffs:
   - label: Specify approved architecture
     agent: AL Spec Agent
-    prompt: Read the approved architecture and requirement. Produce the canonical spec under the Spec Agent contract, preserving decisions and scope. Present it for human approval before Conductor implementation.
+    prompt: Read the approved architecture, requirement and assigned SPEC-ID/output path. Respect generation prerequisites and approved parallel-authoring groups; preserve implementation dependencies. Produce only the assigned spec, then return it for joint consistency review and human approval before Conductor implementation.
     send: false
   - label: Quick Implementation
     agent: AL Implementation Specialist
@@ -171,7 +171,7 @@ Cover all relevant areas based on complexity:
    Create spec for {req_name}. Read .github/plans/{req_name}/{req_name}.architecture.md
    ```
 
-   **Decomposed (multiple specs)**: invoke al-spec.create per sub-spec in defined order.
+   **Decomposed (multiple specs)**: invoke al-spec.create once per assigned SPEC-ID/output path, following approved authoring groups and required contract revisions. Distinguish generation from implementation dependencies.
 
    **After human approval of the current spec, implement**:
    ```
@@ -187,6 +187,27 @@ Load relevant domain skills based on requirements:
 - **Performance analysis** → `skill-performance` for optimization strategy
 - **Event-driven** → `skill-events` for publishers/subscribers
 - **UX/pages** → `skill-pages` for layout patterns
+
+### Step 5: BCQuality design constraints (read path, non-blocking)
+
+Read [the BCQuality design guidance](../docs/templates/bcquality-design-guidance.md)
+and follow its selection procedure for stage `design`: house rules first, then
+these domains by Step 2 area — Object Model → `data-modeling`, `interfaces` ·
+Integration → `events`, `web-services` · Data → `data-modeling`, `upgrade`,
+`breaking-changes` · Security → `security`, `privacy` · Performance →
+`performance` (keys, FlowFields, batch — not loop-level rules).
+
+Write `.github/plans/{req_name}/{req_name}.bcq-constraints.md` with two blocks:
+
+- **House rules** — every custom-layer article, first, uncapped. One line each: the
+  rule, the design decision it touches, the cited `path`, any displaced path.
+- **Platform constraints** — the rest, grouped by area, same one-line shape. Name the
+  unknown dimension for a conditional article.
+
+Write the selection file the guidance defines (`{req_name}.bcq-selection.json`,
+stage `design`). Nothing here gates approval. When you deviate from a house rule,
+record the deviation and reason in the architecture document's decisions. Not
+mounted: skip, say so in the evidence line, continue.
 
 For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer` directly.
 </workflow>
@@ -223,7 +244,7 @@ This agent draws on these skills from `.github/skills/`. They are **not** auto-l
 
 ## Skills Evidencing
 
-The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `.github/docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream.
+The `> **Skills applied**:` line at the top of the architecture document is **mandatory**. Format and placement are defined in `.github/docs/templates/architecture-template.md`. List only skills actually loaded; write "None (general architecture patterns only)" if no skill was applied. The Conductor and Review Subagent use this line to verify skill coverage downstream. Next to it, the `> **BCQuality**:` evidence line defined in the design guidance is mandatory whenever the corpus was read, and states `loaded`, never `executed`. Write `> **BCQuality**: not consulted (<reason>)` otherwise.
 
 <stopping_rules>
 ## Stopping Rules
@@ -258,25 +279,29 @@ The `> **Skills applied**:` line at the top of the architecture document is **ma
 
 ## Requirement Decomposition
 
-When a requirement is too complex for a single spec, document decomposition in architecture.md under **"## Spec Decomposition"**:
+Read [section 14 of the architecture template](../docs/templates/architecture-template.md)
+and apply its decomposition rules before proposing MEDIUM/HIGH approval. Explicitly
+choose single-spec or multi-spec; define stable SPEC-IDs, bounded capabilities,
+unique output paths, shared contracts, both dependency types and resource ownership.
 
-```markdown
-## Spec Decomposition
+Name the concrete predecessor result for every dependency. Derive authoring groups
+from `generation_depends_on`; an `implementation_depends_on` edge alone does not
+block parallel authoring. Validate references, cycles, output/ID collisions and
+shared-contract readiness before declaring a group eligible. Do not split merely
+by AL object type or equate shared resources with semantic dependencies.
 
-This requirement requires 2 separate technical specifications:
+The architecture document is the source of assignments and approvals. Hand each
+Spec invocation one SPEC-ID, output path, current architecture revision and required
+approved contract references. Separate invocations may author eligible units in
+parallel when the host/session allows; no new scheduler or Graph runtime is required.
+If unavailable, run sequentially and state that concurrency was not observed.
 
-### Spec A: {req_name}-core
-- Scope: Table, Enum, Codeunit (data model + business logic)
-- Dependencies: None
-- Estimated phases: 2
-
-### Spec B: {req_name}-ui
-- Scope: Pages, FactBox, Actions
-- Dependencies: Spec A must be completed first
-- Estimated phases: 2
-
-Order: Spec A → Spec B (sequential)
-```
+After the specs return, perform the template's joint consistency review on their
+actual revisions. Resolve shared-contract/ownership conflicts with the affected
+Spec owners; do not write their specs yourself. Present the selected coherent
+increment for human approval, then pass its paths and implementation dependencies
+to Conductor under the existing gates. A changed contract invalidates only affected
+consumer readiness and prior consistency conclusions; preserve unrelated approvals.
 
 ## Architecture Document Structure
 
@@ -319,7 +344,7 @@ Execute the sequence in **§🚨 Critical: Automatic Architecture Document Creat
 
 ### After Document Creation
 - [ ] Suggest `@workspace use al-spec.create` as NEXT step (MEDIUM/HIGH)
-- [ ] If decomposed: indicate order of specs to create
+- [ ] If decomposed: provide assigned SPEC-IDs/paths, both dependency types, justified authoring groups and joint consistency review
 - [ ] Clarify handoff: architect → spec.create → conductor
 
 **If approval unclear**: ask explicitly "Does this architecture meet your requirements? Should I create the documentation?"
@@ -347,6 +372,8 @@ Execute the sequence in **§🚨 Critical: Automatic Architecture Document Creat
 2. `.github/plans/*/*.spec.md` — existing technical specifications
 3. `.github/plans/*/*.architecture.md` — previous architecture decisions
 4. `.github/plans/*/*.test-plan.md` — test strategies
+5. `.github/plans/*/*.bcq-constraints.md` — house rules and platform constraints
+   already recorded for sibling requirements; reuse citations, do not re-derive them.
 
 **Why**: ensures your architecture aligns with project conventions, previous decisions, known constraints, and team standards.
 

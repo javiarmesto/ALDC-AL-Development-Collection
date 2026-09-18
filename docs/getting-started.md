@@ -1,24 +1,26 @@
-# Getting Started with ALDC v3.2.0
+# Getting Started with ALDC
 
-Welcome to the **AL Development Collection** (ALDC Core v1.1).
+Start with [installation by surface](start.md) ([castellano](start-es.md)) to choose VS Code, Copilot CLI, Claude Code or Codex. Published and candidate channels have different capabilities.
+
+Welcome to the **AL Development Collection**.
 This guide helps you start developing Business Central extensions
 with structured, contract-driven, TDD-orchestrated workflows.
 
 ## What was installed
 
-Your workspace now has the ALDC toolkit in `.github/`:
+After installing the VS Code toolkit, the following directories hold the project content. Terminal/plugin layouts differ; follow your selected installation route:
 
 ```text
 .github/
-  agents/          4 public agents + 3 internal subagents
-  instructions/    9 auto-applied coding standards
-  prompts/         6 workflows
-  skills/          11 composable skills (7 required + 4 recommended)
+  agents/          Specialist agents and internal subagents
+  instructions/    Scoped coding standards
+  prompts/         Development workflows
+  skills/          Reusable domain skills
   plans/
     memory.md      Global memory (append-only, cross-session context)
   docs/
     schema/        aldc.schema.json (configuration schema)
-    templates/     7 document templates (spec, architecture, test-plan, etc.)
+    templates/     Specification, architecture, test-plan and review templates
   tools/
     aldc-validate/ Compliance validator
 aldc.yaml          Configuration file (workspace root)
@@ -33,7 +35,7 @@ cd your-workspace
 node .github/tools/aldc-validate/index.js --config aldc.yaml
 ```
 
-Expected output: `ALDC Core v1.1 COMPLIANT (0 warning(s))`
+Read the reported missing components, errors and warnings for your installed version. This is a structural check, not evidence of host loading, compilation or a completed review. The validator requires its declared Node dependencies; do not assume installation of the VSIX also installs them.
 
 ## Your first requirement
 
@@ -132,5 +134,5 @@ Each requirement generates a contract set in `.github/plans/`:
 ## Need help?
 
 - Run validation: `node .github/tools/aldc-validate/index.js --config aldc.yaml`
-- Check the [ALDC Core Spec v1.1](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/blob/main/docs/framework/ALDC-Core-Spec-v1.1.md)
-- Report issues: [GitHub Issues](https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot/issues)
+- Check the [collection guide](al-development.md)
+- Report issues: [GitHub Issues](https://github.com/javiarmesto/ALDC-AL-Development-Collection/issues)

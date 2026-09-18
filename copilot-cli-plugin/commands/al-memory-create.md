@@ -1,20 +1,6 @@
 ---
-description: |
-  Generate or update memory.md file tracking decisions, changes, and learnings throughout project development for continuity across sessions. Use when you need to create or update memory, track decisions, or maintain session continuity.
+description: Generate or update memory.md file tracking decisions, changes, and learnings throughout project development for continuity across sessions. ALDC workflow (Copilot prompt al-memory.create); invoke explicitly.
 ---
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
-
 # AL Memory File Generator
 
 Generate and maintain a `memory.md` file that serves as the **project memory** - tracking decisions, changes, learnings, and important conversations across development sessions.
@@ -51,7 +37,6 @@ If `memory.md` doesn't exist, create with this template:
 **Blockers**: [Current blockers if any]
 
 ---
----
 
 ## Session Log
 
@@ -77,7 +62,6 @@ If `memory.md` doesn't exist, create with this template:
 - [Any important observations]
 
 ---
----
 
 ## Decision Log
 
@@ -94,7 +78,6 @@ If `memory.md` doesn't exist, create with this template:
 **Review Date**: [When to revisit if applicable]
 
 ---
----
 
 ## Problem/Solution Patterns
 
@@ -107,7 +90,6 @@ If `memory.md` doesn't exist, create with this template:
 **Related Code**: [File paths or line numbers]
 
 ---
----
 
 ## Learning Journal
 
@@ -118,7 +100,6 @@ If `memory.md` doesn't exist, create with this template:
 **Where Applied**: [Code locations]
 **Resources**: [Links to docs, articles that helped]
 
----
 ---
 
 ## Code Evolution
@@ -134,7 +115,6 @@ If `memory.md` doesn't exist, create with this template:
 - Reason: [Why it changed]
 - Migration: [How to adapt if needed]
 
----
 ---
 
 ## TODO & Backlog
@@ -152,7 +132,6 @@ If `memory.md` doesn't exist, create with this template:
 - [x] [Completed task] - [Date completed]
 
 ---
----
 
 ## Questions & Answers
 
@@ -161,7 +140,6 @@ If `memory.md` doesn't exist, create with this template:
 **Answer**: [The answer found]
 **Source**: [Where answer came from - docs, testing, expert]
 
----
 ---
 
 ## Integration Points
@@ -174,7 +152,6 @@ If `memory.md` doesn't exist, create with this template:
 **Issues Encountered**: [Problems and solutions]
 **Dependencies**: [What depends on this]
 
----
 ---
 
 ## Performance Tracking
@@ -189,7 +166,6 @@ If `memory.md` doesn't exist, create with this template:
 **Target**: [Performance goal]
 
 ---
----
 
 ## Testing Insights
 
@@ -203,7 +179,6 @@ If `memory.md` doesn't exist, create with this template:
 **Regression History**: [If this broke before, when and why]
 
 ---
----
 
 ## Communication Log
 
@@ -214,7 +189,6 @@ If `memory.md` doesn't exist, create with this template:
 **Action Items**: [Who does what]
 **Follow-up**: [When to check back]
 
----
 ---
 
 ## Environment Notes
@@ -230,7 +204,6 @@ If `memory.md` doesn't exist, create with this template:
 - [Issue]: [Workaround]
 
 ---
----
 
 ## Deprecated Patterns
 
@@ -241,7 +214,6 @@ If `memory.md` doesn't exist, create with this template:
 **Migration Guide**: [How to update old code]
 **Reason for Deprecation**: [Why we stopped using it]
 
----
 ---
 
 ## Useful Snippets
@@ -254,7 +226,6 @@ If `memory.md` doesn't exist, create with this template:
 **Source**: [Where this came from]
 
 ---
----
 
 ## Meeting Notes
 
@@ -265,7 +236,6 @@ If `memory.md` doesn't exist, create with this template:
 **Decisions**: [What was decided]
 **Actions**: [Who does what by when]
 
----
 ---
 
 ## Maintenance Log
@@ -281,15 +251,15 @@ If `memory.md` doesn't exist, create with this template:
 ### 2. If Memory File Exists - Update It
 
 **Add new session entry:**
-```
+```powershell
 # Check for recent changes
-execute: git diff / git status
+@changes
 
 # Check current problems
-execute: al compile   (read the compiler output)
+@problems
 
-# Check open work
-the current task list or plan document
+# Check TODOs
+@todos
 ```
 
 **Update with:**

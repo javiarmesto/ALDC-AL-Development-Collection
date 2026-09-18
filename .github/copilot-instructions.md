@@ -4,7 +4,7 @@
 
 ## Overview
 
-This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.2** skills-based architecture. The installed distribution contains **11 agents (including 3 subagents), 16 skills, 11 prompts and 8 scoped instructions**; required and optional components are defined in `aldc.yaml`.
+This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.2** skills-based architecture. The installed distribution contains **12 agents (including 3 subagents), 16 skills, 11 prompts and 8 scoped instructions**; required and optional components are defined in `aldc.yaml`.
 
 ## Core Principles
 
@@ -82,13 +82,14 @@ The 11 core knowledge modules below are part of the 16 shipped skills, including
 
 ## External Knowledge: BCQuality
 
-This layer is optional. Resolve `external.bcquality.enabled` from `aldc.yaml` once; when disabled or unavailable, use the complete native A–G review and state its coverage. Under `bc29-native`, the installed native contract also permits an already configured knowledge provider. A missing clone does not block the workflow.
-
-[BCQuality](https://github.com/microsoft/BCQuality) — a curated, citable knowledge base of Business Central guidance (atomic knowledge files + review skills) — is consumed from **outside the AL project**: a clone added as a second VS Code workspace root (multi-root via `aldc.code-workspace`), so its example `.al` files never enter your extension's compilation. Source/version is configurable in `aldc.yaml → external.bcquality` (defaults to upstream; point it at your own fork). See [`docs/bcquality.md`](../docs/bcquality.md) for install + usage.
-
-BCQuality is a **citation/audit layer, not a replacement** for the scoped instructions or skills. The **AL Code Review Subagent** consults it (its "Step 0") before the A-G checklist: it routes via the BCQuality entry point (`<home>/skills/entry.md`, per `aldc.yaml`), runs the dispatched review skills, and folds the resulting findings — each backed by a knowledge-file citation — into the review report. A BCQuality `blocker`/`major` raises the review verdict like a native CRITICAL/MAJOR.
-
-> **Pilot scope**: only `al-performance-review`, `al-security-review`, and `al-style-review` are enabled. If you choose the optional clone provider, run `bash tools/bcquality/install.sh` to clone BCQuality (to `../bcquality`), then open `aldc.code-workspace`.
+BCQuality is an optional citable review provider. Follow the shared
+`docs/templates/bcquality-provider-contract.md`: `external.bcquality.mode` selects
+`plugin` or `external-multiroot`, and `enabled: false` skips every probe. Plugin
+mode loads the exact configured skill (default `al-code-review`); multiroot
+reads the configured external Entry. Keep full native A–G until actual results
+establish domain coverage. Track discovery, loading, execution and best-effort
+index generation separately. Expected versions/revisions are not observed facts.
+See `docs/bcquality.md` for setup and limitations.
 
 ## Skills Evidencing
 
@@ -102,12 +103,12 @@ Agents MUST declare which skills they loaded and which patterns they applied:
 
 This traceability chain ensures every skill application is auditable end-to-end.
 
-### BCQuality evidence: declarative vs falsifiable
+### BCQuality evidence
 
-The chain above is **declarative** — an agent could in principle claim a BCQuality consultation it did not perform. Two mechanisms make it **falsifiable**:
-
-1. **Persisted findings-report** — the raw JSON on disk (`*-bcquality-phase-<N>.json`) carries each finding's `references[].path` (the cited knowledge file) and the pinned BCQuality SHA.
-2. **CI validation** — the `bcquality-evidence` workflow runs `tools/bcquality/validate_evidence.py`, which (a) asserts the pin agrees across `aldc.yaml` and both install scripts, and (b) verifies **every** citation resolves to a real file in the BCQuality clone (cloned at the pin via `--bcquality-root`). A hallucinated citation or a drifted pin fails the check.
+Persist actual findings, cited paths and observed provider identity. CI checks
+report structure and, only with an available matching corpus, resolves citations.
+Neither CI exit zero nor a catalog listing proves that a plugin loaded, executed
+or refreshed its index. Keep those scoped observations in the review evidence.
 
 ## Auto-Applied Instructions
 
@@ -149,7 +150,7 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 **MEDIUM / HIGH:**
 
 1. `@AL Architecture & Design Specialist` — Designs solution, creates `.github/plans/{req_name}/{req_name}.architecture.md`
-2. `@workspace use al-spec.create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (detailed blueprint: object IDs, procedure signatures, AL code)
+2. `@workspace use al-spec.create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (technical contracts: object IDs, procedure signatures, acceptance; no AL implementation bodies)
 3. `@AL Development Conductor` — Reads spec + architecture from `.github/plans/{req_name}/`, orchestrates TDD: planning → implementation → review
 4. `@workspace use al-pr-prepare` — Prepares PR referencing the plan
 
@@ -190,4 +191,6 @@ Human-facing reference material — examples, workspace layout, links, troublesh
 **Version**: 1.2.0
 **Last Updated**: 2026-09-14
 **Workspace**: AL Development for Business Central
-**Primitives**: 11 agents (including 3 subagents) + 16 skills + 11 prompts + 8 scoped instructions; 6 core workflows
+**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 8 scoped instructions; 6 core workflows
+
+For direct Developer increments, use AL Developer Reviewer in an independent context before human approval. Dredd remains the advisory auditor. Both load skill-al-review-pipeline; Conductor phases keep their own review subagent.

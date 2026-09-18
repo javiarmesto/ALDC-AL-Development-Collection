@@ -1,6 +1,6 @@
 ---
 name: skill-performance
-description: "AL performance optimization patterns for Business Central. Use when optimizing queries with SetLoadFields, working with FlowFields and CalcFields, profiling codeunits, or resolving performance issues."
+description: AL performance optimization patterns for Business Central. Use when optimizing queries with SetLoadFields, working with FlowFields and CalcFields, profiling codeunits, or resolving performance issues.
 ---
 
 # Skill: AL Performance Optimization
@@ -246,7 +246,7 @@ Avoid FlowFields:
 
 Scan the codebase before profiling to identify structural issues:
 
-Patterns to detect manually with Search/Search, or from compiler warnings in `al compile` output:
+Patterns to detect manually or with `search` + `problems`:
 - `FindSet()` / `FindFirst()` without preceding `SetRange` / `SetFilter`
 - `SetLoadFields` placed after `SetRange` (wrong order)
 - Database calls (`Get`, `FindSet`, `FindFirst`) inside `repeat...until`
@@ -263,9 +263,12 @@ Severity assessment:
 
 ### Step 2: Profile (Runtime Measurement)
 
-CPU profiling is a **VS Code AL command / human step** — there is no agent tool for it on this surface. Ask the human to capture a CPU profile (VS Code AL profiler) and share the result, then analyze it.
+Generate CPU profile for runtime bottleneck identification:
+```
+Capture a CPU profile in VS Code (VS Code command — not an agent tool)
+```
 
-Analyze the profile for:
+Analyze profile for:
 - **Hotspots** — procedures with highest cumulative execution time
 - **Frequency** — procedures called most often (especially in loops)
 - **DB operations** — expensive `FindSet` / `Get` calls
@@ -273,13 +276,16 @@ Analyze the profile for:
 
 Compare before/after optimizations by re-profiling after each fix.
 
-⚠️ **Human Gate — cleanup**: Before the human clears the profile codelenses in VS Code, confirm all findings are documented (clearing codelenses is a VS Code action, not an agent tool here).
+⚠️ **Human Gate — cleanup**: Before clearing codelenses, confirm all findings are documented:
+```
+Clear profile codelenses in VS Code  ← VS Code command (not an agent tool), only after approval
+```
 
 ### Step 3: Fix
 
 Apply fixes in priority order (critical first). For each fix:
 1. Apply targeted change (Pattern 1–5 above)
-2. Rebuild: `shell: al compile` (`al workspace compile` for a multi-project workspace)
+2. Rebuild: `al_build`
 3. Re-profile to verify improvement
 
 Performance targets:
@@ -292,7 +298,7 @@ Performance targets:
 
 ### Step 4: Document Findings
 
-For significant optimizations, create a triage report at `.github/plans/perf-triage-<scope>.md`:
+For significant optimizations, create a triage report at `.agents/plans/perf-triage-<scope>.md`:
 
 ```markdown
 # Performance Triage — <Scope>
@@ -329,7 +335,7 @@ For significant optimizations, create a triage report at `.github/plans/perf-tri
 
 ## Constraints
 
-- This skill covers **analysis and fix patterns** — it does NOT duplicate the passive rules in `al-performance.md` (auto-applied to all `.al` files)
+- This skill covers **analysis and fix patterns** — it does NOT duplicate the passive rules in `al-performance.instructions.md` (auto-applied to all `.al` files)
 - Do **NOT** modify source code automatically during triage — generate report and get approval first
 - Do **NOT** clear profile codelenses without human confirmation
 - Do **NOT** save triage report without human gate review

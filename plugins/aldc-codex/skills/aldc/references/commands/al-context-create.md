@@ -7,25 +7,25 @@ Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
 new discoverable skills must still be created with SKILL.md.
 
-Use only tools actually exposed by this session. Model, reasoning, sandbox and
-approval settings inherit from the parent; this profile grants no extra tools.
-Role write scopes below are behavioral, not filesystem sandboxes. Discover MCP
+Read the terminal-host contract at
+`.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
+before choosing AL tools, changing dependencies or reporting BC29 / AL18
+validation. Use only tools actually exposed by this session. Model, reasoning and approval
+settings inherit from the parent; this profile grants no extra tools. Its
+`sandbox_mode` is derived from the write scope the canonical contract grants this
+role, and the session's own permission profile is reapplied over it, so that key
+narrows and never grants. The narrower role write scopes stated below are still
+behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
+The `handoffs:` entries of the canonical contract, and the `send: false` on some
+of them, have no equivalent here. In Copilot a handoff is a button the human
+clicks, and `send: false` additionally hands them the prompt to review before it
+is sent: the host supplies the approval. Codex has no such step, so the gate is
+yours to keep — never auto-delegate. Present your output, get explicit approval,
+and only then delegate or switch role.
 
 # AL Context File Generator
 
@@ -47,33 +47,33 @@ This enables AI assistants to load complete project context quickly and make inf
 ### 1. Analyze Project Structure
 
 **Load project metadata:**
-```
+```powershell
 # Get app.json configuration
-Read app.json
+@read_file app.json
 
-# Understand dependencies (app.json `dependencies` + al-symbols-mcp al_packages)
-al-symbols-mcp: al_packages
+# Understand dependencies
+@al_get_package_dependencies
 
 # Map directory structure
-Glob src/**
+@list_dir src/
 ```
 
 **Identify key patterns:**
-```
+```powershell
 # Find all table extensions
-Grep "tableextension" --glob *.al
+@search "tableextension" *.al
 
 # Find all page extensions
-Grep "pageextension" --glob *.al
+@search "pageextension" *.al
 
 # Find event subscribers
-Grep "EventSubscriber" --glob *.al
+@search "EventSubscriber" *.al
 
 # Find published integration events
-Grep "IntegrationEvent" --glob *.al
+@search "IntegrationEvent" *.al
 
 # Find API pages
-Grep "APIPublisher|APIVersion" --glob *.al
+@search "APIPublisher\|APIVersion" *.al
 ```
 
 ### 2. Analyze Business Domain
@@ -310,15 +310,18 @@ src/
 
 ## 15. Useful Commands
 
-```
+```powershell
 # Build project
-shell: al compile
+al_build
 
-# Download symbols (VS Code AL: Download Symbols, or restore the symbol cache in CI)
+# Download symbols
+al_downloadsymbols
 
-# Run tests (VS Code AL: Run Tests, or the AL-Go/CI test runner)
+# Run tests
+@workspace /al-test
 
-# Generate permissions (write the permissionset object as AL code)
+# Generate permissions
+al_generatepermissionset
 ```
 
 ## 16. References
@@ -327,7 +330,6 @@ shell: al compile
 - **Wiki**: [Link to wiki if exists]
 - **Related Extensions**: [Dependencies or companion extensions]
 
----
 ---
 
 **Maintenance**: Update this file when:

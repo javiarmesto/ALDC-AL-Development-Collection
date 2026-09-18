@@ -27,9 +27,9 @@
 ## Audit pipeline
 
 1. **Scope & worklist** — default = `*.al` changed vs `main` (local git, read-only); full codebase on request. Batched by module/folder.
-2. **BCQuality first** — probe `external.bcquality.home`; consult it scoped to each batch → cited findings. Native checks cover only what BCQuality doesn't reach (expand to the full **A–G** residual when it's absent).
+2. **BCQuality first** — select `external.bcquality.mode` and load the exact plugin skill or external Entry; review each batch → cited findings. Native checks cover only what BCQuality doesn't reach (expand to the full **A–G** residual when it's absent).
 3. **Verdict** — advisory, with severity-tagged findings.
-4. **Persist** — write the audit report under `.github/audits/`; the `bcquality-evidence` CI workflow validates its citations against the pinned BCQuality clone.
+4. **Persist** — write the audit report under `.github/audits/`; CI checks JSON structure and citation paths only with an available matching corpus; it does not prove plugin execution.
 
 ## Constraints
 
@@ -48,3 +48,6 @@
 ---
 
 <small>Source: [`agents/dredd.agent.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/agents/dredd.agent.md)</small>
+
+Provider identity, discovered/loaded/executed stages, best-effort index evidence
+and native fallback follow [the shared contract](../templates/bcquality-provider-contract.md).

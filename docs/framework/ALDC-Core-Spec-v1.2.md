@@ -32,10 +32,17 @@ ALDC Core is designed for this routing model:
 
 - **Toolkit**: the set of agents, instructions, prompts, and skills installed in the repository.
 - **toolkitRoot**: the root path of the toolkit inside the repository, configurable in `aldc.yaml`.
-- **Plans folder**: the canonical folder for shared contracts: `.github/plans/`.
+- **Plans folder**: the canonical folder for shared contracts: `.github/plans/`, configurable
+  in `aldc.yaml` under `plans.root`. Unlike `toolkitRoot`, it does not change with the host:
+  the contracts are repository artifacts that every surface (Copilot Chat, Copilot CLI,
+  Claude Code, Codex) reads and writes in the same place, so a team using different
+  assistants shares one set.
 - **Copilot entrypoint**: the repo-wide file that Copilot reads by convention: `.github/copilot-instructions.md`.
 - **Skill**: a composable knowledge module loaded by agents on demand. It lives in `skills/skill-{domain}/SKILL.md` under `toolkitRoot` (directory convention; see Core Skills).
-- **Requirement set**: the set of 3 contractual artifacts for a requirement (`{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md`).
+- **Requirement set**: the set of 3 contractual artifacts for a requirement, in its own
+  folder `.github/plans/{req_name}/`: `{req_name}.spec.md`, `{req_name}.architecture.md`,
+  `{req_name}.test-plan.md`. A decomposed requirement replaces `{req_name}.spec.md` with the
+  Architect-assigned unit specs in that same folder.
 - **Global memory**: the single append-only file (`.github/plans/memory.md`) that records cross-cutting decisions, inter-session context, and project state.
 - **Template**: an immutable file in `docs/templates/`, modifiable only by a maintainer through RFC.
 - **Tier** (NEW): the normative category of a primitive — **Core** (MUST ship), **On-Demand** (MUST ship, invoked reactively, read-only on code), **Extension** (MAY ship; optional packs), **Utility** (MAY ship; pipeline support).
@@ -48,7 +55,9 @@ An ALDC Core repository **MUST** contain:
 - `aldc.yaml` at the repository root.
 - `.github/plans/` with:
   - the mandatory global `memory.md`
-  - requirement sets: `{req_name}.spec.md`, `{req_name}.architecture.md`, `{req_name}.test-plan.md` for every active requirement
+  - one folder per active requirement, `{req_name}/`, holding its requirement set:
+    `{req_name}.spec.md` (or the assigned unit specs when decomposed),
+    `{req_name}.architecture.md` and `{req_name}.test-plan.md`
 - A repo-wide Copilot entrypoint at `.github/copilot-instructions.md`.
 - A toolkit under `toolkitRoot` with:
   - `agents/` (user-invocable agents + internal subagents with `user-invocable: false`)
@@ -152,7 +161,6 @@ A **skill** is a composable knowledge module that lives in `skills/skill-{domain
 
 | Skill | Content |
 |-------|---------|
-| `skill-manifest` | Extension Manifest Generator: end-of-pipeline handoff contract so sibling collections (CIRCE — Copilot Studio; DELFOS — Power BI) can consume the extension's published surface via the BC MCP server |
 | `skill-contribution-assistant` | Guided contribution workflow for the framework itself |
 
 ### Loading Mechanism
@@ -215,7 +223,7 @@ A repository is **ALDC Core v1.2 compliant** if:
 
 1. A valid `aldc.yaml` exists and conforms to the schema.
 2. `.github/plans/memory.md` exists.
-3. Every active requirement has the full set: `{req_name}.spec.md`, `.architecture.md`, `.test-plan.md`.
+3. Every active requirement has its own folder `.github/plans/{req_name}/` with the full set: `{req_name}.spec.md` (or the assigned unit specs when decomposed), `.architecture.md`, `.test-plan.md`.
 4. The 7 required immutable templates exist under `docs/templates/` without alteration.
 5. The 5 Core public agents + 3 internal subagents + 2 on-demand agents exist under `toolkitRoot`.
 6. The 6 Core workflows exist under `toolkitRoot`.

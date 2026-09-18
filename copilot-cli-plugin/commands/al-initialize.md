@@ -1,25 +1,11 @@
 ---
-description: |
-  Initialize AL development environment and workspace for Business Central. Use when setting up a new project, initializing the workspace, or configuring the development environment.
+description: Initialize AL development environment and workspace for Business Central. ALDC workflow (Copilot prompt al-initialize); invoke explicitly.
 ---
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
-
 # AL Environment Initialization
 
-Your goal is to initialize the AL development environment and workspace for `${input:ProjectName}`.
+Your goal is to initialize the AL development environment and workspace for `<ProjectName from $ARGUMENTS>`.
 
-This workflow covers environment setup, AL workspace configuration, and **ALDC rules injection** into your project.
+This workflow covers both initial environment setup (VS Code, GitHub Copilot) and AL workspace configuration (project structure, symbols, dependencies).
 
 ## Phase 0: ALDC instructions (Copilot CLI)
 
@@ -102,17 +88,21 @@ Create or update `.vscode/settings.json` in the workspace root:
 ### Choose Project Type
 
 **For New Projects:**
-Scaffold the project structure directly with `edit` (`app.json`, folders, `.vscode/` configs — see the structure below), or have the human run VS Code `AL: Go!` to generate a starter project.
+```
+al_new_project
+```
 
 **For Existing Folders:**
-Work in place — `read` the existing `app.json` and lay out any missing folders with `edit`.
+```
+al_go
+```
 
 ### Project Structure
 
 Implement feature-based organization:
 
 ```
-${input:ProjectName}/
+<ProjectName from $ARGUMENTS>/
 ├── .vscode/
 │   ├── settings.json          # Workspace settings
 │   └── launch.json            # Debug configurations
@@ -136,13 +126,19 @@ ${input:ProjectName}/
 
 ### Download Symbols
 
-Download required symbols (use verified local restore or a human/pipeline step): run VS Code `AL: Download Symbols`, or restore the symbol package cache in CI.
+Download required symbols:
+```
+al_download_symbols
+```
 
 Verify all base application dependencies are available.
 
-### Create the Manifest
+### Generate Manifest
 
-`app.json` **is** the manifest — write it directly with `edit` (id, name, publisher, version, idRanges, dependencies, platform/application).
+Create manifest file:
+```
+al_generate_manifest
+```
 
 **Human Review:** Validate manifest contents before proceeding.
 
@@ -214,7 +210,7 @@ Create `.vscode/launch.json` based on your environment:
             "name": "Attach to agent (Sandbox)",
             "clientType": "Agent",
             "environmentType": "Sandbox",
-            "environmentName": "${input:EnvironmentName}",
+            "environmentName": "<EnvironmentName from $ARGUMENTS>",
             "breakOnNext": "WebClient"
         }
     ]
@@ -259,7 +255,7 @@ TestResults/
 Create comprehensive `README.md`:
 
 ```markdown
-# ${input:ProjectName}
+# <ProjectName from $ARGUMENTS>
 
 ## Overview
 [Project purpose and business value]
@@ -328,7 +324,7 @@ end;
    - Check that warnings appear
 
 5. **Test Build**
-   - Run VS Code `AL: Download Symbols` (a human step in VS Code)
+   - Run AL: Download Symbols
    - Attempt to compile the project
    - Verify no configuration errors
 
@@ -337,15 +333,15 @@ end;
 ### Authentication Issues
 
 If authentication fails:
-- Clear cached credentials in VS Code (`AL: Clear credentials cache`) — a human step, not an agent tool here
+- Use `al_clear_credentials_cache` to clear cached credentials
 - Re-authenticate when prompted
 - Verify launch.json authentication method is correct
 
 ### Symbol Issues
 
 If symbols are missing:
-1. Download symbols: VS Code `AL: Download Symbols` (or restore the symbol cache in CI — a human/pipeline step)
-2. If persistent, download source: VS Code `AL: Download Source` (a human step; to inspect base/app symbols use **al-symbols-mcp** `al_get_object_definition` / `al_search_objects`)
+1. Download symbols: `al_download_symbols`
+2. If persistent, download source: `al_download_source`
 3. Verify app.json dependencies match BC version
 
 ### AI Suggestions Not Appearing
@@ -386,18 +382,18 @@ Once your environment is initialized:
 
 **For Development:**
 ```
-agent `al-developer`                    # Implement features (loads page/event skills on demand)
+@AL Implementation Specialist                    # Implement features (loads page/event skills on demand)
 /al-build          # Build and deploy
 ```
 
 **For Architecture:**
 ```
-agent `al-architect`                    # Design solutions
+@AL Architecture & Design Specialist                    # Design solutions
 ```
 
 **For TDD Orchestration:**
 ```
-agent `al-conductor`                    # Plan → Implement → Review → Commit
+@AL Development Conductor                    # Plan → Implement → Review → Commit
 ```
 
 ## Security Considerations
@@ -418,7 +414,6 @@ agent `al-conductor`                    # Plan → Implement → Review → Comm
 - Use environment variables for credentials
 - Close files with sensitive information when not needed
 
----
 ---
 
 **Environment Initialization Complete! 🎉**

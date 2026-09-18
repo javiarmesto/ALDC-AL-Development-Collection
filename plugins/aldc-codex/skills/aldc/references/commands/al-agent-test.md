@@ -7,33 +7,35 @@ Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
 new discoverable skills must still be created with SKILL.md.
 
-Use only tools actually exposed by this session. Model, reasoning, sandbox and
-approval settings inherit from the parent; this profile grants no extra tools.
-Role write scopes below are behavioral, not filesystem sandboxes. Discover MCP
+Read the terminal-host contract at
+`.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
+before choosing AL tools, changing dependencies or reporting BC29 / AL18
+validation. Use only tools actually exposed by this session. Model, reasoning and approval
+settings inherit from the parent; this profile grants no extra tools. Its
+`sandbox_mode` is derived from the write scope the canonical contract grants this
+role, and the session's own permission profile is reapplied over it, so that key
+narrows and never grants. The narrower role write scopes stated below are still
+behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
+The `handoffs:` entries of the canonical contract, and the `send: false` on some
+of them, have no equivalent here. In Copilot a handoff is a button the human
+clicks, and `send: false` additionally hands them the prompt to review before it
+is sent: the host supplies the approval. Codex has no such step, so the gate is
+yours to keep — never auto-delegate. Present your output, get explicit approval,
+and only then delegate or switch role.
 
 # Workflow: Test Agent SDK Integration
 
-You are an expert AL test developer. Generate tests for all Agent SDK layers.
+Generates tests for all Agent SDK layers. Interface signatures come from `skill-agent-toolkit`; task pattern verification rules come from `skill-agent-task-patterns`.
 
-## 6 Required Test Categories
+**Load skills**: `skill-agent-toolkit` (interface signatures), `skill-agent-task-patterns` (Pattern C/D/H rules for integration tests).
 
-### 1. Registration Tests
+## 6 required test categories
+
+### 1. Registration tests
 
 ```al
 [Test]
@@ -57,7 +59,7 @@ begin
 end;
 ```
 
-### 2. Factory Tests (IAgentFactory)
+### 2. Factory tests (IAgentFactory)
 
 ```al
 [Test]
@@ -108,7 +110,7 @@ begin
 end;
 ```
 
-### 3. Metadata Tests (IAgentMetadata)
+### 3. Metadata tests (IAgentMetadata)
 
 ```al
 [Test]
@@ -139,7 +141,7 @@ begin
 end;
 ```
 
-### 4. Task Execution Tests (IAgentTaskExecution)
+### 4. Task Execution tests (IAgentTaskExecution)
 
 ```al
 [Test]
@@ -155,14 +157,17 @@ begin
 end;
 ```
 
-### 5. Task Integration Tests
+### 5. Task Integration tests
 
-- Task created with correct External ID format
+Apply Pattern C rules from `skill-agent-task-patterns`:
+
+- Task created with correct ExternalId format
 - Task NOT created when business condition is false
 - Message contains all required context fields
-- TryFunction does not block business events on failure
+- `[TryFunction]` does not block business events on failure
+- Telemetry logged via `Session.LogMessage` on failure
 
-### 6. Agent Session Tests
+### 6. Agent Session tests
 
 ```al
 [Test]
@@ -175,7 +180,7 @@ begin
 end;
 ```
 
-## Coverage Matrix
+## Coverage matrix
 
 | Category        | Test                     | Status |
 | --------------- | ------------------------ | ------ |
@@ -194,9 +199,20 @@ end;
 | TaskExecution   | InputValidation          |        |
 | TaskExecution   | OutputPostProcess        |        |
 | TaskExecution   | Suggestions              |        |
-| TaskExecution   | PageContext               |        |
+| TaskExecution   | PageContext              |        |
 | TaskIntegration | Creation                 |        |
 | TaskIntegration | ConditionFilter          |        |
 | TaskIntegration | MessageContent           |        |
 | TaskIntegration | ErrorHandling            |        |
 | AgentSession    | Detection                |        |
+
+## Skills Evidencing
+
+End with:
+
+```
+**Skills loaded**: skill-agent-toolkit, skill-agent-task-patterns
+**Patterns applied**:
+- Interface signatures verified against skill-agent-toolkit
+- Pattern C TryFunction + telemetry rules verified in integration tests
+```

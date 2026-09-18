@@ -58,7 +58,7 @@ function plan({ root, surface, files, force = false }) {
   root = path.resolve(root);
   if (json(root, `${META}/pending.json`)) throw Error('Interrupted operation: run rollback before installing');
   const state = json(root, statePath(surface));
-  if (state && (state.schema !== 1 || state.surface !== surface || !state.files)) throw Error('Invalid installation receipt');
+  if (state && (state.schema !== 1 || state.surface !== surface || !state.files || typeof state.files !== 'object' || Array.isArray(state.files))) throw Error('Invalid installation receipt');
   const seen = new Set(), actions = [];
   for (const [rel, record] of files) {
     if (rel.startsWith(META + '/')) throw Error('Reserved installer destination');
@@ -66,10 +66,15 @@ function plan({ root, surface, files, force = false }) {
     seen.add(rel.toLowerCase());
     const before = read(root, rel), desired = Buffer.from(record.content);
     const oldHash = state?.files[rel];
-    const drift = before !== null && !before.equals(desired) && hash(before) !== oldHash;
+    // Bytes an earlier release of this toolkit is known to have written are ours, not a
+    // local change. Consulted only when no receipt exists, which is the upgrade from a
+    // release that recorded none: with a receipt, the receipt is the sole authority.
+    // Seeded files stay out of it, and the replace is previewed and backed up as usual.
+    const recognised = before !== null && !state && !record.seed && Array.isArray(record.prior) && record.prior.includes(hash(before));
+    const drift = before !== null && !before.equals(desired) && hash(before) !== oldHash && !recognised;
     const preserve = before !== null && (record.seed || (drift && !force && !record.merge));
     const after = preserve ? before : desired;
-    actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain),
+    actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain), customized: Boolean(drift), recognised: Boolean(recognised),
       status: before === null ? 'add' : preserve ? (record.seed ? 'preserve' : 'collision') : before.equals(after) ? 'unchanged' : 'replace' });
   }
   // Never delete unknown files. A retired tracked path needs an explicit decision
@@ -83,7 +88,11 @@ function plan({ root, surface, files, force = false }) {
   }
   return { root, surface, state, actions };
 }
-function report(plan) { return plan.actions.map(({ rel, status }) => ({ path: rel, action: status })); }
+// customized: existing bytes match neither the receipt nor the packaged content,
+// so a replace action overwrites a local change (recoverably) rather than a tracked file.
+function report(plan) { return plan.actions.map(({ rel, status, before, after, customized, recognised }) => ({ path: rel, action: status, before: hash(before), after: hash(after), customized: Boolean(customized), recognised: Boolean(recognised) })); }
+// Stable identity of a planned outcome: the same files, actions and bytes.
+function digest(plan) { return hash(Buffer.from(JSON.stringify(report(plan).map(f => [f.path, f.action, f.before, f.after])))); }
 function restore(root, journal, interrupted = false, beforeWrites = () => {}) {
   if (journal?.schema !== 1 || !Array.isArray(journal.actions)) throw Error('Invalid rollback journal');
   const changes = [], preserved = [];
@@ -106,16 +115,17 @@ function restore(root, journal, interrupted = false, beforeWrites = () => {}) {
 }
 function apply(options) {
   let p = plan(options);
-  if (options.dryRun) return { files: report(p), transaction: null, dryRun: true };
+  if (options.dryRun) return { files: report(p), transaction: null, dryRun: true, digest: digest(p) };
   const release = acquire(p.root);
   try {
     p = plan(options); // Read again under the installer lock.
+    if (options.expectDigest && digest(p) !== options.expectDigest) throw Error('Installation plan changed since preview; review the new preview before applying');
     const files = {};
     const collisions = p.actions.filter(a => a.status === 'collision').map(a => a.rel);
     const retained = p.actions.filter(a => a.retain).map(a => a.rel);
     for (const a of p.actions) if (a.managed && !a.seed && a.after !== null) files[a.rel] = a.status === 'collision' ? p.state.files[a.rel] : hash(a.after);
     const changes = p.actions.filter(a => hash(a.before) !== hash(a.after));
-    if (!changes.length && JSON.stringify(files) === JSON.stringify(p.state?.files || {}) && JSON.stringify(collisions) === JSON.stringify(p.state?.collisions || []) && JSON.stringify(retained) === JSON.stringify(p.state?.retained || [])) return { files: report(p), transaction: null };
+    if (!changes.length && JSON.stringify(files) === JSON.stringify(p.state?.files || {}) && JSON.stringify(collisions) === JSON.stringify(p.state?.collisions || []) && JSON.stringify(retained) === JSON.stringify(p.state?.retained || [])) return { files: report(p), transaction: null, digest: digest(p) };
     const id = randomUUID(), stateRel = statePath(p.surface);
     changes.push({ rel: stateRel, before: read(p.root, stateRel), after: encode({ schema: 1, surface: p.surface, transaction: id, files, collisions, retained }) });
     const journal = { schema: 1, id, surface: p.surface, status: 'prepared', actions: [] };
@@ -146,7 +156,7 @@ function apply(options) {
       } catch (recovery) { throw Error(`${error.message}; recovery pending: ${recovery.message}`); }
       throw Error(`${error.message}; previous files restored`);
     }
-    return { files: report(p), transaction: id };
+    return { files: report(p), transaction: id, digest: digest(p) };
   } finally { release(); }
 }
 function rollback(root, surface) {
@@ -166,9 +176,66 @@ function rollback(root, surface) {
   } finally { release(); }
 }
 function drift(root, surface) {
-  const state = json(root, statePath(surface));
-  if (!state || state.schema !== 1 || !state.files) throw Error('No valid installation receipt');
+  const rel = statePath(surface);
+  let state;
+  try { state = json(root, rel); }
+  catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw Error(`Invalid installation receipt (${rel}): malformed JSON. Preserve the receipt/backups and inspect before replacing anything.`);
+  }
+  if (!state) throw Error(`No installation receipt (${rel}). Run Install Toolkit to Workspace (CLI: aldc install) and review existing-file collisions; older toolkit copies may have no receipt.`);
+  if (state.schema !== 1 || state.surface !== surface || !state.files || typeof state.files !== 'object' || Array.isArray(state.files))
+    throw Error(`Invalid installation receipt (${rel}). Preserve the receipt/backups and inspect before replacing anything.`);
   return [...new Set([...(state.collisions || []), ...Object.entries(state.files).filter(([rel, h]) => hash(read(root, rel)) !== h).map(([rel]) => rel)])];
+}
+// Read-only state for a user interface. Absent, invalid and drifted receipts are
+// reported as data, never thrown; restore() remains the authority at rollback time.
+function inspect(root, surface) {
+  root = path.resolve(root);
+  const rel = statePath(surface);
+  const result = { surface, receipt: 'absent', receiptPath: rel, receiptProblem: null, transaction: null, pending: null,
+    managed: 0, drift: [], collisions: [], retained: [],
+    restore: { available: false, transaction: null, status: null, reason: 'No recorded installation transaction', interrupted: false, changes: [], preserved: [], blocked: [] } };
+  let state = null;
+  const raw = read(root, rel);
+  if (raw !== null) {
+    try { state = JSON.parse(raw); } catch { state = undefined; }
+    if (state === undefined) result.receiptProblem = 'malformed JSON';
+    else if (!state || state.schema !== 1 || state.surface !== surface || !state.files || typeof state.files !== 'object' || Array.isArray(state.files)) result.receiptProblem = 'unexpected receipt schema or surface';
+    if (result.receiptProblem) { result.receipt = 'invalid'; state = null; }
+    else {
+      try {
+        // Receipt keys are only read through the same path checks as installation; an unsafe key marks the receipt invalid.
+        const drift = Object.entries(state.files).filter(([p, h]) => hash(read(root, p)) !== h).map(([p]) => p);
+        result.receipt = 'valid'; result.transaction = state.transaction || null; result.managed = Object.keys(state.files).length; result.paths = Object.keys(state.files);
+        result.collisions = [...(state.collisions || [])]; result.retained = [...(state.retained || [])];
+        result.drift = [...new Set([...result.collisions, ...drift])];
+      } catch (error) { result.receipt = 'invalid'; result.receiptProblem = error.message; state = null; }
+    }
+  }
+  try { result.pending = json(root, `${META}/pending.json`)?.id || null; } catch { result.pending = null; result.pendingProblem = 'malformed pending marker'; }
+  const id = result.pending || state?.transaction;
+  const restore = result.restore;
+  if (!id) return result;
+  restore.transaction = id; restore.interrupted = Boolean(result.pending);
+  let journal = null;
+  try { journal = json(root, journalPath(id)); } catch { journal = null; }
+  if (journal?.id !== id || journal.surface !== surface || journal.schema !== 1 || !Array.isArray(journal.actions)) { restore.reason = 'Rollback journal is missing or invalid'; return result; }
+  restore.status = journal.status;
+  if (journal.status === 'rolled-back' && !restore.interrupted) { restore.reason = 'The last transaction was already rolled back'; return result; }
+  for (const a of journal.actions) {
+    const actual = hash(read(root, a.rel));
+    if (a.seed && actual !== a.afterHash) { restore.preserved.push(a.rel); continue; }
+    if (restore.interrupted && actual === a.beforeHash) continue;
+    if (actual !== a.afterHash) { restore.blocked.push(a.rel); continue; }
+    let backup = null;
+    try { backup = a.backup === null ? null : read(root, a.backup); } catch { backup = undefined; }
+    if (backup === undefined || hash(backup) !== a.beforeHash) { restore.reason = `Backup integrity mismatch: ${a.rel}`; return result; }
+    restore.changes.push(a.rel);
+  }
+  restore.available = restore.blocked.length === 0;
+  restore.reason = restore.available ? null : 'Changed since installation; rollback would overwrite later edits';
+  return result;
 }
 // The caller supplies only its managed fragment; surrounding user bytes survive.
 function managedBlock(existing, fragment, label) {
@@ -180,4 +247,4 @@ function managedBlock(existing, fragment, label) {
   if (!starts) return Buffer.from(text + (text ? (text.endsWith('\n') ? '\n' : '\n\n') : '') + block + '\n');
   return Buffer.from(text.slice(0, text.indexOf(begin)) + block + text.slice(text.indexOf(end) + end.length));
 }
-module.exports = { apply, plan, report, rollback, drift, hash, read, checked, managedBlock };
+module.exports = { apply, plan, report, digest, inspect, rollback, drift, hash, read, checked, managedBlock };

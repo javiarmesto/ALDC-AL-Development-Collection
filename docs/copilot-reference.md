@@ -160,9 +160,9 @@ Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Dev
 
 ### This Project's Documentation
 
-- [Instructions Index](../instructions/index.md) — Guide to all instruction files
-- [AL Guidelines](../instructions/al-guidelines.instructions.md) — Core principles
-- [Skills Creation Guide](skills-creation-guide.md) — How to author new skills
+- [Instructions Index](instructions/index.md) — Guide to all instruction files
+- [AL Guidelines](instructions/al-guidelines.instructions.md) — Core principles
+- [Skill template and existing skills](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/main/skills) — How to author new skills
 
 ## Troubleshooting Copilot
 

@@ -4,7 +4,8 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { expected, split, bodyFor, toolsFor } = require('./sync-copilot-cli');
+const { expected, split, bodyFor, toolsFor, agentBody, stripAdapterPreamble } = require('./sync-copilot-cli');
+const { build: buildPlugin, rewritePaths, plansRootFor, AGENTS, WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
 const ROOT = path.resolve(__dirname, '..');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 let checks = 0;
@@ -22,8 +23,12 @@ for (const [file, content] of generated) {
   if (!file.endsWith('.md')) continue;
   check(!/\bTodoWrite\b/.test(content), `${file}: no Claude task-list tool remains`);
   // Verify actual packaged links for new contracts rather than repo-only links.
-  for (const match of content.matchAll(/\]\(([^)]+(?:cli-al-tools|al18-capabilities)\.md)\)/g)) {
-    const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), match[1]));
+  for (const match of content.matchAll(/\]\(([^)]+(?:cli-al-tools|al18-capabilities|bcquality-provider-contract|bcquality-task-context)\.md)\)/g)) {
+    // Links are either relative to the file or anchored at the distribution root.
+    const anchored = match[1].startsWith('${PLUGIN_ROOT}/');
+    const target = anchored
+      ? path.posix.join('copilot-cli-plugin', match[1].slice('${PLUGIN_ROOT}/'.length))
+      : path.posix.normalize(path.posix.join(path.posix.dirname(file), match[1]));
     check(generated.has(target), `${file}: bundled reference ${target}`);
   }
   if (file.includes('/agents/')) {
@@ -33,7 +38,7 @@ for (const [file, content] of generated) {
     check(agent.data.tools.every(t => /^(read|search|edit|execute|agent|web)$/.test(t) || /^(al-symbols-mcp|context7|microsoft-docs)\/\*$/.test(t)), `${file}: host tool vocabulary`);
     check(agent.data.model === 'claude-sonnet-4.6', `${file}: retains canonical Copilot model`);
     const source = split(read(`claude-plugin/agents/${agent.data.name}.md`));
-    check(agent.body === bodyFor(source.body), `${file}: complete source workflow retained`);
+    check(agent.body === agentBody(source.body), `${file}: complete source workflow retained`);
   }
   if (file.includes('/commands/')) {
     const command = split(content);
@@ -41,14 +46,38 @@ for (const [file, content] of generated) {
     check(!content.includes('.claude/rules'), `${file}: no Claude instruction destination`);
   }
 }
+// claude-plugin/ used to hold hand-maintained copies, so the Conductor body was
+// pinned here by hash: nothing else would have noticed an edit. It is generated
+// now, so the check is the generator itself — every file matches what the
+// canonical sources produce, and the Conductor contract survives the adapter
+// intact rather than merely matching one recorded digest.
+const pluginFiles = buildPlugin().files;
+const handEdited = [...pluginFiles].filter(([rel, content]) => read('claude-plugin/' + rel) !== content).map(([rel]) => rel);
+check(handEdited.length === 0, `claude-plugin is generated, not hand-edited: ${handEdited.join(', ')}`);
+// The adapter preamble is a leading block quote, and the Copilot CLI and Codex
+// generators remove it by exactly that shape. A canonical body that opened with a
+// quote would be eaten silently, so pin that none does.
+for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.map(w => `prompts/${w}.prompt.md`)]) {
+  check(!/^\s*>/.test(split(read(rel)).body), `${rel}: canonical body must not open with a block quote`);
+}
+// `${input:Name}` is a Copilot prompt variable with no Claude Code equivalent; the
+// adapter rewrites every one, including inside fenced blocks and directory trees.
+// The mapping table names the Copilot surface it maps, so the check is on the body
+// the preamble introduces — which also exercises the strip on every real file.
+for (const rel of [...AGENTS.map(a => `agents/${a.id}.md`), ...WORKFLOWS.map(w => `skills/${workflowSkillName(w)}/SKILL.md`)]) {
+  const body = stripAdapterPreamble(split(pluginFiles.get(rel)).body);
+  check(!/^\s*>/.test(body), `claude-plugin/${rel}: the adapter preamble strips cleanly`);
+  check(!body.includes('${input:'), `claude-plugin/${rel}: no Copilot input variable survives the adapter`);
+}
 const conductor = split(read('claude-plugin/agents/al-conductor.md'));
-const originalBody = conductor.body.slice(conductor.body.indexOf('\n# AL Conductor Agent'));
-check(crypto.createHash('sha256').update(originalBody).digest('hex') === '7eff0a1f389fc66afb9e5bdd5af4ac05bf69d2fb8eaba6539b87fe8c09d88608', 'Original Claude Conductor body preserved byte for byte');
+const canonicalConductor = rewritePaths(split(read('agents/al-conductor.agent.md')).body, plansRootFor(ROOT));
+check(conductor.body.endsWith(canonicalConductor), 'Claude Conductor workflow, including the explicit BCQuality provider contract, carried from the canonical contract without edits');
+check(crypto.createHash('sha256').update(canonicalConductor).digest('hex').length === 64, 'Conductor body is hashable evidence, not a transcription');
 check(conductor.data.model === 'haiku', 'Claude Conductor model unchanged');
 check(!conductor.data.tools.includes('mcp__'), 'Conductor does not acquire AL MCP execution');
 for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {
   const agent = split(read('claude-plugin/agents/' + file));
-  check(agent.body.includes('../skills/skill-migrate/references/cli-al-tools.md'), `${file}: contract is directly reachable`);
+  check(agent.body.includes('${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md'), `${file}: contract is directly reachable`);
   if (file === 'al-conductor.md') continue;
   for (const server of ['al-symbols-mcp', 'context7', 'microsoft-docs']) {
     check(agent.data.tools.includes(`mcp__plugin_aldc_${server}__*`) && agent.data.tools.includes(`mcp__${server}__*`), `${file}: plugin and workspace MCP allowlists`);

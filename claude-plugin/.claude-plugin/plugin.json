@@ -1,6 +1,7 @@
 {
   "name": "aldc",
-  "version": "4.2.0",
+  "displayName": "ALDC for Claude Code",
+  "version": "5.0.0",
   "description": "AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents (architect, developer, conductor, pre-sales, agent-builder, triage, dredd) + TDD subagents, skills, and workflows for extension-only development with TDD, BCQuality-cited review/audit, event-driven architecture, and HITL gates.",
   "author": {
     "name": "javiarmesto",
@@ -9,6 +10,7 @@
   "homepage": "https://github.com/javiarmesto/ALDC-AL-Development-Collection",
   "repository": "https://github.com/javiarmesto/ALDC-AL-Development-Collection",
   "license": "MIT",
+  "category": "development",
   "keywords": [
     "AL",
     "Business Central",
@@ -27,7 +29,10 @@
     "al-symbols-mcp": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@nicholasglazer/al-symbols-mcp"]
+      "args": [
+        "-y",
+        "@nicholasglazer/al-symbols-mcp"
+      ]
     },
     "context7": {
       "type": "http",

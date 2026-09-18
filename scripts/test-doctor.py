@@ -75,6 +75,28 @@ class DoctorTest(unittest.TestCase):
         runtime = self.runtime({"compile-app": {"discovered": True, "loaded": True, "provider": "native", "detail": "Compiler exposed in this session"}})
         self.assertEqual(self.report(runtime=runtime)["operations"]["compile-app"]["status"], "available-reported")
 
+    def test_mixed_application_targets_are_reported_without_blocking(self):
+        self.app("app/app.json", version="28.0.0.0")
+        self.app("test/app.json", version="27.0.0.0")
+        report = self.report()
+        mismatch = [e for e in report["configuration_errors"] if "different application targets" in e["problem"]]
+        self.assertEqual(len(mismatch), 1)
+        self.assertFalse(mismatch[0]["blocking"])
+        self.assertIn("app/app.json=BC28", mismatch[0]["problem"])
+        self.assertIn("test/app.json=BC27", mismatch[0]["problem"])
+        # Advisory: no operation is blocked and the exit code stays 0.
+        self.assertEqual(report["operations"]["compile-test"]["status"], "unobserved")
+        self.assertEqual(self.cli().returncode, 0)
+        # A manifest without an application target is not compared.
+        self.put("test/app.json", {"runtime": "17.0"})
+        self.assertEqual([e for e in self.report()["configuration_errors"] if "different application" in e["problem"]], [])
+        # Agreeing manifests report nothing.
+        self.app("test/app.json", version="28.0.0.0")
+        self.assertEqual([e for e in self.report()["configuration_errors"] if "different application" in e["problem"]], [])
+        # Selecting only specification does not raise a compilation concern.
+        self.app("test/app.json", version="27.0.0.0")
+        self.assertEqual([e for e in self.report(operations=["specify"])["configuration_errors"] if "different application" in e["problem"]], [])
+
     def test_optional_mcp_parse_error_does_not_block_native_capability(self):
         self.app(version="29.0.0.0")
         self.put(".vscode/mcp.json", "{broken")
@@ -137,6 +159,45 @@ class DoctorTest(unittest.TestCase):
         self.put(".AL-Go/settings.json", {"appFolders": ["src/a/b/c/App"], "testFolders": ["qa/suite"]})
         projects = self.report()["projects"]
         self.assertEqual([(p["role"], p["manifest"]) for p in projects], [("app", "src/a/b/c/App/app.json"), ("test", "qa/suite/app.json")])
+
+    def test_al_go_named_folders_classified_without_declaration(self):
+        """AL-Go names folders after the app, so "<app>.Test" is the test project."""
+        self.app("MiExtension/app.json")
+        self.app("MiExtension.Test/app.json")
+        projects = self.report()["projects"]
+        self.assertEqual(sorted((p["role"], p["manifest"]) for p in projects),
+                         [("app", "MiExtension/app.json"), ("test", "MiExtension.Test/app.json")])
+        self.assertEqual(self.report()["operations"]["compile-test"]["status"], "unobserved")
+
+    def test_scanning_the_test_folder_itself_still_knows_it_is_the_test_project(self):
+        """From inside test/ no path segment says "test"; the folder's own name does."""
+        self.app("app.json")
+        with tempfile.TemporaryDirectory(suffix=".Test") as suite:
+            Path(suite, "app.json").write_text(json.dumps({"application": "28.0.0.0", "runtime": "17.0"}))
+            report = doctor.diagnose(Path(suite))
+            self.assertEqual([(p["role"], p["manifest"]) for p in report["projects"]], [("test", "app.json")])
+            self.assertEqual(report["operations"]["compile-test"]["status"], "unobserved")
+            # A folder holding only the suite has no App project, which is reported as
+            # the configuration problem it is; before this it claimed an App and no Test.
+            self.assertEqual(report["operations"]["compile-app"]["status"], "configuration-blocked")
+            self.assertIn("no App app.json found", report["operations"]["compile-app"]["problems"][0])
+
+    def test_host_configuration_of_each_project_folder_is_inspected(self):
+        """The solution keeps .vscode inside app/ and test/, not at its root."""
+        self.app("app/app.json")
+        self.app("test/app.json")
+        self.put("app/.vscode/mcp.json", {"servers": {}})
+        self.put("app/.vscode/tasks.json", {"tasks": []})
+        self.put("test/.vscode/launch.json", {"configurations": []})
+        config = self.report()["configuration"]
+        for rel in ("app/.vscode/mcp.json", "app/.vscode/tasks.json", "test/.vscode/launch.json"):
+            self.assertIn(rel, config, f"{rel} belongs to the solution")
+        # A broken one is reported against the operations it affects, wherever it lives.
+        self.put("test/.vscode/launch.json", "{broken")
+        report = self.report()
+        self.assertEqual([e["path"] for e in report["configuration_errors"]], ["test/.vscode/launch.json"])
+        self.assertEqual(report["operations"]["execute-tests"]["status"], "configuration-blocked")
+        self.assertEqual(report["operations"]["compile-app"]["status"], "unobserved")
 
     def test_al_go_invalid_types_conflicts_and_escape_are_errors(self):
         self.app("App/app.json")
@@ -219,6 +280,28 @@ class DoctorTest(unittest.TestCase):
         r = self.cli(*args, script=script)
         self.assertEqual(r.returncode, 2)
         self.assertEqual(json.loads(r.stdout)['configuration_errors'][0]['path'], '.copilot/aldc-profile.json')
+
+    def test_bcquality_snapshot_binds_by_resolved_path_not_text(self):
+        self.app()
+        self.put("aldc.yaml", "external:\n  bcquality:\n    mode: plugin\n")
+        export = subprocess.run(['node', str(ROOT / 'tools/bcquality/config.js'), str(self.root)], capture_output=True, text=True, check=True)
+        snapshot = json.loads(export.stdout)
+        # An exporter may spell the same workspace differently (short names, case, symlinks).
+        alias = Path(self.temp.name).parent / ("alias-" + Path(self.temp.name).name)
+        alias.symlink_to(self.root, target_is_directory=True)
+        self.addCleanup(alias.unlink)
+        snapshot["workspace"] = str(alias)
+        snapshot["configPath"] = str(alias / "aldc.yaml")
+        path = self.put("snapshot.json", snapshot)
+        report = self.report(bcquality_config=path)
+        self.assertEqual(report["bcquality"]["status"], "configured")
+        self.assertEqual(report["bcquality"]["configuration"]["mode"], "plugin")
+        snapshot["workspace"] = str(alias.parent)
+        with self.assertRaises(ValueError):
+            self.report(bcquality_config=self.put("snapshot.json", snapshot))
+        snapshot["workspace"] = "relative"
+        with self.assertRaises(ValueError):
+            self.report(bcquality_config=self.put("snapshot.json", snapshot))
 
     def test_real_chat_install_contains_doctor_and_rollback_removes_it(self):
         self.app()

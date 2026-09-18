@@ -11,7 +11,20 @@
 ## 1. Overview
 
 Business context, approved scope in/out, architecture path and decision references.
-Assigned unit and required predecessor contracts, if the architecture defines them.
+For multi-spec, assigned SPEC-ID, exact output path and approved architecture revision.
+Keep single-spec compatibility; preserve existing assigned filenames on revision.
+
+| Dependency type | Predecessor / contract consumed | Required revision / actual approval reference | Availability and effect |
+| --- | --- | --- | --- |
+| {generation_depends_on / implementation_depends_on / None} | {named result} | {current source or pending} | {authoring prerequisite or implementation order} |
+
+| Shared resource / contract | Owner / approved allocation | Consumers | Change or coordination issue |
+| --- | --- | --- | --- |
+| {App/Test object/field IDs, output path, interface or manifest} | {architecture reference; no shared writes} | {SPEC-IDs} | {None or precise conflict for Architect} |
+
+Read [architecture section 14](architecture-template.md) for decomposition rules.
+Record only this unit's relevant contracts and coordination needs, not a second
+copy of the architecture's complete decomposition.
 LOW without architecture: approved requirement and why no architecture decision is needed.
 
 ### Governing sources
@@ -84,8 +97,22 @@ Functional business outcomes, technical contracts and downstream quality/review
 criteria, with references to tests and pending proof. Include negative cases and
 unchanged behavior where they matter.
 
+### Review criteria (BCQuality)
+
+| Object | Knowledge path | What the reviewer checks | Layer |
+|---|---|---|---|
+| {type id name} | {exact path under the corpus} | {one line} | custom / community / microsoft |
+
+Declared, not evaluated. Paths must resolve in the corpus. The review phase reports
+these criteria as met, unmet or not evaluated.
+
 ## 12. Human Review and Next Step
 
 What is complete; unresolved material decisions; affected changes since previous
 approval. Record actual approval for this revision before the forward handoff.
-MEDIUM/HIGH → Conductor; LOW → Developer. Carry the spec, architecture and limits.
+For multi-spec, cite Architect's joint consistency review of the actual revisions
+and the selected implementation increment; identify pending siblings separately.
+A shared-contract change reopens affected consumers for review/approval, not all work.
+MEDIUM/HIGH → Conductor; LOW → Developer. Carry both dependency types, current
+spec/architecture paths, resource coordination and verification limits. No implicit
+parallel implementation or change to existing Conductor gates.

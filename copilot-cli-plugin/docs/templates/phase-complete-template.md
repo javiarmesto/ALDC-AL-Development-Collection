@@ -44,10 +44,13 @@ Use this template verbatim when writing `.github/plans/<plan-name>/<plan-name>-p
 (Consolidated from implement-subagent summary. Remove the table entirely if no domain skills were loaded in this phase. Do not list skills you did not actually apply.)
 
 **BCQuality Evidence:** (omit only if BCQuality was not consulted this phase)
-- Submodule SHA: {e.g. f562fba}
-- Skills run: {al-performance-review, al-security-review, al-style-review}
+- Provider mode / skill: {selected mode and exact skill}
+- Observed revision: {full SHA, or unverified; never the configured pin as proof}
+- Stages / index: {scoped observations from the provider contract}
+- Skills run: {actual completed dispatches, not a fixed pilot list}
 - Outcome: {completed | no-knowledge | not-applicable | partial | failed}
 - Findings: {N} (blocker/major/minor/info) — citations: {N}
+- 📋 Criteria: {met}/{declared} met · {unmet} unmet{ · ⚠️ {house-rules-unmet} house rule(s)} (omit when the review returned no `review.criteria`)
 - Raw report: `.github/plans/<plan>/<plan>-bcquality-phase-<N>.json`
 
 **Review Status:** {APPROVED / APPROVED with minor recommendations / NEEDS_REVISION}

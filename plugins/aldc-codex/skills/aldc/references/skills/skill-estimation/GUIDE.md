@@ -1,6 +1,6 @@
 ---
 name: skill-estimation
-description: "AL project estimation for Business Central. Use when estimating development effort, creating cost models, SWOT analysis, or structuring project proposals."
+description: AL project estimation for Business Central. Use when estimating development effort, creating cost models, SWOT analysis, or structuring project proposals.
 ---
 
 # Skill: AL Project Estimation

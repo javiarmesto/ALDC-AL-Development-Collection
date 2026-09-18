@@ -1,80 +1,103 @@
-# BCQuality — external citable knowledge for reviews & audits
+# BCQuality — optional cited reviews
 
-BCQuality is an **optional** layer that gives ALDC's review/audit agents a curated,
-**citable** Business Central knowledge base. When it is mounted, `al-review-subagent`,
-`@dredd`, and `@al-triage` back their findings with a real knowledge file; when it is
-**absent (the default)**, they fall back to the native A–G checklist + auto-applied
-instructions and **never block**. You only need this if you want BCQuality-cited
-reviews.
+ALDC supports two explicit BCQuality providers with the same evidence and native
+fallback contract. Existing projects retain `external-multiroot`; plugin mode is
+opt-in. No provider is installed or invoked simply by declaring it in `aldc.yaml`.
 
-## How the integration works
+| Mode | Source | Entry | When unavailable |
+|---|---|---|---|
+| `plugin` | Host-installed plugin with the configured identity | Configured skill, default `al-code-review` | Full native A–G; no automatic clone substitution |
+| `external-multiroot` | External folder configured by `home` | `entryPoint`, default `skills/entry.md` | Full native A–G |
+| Either with `enabled: false` | None read | No probe or invocation | Full native A–G |
 
-- **Consumed externally — not a submodule.** ALDC clones BCQuality **outside** your
-  AL project (a sibling folder, default `../bcquality`). Because that clone has no
-  `app.json`, the AL compiler never builds it, so its example `.al` files can't
-  pollute your extension's error list.
-- **The source is configurable; the default is the canonical upstream.** Out of the
-  box `aldc.yaml → external.bcquality.url` points at **[`microsoft/BCQuality`](https://github.com/microsoft/BCQuality)**
-  (the source of truth). Point `url` at **your own fork** if you maintain one. By
-  default it tracks the `ref` branch (`main`); set `pinnedCommit` to a 40-hex SHA for
-  reproducible, evidence-validated runs.
-- **ALDC "hooks in" by calling the meta-skill `entry.md`.** The agents do **not**
-  hardcode which BCQuality skills to run. They read the entry point
-  (`<home>/skills/entry.md`, per `aldc.yaml`) and **execute whatever its `dispatch[]`
-  returns** — Entry owns the routing. As BCQuality's coverage grows, ALDC picks it up
-  with no change on this side.
-- **Configuration lives in `aldc.yaml → external.bcquality`**: `enabled`
-  (`auto` | `true` | `false`), `url`, `ref`, optional `pinnedCommit`, `home` (clone
-  location), `entryPoint` (`skills/entry.md`), the multi-root `workspace`, and the
-  absent-path `fallback` policy. The install scripts read `url`/`ref`/`pinnedCommit`
-  from here — it is the single source of truth.
-- **The `enabled` switch is resolved ONCE by `al-conductor`** and propagated to the
-  subagents (recorded in the plan doc): `auto` probes to detect, `true` expects it
-  (probe + warn if absent), `false` disables it entirely (native A–G, **no probe**).
-  Subagents consume that decision and do not re-probe — except `@dredd`/`@al-triage`
-  run standalone, so they read `enabled` and probe themselves.
+## Plugin configuration
 
-## Install (only if you want BCQuality-backed reviews)
+Merge this small block into the **project's** configuration, preserving other
+settings. Install the intended plugin through the chosen host first.
 
-From your **AL project root**:
+```yaml
+external:
+  bcquality:
+    mode: plugin
+    enabled: auto
+    plugin:
+      id: bcquality
+      skill: al-code-review
+      expectedVersion: "0.2.0"
+      sourceRef: "" # Optional full commit SHA; verify against the actual installation.
+```
 
-1. **Clone the knowledge base.**
-   - macOS / Linux / Git Bash / WSL: `bash tools/bcquality/install.sh`
-   - Windows (PowerShell): `pwsh -File tools/bcquality/install.ps1`
+This selects a compatible adapter exposing that skill; it does not imply that
+current upstream supplies it. Inspect the installed manifest and skill body.
+If a release exposes a differently named review skill, configure that exact skill
+and its actual expected version explicitly. A renamed skill is not a discovery alias.
+An expected revision/version that cannot be observed remains unverified; an
+observed mismatch uses native fallback. Do not copy consumer fork layers or pins
+into shared defaults.
 
-   This reads `url` / `ref` / `pinnedCommit` from `aldc.yaml` and clones BCQuality to
-   `../bcquality` (default upstream `microsoft/BCQuality`; override the location with
-   `$BCQUALITY_HOME`). The scripts are idempotent and verify `skills/entry.md` exists.
-   To use your own fork or a fixed version, edit `external.bcquality` in `aldc.yaml`
-   before running.
+The configured skill owns routing, supported layer controls and index preparation.
+Pass the real request and paths, and retain actual dispatch results unchanged.
+`pilotSkills` is a multiroot policy, not an implicit plugin denylist.
 
-2. **Open the multi-root workspace.** Open `aldc.code-workspace` in VS Code. It adds
-   two roots — your extension (compiled) and `../bcquality` (knowledge, *not*
-   compiled). If the second root shows as missing, re-run the install script.
+## External multiroot setup
 
-3. **Use it.** Run a review/audit as usual:
-   - `@al-conductor` review phases, `@dredd` (independent audit), `@al-triage`
-     (diagnosis) each **probe** `aldc.yaml → external.bcquality.home`, read
-     `entry.md`, and fold cited findings into their output.
-   - If the probe fails (not installed / disabled), they record BCQuality as
-     `not-applicable`, review against the full **A–G** native checklist, and carry
-     on — nothing blocks.
+Keep BCQuality outside AL source folders. Configuration supports `url`, `ref`,
+optional full `pinnedCommit`, `home`, `entryPoint` and the existing `pilotSkills`.
+`BCQUALITY_HOME` overrides the install location. Open the external folder in the
+host so the reviewer can actually read it.
 
-## Pin & evidence
+From the project root, after installing ALDC's declared npm dependencies:
 
-`aldc.yaml → external.bcquality` is the **single source of truth** for `url`, `ref`
-and the optional `pinnedCommit`; the install scripts and the `bcquality-evidence` CI
-workflow read it from there (nothing is hardcoded). Pinning is **optional**: set
-`pinnedCommit` to a 40-hex SHA for reproducible runs, or leave it empty to track the
-`ref` branch. Either way, `tools/bcquality/validate_evidence.py` checks that every
-citation in a persisted review/audit report resolves to a real file **inside** the
-clone — a hallucinated citation fails the build.
+```sh
+bash tools/bcquality/install.sh
+# Windows alternative:
+pwsh -File tools/bcquality/install.ps1
+```
 
-To change the source or version, edit `url` / `ref` / `pinnedCommit` in `aldc.yaml`.
+### Using an organization fork
 
-## Notes
+Point `url` at the fork and set `pinnedCommit`. The `/custom/` layer then carries
+organization rules with precedence over Community and Microsoft, and the evidence CI
+resolves those citations because it clones from the same configured `url`. Keep the
+upstream as a second remote in the fork and merge deliberately; never overwrite the fork
+with an upstream snapshot — that discards the custom layer. Authoring rules for that
+layer live in the provider's own WRITE contract, not here.
 
-- **Absent is the default.** A fresh ALDC install does not clone BCQuality; you opt
-  in with the install script.
-- BCQuality is a **citation/audit layer** — it does not replace the auto-applied
-  `*.instructions.md` or the domain skills; it adds evidence-backed findings on top.
+These commands clone/update only in enabled multiroot mode. In plugin mode or
+when disabled, they exit before any Git/provider operation. YAML is parsed by the
+shared `tools/bcquality/config.js`, so another provider's `url` or `ref` is not
+mistaken for BCQuality's. An installed toolkit can obtain the YAML dependency by
+explicitly running `npm install --prefix <toolkit>/tools/aldc-validate`.
+
+## Review and index evidence
+
+Conductor passes selection and task-context; the executing reviewer loads the
+appropriate provider instructions. Dredd and Triage use the same contract when
+invoked independently. Native coverage shrinks only for domains covered by actual
+completed results. ALDC hard rules remain in force.
+
+| Observation | What it establishes |
+|---|---|
+| Configured | Project selected a provider and expectations |
+| Discovered | Host catalog or external entry found |
+| Loaded | Exact skill/entry body read in the executing context |
+| Executed | An actual result returned for these review inputs, with its outcome |
+| Index generated | Successful generator invocation plus verified output and freshness evidence |
+
+Index generation is best-effort. Missing PowerShell, read-only cache, an execution
+restriction or generator failure must be recorded; use the provider's path-based
+fallback. A pre-existing `knowledge-index.json` alone proves no refresh. Doctor
+never runs the generator, compiles AL or installs a provider.
+
+See [the shared provider contract](templates/bcquality-provider-contract.md),
+[task-context](templates/bcquality-task-context.md) and
+[Doctor usage](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/tools/context-doctor/README.md).
+
+## Validation limits
+
+`validate_evidence.py` checks report shape and resolves citations only when a
+matching corpus is available. Plugin mode requires an explicit `--bcquality-root`
+for this offline check; it never borrows `home` from a multiroot setup. A configured
+pin is compared with an observable Git revision, when available. Missing corpus
+or unobservable identity is reported as **UNVERIFIED**, not citation success.
+CI does not certify plugin discovery, loading, execution or index freshness.

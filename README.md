@@ -9,7 +9,7 @@
 _Engineering systems, visibly reasoned._
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-0891B2.svg?style=flat-square&labelColor=0F172A)](docs/framework/ALDC-Core-Spec-v1.2.md)
-[![Version](https://img.shields.io/badge/version-4.2.0-D946EF?style=flat-square&labelColor=0F172A)](CHANGELOG.md)
+[![Version](https://img.shields.io/github/v/release/javiarmesto/ALDC-AL-Development-Collection?style=flat-square&labelColor=0F172A&color=D946EF&label=version)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
@@ -21,15 +21,17 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release status:** package manifests declare **4.2.0**. The source includes
-features planned for **4.3.0**, documented under [Unreleased](CHANGELOG.md).
-Marketplace and plugin installations may contain an earlier packaged snapshot.
+**Release status:** canonical package and plugin manifests declare **4.3.0**.
+These changes are released as [4.3.0](CHANGELOG.md).
+Previously built VSIX files retain their original version and packaged snapshot.
+Installing newer source content does not itself publish a Marketplace update.
 
 | Capability | What it provides |
 | --- | --- |
-| Architect and Spec Agent | Approved design, technical contracts and acceptance criteria before implementation. |
+| Architect and Spec Agent | Approved design, bounded Specs, explicit dependencies and joint consistency review before implementation. |
 | Conductor | Planning, implementation and review coordinated through existing human gates. |
 | Doctor | Read-only diagnosis of configuration and operation-specific runtime observations. |
+| Recommended BCQuality | Plugin or external multiroot reviews, with discovery, loading, execution and index evidence distinguished. |
 | BC28 / BC29-native | Explicit Chat profile selection with role-specific tools and AL18 guidance. |
 | Host adapters | Dedicated content for Copilot Chat, Copilot CLI, Claude Code and Codex. |
 | Recoverable installation | Preview, visible collisions, receipts, verification and restoration. |
@@ -64,7 +66,26 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 ---
 
+## Updating to 4.3.0
+
+The VS Code extension and each host plugin are separate distribution channels.
+Updating the VSIX does not refresh installed Claude Code, Copilot CLI or Codex plugins.
+
+In VS Code, open **AL Collection: Open Project Manager** (also available as a view in
+the Explorer) to preview and confirm the update, verify the installation, restore the
+previous transaction and run Doctor without leaving the panel; the **ALDC Visor** view
+lists the plan artifacts of each requirement with template-specific icons. The palette
+command **AL Collection: Update Toolkit** remains available: review file collisions,
+verify the installation and reload the window. Existing installations retain their
+recorded profile. The extension's optional `al-collection.autoInstall` setting is
+`false` by default; when enabled, it attempts installation on AL project detection.
+Toolkit restoration covers installation files, not Business Central data or all
+project history. See [installation and recovery](docs/plugin-packaging.md).
+
 ## Installation
+
+[Choose your surface — installation guide](https://javiarmesto.github.io/ALDC-AL-Development-Collection/start/) · [Guía en castellano](https://javiarmesto.github.io/ALDC-AL-Development-Collection/start-es/)
+
 
 For the opt-in **BC29 / AL18 native profile in Copilot Chat**, see
 [installation, role changes and local validation](docs/native-bc29.md).
@@ -174,9 +195,9 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 
 al-guidelines · al-code-style · al-naming-conventions · al-performance · al-error-handling · al-events · al-testing · copilot-instructions · index
 
-### 📚 BCQuality (optional) — external, citable BC knowledge layer
+### 📚 BCQuality (recommended) — external, citable BC knowledge layer
 
-An externally-consumed BC knowledge base (multi-root), defaulting to the canonical upstream [`microsoft/BCQuality`](https://github.com/microsoft/BCQuality) and configurable to your own fork. Agents cite findings to real knowledge files, with a graceful native fallback when it is absent. See [`docs/bcquality.md`](docs/bcquality.md).
+Optional cited review through an explicitly selected host plugin or external multiroot knowledge base. Agents distinguish discovery, loading, execution and best-effort index generation; unavailable providers retain native A–G coverage. See [`docs/bcquality.md`](docs/bcquality.md).
 
 ### 📄 Contracts per Requirement — structured docs in `.github/plans/{req_name}/`
 
@@ -342,7 +363,7 @@ ALDC is available as a native **Claude Code** integration in two forms:
 | --------- | ------------------- | ---------------- | ----- |
 | Agents | `.claude/agents/` | `agents/` | 8 public + 3 internal |
 | Skills | `.claude/skills/` | `skills/` | 16 composable knowledge modules |
-| Rules | `.claude/rules/` | `rules-templates/` (injected via `al-initialize`) | 8 coding standards |
+| Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 8 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
 | Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
 | Instructions | `CLAUDE.md` | `CLAUDE.md` | Agent routing, workflows |
@@ -354,7 +375,7 @@ GitHub Copilot              →  Claude Code (Direct)         →  Claude Code (
 ──────────────────────────────────────────────────────────────────────────────────────
 agents/*.agent.md           →  .claude/agents/*.md          →  agents/*.md
 skills/*/SKILL.md           →  .claude/skills/*/SKILL.md    →  skills/*/SKILL.md
-instructions/*.md           →  .claude/rules/*.md           →  rules-templates/*.md
+instructions/*.md           →  .claude/rules/*.md           →  rules/*.md
 prompts/*.prompt.md         →  .claude/skills/ (workflows)  →  skills/ (workflows)
 .github/copilot-instructions.md → CLAUDE.md                 →  plugin.json + CLAUDE.md
 ```
@@ -399,27 +420,13 @@ On first enable, the plugin prompts for optional settings:
 
 ---
 
-## Using BCQuality (optional)
+## Using BCQuality (recommended)
 
-BCQuality is an optional, externally-consumed BC knowledge layer for cited reviews and audits. The source is configurable in `aldc.yaml` and defaults to the canonical upstream [microsoft/BCQuality](https://github.com/microsoft/BCQuality) (point it at your own fork if you keep one); it is consumed via a multi-root workspace — **not a submodule, never compiled**. When absent, agents fall back gracefully to the native A–G checklist and are never blocked.
-
-**Quick start (3 steps):**
-
-1. From your AL project root, run the install script — clones the pinned fork to `../bcquality`:
-   ```bash
-   bash tools/bcquality/install.sh
-   # or on Windows:
-   pwsh -File tools/bcquality/install.ps1
-   ```
-   Override the target location with `$BCQUALITY_HOME` if needed.
-
-2. Open `aldc.code-workspace` (multi-root: your extension + `../bcquality`, which does **not** compile).
-
-3. Run a review or audit (`@AL Development Conductor`, `@Dredd`, or `@AL Triage`): they cite BCQuality if mounted, or degrade gracefully to native checks if not.
-
-See [`docs/bcquality.md`](docs/bcquality.md) for the full guide.
-
----
+BCQuality supports explicit `plugin` and `external-multiroot` modes in `aldc.yaml`.
+Plugin mode loads the configured skill (default `al-code-review`); multiroot
+retains the external Entry workflow. An expected version or commit is not proof of
+the installed identity, and catalog discovery is not execution. When unavailable,
+native review continues. See [configuration and evidence](docs/bcquality.md).
 
 ## BC Agent Builder (optional)
 
@@ -453,7 +460,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.architecture.md
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
-├── agents/                               # 11 agents (5 core + 2 on-demand + 3 subagents + 1 extension)
+├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
 ├── skills/                               # 11 composable skills
 ├── prompts/                              # 6 retained workflows
 ├── instructions/                         # 9 auto-applied coding standards
@@ -462,18 +469,18 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── CLAUDE.md                             # Master instructions
 ├── .mcp.json                             # MCP server configuration
 ├── .claude/
-│   ├── agents/                           # 11 agents (8 public + 3 internal)
+│   ├── agents/                           # 12 agents (9 public + 3 internal)
 │   ├── skills/                           # 16 skills (composable knowledge modules)
 │   ├── rules/                            # 8 path-scoped coding standards
 │   └── settings.json                     # Hooks + permissions
 │
 │── Claude Code Plugin ─────────────────────────────────
-├── claude-plugin/
+├── claude-plugin/                        # generado: scripts/sync-plugin-support.js
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
-│   ├── agents/                           # 11 agents (auto-discovered)
-│   ├── skills/                           # 16 skills (auto-discovered)
+│   ├── agents/                           # 12 agents (auto-discovered)
+│   ├── skills/                           # 9 role entries + 11 workflows + 16 knowledge
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
-│   ├── rules-templates/                  # 8 rules (injected via al-initialize)
+│   ├── rules/                            # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
 │   └── README.md                         # Plugin documentation
 │
@@ -529,15 +536,14 @@ AL-Development-Collection-for-GitHub-Copilot/
 ### Planned 4.3.0 — specifications, diagnostics and host integration
 
 Dedicated Spec Agent, per-operation Doctor, BC29-native tooling, terminal adapters
-and recoverable initialization. These changes are described in [Unreleased](CHANGELOG.md)
-and are not a claim that a new Marketplace package has been published.
+and recoverable initialization. These changes are described in the [4.3.0 changelog](CHANGELOG.md).
 
 
 ### 4.2.0 — Conformance release
 
 The framework now enforces its own spec in CI.
 
-- **Core Spec v1.2 (original 4.2.0 release)** — originally normalized the tier model to 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. The subsequent canonical Spec Agent increment adds a fifth core role (11 total); the current inventory above includes it.
+- **Core Spec v1.2 (original 4.2.0 release)** — originally normalized the tier model to 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. The subsequent canonical Spec Agent increment adds a fifth core role (11 total); Developer Reviewer adds a direct review role (12 total, with 17 skills).
 - **Conformance tooling** — `scripts/check-conformance.js` (counters, cross-references, links, frontmatter) and `scripts/sync-foundation.js --check` (zero drift between the canonical trees and `packages/foundation/`) run on every push and PR.
 - **`ARCHITECTURE.md`** — one-page map of what is source, what is generated, and which distribution channel consumes each tree.
 - Fixed: truncated `skill-manifest` in `packages/foundation/`, broken README links, undeclared primitives in `aldc.yaml`, contradictory counters.
@@ -545,7 +551,7 @@ The framework now enforces its own spec in CI.
 ### 4.1.0 — Lower token cost & cited audits
 
 - **⚡ Lower token / AIC cost** — trimmed always-on entrypoint (~31% lighter), narrow instruction globs (`applyTo` by object type), curated context passing, condensed primitives, BCQuality task-context built once and passed inline.
-- **📚 Cited reviews & audits with BCQuality (optional)** — agents back findings with a pinned BC knowledge base; graceful native fallback (never blocks).
+- **📚 Cited reviews & audits with BCQuality (recommended)** — agents back findings with a pinned BC knowledge base; graceful native fallback (never blocks).
 - **`@AL Triage`** and **`@Dredd`** — read-only on-demand specialists.
 - **`skill-contribution-assistant`** — guided contribution workflow.
 - Restored full architecture & spec templates with authoring guidance.
@@ -583,6 +589,16 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.2.0
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0
 
 </div>
+
+### Independent review
+
+Use **Developer Reviewer** after a direct Developer increment; use the Conductor's
+review subagent for orchestrated phases. **Dredd** remains the independent advisory
+auditor for an explicit file set, changes or a broader codebase. All three share
+provider execution and coverage rules: loading BCQuality is not execution, and
+skipping its optional index refresh does not stop path-based review. A partial
+review never becomes approval from zero findings. See
+[the review contract](docs/templates/review-report-contract.md).

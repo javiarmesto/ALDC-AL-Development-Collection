@@ -1,5 +1,5 @@
 site_name: ALDC — AL Agentic Engineering System
-site_description: Open agentic engineering for Microsoft Dynamics 365 Business Central — structured, traceable and human-governed
+site_description: From business requirements to AL development — specialist AI agents and human review for Microsoft Dynamics 365 Business Central
 site_author: Javier Armesto González
 site_url: https://javiarmesto.github.io/ALDC-AL-Development-Collection/
 
@@ -58,6 +58,9 @@ extra:
   #analytics:
   #  provider: google
   #  property: G-XXXXXXXXXX  # Replace with your GA4 ID
+
+extra_javascript:
+  - javascripts/install-guide.js
 
 extra_css:
   - stylesheets/extra.css
@@ -122,6 +125,8 @@ nav:
   - Home: index.md
   - Inicio (ES): index-es.md
   - Events: events.md
+  - Install ALDC: start.md
+  - Instalar ALDC (ES): start-es.md
   - Getting Started:
     - Overview: getting-started.md
     - Quick Start (EN): quick-start-en.md
@@ -129,6 +134,8 @@ nav:
     - Reproducible Example: reproducible-example.md
   - Collection Guide: al-development.md
   - BCQuality (reviews/audits): bcquality.md
+  - Doctor (diagnostics): doctor.md
+  - Doctor (diagnóstico, ES): doctor-es.md
   - Instructions:
     - Overview: instructions/index.md
     - Guidelines: instructions/al-guidelines.instructions.md
@@ -154,7 +161,9 @@ nav:
     - Overview: agents/index.md
     - Core Agents:
       - Architect: agents/al-architect.agent.md
+      - Spec Agent: agents/al-spec-agent.agent.md
       - Developer: agents/al-developer.agent.md
+      - Developer Reviewer: agents/al-developer-reviewer.agent.md
       - Pre-Sales Specialist: agents/al-presales.agent.md
     - Orchestra System:
       - Conductor: agents/al-conductor.agent.md

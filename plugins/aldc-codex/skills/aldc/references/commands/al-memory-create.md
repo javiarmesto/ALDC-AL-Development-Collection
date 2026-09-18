@@ -7,25 +7,25 @@ Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
 new discoverable skills must still be created with SKILL.md.
 
-Use only tools actually exposed by this session. Model, reasoning, sandbox and
-approval settings inherit from the parent; this profile grants no extra tools.
-Role write scopes below are behavioral, not filesystem sandboxes. Discover MCP
+Read the terminal-host contract at
+`.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
+before choosing AL tools, changing dependencies or reporting BC29 / AL18
+validation. Use only tools actually exposed by this session. Model, reasoning and approval
+settings inherit from the parent; this profile grants no extra tools. Its
+`sandbox_mode` is derived from the write scope the canonical contract grants this
+role, and the session's own permission profile is reapplied over it, so that key
+narrows and never grants. The narrower role write scopes stated below are still
+behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
 Conductor workflow is pending; do not certify self-review as independent review.
 
-
-## BC29 / AL18 terminal contract
-
-Before selecting AL tools, dependency changes or validation evidence, read
-[the terminal-host contract](../skills/skill-migrate/references/cli-al-tools.md)
-and apply its role boundaries. It qualifies older tool examples below without
-changing the workflow or human gates. Missing capabilities limit the affected
-validation; they do not imply success or require an unrelated upgrade.
-
-Resolve input placeholders from the user request or ask for missing required values;
-`${input:...}` is template notation, not an automatically expanded CLI variable.
-
+The `handoffs:` entries of the canonical contract, and the `send: false` on some
+of them, have no equivalent here. In Copilot a handoff is a button the human
+clicks, and `send: false` additionally hands them the prompt to review before it
+is sent: the host supplies the approval. Codex has no such step, so the gate is
+yours to keep — never auto-delegate. Present your output, get explicit approval,
+and only then delegate or switch role.
 
 # AL Memory File Generator
 
@@ -63,7 +63,6 @@ If `memory.md` doesn't exist, create with this template:
 **Blockers**: [Current blockers if any]
 
 ---
----
 
 ## Session Log
 
@@ -89,7 +88,6 @@ If `memory.md` doesn't exist, create with this template:
 - [Any important observations]
 
 ---
----
 
 ## Decision Log
 
@@ -106,7 +104,6 @@ If `memory.md` doesn't exist, create with this template:
 **Review Date**: [When to revisit if applicable]
 
 ---
----
 
 ## Problem/Solution Patterns
 
@@ -119,7 +116,6 @@ If `memory.md` doesn't exist, create with this template:
 **Related Code**: [File paths or line numbers]
 
 ---
----
 
 ## Learning Journal
 
@@ -130,7 +126,6 @@ If `memory.md` doesn't exist, create with this template:
 **Where Applied**: [Code locations]
 **Resources**: [Links to docs, articles that helped]
 
----
 ---
 
 ## Code Evolution
@@ -146,7 +141,6 @@ If `memory.md` doesn't exist, create with this template:
 - Reason: [Why it changed]
 - Migration: [How to adapt if needed]
 
----
 ---
 
 ## TODO & Backlog
@@ -164,7 +158,6 @@ If `memory.md` doesn't exist, create with this template:
 - [x] [Completed task] - [Date completed]
 
 ---
----
 
 ## Questions & Answers
 
@@ -173,7 +166,6 @@ If `memory.md` doesn't exist, create with this template:
 **Answer**: [The answer found]
 **Source**: [Where answer came from - docs, testing, expert]
 
----
 ---
 
 ## Integration Points
@@ -186,7 +178,6 @@ If `memory.md` doesn't exist, create with this template:
 **Issues Encountered**: [Problems and solutions]
 **Dependencies**: [What depends on this]
 
----
 ---
 
 ## Performance Tracking
@@ -201,7 +192,6 @@ If `memory.md` doesn't exist, create with this template:
 **Target**: [Performance goal]
 
 ---
----
 
 ## Testing Insights
 
@@ -215,7 +205,6 @@ If `memory.md` doesn't exist, create with this template:
 **Regression History**: [If this broke before, when and why]
 
 ---
----
 
 ## Communication Log
 
@@ -226,7 +215,6 @@ If `memory.md` doesn't exist, create with this template:
 **Action Items**: [Who does what]
 **Follow-up**: [When to check back]
 
----
 ---
 
 ## Environment Notes
@@ -242,7 +230,6 @@ If `memory.md` doesn't exist, create with this template:
 - [Issue]: [Workaround]
 
 ---
----
 
 ## Deprecated Patterns
 
@@ -253,7 +240,6 @@ If `memory.md` doesn't exist, create with this template:
 **Migration Guide**: [How to update old code]
 **Reason for Deprecation**: [Why we stopped using it]
 
----
 ---
 
 ## Useful Snippets
@@ -266,7 +252,6 @@ If `memory.md` doesn't exist, create with this template:
 **Source**: [Where this came from]
 
 ---
----
 
 ## Meeting Notes
 
@@ -277,7 +262,6 @@ If `memory.md` doesn't exist, create with this template:
 **Decisions**: [What was decided]
 **Actions**: [Who does what by when]
 
----
 ---
 
 ## Maintenance Log
@@ -293,15 +277,15 @@ If `memory.md` doesn't exist, create with this template:
 ### 2. If Memory File Exists - Update It
 
 **Add new session entry:**
-```
+```powershell
 # Check for recent changes
-shell: git diff / git status
+@changes
 
 # Check current problems
-shell: al compile   (read the compiler output)
+@problems
 
-# Check open work
-the the available planning tool (or the plan document) list
+# Check TODOs
+@todos
 ```
 
 **Update with:**

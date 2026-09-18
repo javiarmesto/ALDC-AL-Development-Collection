@@ -1,11 +1,22 @@
 {
   "name": "aldc-codex",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "Canonical ALDC roles and workflows for Codex; local bootstrap with recoverable updates.",
   "author": {
     "name": "javiarmesto"
   },
   "license": "MIT",
+  "keywords": [
+    "AL",
+    "Business Central",
+    "Dynamics 365",
+    "GitHub Copilot",
+    "AI Native",
+    "Development",
+    "Toolkit",
+    "agent-sdk",
+    "ai-development-toolkit"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "ALDC for Codex",
@@ -13,7 +24,11 @@
     "longDescription": "Canonical roles, AL rules, workflow references and local project initialization.",
     "developerName": "javiarmesto",
     "category": "Productivity",
-    "capabilities": [],
-    "defaultPrompt": "Use ALDC to continue the approved Business Central work."
+    "websiteURL": "https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme",
+    "defaultPrompt": [
+      "Use ALDC to continue the approved Business Central work.",
+      "Design a Business Central extension with al-architect.",
+      "Audit the AL objects changed against main with dredd."
+    ]
   }
 }

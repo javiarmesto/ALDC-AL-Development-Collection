@@ -1,5 +1,9 @@
 # Canonical ALDC Doctor
 
+This file is the operator reference for the script. For a task-oriented manual of
+every status value, exit code and common problem, see `docs/doctor.md`
+(`docs/doctor-es.md` in Spanish).
+
 Read-only Python 3.9+ stdlib diagnostics. Use an already available interpreter
 (`python3`, `python`, or `py -3` on Windows); Doctor does not install Python or
 modify PATH. Run at session start or after an environment change. Repeat only
@@ -28,7 +32,9 @@ workspace folder is inspected separately; Doctor never traverses another root
 implicitly. For a custom Chat target, point `--toolkit` at the directory holding
 `agents/` and `prompts/`; its aldc-profile.json is diagnosed there, including
 invalid profile values. The default installation uses .github/aldc-profile.json.
-It does not parse `toolkitRoot` from aldc.yaml.
+It does not parse YAML: the caller resolves `toolkitRoot` from aldc.yaml (through
+`tools/bcquality/config.js`, which reports it alongside the solution layout) and
+passes the result as `--toolkit`. The VS Code extension does exactly that.
 
 App/Test discovery reads `.AL-Go/settings.json` appFolders/testFolders. Non-empty
 lists are authoritative per role; otherwise scan at most three folder levels,
@@ -113,3 +119,32 @@ Exit 2: malformed input or affected configuration problem.
 
 The canonical script and host adapters are synchronized by the repository generators.
 The behavioral checks run with `python3 -B scripts/test-doctor.py` from a source checkout.
+
+## Optional BCQuality observations
+
+Doctor remains Python stdlib-only and never parses YAML with a partial parser.
+Export the current configuration explicitly with the packaged YAML reader:
+
+```sh
+node tools/bcquality/config.js /absolute/project > /tmp/bcquality-config.json
+python3 tools/context-doctor/aldc_context_doctor.py --workspace /absolute/project --host claude --bcquality-config /tmp/bcquality-config.json --runtime /tmp/runtime.json --json
+```
+
+The exporter requires the declared `js-yaml` dependency (root npm install or an
+explicit install in `tools/aldc-validate`). For Codex local bootstrap, tools live
+under `.agents/skills/aldc/scripts/`, including `bcquality/config.js` and
+`aldc-validate/package.json`. Use those paths instead of `tools/`. Export as UTF-8;
+in Windows PowerShell 5 use `[IO.File]::WriteAllText` with UTF8Encoding rather than
+its default UTF-16 redirection.
+
+The optional runtime JSON retains `workspace`, `host` and `operations` (use `{}`
+when only BCQuality is observed), and adds a `bcquality` object matching the
+[provider contract](templates/bcquality-provider-contract.md) evidence
+shape. `executed: true` additionally requires `outcome`. Doctor checks snapshot
+workspace/source hash, exact configured plugin/skill, consistent stages, expected
+identity and index output bytes/hash when generation is reported. Stages and
+freshness are caller reports, not independent proof. Missing export is
+`configuration-uninspected`; a catalog-only observation is `discovered-reported`,
+never loaded or executed. An unavailable optional provider does not block other
+Doctor operations. Invalid evidence input returns 2 for repair; that is not an AL
+review verdict.

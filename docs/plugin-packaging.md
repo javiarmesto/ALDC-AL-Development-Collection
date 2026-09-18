@@ -9,7 +9,7 @@ chosen project; use separate disposable projects for host acceptance.
 
 | Surface | Preview | Apply | Inspect / restore |
 | --- | --- | --- | --- |
-| Copilot Chat | `node /path/to/aldc/scripts/install.js install --yes --dry-run` from project root | Repeat without `--dry-run`; select `--profile bc29-native` only when intended | `verify-install` / `rollback` commands from the same project root |
+| Copilot Chat | `node /path/to/aldc/scripts/install.js install --yes --dry-run` from project root | Repeat without `--dry-run`; select `--profile bc29-native` only when intended | `status` / `verify-install` / `rollback` commands from the same project root; add `--json` for structured output |
 | Claude | `node /path/to/claude-plugin/scripts/init.js --project /path/to/project` | Add `--apply` | Add `--verify` / `--rollback` |
 | Copilot CLI | `node /path/to/copilot-cli-plugin/scripts/init.js --project /path/to/project` | Add `--apply` | Add `--verify` / `--rollback` |
 | Codex local bootstrap | `node /path/to/plugins/aldc-codex/scripts/init.js --project /path/to/project` | Add `--apply` | Add `--verify` / `--rollback` |
@@ -57,6 +57,10 @@ Each terminal package has provenance.json with source and output SHA-256 digests
 The complete source set records generator dependencies; output hashes verify the
 actual packaged payload before initialization. Hashes normalize LF/CRLF only;
 other modifications fail. This is drift/integrity evidence, not a publisher signature.
+Provenance detects accidental drift; it is not tamper-proofing. The lock is unsigned,
+so whoever can write to an installation can rewrite the lock with it. Derived build
+artifacts a run leaves behind, such as `__pycache__`, are excluded from both the source
+set and the payload listing for that reason: they appear in a correct installation.
 Regenerate with `npm run sync:plugins`; npm validation checks drift and exercises
 initialization from the extracted archive. No second Copilot command generator
 was introduced.
