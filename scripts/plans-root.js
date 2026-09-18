@@ -8,10 +8,15 @@
  * silent failure in someone's project, not a red build: it would seed memory.md
  * in one place and report another as missing.
  *
- * So the contract is: the default applies only when there is genuinely nothing
- * to read (no `aldc.yaml`, or no `plans:` block in it). A `plans:` block that
- * cannot be read with confidence — a shape this parser does not cover, an
- * unterminated quote, an absolute or escaping path — **throws**.
+ * So the contract turns on absence versus unreadability:
+ *
+ *   - the key is ABSENT (no `aldc.yaml`, no `plans:` block, or a block that
+ *     simply does not declare `root`) -> the default. This is the normal case:
+ *     `plans.root` has existed since 4.2.0, but a project may predate it or have
+ *     removed it, and failing there would break every such installation.
+ *   - the key is PRESENT but cannot be read with confidence — an unterminated
+ *     quote, an empty value, a shape this parser does not cover, an absolute or
+ *     escaping path — -> **throw**, naming the file.
  */
 const fs = require('fs');
 const path = require('path');
@@ -57,8 +62,10 @@ function validate(value, where) {
 
 /**
  * Resolve `plans.root` from the text of an `aldc.yaml`.
- * Returns the normalized path, or `null` when the file declares no `plans:`
- * block at all — the one case where a caller's default is the right answer.
+ * Returns the normalized path, or `null` when the key is absent — the case where
+ * a caller's default is the right answer. Throws when it is present but
+ * unreadable. A `plans:` block in a shape this parser cannot walk also throws:
+ * absence has to be something it established, not something it assumed.
  */
 function readPlansRoot(text, where = 'aldc.yaml') {
   const lines = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').split('\n');
@@ -80,8 +87,7 @@ function readPlansRoot(text, where = 'aldc.yaml') {
     if (root !== null) throw Error(`${where}: plans.root is declared more than once`);
     root = validate(scalar(entry[2], where), where);
   }
-  if (root === null) throw Error(`${where}: plans is declared without a root key`);
-  return root;
+  return root; // null: the block declares no root, so the caller's default stands
 }
 
 /** First `aldc.yaml` among `dirs` that declares a plans root wins. */

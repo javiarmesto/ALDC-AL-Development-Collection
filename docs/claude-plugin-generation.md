@@ -84,13 +84,48 @@ says more precisely. Two examples:
   preamble's host-contract line plus the mapping table, which states the same
   boundaries once and declares them binding.
 
-One thing the plugin had and the canonical genuinely lacked went **up**, not
-across: six agents (`al-agent-builder`, `al-architect`, `al-conductor`,
-`al-developer`, `al-presales`, `al-triage`) carried a `Use when …` sentence in
-their plugin `description` that the canonical did not have. `description` governs
-agent selection on every surface, Copilot included, so the sentence belongs in
-`agents/*.agent.md` — promoting it is not invention, and from there it reaches all
-four distributions and the VSIX through `packages/foundation`.
+### Descriptions: what goes up, and what is right to differ
+
+`description` governs agent selection on every surface, Copilot included, so a
+difference there is not automatically adapter business. Comparing all twelve with
+a YAML parser: four are identical (the four that were already generated), and
+eight differ — in three distinct ways, which need three distinct answers:
+
+| Kind of difference | Answer | Example |
+|---|---|---|
+| Host vocabulary | **Leave it.** The adapter is right to differ | `al-triage`: the plugin says `al-developer` and `dredd` where the canonical says `@al-developer` and `Dredd`; `al-implement-subagent`: `via Task tool` for the canonical `via runSubagent` |
+| The canonical is out of date | **Fix the canonical description** | none applied so far; see the open items below |
+| A `Use when …` enrichment | **Promote it to the canonical** | `al-architect` and five others |
+
+Six carried a `Use when …` sentence the canonical lacked — `al-agent-builder`,
+`al-architect`, `al-conductor`, `al-developer`, `al-presales`, `al-triage` — and
+it now lives in `agents/*.agent.md`, verbatim. Promoting is not invention, and
+from the canonical it reaches all four distributions and the VSIX through
+`packages/foundation`.
+
+Cosmetic differences were left alone in both directions: a dropped `AL Conductor
+Agent - ` prefix is redundant next to a `name:` that already says it, and
+`RED→GREEN→REFACTOR` versus `RED-GREEN-REFACTOR` is typography, not contract.
+
+Three differences are recorded rather than resolved, because they do not fall
+cleanly into any of the three kinds:
+
+- **`al-developer`.** Its plugin description said the developer "hands
+  publish/test/debug runtime steps to a human or CI". That is the Claude Code
+  boundary, not a canonical correction: the canonical body still grants
+  `al_debug`, `al_setbreakpoint` and `al_snapshotdebugging`, and still says "run
+  and analyze tests". Separately, and more usefully: the canonical body
+  contradicts *itself* about building — its tool-surface note calls building "a
+  VS Code command or human step, not an agent tool", while three later sections
+  tell the agent to build in the terminal through `execute`. That is a canonical
+  defect in the body, not in the description.
+- **`al-implement-subagent`.** The plugin description added real detail the
+  canonical omits — "writes tests FIRST, then minimal code to pass, then
+  refactors". It is enrichment, but it is not a `Use when …` sentence.
+- **`al-planning-subagent`.** The canonical omits the "only the Conductor invokes
+  this" restriction that `al-implement-subagent`'s canonical description states
+  and that `user-invocable: false` encodes. Of the three subagents, one states it
+  and two do not.
 
 Every rule-like line that disappeared was checked against the canonical corpus.
 All of them have an owner there **except one**:
@@ -129,11 +164,15 @@ enforces.
 dependency, because `scripts/install.js` also runs from payloads that carry no
 `node_modules`. Parsing narrowly is not a licence to guess: the wrong folder
 would seed `memory.md` in one place and report another as missing, silently, in
-someone's project rather than in CI. So the default applies **only** when there
-is nothing to read — no `aldc.yaml`, or no `plans:` block in it. A block that
-cannot be read with confidence (a shape the parser does not cover, an
-unterminated quote, an absolute or escaping path) throws and names the file.
-`scripts/test-plans-root.js` pins that contract.
+someone's project rather than in CI. So the contract turns on absence versus
+unreadability. An **absent** key — no `aldc.yaml`, no `plans:` block, or a block
+that simply does not declare `root` — takes the default: `plans.root` has existed
+since 4.2.0, but a project may predate it or have removed it, and failing there
+would break every such installation. A key that is **present but unreadable** —
+an unterminated quote, an empty value, a shape the parser does not cover, an
+absolute or escaping path — throws and names the file. A `plans:` block the
+parser cannot walk also throws: absence has to be something it established, not
+something it assumed. `scripts/test-plans-root.js` pins that contract.
 
 ## Regenerating
 

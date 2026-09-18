@@ -48,14 +48,17 @@ test('the block ends at the next top-level key', () => {
   assert.equal(readPlansRoot('other:\n  plans:\n    root: "x"\n'), null);
 });
 
-test('nothing to read is the only case that falls back', () => {
-  assert.equal(readPlansRoot('core:\n  version: "1.2.0"\n'), null);
-  assert.equal(readPlansRoot(''), null);
+test('an absent key falls back; it never fails', () => {
+  assert.equal(readPlansRoot('core:\n  version: "1.2.0"\n'), null, 'no plans block');
+  assert.equal(readPlansRoot(''), null, 'empty file');
+  // plans.root has existed since 4.2.0, but a project may predate it or have
+  // removed it. Failing here would break every such installation.
+  assert.equal(readPlansRoot('plans:\n  archive: "x"\n'), null, 'block without a root key');
+  assert.equal(readPlansRoot('plans:\n'), null, 'empty block');
+  assert.equal(readPlansRoot('plans:\n\ncontracts:\n  globalMemory: "memory.md"\n'), null, 'block closed by the next key');
 });
 
 test('declared but unreadable throws instead of defaulting', () => {
-  assert.throws(() => readPlansRoot('plans:\n  archive: "x"\n'), /without a root key/);
-  assert.throws(() => readPlansRoot('plans:\n'), /without a root key/);
   assert.throws(() => readPlansRoot('plans: {root: ".claude/plans"}\n'), /not an inline value/);
   assert.throws(() => readPlansRoot('plans:\n  root: ".claude/plans\n'), /unterminated/);
   assert.throws(() => readPlansRoot('plans:\n  root: ".claude/plans" oops\n'), /trailing content/);
@@ -76,7 +79,14 @@ test('an escaping or absolute root is refused', () => {
 });
 
 test('the error names the file it could not read', () => {
-  assert.throws(() => readPlansRoot('plans:\n', '/tmp/p/aldc.yaml'), /\/tmp\/p\/aldc\.yaml: plans is declared/);
+  assert.throws(() => readPlansRoot('plans:\n  root: "x\n', '/tmp/p/aldc.yaml'), /\/tmp\/p\/aldc\.yaml: plans\.root has an unterminated/);
+});
+
+test('a block this parser cannot walk is unreadable, not absent', () => {
+  // Absence has to be established, not assumed: a shape it cannot walk might
+  // well declare root, so it refuses instead of quietly defaulting.
+  assert.throws(() => readPlansRoot('plans:\n  - root: x\n'), /unreadable line/);
+  assert.throws(() => readPlansRoot('plans: {archive: "x"}\n'), /not an inline value/);
 });
 
 test('plansRootOf walks the candidate directories in order', (t) => {
