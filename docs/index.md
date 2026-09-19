@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#whats-new">
   <span class="hero-banner__badge">NEW</span>
-  <span class="hero-banner__text">ALDC 4.3.0 · now available</span>
+  <span class="hero-banner__text">ALDC 5.0.0 · now available</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="index-es/">Español</a></div>
@@ -21,16 +21,16 @@ hide:
   <a class="md-button" href="#whats-new">Explore what is new</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">Version 4.3.0 is available for VS Code from the Marketplace, and for Copilot CLI, Claude Code and Codex from the tagged source.</p>
+<p class="hero-subnote">Version 5.0.0 is available for VS Code from the Marketplace, and for Copilot CLI, Claude Code and Codex from the tagged source.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>4.3.0</b> · MIT</span>
+  <span class="pill pill--version"><b>5.0.0</b> · MIT</span>
 </div>
 </div>
 
-## What is new in 4.3.0 { #whats-new .section-title }
+## What is new in 5.0.0 { #whats-new .section-title }
 
 <div class="grid cards" markdown="1">
 
