@@ -59,6 +59,12 @@ claude-plugin/
 └── README.md                       # this file
 ```
 
+## AL language tooling
+
+Read [Claude AL tooling](docs/claude-al-tooling.md) to reuse the existing AL LSP
+for Agents companion and verify access from each agent mode. ALDC declares no
+second LSP server and does not change user or project provider configuration.
+
 ## MCP servers
 
 **al-symbols-mcp** (read-only AL symbol queries), **context7** (library docs) and

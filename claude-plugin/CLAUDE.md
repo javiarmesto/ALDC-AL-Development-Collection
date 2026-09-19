@@ -7,7 +7,7 @@ contracts were authored for GitHub Copilot Chat; every adapted file carries the
 binding Copilot -> Claude Code mapping table at the top, plus the sha256 of the
 canonical source it was generated from.
 
-Read the terminal-host contract at `${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md` before choosing AL tools, changing dependencies or reporting BC29 / AL18 validation. Each agent and workflow links it explicitly, because a
+Read `${CLAUDE_PLUGIN_ROOT}/docs/claude-al-tooling.md` for this surface’s LSP/MCP bindings, then `${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md` for the shared role/evidence contract. The Claude guide supersedes older capability-availability examples, never role responsibilities or human gates. Each agent and workflow links it explicitly, because a
 plugin-root CLAUDE.md is not auto-loaded into a subagent.
 
 ## Roles
@@ -73,7 +73,8 @@ is what the Copilot deployment and the VS Code extension read.
 | `#changes`, `changes`, `search/changes` | Read-only `git status` / `git diff` through `Bash` |
 | `read/problems`, `al_get_diagnostics`, `#testFailure` | Compiler/test output produced by an actual run when a runner exists; otherwise record `not-run` / `unavailable`, never infer |
 | `al-symbols-mcp/*`, `upstash/context7/*`, `microsoft-learn/*`, `microsoft-docs/*` | Tools named `mcp__al-symbols-mcp__*`, `mcp__context7__*`, `mcp__microsoft-docs__*` (or the `mcp__plugin_aldc_…` form). A server that is not loaded is `unavailable`; do not simulate it |
-| `ms-dynamics-smb.al/*`, `sshadowsdk.al-lsp-for-agents/*`, `vscode.mermaid-chat-features/*` | VS Code language-model tools; they do not exist in this harness. Never call one or rename a community tool to a Microsoft-native one |
+| `sshadowsdk.al-lsp-for-agents/*`, semantic definition/reference queries | Claude `LSP` with the existing AL LSP for Agents companion; discover the actual operations and project context first. VS Code tool identifiers are not Claude tool names |
+| `ms-dynamics-smb.al/*`, `vscode.mermaid-chat-features/*` | VS Code tool identifiers do not exist here. Use only a separately discovered Claude capability; never rename community tools as Microsoft tools |
 | `vscode/memory`, `vscode/*` | Not available; keep state in the canonical `.claude/plans/` artifacts of the project |
 | `todo` | `TodoWrite` for in-session tracking; durable state stays in `.claude/plans/` |
 | "load `skill-x`" | The `Skill` tool (`aldc:<skill-name>`) or read `${CLAUDE_PLUGIN_ROOT}/skills/<skill-name>/SKILL.md` |

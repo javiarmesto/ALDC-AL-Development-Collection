@@ -22,7 +22,8 @@ disable-model-invocation: true
 > | `#changes`, `changes`, `search/changes` | Read-only `git status` / `git diff` through `Bash` |
 > | `read/problems`, `al_get_diagnostics`, `#testFailure` | Compiler/test output produced by an actual run when a runner exists; otherwise record `not-run` / `unavailable`, never infer |
 > | `al-symbols-mcp/*`, `upstash/context7/*`, `microsoft-learn/*`, `microsoft-docs/*` | Tools named `mcp__al-symbols-mcp__*`, `mcp__context7__*`, `mcp__microsoft-docs__*` (or the `mcp__plugin_aldc_…` form). A server that is not loaded is `unavailable`; do not simulate it |
-> | `ms-dynamics-smb.al/*`, `sshadowsdk.al-lsp-for-agents/*`, `vscode.mermaid-chat-features/*` | VS Code language-model tools; they do not exist in this harness. Never call one or rename a community tool to a Microsoft-native one |
+> | `sshadowsdk.al-lsp-for-agents/*`, semantic definition/reference queries | Claude `LSP` with the existing AL LSP for Agents companion; discover the actual operations and project context first. VS Code tool identifiers are not Claude tool names |
+> | `ms-dynamics-smb.al/*`, `vscode.mermaid-chat-features/*` | VS Code tool identifiers do not exist here. Use only a separately discovered Claude capability; never rename community tools as Microsoft tools |
 > | `vscode/memory`, `vscode/*` | Not available; keep state in the canonical `.claude/plans/` artifacts of the project |
 > | `todo` | `TodoWrite` for in-session tracking; durable state stays in `.claude/plans/` |
 > | "load `skill-x`" | The `Skill` tool (`aldc:<skill-name>`) or read `${CLAUDE_PROJECT_DIR}/.claude/skills/<skill-name>/SKILL.md` |
@@ -31,7 +32,7 @@ disable-model-invocation: true
 > | `python …` runtime helpers, `--aldc-root` | Paths already point at `${CLAUDE_PLUGIN_ROOT}`; use `python` or `python3`, whichever exists (stdlib only) |
 > | `aldc.yaml` | `${CLAUDE_PROJECT_DIR}/aldc.yaml` when the project has one, otherwise `${CLAUDE_PROJECT_DIR}/claude-plugin/aldc.yaml` |
 >
-> Read the terminal-host contract at `${CLAUDE_PROJECT_DIR}/.claude/skills/skill-migrate/references/cli-al-tools.md` before choosing AL tools, changing dependencies or reporting BC29 / AL18 validation.
+> Read `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/claude-al-tooling.md` for this surface’s LSP/MCP bindings, then `${CLAUDE_PROJECT_DIR}/.claude/skills/skill-migrate/references/cli-al-tools.md` for the shared role/evidence contract. The Claude guide supersedes older capability-availability examples, never role responsibilities or human gates.
 
 
 # Workflow: Create Coded Agent (Agent SDK)
