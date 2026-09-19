@@ -55,14 +55,15 @@ function initialize({ project, pluginRoot, apply = false, force = false, rollbac
     for (const rel of walk(pluginRoot, 'agents')) copy(rel, '.codex/' + rel);
   }
   let guidance = surface === 'claude' ? 'CLAUDE.md' : 'AGENTS.md';
-  if (surface !== 'claude' && tx.read(project, 'AGENTS.override.md') !== null) guidance = 'AGENTS.override.md';
+  // Copilot CLI reads AGENTS.md; preserve AGENTS.override.md without using it.
   const before = tx.read(project, guidance);
   const fragment = fs.readFileSync(path.join(pluginRoot, 'project-guidance.md'), 'utf8');
   // Only the ALDC block is managed; preserve surrounding text, including CRLF.
   put(guidance, tx.managedBlock(before, fragment, surface.toUpperCase()), { retain: true, merge: before === null || !before.toString('utf8').includes(`<!-- BEGIN ALDC ${surface.toUpperCase()} -->`) });
+  const shadowing = require('./cli-bootstrap').inspectShadowing(project, pluginRoot);
   const result = tx.apply({ root: project, surface, files, force, dryRun: !apply });
-  return { ...result, surface, guidance, hostLoading: 'unverified',
-    note: 'Review collisions. Restart the host and inspect loaded sources; do not combine a Codex plugin install with its local bootstrap copies.' };
+  return { ...result, surface, guidance, shadowing, hostLoading: 'unverified',
+    note: 'Review collisions and potential shadowing. Bootstrap installs no agents or skills. Restart Copilot CLI and inspect actual loaded sources, including any extra trusted roots.' };
 }
 if (require.main === module) {
   try {

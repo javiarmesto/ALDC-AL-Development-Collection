@@ -1,0 +1,49 @@
+{
+  "consumerUnchanged": true,
+  "attempts": [
+    {
+      "command": [
+        "copilot",
+        "--agent",
+        "al-architect",
+        "--prompt",
+        "Add a delivery note field to Customer and expose it on Customer Card. Return complexity, architecture and next role only. Do not modify files.",
+        "--deny-tool",
+        "write",
+        "--deny-tool",
+        "shell",
+        "--disable-builtin-mcps",
+        "--log-level",
+        "debug",
+        "--log-dir",
+        "/workspace/scratch/26499ba303de/cli-test/logs"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error: No authentication information found.\n\nCopilot can be authenticated with GitHub using an OAuth Token or a Fine-Grained Personal Access Token.\n\nTo authenticate, you can use any of the following methods:\n  \u2022 Start 'copilot' and run the '/login' command\n  \u2022 Set the COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN environment variable\n  \u2022 Run 'gh auth login' to authenticate with the GitHub CLI\n",
+      "status": "blocked-authentication"
+    },
+    {
+      "command": [
+        "copilot",
+        "--agent",
+        "al-conductor",
+        "--prompt",
+        "Host delegation check only. I approve exactly one read-only task delegation to al-planning-subagent for the delivery-note requirement. Load your complete contract, delegate once, wait, summarize and stop. No writes, implementation, review or further delegation. Report missing capability without simulating it.",
+        "--deny-tool",
+        "write",
+        "--deny-tool",
+        "shell",
+        "--disable-builtin-mcps",
+        "--log-level",
+        "debug",
+        "--log-dir",
+        "/workspace/scratch/26499ba303de/cli-test/logs"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error: No authentication information found.\n\nCopilot can be authenticated with GitHub using an OAuth Token or a Fine-Grained Personal Access Token.\n\nTo authenticate, you can use any of the following methods:\n  \u2022 Start 'copilot' and run the '/login' command\n  \u2022 Set the COPILOT_GITHUB_TOKEN, GH_TOKEN, or GITHUB_TOKEN environment variable\n  \u2022 Run 'gh auth login' to authenticate with the GitHub CLI\n",
+      "status": "blocked-authentication"
+    }
+  ]
+}

@@ -26,8 +26,8 @@ execute/Bash is also broader than a report directory. Dredd and Triage must writ
 only their reports as specified. Host tool/path approvals remain necessary;
 this package does not claim an enforced per-role filesystem boundary.
 
-Full local verification steps and limitations: ../docs/native-bc29.md.
-The complete Conductor and Architect exceed the generic custom-agent 30,000-character
-guidance. They have not been shortened or externalized. Confirm that your installed
-CLI loads them completely; if it rejects/truncates one, do not certify that workflow.
-Plugin discovery, tool availability and AL execution depend on the installed host.
+Install, update, precedence, bootstrap and validation: [Copilot CLI guide](docs/copilot-cli-plugin.md).
+Legacy format is retained intentionally. All agent entry bodies stay below 29,000
+characters; Conductor must load its complete bundled reference before acting.
+No canonical workflow is truncated. Authenticated invocation and delegation still
+need host evidence; installation and catalogs alone do not certify them.

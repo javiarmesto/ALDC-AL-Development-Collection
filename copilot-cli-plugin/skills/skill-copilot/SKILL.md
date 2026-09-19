@@ -385,7 +385,7 @@ Define before coding:
 1. Register capability (Phase 1: enum + install codeunit)
 2. Create PromptDialog page (Phase 2: areas, system actions, prompt guide)
 3. Create generation codeunit (Phase 3: Azure OpenAI + JSON parsing)
-4. Build: `al_build`
+4. Build: `verified project build/package command (if available)`
 
 ### Step 3: Test (Phase 4)
 

@@ -1,6 +1,35 @@
 ---
 description: Prepare a clean, documented pull request draft for AL features or fixes with summary, testing notes, and checklist. ALDC workflow (Copilot prompt al-pr-prepare); invoke explicitly.
+disable-model-invocation: true
 ---
+
+> **Copilot CLI adapter — generated; do not edit this distribution.**
+> Select a role using /agent or copilot --agent <id>. Role names in this contract
+> are routing destinations, never chat mentions or evidence of an invocation.
+> Delegate only through the native task tool, using the exact discovered agent ID
+> as agent_type (for example al-planning-subagent). Inspect list_agents and the
+> actual task schema first. Keep all canonical human gates. Pass bounded context
+> inline; wait for completion (read_agent for a background task) before consuming
+> the result. A delegated role returns questions to its caller for the human gate.
+> If task or the requested custom agent is unavailable in this context, return
+> the blocked handoff to the caller/user. Never impersonate a missing subagent,
+> silently substitute general-purpose, or launch another CLI process to fake it.
+> Tool aliases in frontmatter select capabilities; call the actual tools exposed
+> by the host: view, glob, grep/rg, edit/create/apply_patch, bash/powershell,
+> web_fetch, task. Use a capability only when granted to this role and available.
+> Load domain skills through the host's skill mechanism when exposed, otherwise
+> read the complete bundled SKILL.md. A read is not a native skill invocation.
+> Resolve PLUGIN_ROOT to this installed agent's plugin directory (not the project
+> or original checkout). It is a path placeholder here, not a promised global
+> shell variable. Read skills/skill-migrate/references/cli-al-tools.md there.
+> Project instructions and matching .github/instructions rules remain binding;
+> pass the relevant excerpts to delegated roles. Canonical artifacts remain in
+> .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
+> AL execution requires a verified terminal command/runner or an actually exposed
+> MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> Record missing capabilities and unexecuted checks explicitly; never simulate.
+
+
 # AL Pull Request Preparation
 
 Your goal is to prepare a **pull request draft** for the branch `<Branch from $ARGUMENTS>` summarizing all modifications, test evidence, and validation steps.
@@ -325,8 +354,8 @@ Create `/reports/pr-draft.md` with this structure:
 
 **For final validation:**
 ```
-@AL Development Conductor   # TDD orchestration with review subagent
-@AL Implementation Specialist   # Direct testing and fixes
+al-conductor   # TDD orchestration with review subagent
+al-developer   # Direct testing and fixes
 ```
 
 ---
