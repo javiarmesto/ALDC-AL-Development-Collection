@@ -84,6 +84,59 @@ Doctor or installation on behalf of this guide.
 To undo a manually added connection, remove only that entry from its original
 configuration scope; retain pre-existing entries, credentials and LSP configuration.
 
+## Optional Triage profiling and snapshot
+
+These are BC29/runtime 18 preview capabilities. Their absence on BC28 is expected;
+continue source/log triage. Reuse configured dedicated proxies, with environment
+MCP enabled and the current user's required permissions. Setup is separate from
+permission to capture. After explicit connection setup, use these entries under
+`mcpServers`, replacing the example target with the approved sandbox:
+
+```json
+{
+  "bc-profiling": {
+    "command": "altool",
+    "args": ["launchprofilingmcpproxy", "--environmenttype", "Sandbox", "--environmentname", "sandbox", "--tenant", "contoso.onmicrosoft.com"]
+  },
+  "bc-snapshot": {
+    "command": "altool",
+    "args": ["launchsnapshotmcpproxy", "--environmenttype", "Sandbox", "--environmentname", "sandbox", "--tenant", "contoso.onmicrosoft.com"]
+  }
+}
+```
+
+Reuse cached ALTool sign-in. If authentication is absent, return that prerequisite;
+do not initiate login, clear tokens or change permissions as a diagnostic probe.
+Do not put credentials in command arguments or tracked configuration.
+
+Only Triage has `mcp__bc-profiling__*` and `mcp__bc-snapshot__*`. These grants cover
+**all tools exposed by those dedicated proxies**, not a per-operation boundary.
+Never point the aliases at the general Business Central API server or another
+provider. Inspect the actual catalog and schemas before use; do not derive wire
+names from documentation's human-readable labels. A changed/broader catalog needs
+review before capture. No proxy is declared in ALDC's manifest or autostarted.
+
+For profiling, obtain the authorized numeric session ID and bounded window before
+scheduling. Another user's session also requires D365 ATTACH DEBUG. Stop and collect
+that schedule; keep artifact paths, timings and correlation details in the triage
+report. Save needed recordings before local retention removes them. Previously
+captured profiles may be analyzed locally through the available proxy operation.
+
+For snapshot, identify the reproduction, client/user scope and relevant snappoints.
+A session ID is optional when arming the next reproduction. Both D365 Snapshot
+Debug and D365 ATTACH DEBUG are required by MCP. Report when armed, let the human
+reproduce the authorized scenario, then query status and finalize. Collect the
+archive and hand it to the configured snapshot debugger; capture does not prove
+that Claude can step through it or inspect variable values autonomously.
+
+Do not combine profiling and snapshot on the same session. If capture fails, report
+its known schedule/snapshot identity and cleanup status; do not retry with a wider
+target. Preserve business-data artifacts in the approved project location, not the
+plugin cache or repository by default. Triage hands findings and coverage limits
+to Developer; it does not implement the fix or replay business actions implicitly.
+To revert setup, remove only the newly added proxy entries after ending any owned
+capture. Other roles consume evidence without being granted these proxy tools.
+
 ## Evidence before acceptance
 
 Use existing plan/triage artifacts. Separate configuration detected, connection
@@ -98,6 +151,10 @@ references. Static packaging tests do not satisfy this host smoke test.
 - From Developer, compile the authorized App/Test fixture through the discovered
   official MCP and retain the result; reviewers must not receive compile, restore,
   publish or authentication tools. Do not run forbidden operations to test absence.
+- In a compatible sandbox, separately validate one bounded profile and one
+  snapshot through Triage: catalog, target, capture, stop and retrievable artifact.
+  Record snapshot inspection separately. An unavailable optional capability is
+  reported as such, not as a failed BC28 installation.
 - Check a background mode separately if it is part of the intended workflow.
 - Initialize/update ALDC and verify existing MCP and LSP settings are unchanged.
 
@@ -110,3 +167,6 @@ No authenticated Claude/LSP invocation has been performed by the packaging tests
 - [AL LSP for Agents source and setup](https://github.com/SShadowS/al-lsp-for-agents)
 
 - [Microsoft AL MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-mcp-server)
+
+- [Microsoft profiling MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/scheduled-performance-profiler-overview#profiling-with-an-ai-agent-mcp-server)
+- [Microsoft snapshot MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-snapshot-debugging#snapshot-debugging-with-an-ai-agent-mcp-server)

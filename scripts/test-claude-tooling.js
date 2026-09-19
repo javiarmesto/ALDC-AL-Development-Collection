@@ -66,3 +66,14 @@ test('official AL MCP writes belong only to implementation, never a wildcard', (
     }
   }
 });
+
+
+test('capture proxy grants stay in Triage and no optional server is autostarted', () => {
+  for (const { id } of AGENTS) {
+    for (const proxy of ['bc-profiling', 'bc-snapshot']) {
+      assert.equal(tools(id).includes(`mcp__${proxy}__*`), id === 'al-triage', `${id}: ${proxy}`);
+    }
+  }
+  const servers = JSON.parse(files.get('.mcp.json')).mcpServers;
+  for (const name of ['al', 'bc-profiling', 'bc-snapshot']) assert.equal(servers[name], undefined);
+});

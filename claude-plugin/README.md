@@ -75,6 +75,8 @@ The Microsoft AL MCP is optional and separately configured under user/project
 alias `al`; see [setup and role grants](docs/claude-al-tooling.md). ALDC grants
 its query operations explicitly and compilation/build/restore only to Developer
 and Implementer. It does not start that server or grant publish/authentication.
+Optional BC29 profiling/snapshot proxies are granted only to Triage after explicit
+connection setup; see the same guide for capture scope and runtime acceptance.
 
 ## Requirements
 
