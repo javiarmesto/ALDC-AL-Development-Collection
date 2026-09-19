@@ -33,13 +33,27 @@ function servers(file) {
 
 // The package is the first argument that is not a flag: `npx -y <pkg>`.
 const packageOf = spec => (spec.args || []).find(a => !a.startsWith('-'));
+const numeric = '(?:0|[1-9][0-9]*)';
+const prerelease = `(?:${numeric}|[0-9]*[A-Za-z-][0-9A-Za-z-]*)`;
+const exactVersion = new RegExp(`^${numeric}\\.${numeric}\\.${numeric}(?:-${prerelease}(?:\\.${prerelease})*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$`);
 const unversioned = pkg => {
   // A scope leads with '@', so only a later '@' carries the version. A dist-tag
   // (`@latest`) is not a pin: it resolves to whatever was published last, so two
   // installs of the same ALDC release can run different code.
   const at = pkg.lastIndexOf('@');
-  return at <= 0 || !/^\d/.test(pkg.slice(at + 1));
+  return at <= 0 || !exactVersion.test(pkg.slice(at + 1));
 };
+
+for (const name of ['al-mcp-server', '@scope/server']) {
+  for (const version of ['2.5.0', '0.0.0', '2.5.0-rc.1', '2.5.0+build.01']) {
+    check(!unversioned(`${name}@${version}`), `Accept exact version: ${name}@${version}`);
+  }
+  for (const version of ['', 'latest', '2', '2.5', '2.x', '2.5.*', '^2.5.0', '~2.5.0',
+    '>=2.5.0', '2.5.0 || 3.0.0', '2.5.0 - 3.0.0', '02.5.0', '2.5.0-01', '2.5.0junk']) {
+    check(unversioned(`${name}@${version}`), `Reject non-exact version: ${name}@${version}`);
+  }
+  check(unversioned(name), `Reject missing version: ${name}`);
+}
 
 const declared = [...DISTRIBUTED, ...DEVELOPMENT].flatMap(servers);
 check(declared.length > 0, 'Found MCP server declarations to check');
