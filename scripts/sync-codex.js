@@ -30,6 +30,36 @@ function sandboxModeFor(tools) {
     .some((tool) => WRITE_TOOLS.some((write) => tool === write || tool.startsWith(`${write}/`)));
   return granted ? 'workspace-write' : 'read-only';
 }
+function presalesMcpForCodex(body) {
+  // This source section includes a nonexistent Context7 package, obsolete tool
+  // names and VS Code-only setup. Adapt only Codex; other surfaces keep their
+  // own sources and generators. Fail visibly if the source section moves.
+  const start = body.indexOf('### 2.2 MCP Tools Verification');
+  const end = body.indexOf('### 2.3 Complexity Assessment', start);
+  if (start < 0 || end < start) throw Error('Presales MCP verification structure changed');
+  return body.slice(0, start) + `### 2.2 MCP Tools Verification
+
+Discover the MCP providers and exact tool schemas exposed by this Codex session.
+Read \`.agents/skills/aldc/references/mcp-setup.md\` for provider endpoints,
+configuration examples and the bounded connection check. Resolve that path
+against the installed ALDC skill root when using plugin discovery.
+
+- AL symbols: query the configured provider against the target project's packages.
+- Context7: discover library resolution and documentation query tools; names vary
+  by server version. Do not assume the older get-library-docs tool exists.
+- Microsoft Learn: use the configured remote documentation provider. Installing
+  a VS Code extension does not register an MCP server with Codex.
+- GitHub: use an existing authorized repository connector if available; do not
+  require a new MCP server or request a Personal Access Token as a default.
+
+Record configured, connected, tools discovered and read-only query executed as
+separate observations. If unavailable, identify the missing capability and use
+available source/documentation evidence; mark the affected estimates uncertain.
+Do not install servers, modify configuration or duplicate existing providers
+automatically. A successful ALDC Doctor report does not verify MCP connectivity.
+
+` + body.slice(end);
+}
 function bodyFor(text) {
   // Plugin-layout paths first: the Claude Code adapter emits ${CLAUDE_PLUGIN_ROOT}.
   return text
@@ -61,6 +91,7 @@ function expected(root = ROOT) {
   const read = p => { sources.push(p); return normalized(fs.readFileSync(path.join(root,p))).toString('utf8'); };
   const pkg = JSON.parse(read('package.json'));
   const version = pkg.version;
+  files.set('skills/aldc/references/mcp-setup.md', read('scripts/codex-mcp-setup.md'));
   // Field set verified against codex-rs/core-plugins/src/manifest.rs (RawPluginManifest,
   // RawPluginManifestInterface). `keywords` and `interface.websiteURL` are read there;
   // `homepage`/`repository` are not — they belong to the separate `$schema` Agent Plugins
@@ -90,7 +121,9 @@ function expected(root = ROOT) {
     // frontmatter: the Claude adapter has already rewritten `tools` into Claude Code's
     // vocabulary, where the `edit`/`execute` grant this reads no longer exists.
     const canonical = split(read(`agents/${name}.agent.md`));
-    const body = preface + bodyFor(stripAdapterPreamble(src.body));
+    let adapted = bodyFor(stripAdapterPreamble(src.body));
+    if (name === 'al-presales') adapted = presalesMcpForCodex(adapted);
+    const body = preface + adapted;
     files.set(`skills/aldc/references/agents/${name}.md`,body);
     const instructions = 'Resolve relative links in this profile from .agents/skills/aldc/references/agents/.\n\n' + body;
     // JSON basic strings are TOML-compatible for these strings; validate with tomllib.
@@ -128,6 +161,7 @@ function expected(root = ROOT) {
   files.set('skills/aldc/SKILL.md', '---\n' + yaml.dump({name:'aldc',description:'Use canonical ALDC architecture, implementation, TDD orchestration, review and specification workflows for AL / Business Central projects.'},{lineWidth:-1}) + '---\n\n' +
     `Read the relevant role or workflow below in full before acting. Resolve these\nlinks from this skill directory, including when a plugin cache holds it. Load\napplicable rules from references/rules/ and domain guidance from\nreferences/skills/ (GUIDE.md) on demand. These domain references are not duplicate\ndiscoverable skills. Recover approved work from ${PLANS}/ and memory.md.\n\nFor MEDIUM/HIGH work, preserve architecture → specification → Conductor order.\nThe al-spec-create workflow loads the same al-spec-agent contract as direct role invocation.\nHuman material gates and current session authorization govern actions. Plugin\ninstallation alone does not authorize compilation, publishing or deployment.\n\nUse discovered project custom agents when available. Otherwise read the selected\nrole as instructions in this session; when independent subagents are required\nand unavailable, report the affected step as pending. Do not invent a tool name\nor claim independent review from a sequential role change.\n\n## Roles\n\n${links(roles,'agents')}\n\n## Workflows\n\n${links(commands,'commands')}\n`);
   files.set('README.md', `# ALDC for Codex\n\nGenerated by scripts/sync-codex.js from canonical terminal sources. No manual\nedits. Node 20+ is the only bootstrap interpreter; no Python/PATH setup is needed.\n\nFrom a checkout, preview a separate project:\n\n\`node plugins/aldc-codex/scripts/init.js --project /path/to/project\`\n\nRepeat with --apply after reviewing the plan. This installs one local ALDC skill,\n${roles.length} .codex/agents profiles, AL rules and a managed AGENTS.md block (or the existing\nAGENTS.override.md). Models, sandbox, approvals and MCP settings are inherited.\n--force backs up reviewed collisions; --verify checks receipt drift; --rollback\nrestores the preceding transaction if later project edits would not be lost.\n\nThe package manifest supports plugin distribution, but no marketplace entry is\ncreated. Use either plugin skill discovery or local bootstrap, never both in the\nsame project. Plugin discovery alone does not install the project TOML profiles.\n\nRestart Codex, inspect /skills and loaded instruction sources, then request a\nbounded read-only role invocation and inspect its full loaded profile. Counting\nfiles is not this host test. Full Conductor/Architect bodies remain intact and\nmust load completely in the installed host. See ../../docs/plugin-packaging.md\nfor installation behavior and compatibility requirements.\n`);
+  files.set('README.md', files.get('README.md') + `\n## MCP setup and verification\n\nALDC for Codex declares no MCP servers and does not copy the repository's\n\`.mcp.json\` or another host's plugin manifest. Existing Codex providers are inherited.\nSee [MCP setup](skills/aldc/references/mcp-setup.md) for the corrected AL symbols\npackage from PR #108, official documentation endpoints and a bounded smoke check.\nDoctor does not inspect Codex MCP configuration or establish connectivity.\n`);
   sources.push(...walk(root,'tools/bcquality'),'tools/aldc-validate/package.json','tools/aldc-validate/index.js',...walk(root,'tools/context-doctor'),'scripts/sync-plugin-support.js','scripts/install-transaction.js','scripts/init-plugin.js','scripts/sync-copilot-cli.js','docs/templates/memory-template.md');
   files.set('provenance.json',provenance(root,sources,files,'scripts/sync-codex.js'));
   return files;
