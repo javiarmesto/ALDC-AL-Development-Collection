@@ -22,3 +22,11 @@ bounded read-only role invocation and inspect its full loaded profile. Counting
 files is not this host test. Full Conductor/Architect bodies remain intact and
 must load completely in the installed host. See ../../docs/plugin-packaging.md
 for installation behavior and compatibility requirements.
+
+## MCP setup and verification
+
+ALDC for Codex declares no MCP servers and does not copy the repository's
+`.mcp.json` or another host's plugin manifest. Existing Codex providers are inherited.
+See [MCP setup](skills/aldc/references/mcp-setup.md) for the corrected AL symbols
+package from PR #108, official documentation endpoints and a bounded smoke check.
+Doctor does not inspect Codex MCP configuration or establish connectivity.
