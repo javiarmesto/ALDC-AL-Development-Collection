@@ -32,7 +32,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@nicholasglazer/al-symbols-mcp"
+        "al-mcp-server@2.5.0"
       ]
     },
     "context7": {

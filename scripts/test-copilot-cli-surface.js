@@ -13,6 +13,19 @@ function temp(t) { const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-cli-'
 function write(root, name, content) { fs.mkdirSync(path.dirname(path.join(root, name)), { recursive: true }); fs.writeFileSync(path.join(root, name), content); }
 const read = (dir, name) => fs.readFileSync(path.join(dir, name), 'utf8');
 
+test('CLI MCP rejects nonexistent provider and floating/range pins without changing tool identity', () => {
+  const { validateManifest } = require('./test-copilot-cli-mcp');
+  const manifest = JSON.parse(read(pluginRoot, 'plugin.json'));
+  assert.equal(validateManifest(manifest), 'al-mcp-server@2.5.0');
+  for (const pkg of ['@nicholasglazer/al-symbols-mcp', '@nicholasglazer/al-symbols-mcp@1.0.0', 'al-mcp-server', 'al-mcp-server@latest', 'al-mcp-server@2.x', 'al-mcp-server@2.5', 'al-mcp-server@^2.5.0']) {
+    const invalid = structuredClone(manifest);
+    invalid.mcpServers['al-symbols-mcp'].args[1] = pkg;
+    assert.throws(() => validateManifest(invalid), /exact version pin/, pkg);
+  }
+  const correctedSource = structuredClone(manifest.mcpServers);
+  assert.deepEqual(Object.keys(correctedSource), ['al-symbols-mcp', 'context7', 'microsoft-docs']);
+});
+
 test('CLI bootstrap uses AGENTS.md even beside a Codex override; no role copies', t => {
   const project = temp(t);
   write(project, 'AGENTS.md', 'My instructions\r\n');

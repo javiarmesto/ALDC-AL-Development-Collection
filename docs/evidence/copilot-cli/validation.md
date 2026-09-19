@@ -28,12 +28,13 @@ remain blocked. The PR must not merge as a fully validated CLI release yet.
 | Architect invocation | Actual `--agent al-architect --prompt ...` attempted, exit 1: no authentication; not invoked |
 | Conductor → Planning | Actual Conductor attempt blocked by authentication before delegation; no parent/child execution evidence |
 | MCP configuration | All 3 exposed by `copilot mcp list --json` |
-| MCP session connection | Microsoft Learn and Context7 connected; al-symbols-mcp failed with npm E404 |
+| MCP session connection | All three connected after PR #108 package fix; original E404 retained as historical evidence |
+| Symbol MCP tools | Six tools shown in host Details and returned by a direct tools/list probe |
 | MCP business/tool execution | Not performed; connection is not execution |
 | Bootstrap | Preview reviewed; apply and verify passed; AGENTS.md + 8 scoped rules discovered by host |
 | Consumer safety | Invocation attempts changed no consumer files; bootstrap has no agent/skill/AL/app.json copies |
 | Generator | 103 outputs; repeated CLI check reports zero differences |
-| CLI regressions | Packaging checks plus 4 CLI bootstrap/permission tests pass |
+| CLI regressions | 353 packaging checks plus 5 CLI MCP/bootstrap/permission tests pass |
 | Shared acceptance tests | Spec 114 checks; review contract checks; 59 transaction/layout/validator tests pass, 2 skip |
 | Other payloads | No tracked changes to Claude, Codex, VSIX/foundation or shared canonical sources |
 | Global `npm test` | Fails at the Codex provenance check described below; not reported green |
@@ -59,13 +60,28 @@ remain blocked. The PR must not merge as a fully validated CLI release yet.
    provenance source hash, or a separately agreed refactor of generator coupling.
    Do not weaken the check or falsify the hash to hide this dependency.
 
-3. **Inherited AL symbol MCP command returns npm E404.** The configured package
-   `@nicholasglazer/al-symbols-mcp` could not be resolved by this host. This is an
-   explicit provider failure, not a passing AL symbol check. The CLI adaptation
-   preserves the existing manifest servers; it does not change other hosts'
-   provider configuration or silently substitute another provider. Microsoft
-   Learn and Context7 connected in the same session. Resolve a valid AL symbol
-   provider configuration before claiming AL symbol-dependent workflows work.
+## Symbol MCP correction from PR #108
+
+The original npm E404 is resolved for CLI by projecting the exact
+`al-mcp-server@2.5.0` package from PR #108 at `c6f57c0`. The generator preserves
+server ID `al-symbols-mcp`, role grants, the other two endpoints and version 5.0.0.
+Registry identity/version/repository checks pass. The regenerated local plugin
+was reinstalled and the cached manifest hash matches. In a new CLI session,
+all three MCP servers connected; `/mcp` → symbol server Details showed six tools.
+An independent stdio `initialize` + `tools/list` probe returned the same six.
+
+This verifies installation, connection and discovery, **not symbol execution**.
+No tool was invoked and no AL corpus was loaded. The provider's first tool call
+may install AL prerequisites; the adapter now requires them to be verified first
+and prohibits software bootstrap by read-only roles. Its stdio entrypoint is
+also an editor installer when run in a TTY; tests used pipes. The server's cwd
+is the plugin cache, so the adapter requires an absolute consumer path when
+loading packages. See [full evidence](mcp-pr108.json) and the installation guide.
+
+The source PR's Claude `.in_use` provenance exception, shared development config,
+ALMCP integration and other-host/version changes were not imported. The original
+[host log extracts](host-observations.json) remain unchanged as historical
+pre-fix evidence. The two blockers above remain open.
 
 ## Changes and evidence
 

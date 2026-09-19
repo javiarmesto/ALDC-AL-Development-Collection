@@ -17,7 +17,11 @@ check(catalog.plugins.find(p => p.name === manifest.name)?.source === './copilot
 for (const component of ['agents', 'skills', 'commands']) {
   check([...generated.keys()].some(p => p.startsWith('copilot-cli-plugin/' + manifest[component])), `Manifest ${component} resolves`);
 }
-check(JSON.stringify(manifest.mcpServers) === JSON.stringify(JSON.parse(read('plugin.json')).mcpServers), 'MCP config retained without new servers');
+const sourceServers = JSON.parse(read('plugin.json')).mcpServers;
+const expectedServers = JSON.parse(JSON.stringify(sourceServers));
+expectedServers['al-symbols-mcp'].args = expectedServers['al-symbols-mcp'].args.map(a => a === '@nicholasglazer/al-symbols-mcp' ? 'al-mcp-server@2.5.0' : a);
+check(JSON.stringify(manifest.mcpServers) === JSON.stringify(expectedServers), 'Only PR108 symbol package correction; server identity, other providers and settings retained');
+require('./test-copilot-cli-mcp').validateManifest(manifest);
 check(!manifest.hooks, 'No incompatible Claude hooks imported');
 for (const [file, content] of generated) {
   if (!file.endsWith('.md')) continue;

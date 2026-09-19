@@ -77,6 +77,13 @@ function expected(root = ROOT) {
   manifest.name = 'aldc-cli';
   manifest.description = 'ALDC for Copilot CLI: terminal-adapted agents, skills and commands; conditional BC29/AL18 capability checks and canonical human gates.';
   manifest.commands = 'commands/';
+  // PR #108 (c6f57c0): the old scoped npm package does not exist. Project this
+  // fix only into CLI while the shared manifest/other hosts stay untouched.
+  // Once #108 lands, its already-correct declaration passes through unchanged.
+  const symbols = manifest.mcpServers?.['al-symbols-mcp'];
+  if (symbols?.command === 'npx' && symbols.args?.includes('@nicholasglazer/al-symbols-mcp')) {
+    symbols.args = symbols.args.map(arg => arg === '@nicholasglazer/al-symbols-mcp' ? 'al-mcp-server@2.5.0' : arg);
+  }
   put('plugin.json', JSON.stringify(manifest, null, 2) + '\n');
   for (const file of walk(path.join(root, 'claude-plugin/agents'))) {
     const name = path.basename(file, '.md');

@@ -41,6 +41,12 @@ disable-model-invocation: true
 > .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
 > AL execution requires a verified terminal command/runner or an actually exposed
 > MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
+> provisioned; this provider may auto-install AL tools on first use. A read-only
+> role must return that prerequisite to the caller, never bootstrap software.
+> Load symbols via al_packages(action: load, path: absolute consumer path).
+> The MCP process may run from the plugin cache; never assume its cwd is the
+> consumer. Use the discovered schema and report missing .app packages explicitly.
 > Record missing capabilities and unexecuted checks explicitly; never simulate.
 
 

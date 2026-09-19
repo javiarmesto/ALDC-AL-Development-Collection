@@ -216,6 +216,47 @@ recorded results. No authenticated Architect/Conductor pass is claimed without
 the events above. MCP configuration listing is distinct from server connection,
 tool discovery and successful tool invocation.
 
+## Symbol MCP provider
+
+CLI projects the symbol-provider fix from [PR #108](https://github.com/javiarmesto/ALDC-AL-Development-Collection/pull/108):
+`al-symbols-mcp` starts `npx -y al-mcp-server@2.5.0` over stdio.
+The server ID and role grants stay unchanged. The source fix lives in
+`scripts/sync-copilot-cli.js`; the shared manifest and other distributions are
+untouched. When the corrected shared declaration lands, it passes through.
+
+The published package was verified against Stefan Maron's
+[AL Dependency MCP Server](https://github.com/StefanMaron/AL-Dependency-MCP-Server).
+Copilot CLI connected it and displayed six tools: `al_search_objects`,
+`al_get_object_definition`, `al_find_references`, `al_search_object_members`,
+`al_get_object_summary`, and `al_packages`. Its MCP handshake reports server
+version `1.0.0`; npm package version is `2.5.0`. These are distinct evidence fields.
+Actual symbol queries against an AL corpus remain unverified.
+
+Let the host start the command with stdin/stdout pipes. Running the package
+directly in an interactive terminal selects its installer, which can configure
+other editors. Its first tool call also checks AL CLI and may install missing
+AL tools. Provision and verify those prerequisites separately; a read-only role
+must not use a symbol query as an implicit software bootstrap.
+
+The observed CLI launches the plugin MCP from its cached plugin directory.
+Use `al_packages` with `action: "load"` and an **absolute consumer project or
+package-directory path**, then query that loaded corpus. Do not rely on the
+server's working directory or treat an empty database as proof of missing AL
+objects. Inspect the actual discovered schema before calls. An isolated consumer
+without `.app` packages can validate connection/discovery, not symbol correctness.
+
+After changing the generated manifest, reinstall the local plugin or update its
+marketplace installation and start a new session. `/mcp` shows connection and
+the server's Details view shows the tools. Offline package checks and an explicit
+registry lookup are available separately:
+
+```shell
+node scripts/test-copilot-cli-mcp.js
+node scripts/test-copilot-cli-mcp.js --registry
+```
+
+Registry success is not server startup, tool invocation or AL symbol validation.
+
 ## Maintenance and sources
 
 ```shell
