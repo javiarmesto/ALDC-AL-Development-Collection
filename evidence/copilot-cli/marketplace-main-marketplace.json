@@ -1,0 +1,12 @@
+{
+  "command": [
+    "copilot",
+    "plugin",
+    "marketplace",
+    "list",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": "[\n  {\n    \"name\": \"aldc-marketplace\",\n    \"source\": \"GitHub: javiarmesto/ALDC-AL-Development-Collection\",\n    \"isDefault\": false\n  },\n  {\n    \"name\": \"copilot-plugins\",\n    \"source\": \"GitHub: github/copilot-plugins\",\n    \"isDefault\": true\n  },\n  {\n    \"name\": \"awesome-copilot\",\n    \"source\": \"GitHub: github/awesome-copilot\",\n    \"isDefault\": true\n  }\n]\n",
+  "stderr": ""
+}

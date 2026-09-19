@@ -1,0 +1,87 @@
+{
+  "testedCommit": "524596f85cdcf0d140e4ca147d91e5e5540cd140",
+  "commands": [
+    {
+      "command": [
+        "copilot",
+        "plugin",
+        "marketplace",
+        "add",
+        "javiarmesto/ALDC-AL-Development-Collection#feat/copilot-cli-plugin"
+      ],
+      "exitCode": 0,
+      "stdout": "Marketplace \"aldc-marketplace\" added successfully.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "copilot",
+        "plugin",
+        "install",
+        "aldc-cli@aldc-marketplace"
+      ],
+      "exitCode": 0,
+      "stdout": "Plugin \"aldc-cli\" installed successfully. Installed 16 skills.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "copilot",
+        "plugin",
+        "marketplace",
+        "list",
+        "--json"
+      ],
+      "exitCode": 0,
+      "stdout": "[\n  {\n    \"name\": \"aldc-marketplace\",\n    \"source\": \"GitHub: javiarmesto/ALDC-AL-Development-Collection\",\n    \"isDefault\": false\n  },\n  {\n    \"name\": \"copilot-plugins\",\n    \"source\": \"GitHub: github/copilot-plugins\",\n    \"isDefault\": true\n  },\n  {\n    \"name\": \"awesome-copilot\",\n    \"source\": \"GitHub: github/awesome-copilot\",\n    \"isDefault\": true\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "copilot",
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "exitCode": 0,
+      "stdout": "[\n  {\n    \"name\": \"aldc-cli\",\n    \"marketplace\": \"aldc-marketplace\",\n    \"version\": \"5.0.0\",\n    \"enabled\": true,\n    \"source\": \"installed\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "copilot",
+        "plugin",
+        "marketplace",
+        "update",
+        "aldc-marketplace"
+      ],
+      "exitCode": 0,
+      "stdout": "Updating marketplace \"aldc-marketplace\"...\nMarketplace \"aldc-marketplace\" updated successfully.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "copilot",
+        "plugin",
+        "update",
+        "aldc-cli"
+      ],
+      "exitCode": 0,
+      "stdout": "Plugin \"aldc-cli\" updated successfully (v5.0.0, already at latest). Updated 16 skills.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "copilot",
+        "skill",
+        "list",
+        "--json"
+      ],
+      "exitCode": 0,
+      "stdout": "[\n  {\n    \"name\": \"skill-agent-instructions\",\n    \"description\": \"Generate, review, and optimize natural language instructions for Business Central agents (Designer or SDK). Triggers on: agent instructions, InstructionsV1.txt, InstructionsV2.txt, MEMORIZE, qualification rules, agent behavior, instruction keywords, agent task instructions, iterate instructions, or improve agent accuracy. Single source of truth for the Responsibilities-Guidelines-Instructions framework and runtime keywords.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-agent-instructions\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-agent-task-patterns\",\n    \"description\": \"Agent SDK task integration patterns for Business Central. Triggers on: Agent Task Builder, Agent Task Message Builder, Public API, AssignTask, ExternalId, agent session detection, BindSubscription, TryFunction agent task, multi-turn agent conversation, agent attachment, task lifecycle management, OnPrem-only methods, AddToTask, SetRequiresReview, SetSkipMessageSanitization, runtime availability.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-agent-task-patterns\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-agent-toolkit\",\n    \"description\": \"Build, configure, and integrate Business Central agents using the AI Development Toolkit and Agent SDK. Triggers on Agent SDK, Agent Metadata Provider, IAgentFactory, IAgentMetadata, IAgentTaskExecution, ConfigurationDialog, Agent Task Builder, Agent Session, Copilot Capability, agent instructions, or agent setup in BC context.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-agent-toolkit\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-al-review-pipeline\",\n    \"description\": \"Review an AL increment or audit scope using the configured BCQuality provider and evidence-based native coverage. Shared by Developer Reviewer, Conductor review and Dredd; does not implement fixes or run builds.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-al-review-pipeline\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-api\",\n    \"description\": \"AL API development patterns for Business Central. Use when creating OData/REST API pages, HttpClient integrations, webhook implementations, or any external system integration via API.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-api\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-contribution-assistant\",\n    \"description\": \"Guides contributors to design, polish, and submit high-quality skills for AL Copilot Skill Collection. Use when creating a new community skill, improving a draft skill, or evaluating whether a user request can become a reusable skill. Includes non-intrusive opportunity detection and mandatory onboarding questions once the author confirms they want to build the skill.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-contribution-assistant\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-copilot\",\n    \"description\": \"AL Copilot capability development for Business Central. Use when implementing PromptDialog pages, AI generation features, or integrating with the Copilot toolkit.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-copilot\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-debug\",\n    \"description\": \"AL debugging and diagnostics for Business Central. Use when performing snapshot debugging, CPU profiling, analyzing telemetry, or troubleshooting runtime issues.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-debug\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-estimation\",\n    \"description\": \"AL project estimation for Business Central. Use when estimating development effort, creating cost models, SWOT analysis, or structuring project proposals.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-estimation\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-events\",\n    \"description\": \"AL event-driven architecture for Business Central. Use when creating EventSubscribers, IntegrationEvents, BusinessEvents, or implementing publisher/subscriber patterns in extensions.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-events\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-migrate\",\n    \"description\": \"AL version migration for Business Central. Use when upgrading extensions between BC versions, handling breaking changes, or implementing rollback strategies.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-migrate\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-pages\",\n    \"description\": \"AL page design patterns for Business Central. Use when creating Card, List, ListPart, Document pages, implementing page extensions, or designing UX layouts.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-pages\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-performance\",\n    \"description\": \"AL performance optimization patterns for Business Central. Use when optimizing queries with SetLoadFields, working with FlowFields and CalcFields, profiling codeunits, or resolving performance issues.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-performance\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-permissions\",\n    \"description\": \"AL permission set design for Business Central. Use when creating PermissionSets, implementing least-privilege access, or designing security models for extensions.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-permissions\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-testing\",\n    \"description\": \"AL test development patterns for Business Central. Use when creating test codeunits, writing Given/When/Then test procedures, using Library Assert, configuring test projects, or implementing TDD workflows.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-testing\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"skill-translate\",\n    \"description\": \"AL translation and localization for Business Central. Use when working with XLF files, NAB tools, or implementing multi-language support in extensions.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/skills/skill-translate\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"customize-cloud-agent\",\n    \"description\": \"Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.\",\n    \"source\": \"builtin\",\n    \"path\": \"/root/.cache/copilot/pkg/linux-x64/1.0.86/builtin/customize-cloud-agent\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"github-pr-media\",\n    \"description\": \"Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.\",\n    \"source\": \"builtin\",\n    \"path\": \"/root/.cache/copilot/pkg/linux-x64/1.0.86/builtin/github-pr-media\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-agent-build-instructions\",\n    \"description\": \"Generate optimized natural language instructions for Business Central agents (Designer or SDK). Applies the Responsibilities-Guidelines-Instructions framework from skill-agent-instructions. Output stored in .resources/Instructions/InstructionsV1.txt for SDK agents. ALDC workflow (Copilot prompt al-agent.build-instructions); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-agent-create\",\n    \"description\": \"End-to-end workflow to create a coded Business Central agent using the Agent SDK. Orchestrates the 7 phases following the official Agent Template structure. Generates all required objects by applying patterns from skill-agent-toolkit, skill-agent-task-patterns and skill-agent-instructions. ALDC workflow (Copilot prompt al-agent.create); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-agent-instructions\",\n    \"description\": \"Generate optimized natural language instructions for Business Central agents (Designer or SDK). Applies the Responsibilities-Guidelines-Instructions framework from skill-agent-instructions. Output stored in .resources/Instructions/InstructionsV1.txt for SDK agents. ALDC workflow (Copilot prompt al-agent.instructions); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-agent-task\",\n    \"description\": \"Generate AL code for Business Central Agent SDK task integration. Applies the patterns from skill-agent-task-patterns to produce production-ready codeunits, page extensions, and event subscribers \u2014 verified against the runtime API availability matrix. ALDC workflow (Copilot prompt al-agent.task); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-agent-test\",\n    \"description\": \"Generate comprehensive test codeunits for Business Central Agent SDK integrations. Covers 6 categories: Registration, Factory, Metadata, TaskExecution, TaskIntegration, AgentSession. ALDC workflow (Copilot prompt al-agent.test); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-build\",\n    \"description\": \"Build, package, and deploy AL extensions to Business Central environments. ALDC workflow (Copilot prompt al-build); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-context-create\",\n    \"description\": \"Generate or update context.md file documenting project structure, architecture, and key patterns for AI assistants and developers. ALDC workflow (Copilot prompt al-context.create); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-initialize\",\n    \"description\": \"Initialize AL development environment and workspace for Business Central. ALDC workflow (Copilot prompt al-initialize); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-memory-create\",\n    \"description\": \"Generate or update memory.md file tracking decisions, changes, and learnings throughout project development for continuity across sessions. ALDC workflow (Copilot prompt al-memory.create); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-pr-prepare\",\n    \"description\": \"Prepare a clean, documented pull request draft for AL features or fixes with summary, testing notes, and checklist. ALDC workflow (Copilot prompt al-pr-prepare); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"al-spec-create\",\n    \"description\": \"Create or revise the canonical AL technical specification through AL Spec Agent, preserving approved architecture and human approval. ALDC workflow (Copilot prompt al-spec.create); invoke explicitly.\",\n    \"source\": \"plugin\",\n    \"path\": \"/workspace/scratch/26499ba303de/cli-test/branch-home/installed-plugins/aldc-marketplace/aldc-cli/commands\",\n    \"enabled\": true\n  }\n]\n",
+      "stderr": ""
+    }
+  ],
+  "sourceProvenanceSha256": "ea0f40d7a3788ecf1e189f642a373efcc783290a737d870310c23d103530b8f7",
+  "cachedProvenanceSha256": "ea0f40d7a3788ecf1e189f642a373efcc783290a737d870310c23d103530b8f7"
+}

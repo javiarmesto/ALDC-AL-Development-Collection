@@ -1,0 +1,11 @@
+{
+  "command": [
+    "copilot",
+    "plugin",
+    "list",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": "[\n  {\n    \"name\": \"aldc-cli\",\n    \"marketplace\": \"aldc-marketplace\",\n    \"version\": \"5.0.0\",\n    \"enabled\": true,\n    \"source\": \"installed\"\n  }\n]\n",
+  "stderr": ""
+}

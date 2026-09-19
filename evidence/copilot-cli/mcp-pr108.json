@@ -1,0 +1,421 @@
+{
+  "date": "2026-09-19",
+  "sourcePR": 108,
+  "sourceCommit": "c6f57c094e55888be1466446542ecbce79dc5189",
+  "scope": "Copilot CLI only; other manifests/distributions unchanged",
+  "registry": {
+    "name": "al-mcp-server",
+    "version": "2.5.0",
+    "repository.url": "git+https://github.com/StefanMaron/AL-Dependency-MCP-Server.git",
+    "tarballSha1": "2ef63361a8f7854e63ffadc9e671a8411ae389d4"
+  },
+  "localReinstall": {
+    "hostVersion": "1.0.86",
+    "result": "Plugin aldc-cli installed successfully. Installed 16 skills.",
+    "sourceManifestSha256": "645e3ca1e02e4c275561aa486f46a248d40ccf5e526025a0b8eab73e2cac3412",
+    "cachedManifestSha256": "645e3ca1e02e4c275561aa486f46a248d40ccf5e526025a0b8eab73e2cac3412"
+  },
+  "hostSession": {
+    "log": "process-1789842044615-16.log",
+    "selectedLines": [
+      "2026-09-19T18:21:14.824Z [DEBUG] [rust:copilot_runtime::mcp::native_connector] MCP server stderr {\"server_name\":\"al-symbols-mcp\",\"stderr\":\"AL MCP Server started successfully (packages will be auto-loaded on first use)\"}",
+      "2026-09-19T18:21:14.834Z [INFO] [rust:rmcp::service] Service initialized as client {\"peer_info\":\"Some(ServerPeerInfo { protocol_version: ProtocolVersion(\\\"2025-11-25\\\"), capabilities: ServerCapabilities { experimental: None, extensions: None, logging: None, completions: None, prompts: None, resources: None, tools: Some(ToolsCapability { list_changed: None }) }, server_info: Some(Implementation { name: \\\"al-mcp-server\\\", title: None, version: \\\"1.0.0\\\", description: None, icons: None, website_url: None }), instructions: None, meta: None })\"}"
+    ],
+    "interactiveObservations": {
+      "method": "Transcribed from real CLI /mcp and Details views",
+      "connectionMessage": "MCP Servers reloaded: 3 servers connected",
+      "server": "al-symbols-mcp",
+      "scope": "Plugin-contributed",
+      "plugin": "aldc-cli",
+      "enabled": true,
+      "toolsCount": 6,
+      "tools": [
+        "al_search_objects",
+        "al_get_object_definition",
+        "al_find_references",
+        "al_search_object_members",
+        "al_get_object_summary",
+        "al_packages"
+      ]
+    },
+    "effectiveCwd": "${PLUGIN_ROOT} (cached plugin root)"
+  },
+  "directProtocolProbe": {
+    "command": [
+      "npx",
+      "-y",
+      "al-mcp-server@2.5.0"
+    ],
+    "transport": "stdio pipes (not TTY)",
+    "initialize": {
+      "result": {
+        "protocolVersion": "2024-11-05",
+        "capabilities": {
+          "tools": {}
+        },
+        "serverInfo": {
+          "name": "al-mcp-server",
+          "version": "1.0.0"
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    },
+    "toolsList": {
+      "result": {
+        "tools": [
+          {
+            "name": "al_search_objects",
+            "description": "Search AL objects in YOUR WORKSPACE (.app packages). Analyzes compiled AL code structure. Use summaryMode:true & limit for token efficiency. For complex objects prefer al_get_object_summary. Supports domain filtering.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "pattern": {
+                  "type": "string",
+                  "description": "Search pattern (wildcards supported)"
+                },
+                "objectType": {
+                  "type": "string",
+                  "description": "Filter by type",
+                  "enum": [
+                    "Table",
+                    "TableExtension",
+                    "Page",
+                    "PageExtension",
+                    "Codeunit",
+                    "Report",
+                    "ReportExtension",
+                    "Enum",
+                    "EnumExtensionType",
+                    "Interface",
+                    "PermissionSet",
+                    "PermissionSetExtension",
+                    "XmlPort",
+                    "Query"
+                  ]
+                },
+                "packageName": {
+                  "type": "string",
+                  "description": "Filter by package"
+                },
+                "domain": {
+                  "type": "string",
+                  "description": "Business domain filter",
+                  "enum": [
+                    "Sales",
+                    "Purchasing",
+                    "Finance",
+                    "Inventory",
+                    "Manufacturing",
+                    "Service"
+                  ]
+                },
+                "includeFields": {
+                  "type": "boolean",
+                  "description": "Include table fields (increases tokens)",
+                  "default": false
+                },
+                "includeProcedures": {
+                  "type": "boolean",
+                  "description": "Include procedures (increases tokens)",
+                  "default": false
+                },
+                "limit": {
+                  "type": "number",
+                  "description": "Max results (default: 20)",
+                  "default": 20
+                },
+                "offset": {
+                  "type": "number",
+                  "description": "Pagination offset (default: 0)",
+                  "default": 0
+                },
+                "summaryMode": {
+                  "type": "boolean",
+                  "description": "Summary view (default: true)",
+                  "default": true
+                }
+              }
+            }
+          },
+          {
+            "name": "al_get_object_definition",
+            "description": "Get AL object definition from YOUR WORKSPACE. Retrieves compiled code structure by ID or name. Use summaryMode:true for token efficiency. Use limits for large objects.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "objectId": {
+                  "type": "number",
+                  "description": "Object ID"
+                },
+                "objectName": {
+                  "type": "string",
+                  "description": "Object name (alternative to ID)"
+                },
+                "objectType": {
+                  "type": "string",
+                  "description": "Object type",
+                  "enum": [
+                    "Table",
+                    "TableExtension",
+                    "Page",
+                    "PageExtension",
+                    "Codeunit",
+                    "Report",
+                    "ReportExtension",
+                    "Enum",
+                    "EnumExtensionType",
+                    "Interface",
+                    "PermissionSet",
+                    "PermissionSetExtension",
+                    "XmlPort",
+                    "Query"
+                  ]
+                },
+                "packageName": {
+                  "type": "string",
+                  "description": "Package (for disambiguation)"
+                },
+                "includeFields": {
+                  "type": "boolean",
+                  "description": "Include table fields",
+                  "default": true
+                },
+                "includeProcedures": {
+                  "type": "boolean",
+                  "description": "Include procedures",
+                  "default": true
+                },
+                "summaryMode": {
+                  "type": "boolean",
+                  "description": "Summary view (recommended)",
+                  "default": true
+                },
+                "fieldLimit": {
+                  "type": "number",
+                  "description": "Max fields (10 summary/100 full)"
+                },
+                "procedureLimit": {
+                  "type": "number",
+                  "description": "Max procedures (10 summary/50 full)"
+                }
+              }
+            }
+          },
+          {
+            "name": "al_find_references",
+            "description": "Find object/field references in YOUR WORKSPACE. Tracks extensions, variables, parameters, field usage, and table relations across all object types.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "targetName": {
+                  "type": "string",
+                  "description": "Target object or table name"
+                },
+                "fieldName": {
+                  "type": "string",
+                  "description": "Field name (optional, use \"*\" for all fields)"
+                },
+                "referenceType": {
+                  "type": "string",
+                  "description": "Reference type filter",
+                  "enum": [
+                    "extends",
+                    "source_table",
+                    "table_relation",
+                    "field_usage",
+                    "table_usage",
+                    "variable",
+                    "parameter",
+                    "return_type"
+                  ]
+                },
+                "sourceType": {
+                  "type": "string",
+                  "description": "Source object type filter",
+                  "enum": [
+                    "Table",
+                    "TableExtension",
+                    "Page",
+                    "PageExtension",
+                    "Codeunit",
+                    "Report",
+                    "ReportExtension",
+                    "Enum",
+                    "EnumExtensionType",
+                    "Interface",
+                    "PermissionSet",
+                    "PermissionSetExtension",
+                    "XmlPort",
+                    "Query"
+                  ]
+                },
+                "includeContext": {
+                  "type": "boolean",
+                  "description": "Include detailed context",
+                  "default": false
+                }
+              },
+              "required": [
+                "targetName"
+              ]
+            }
+          },
+          {
+            "name": "al_search_object_members",
+            "description": "Search procedures, fields, controls, or dataitems within an object in YOUR WORKSPACE. Unified search for all object child elements.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "objectName": {
+                  "type": "string",
+                  "description": "Parent object name"
+                },
+                "objectType": {
+                  "type": "string",
+                  "description": "Object type (optional)",
+                  "enum": [
+                    "Table",
+                    "TableExtension",
+                    "Page",
+                    "PageExtension",
+                    "Codeunit",
+                    "Report",
+                    "ReportExtension",
+                    "Query",
+                    "XmlPort"
+                  ]
+                },
+                "memberType": {
+                  "type": "string",
+                  "description": "Member type to search",
+                  "enum": [
+                    "procedures",
+                    "fields",
+                    "controls",
+                    "dataitems"
+                  ]
+                },
+                "pattern": {
+                  "type": "string",
+                  "description": "Filter pattern (wildcards supported)"
+                },
+                "limit": {
+                  "type": "number",
+                  "description": "Max results (default: 20)",
+                  "default": 20
+                },
+                "offset": {
+                  "type": "number",
+                  "description": "Pagination offset (default: 0)",
+                  "default": 0
+                },
+                "includeDetails": {
+                  "type": "boolean",
+                  "description": "Include full details",
+                  "default": true
+                }
+              },
+              "required": [
+                "objectName",
+                "memberType"
+              ]
+            }
+          },
+          {
+            "name": "al_get_object_summary",
+            "description": "\u2705 TOKEN EFFICIENT: Get categorized overview of AL object in YOUR WORKSPACE. Intelligent procedure grouping with 96% token reduction vs full definition.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "objectName": {
+                  "type": "string",
+                  "description": "Object name"
+                },
+                "objectType": {
+                  "type": "string",
+                  "description": "Object type (optional)",
+                  "enum": [
+                    "Table",
+                    "TableExtension",
+                    "Page",
+                    "PageExtension",
+                    "Codeunit",
+                    "Report",
+                    "ReportExtension",
+                    "Enum",
+                    "EnumExtensionType",
+                    "Interface",
+                    "PermissionSet",
+                    "PermissionSetExtension",
+                    "XmlPort",
+                    "Query"
+                  ]
+                }
+              },
+              "required": [
+                "objectName"
+              ]
+            }
+          },
+          {
+            "name": "al_packages",
+            "description": "Package management: load compiled .app packages, list loaded packages, or get stats. Auto-discovers .alpackages if path provided.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "Action to perform",
+                  "enum": [
+                    "load",
+                    "list",
+                    "stats"
+                  ]
+                },
+                "path": {
+                  "type": "string",
+                  "description": "Path to packages directory or AL project root (for load action)"
+                },
+                "autoDiscover": {
+                  "type": "boolean",
+                  "description": "Auto-discover .alpackages directories (default: true for load)",
+                  "default": true
+                },
+                "forceReload": {
+                  "type": "boolean",
+                  "description": "Force reload packages",
+                  "default": false
+                }
+              },
+              "required": [
+                "action"
+              ]
+            }
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    },
+    "toolCalls": 0,
+    "stderr": [
+      "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.",
+      "AL MCP Server started successfully (packages will be auto-loaded on first use)"
+    ]
+  },
+  "toolCalls": 0,
+  "ALCorpusValidation": "not performed; consumer has no AL .app packages",
+  "runtimeFindings": [
+    "stdio pipes select the MCP server; TTY mode selects an editor installer",
+    "first tools/call triggers AL CLI setup and may install missing prerequisites",
+    "MCP serverInfo version 1.0.0 is hardcoded upstream; published npm version is 2.5.0",
+    "load an explicit absolute consumer/package path with al_packages; do not assume MCP cwd is consumer"
+  ],
+  "notImported": [
+    "Claude cache .in_use ignore in shared provenance: no equivalent CLI failure observed",
+    "Root development .mcp.json Microsoft Docs correction: CLI already uses official HTTPS endpoint",
+    "ALMCP al launchmcpserver integration: separate capability and permission design",
+    "Other host changes, version 5.0.1, releases"
+  ]
+}
