@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate the Copilot CLI distribution from the terminal-oriented Claude source.
+ * Generate the Copilot CLI distribution directly from the canonical source trees.
  * Never edit copilot-cli-plugin/ directly. --check detects drift, including orphans.
  * Workflow bodies are retained in full; only host vocabulary and initialization
  * are translated. Copilot model selection remains sourced from root agents/.
@@ -8,37 +8,13 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { HOST_PREFACE, translateHost } = require('./copilot-cli-adapter');
+const { HOST_PREFACE, translateHost, toolsForRole } = require('./copilot-cli-adapter');
+const { split, WORKFLOWS, workflowSkillName, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
+const { support } = require('./plugin-runtime');
 const ROOT = path.resolve(__dirname, '..');
 const DEST = 'copilot-cli-plugin';
-const toolMap = {
-  Read: 'read', Glob: 'search', Grep: 'search', Write: 'edit', Edit: 'edit',
-  Bash: 'execute', Task: 'task', Agent: 'task', WebSearch: 'web', WebFetch: 'web',
-};
-function split(text) {
-  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---([\s\S]*)$/);
-  if (!match) throw new Error('Missing frontmatter');
-  return { data: yaml.load(match[1]), body: match[2] };
-}
-function toolsFor(value) {
-  return [...new Set(value.split(',').map(t => t.trim()).map(t => {
-    if (toolMap[t]) return toolMap[t];
-    const m = t.match(/^mcp__(?:plugin_aldc_)?(al-symbols-mcp|context7|microsoft-docs)__\*$/);
-    if (m) return `${m[1]}/*`;
-    throw new Error(`Unmapped Claude tool: ${t}`);
-  }))];
-}
-/**
- * The Claude Code adapter preamble (the binding Copilot -> Claude Code mapping
- * table that sync-plugin-support.js prepends to every adapted contract) is
- * meaningless in a Copilot host: it would map Copilot surfaces onto themselves.
- * Drop the leading block quote and restate the terminal-host contract instead.
- */
-function stripAdapterPreamble(body) {
-  return body.replace(/^\n*(?:>[^\n]*\n)+\n?/, '');
-}
 const CLI_PREFACE = HOST_PREFACE;
-const agentBody = (body) => HOST_PREFACE + bodyFor(stripAdapterPreamble(body));
+const agentBody = (body) => HOST_PREFACE + bodyFor(canonicalPaths(body.replace(/^\n/, '')));
 function bodyFor(text) {
   text = text.replace(/\]\(\.\.\/agents\/([a-z0-9-]+)\.md\)/g, '](../agents/$1.agent.md)');
   return translateHost(text
@@ -61,6 +37,16 @@ function bodyFor(text) {
     .replace(/(\$\{PLUGIN_ROOT\}\/)skills\/(al-[a-z-]+)\/SKILL\.md/g, '$1commands/$2.md')
     .replace(/[\t ]+$/gm, ''));
 }
+function canonicalPaths(text) {
+  const base = '${PLUGIN_ROOT}';
+  return rewritePaths(text, {
+    instructions: `${base}/docs/copilot-instructions.md`,
+    rules: `${base}/rules-templates/`, rule: name => `${base}/rules-templates/${name}.instructions.md`,
+    workflow: name => `${base}/commands/${name}.md`, invoke: name => `/${name}`,
+    agent: name => `${base}/agents/${name}.agent.md`, templates: `${base}/docs/templates/`,
+    skills: `${base}/skills/`, tools: name => `${base}/tools/${name}/`, plans: '.github/plans',
+  });
+}
 function walk(dir) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => {
@@ -70,7 +56,8 @@ function walk(dir) {
 }
 function expected(root = ROOT) {
   const files = new Map();
-  const read = p => fs.readFileSync(path.join(root, p), 'utf8').replace(/\r\n/g, '\n');
+  const sources = [];
+  const read = p => { sources.push(p); return fs.readFileSync(path.join(root, p), 'utf8').replace(/\r\n/g, '\n'); };
   const put = (p, text) => files.set(`${DEST}/${p}`, text);
   const manifest = JSON.parse(read('plugin.json'));
   delete manifest.userConfig;
@@ -85,16 +72,15 @@ function expected(root = ROOT) {
     symbols.args = symbols.args.map(arg => arg === '@nicholasglazer/al-symbols-mcp' ? 'al-mcp-server@2.5.0' : arg);
   }
   put('plugin.json', JSON.stringify(manifest, null, 2) + '\n');
-  for (const file of walk(path.join(root, 'claude-plugin/agents'))) {
-    const name = path.basename(file, '.md');
-    const src = split(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'));
+  for (const file of walk(path.join(root, 'agents')).filter(p => p.endsWith('.agent.md'))) {
+    const name = path.basename(file, '.agent.md');
     const canonical = split(read(`agents/${name}.agent.md`));
+    const src = canonical;
     // Translate the existing Copilot model identifier, never infer it from AL18.
     const models = { 'Claude Sonnet 4.6 (copilot)': 'claude-sonnet-4.6' };
     const model = models[canonical.data.model];
     if (!model) throw new Error(`Unmapped Copilot model: ${canonical.data.model}`);
-    const data = { name, description: bodyFor(src.data.description), tools: toolsFor(src.data.tools), model };
-    if (data.tools.includes('task')) data.tools.push('list_agents', 'read_agent');
+    const data = { name, description: bodyFor(oneLine(src.data.description)), tools: toolsForRole(name), model };
     for (const field of ['user-invocable', 'disable-model-invocation']) {
       if (canonical.data[field] !== undefined) data[field] = canonical.data[field];
     }
@@ -108,18 +94,17 @@ function expected(root = ROOT) {
     }
     put(`agents/${name}.agent.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + body);
   }
-  // ALDC workflows ship as explicitly invoked skills in the Claude Code plugin
-  // (`disable-model-invocation: true`); Copilot CLI keeps them as commands.
-  const { WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
+  // Copilot CLI exposes canonical workflows as explicitly invoked commands.
   for (const prompt of WORKFLOWS) {
     const name = workflowSkillName(prompt);
-    const file = path.join(root, `claude-plugin/skills/${name}/SKILL.md`);
-    const src = split(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'));
-    let body = bodyFor(stripAdapterPreamble(src.body));
+    const src = split(read(`prompts/${prompt}.prompt.md`));
+    const text = src.body.replace(/^\n/, '').replace('for `${input:req_name}` (complexity `${input:Complexity}`)',
+      'with the requirement, complexity and scope in `$ARGUMENTS`');
+    let body = bodyFor(canonicalPaths(text));
     if (name === 'al-initialize') {
-      const start = body.indexOf('## Phase 0:');
-      const end = body.indexOf('## Phase 1:');
-      if (start < 0 || end <= start) throw new Error('Initialization structure changed');
+      const start = body.indexOf('## Phase 1:');
+      const end = start;
+      if (start < 0) throw new Error('Initialization structure changed');
       body = body.slice(0, start) + `## Phase 0: ALDC instructions (Copilot CLI)
 
 Locate the installed plugin root through the plugin list. Run its scripts/init.js
@@ -150,28 +135,29 @@ the installed CLI. Confirm instruction loading and the human review gate.
     }
     // Commands are instructions, not a permission bypass; CLI agent allowlists
     // and interactive permissions govern execution. Claude allowed-tools is omitted.
-    const data = { description: bodyFor(src.data.description), 'disable-model-invocation': true };
+    const data = { description: bodyFor(`${withPeriod(oneLine(src.data.description || ''))} ALDC workflow (Copilot prompt ${prompt}); invoke explicitly.`), 'disable-model-invocation': true };
     put(`commands/${name}.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + HOST_PREFACE + body);
   }
-  // Only the knowledge skills travel: the workflow skills became commands above and
-  // the short role entry skills are a Claude Code affordance Copilot does not need.
-  for (const file of walk(path.join(root, 'claude-plugin/skills'))) {
-    const rel = path.relative(path.join(root, 'claude-plugin/skills'), file).split(path.sep).join('/');
+  // Only canonical knowledge skills travel; workflows became commands above.
+  for (const file of walk(path.join(root, 'skills'))) {
+    const rel = path.relative(path.join(root, 'skills'), file).split(path.sep).join('/');
     if (!rel.startsWith('skill-')) continue;
-    const content = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+    const content = knowledgeContent('skills/' + rel, read('skills/' + rel), canonicalPaths);
     // Shared contracts explicitly compare hosts; preserve their names and citations.
     const neutral = ['cli-al-tools.md', 'al18-capabilities.md'].includes(path.basename(file));
     put('skills/' + rel, neutral ? content : bodyFor(content));
   }
-  for (const file of walk(path.join(root, 'claude-plugin/rules'))) {
-    const src = split(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'));
-    const data = { applyTo: src.data.paths.join(','), description: src.data.description };
-    const body = bodyFor(stripAdapterPreamble(src.body)).replace(/\]\(\.\/(al-[^)]+)\.md\)/g, '](./$1.instructions.md)');
-    put(`rules-templates/${path.basename(file, '.md')}.instructions.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + body);
+  for (const file of walk(path.join(root, 'instructions')).filter(p => p.endsWith('.instructions.md'))) {
+    const src = split(read('instructions/' + path.basename(file)));
+    const name = path.basename(file, '.instructions.md');
+    const data = { applyTo: String(src.data.applyTo || '**/*.al').split(',').map(p => p.trim()).filter(Boolean).join(','),
+      description: `${withPeriod(oneLine(String(src.data.description || name)))} ALDC always-on AL micro-rules (instruction ${name}); path-scoped.` };
+    const body = bodyFor(canonicalPaths(src.body.replace(/^\n+/, ''))).replace(/\]\(\.\/(al-[^)]+)\.md\)/g, '](./$1.instructions.md)');
+    put(`rules-templates/${name}.instructions.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + body);
   }
   put('README.md', `# ALDC for Copilot CLI
 
-Generated by scripts/sync-copilot-cli.js from claude-plugin/ with explicit host
+Generated by scripts/sync-copilot-cli.js from canonical sources with explicit host
 translation and model IDs from agents/. Do not edit this directory manually.
 
 From a checkout containing the canonical BC29 adaptation (main after PR #97):
@@ -203,16 +189,14 @@ characters; Conductor must load its complete bundled reference before acting.
 No canonical workflow is truncated. Authenticated invocation and delegation still
 need host evidence; installation and catalogs alone do not certify them.
 `);
-  const { support } = require('./sync-plugin-support');
   for (const [p,b] of support('cli', root)) put(p,b);
   const { adaptInitializer } = require('./copilot-cli-bootstrap');
   put('scripts/init.js', adaptInitializer(read('scripts/init-plugin.js')));
   put('scripts/cli-bootstrap.js', read('scripts/copilot-cli-bootstrap.js'));
   put('docs/copilot-cli-plugin.md', read('docs/copilot-cli-plugin.md'));
   const { walk: paths, provenance } = require('./package-provenance');
-  const sources = paths(root, 'claude-plugin').filter(p => !p.endsWith('/provenance.json'));
-  sources.push('scripts/sync-plugin-support.js', 'scripts/copilot-cli-adapter.js', 'scripts/copilot-cli-bootstrap.js', 'docs/copilot-cli-plugin.md');
-  sources.push(...paths(root, 'tools/bcquality'), 'tools/aldc-validate/package.json', 'tools/aldc-validate/index.js', ...paths(root, 'tools/context-doctor'), ...paths(root, 'agents'), 'plugin.json', 'scripts/sync-plugin-support.js',
+  sources.push(...paths(root, 'tools/bcquality'), 'tools/aldc-validate/package.json', 'tools/aldc-validate/index.js', ...paths(root, 'tools/context-doctor'),
+    'aldc.yaml', 'scripts/plugin-runtime.js', 'scripts/generation-utils.js', 'scripts/copilot-cli-adapter.js', 'scripts/copilot-cli-bootstrap.js',
     'scripts/install-transaction.js', 'scripts/init-plugin.js', ...paths(root, 'docs/templates'));
   put('provenance.json', provenance(root, sources,
     new Map([...files].map(([p,b]) => [p.slice(DEST.length+1),b])), 'scripts/sync-copilot-cli.js'));
@@ -238,4 +222,4 @@ function sync(check = false, root = ROOT) {
   return check && drift ? 1 : 0;
 }
 if (require.main === module) process.exitCode = sync(process.argv.includes('--check'));
-module.exports = { expected, split, bodyFor, toolsFor, sync, stripAdapterPreamble, agentBody, CLI_PREFACE };
+module.exports = { expected, split, bodyFor, sync, agentBody, CLI_PREFACE };

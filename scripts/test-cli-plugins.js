@@ -4,7 +4,11 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { expected, split, bodyFor, toolsFor, agentBody, stripAdapterPreamble } = require('./sync-copilot-cli');
+const { expected, bodyFor, agentBody } = require('./sync-copilot-cli');
+const { split } = require('./generation-utils');
+const { toolsForRole } = require('./copilot-cli-adapter');
+// Only the Claude-specific preamble check below strips a generated blockquote.
+const stripAdapterPreamble = body => body.replace(/^\n*(?:>[^\n]*\n)+\n?/, '');
 const { build: buildPlugin, rewritePaths, plansRootFor, AGENTS, WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
 const ROOT = path.resolve(__dirname, '..');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -41,7 +45,7 @@ for (const [file, content] of generated) {
     check(!agent.data.tools.includes('*'), `${file}: no unrestricted grant`);
     check(agent.data.tools.every(t => /^(read|search|edit|execute|task|list_agents|read_agent|web)$/.test(t) || /^(al-symbols-mcp|context7|microsoft-docs)\/\*$/.test(t)), `${file}: host tool vocabulary`);
     check(agent.data.model === 'claude-sonnet-4.6', `${file}: retains canonical Copilot model`);
-    const source = split(read(`claude-plugin/agents/${agent.data.name}.md`));
+    const source = split(read(`agents/${agent.data.name}.agent.md`));
     const contractPath = `copilot-cli-plugin/references/agent-contracts/${agent.data.name}.md`;
     const fullBody = generated.get(contractPath) || agent.body;
     check(fullBody === agentBody(source.body), `${file}: complete source workflow retained`);
@@ -64,9 +68,8 @@ for (const [file, content] of generated) {
 const pluginFiles = buildPlugin().files;
 const handEdited = [...pluginFiles].filter(([rel, content]) => read('claude-plugin/' + rel) !== content).map(([rel]) => rel);
 check(handEdited.length === 0, `claude-plugin is generated, not hand-edited: ${handEdited.join(', ')}`);
-// The adapter preamble is a leading block quote, and the Copilot CLI and Codex
-// generators remove it by exactly that shape. A canonical body that opened with a
-// quote would be eaten silently, so pin that none does.
+// Claude preambles remain separable from the canonical body for this check.
+// CLI and Codex now read canonical bodies directly and do not strip blockquotes.
 for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.map(w => `prompts/${w}.prompt.md`)]) {
   check(!/^\s*>/.test(split(read(rel)).body), `${rel}: canonical body must not open with a block quote`);
 }
@@ -106,7 +109,7 @@ for (const [file, text] of generated) {
     check(generated.has(target), `${file}: generated sibling rule link resolves: ${target}`);
   }
 }
-assert.throws(() => toolsFor('Read, UnknownTool'), /Unmapped Claude tool/); checks++;
+assert.throws(() => toolsForRole('unknown-role'), /Unmapped Copilot CLI role/); checks++;
 const oversized = [...generated].filter(([p, c]) => p.includes('/agents/') && split(c).body.length > 30000).map(([p]) => path.basename(p));
 console.log(`CLI plugin packaging: ${checks} checks passed (static only).`);
 check(oversized.length === 0, 'All CLI agent entries fit the documented size guidance');

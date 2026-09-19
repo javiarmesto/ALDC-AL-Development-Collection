@@ -32,6 +32,8 @@ jobs:
       
     - name: Run validation
       run: npm run validate
+    - name: Surface generation isolation
+      run: npm run test:surface-isolation
     - name: Codex profile syntax and discovery layout
       run: python3 scripts/test-codex.py
     - name: Canonical Doctor acceptance fixtures

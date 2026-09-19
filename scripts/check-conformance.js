@@ -151,8 +151,8 @@ if (exists('claude-plugin/agents')) {
 // ── 7b: el contrato que las dos estirpes comparten ──────────────────────────
 // Históricamente claude-plugin/agents/ NO se generaba desde agents/: varios roles
 // eran documentos distintos y más largos mantenidos a mano, así que una regla podía
-// entrar en una estirpe y faltar en la otra — y con ella en .claude/, Copilot CLI y
-// Codex, que son espejos de claude-plugin. Hoy sync-plugin-support.js genera el árbol
+// entrar en una estirpe y faltar en la otra. Hoy CLI y Codex leen directamente las
+// fuentes canónicas; solo .claude/ es un espejo explícito. sync-plugin-support.js genera el árbol
 // completo y su --check cubre esa divergencia, pero el mecanismo se queda: en cuanto
 // una primitiva vuelva a mantenerse a mano (sin la línea de procedencia del
 // generador), estos marcadores vuelven a ser el único control.
@@ -178,7 +178,7 @@ for (const [name, marker, what] of CROSS_SURFACE) {
   const inCanonical = read(canonical).includes(marker);
   const inPlugin = pluginText.includes(marker);
   if (inCanonical && !inPlugin)
-    errors.push(`${name}: ${what} está en el canónico y falta en claude-plugin (y por tanto en .claude, Copilot CLI y Codex)`);
+    errors.push(`${name}: ${what} está en el canónico y falta en claude-plugin (y por tanto en su espejo .claude)`);
   if (inPlugin && !inCanonical)
     errors.push(`${name}: ${what} está en claude-plugin y falta en el canónico`);
 }

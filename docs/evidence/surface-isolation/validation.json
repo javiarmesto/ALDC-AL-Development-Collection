@@ -1,0 +1,37 @@
+{
+  "baseline_commit": "70d4c67a73608c4c8fa547c2b376b79800cd7b91",
+  "baseline_version": "5.0.1",
+  "surface_comparison": {
+    "claude-plugin": {
+      "functional_files_compared": 115,
+      "changed_functional_files": []
+    },
+    "copilot-cli-plugin": {
+      "functional_files_compared": 101,
+      "changed_functional_files": []
+    },
+    "plugins/aldc-codex": {
+      "functional_files_compared": 121,
+      "changed_functional_files": []
+    }
+  },
+  "generated_metadata_changes": [
+    "claude-plugin/provenance.json",
+    "copilot-cli-plugin/README.md",
+    "copilot-cli-plugin/provenance.json",
+    "plugins/aldc-codex/aldc.yaml",
+    "plugins/aldc-codex/provenance.json"
+  ],
+  "vsix_input_comparison": {
+    "extension_commit": "19607e245c20a456ed836f1bce1f99ad260be80f",
+    "prepare_script_sha256": "d980adfafbde25974abc0d9345e7dc9b5e21c06a8a02c0db4cd34e265f1031a8",
+    "canonical_files_compared": 132,
+    "changed_files": [],
+    "canonical_version_unchanged": true,
+    "vsix_built": false
+  },
+  "limits": [
+    "No new authenticated host invocation or AL runtime execution.",
+    "No release, tag or Marketplace publication."
+  ]
+}

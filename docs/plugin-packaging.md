@@ -61,18 +61,19 @@ Provenance detects accidental drift; it is not tamper-proofing. The lock is unsi
 so whoever can write to an installation can rewrite the lock with it. Derived build
 artifacts a run leaves behind, such as `__pycache__`, are excluded from both the source
 set and the payload listing for that reason: they appear in a correct installation.
-Regenerate with `npm run sync:plugins`; npm validation checks drift and exercises
-initialization from the extracted archive. No second Copilot command generator
-was introduced.
+Regenerate one distribution with its `sync:claude`, `sync:copilot-cli` or
+`sync:codex` command. `npm run sync:plugins` explicitly rebuilds all three, without
+updating the development mirror or VSIX foundation. See [surface generation](surface-generation.md).
+Validation checks drift and exercises initialization from the extracted archive.
 
 ## Host scope and acceptance
 
 | Surface | Distribution | Host requirements |
 | --- | --- | --- |
 | Chat | BC28/BC29 fixtures, force switching, custom target, receipts/recovery | VS Code discovery, full role loading and operation-specific AL capability |
-| Claude | 11 canonical roles/10 commands; safe rules initialization; read-only SessionStart context for AL workspaces | Plugin reload, hook output injection, rules and full Conductor loading |
-| Copilot CLI | 11 canonical roles/10 commands; same generator plus hashes and initializer; no Claude hooks | Reinstall cached plugin, inspect `/agent` and skills, verify provenance and no shadowing |
-| Codex | 11 TOML profiles, one ALDC skill with full role/workflow/domain references; managed guidance and bootstrap | Restart host, inspect skills and instruction sources, invoke a bounded role and verify full body loading |
+| Claude | 12 canonical roles/11 workflows; safe rules initialization; read-only SessionStart context for AL workspaces | Plugin reload, hook output injection, rules and full Conductor loading |
+| Copilot CLI | 12 canonical roles/11 workflows; independent generator, hashes and CLI initializer; no Claude hooks | Reinstall cached plugin, inspect `/agent` and skills, verify provenance and no shadowing |
+| Codex | 12 TOML profiles, one ALDC skill with full role/workflow/domain references; managed guidance and bootstrap | Restart host, inspect skills and instruction sources, invoke a bounded role and verify full body loading |
 
 Use either Codex plugin skill discovery or local bootstrap, never both in the same
 project. Plugin discovery alone does not install project TOML profiles. Domain

@@ -87,3 +87,141 @@ function translateHost(text) {
 }
 
 module.exports = { HOST_PREFACE, translateHost };
+
+// CLI-owned permission grants preserved from the accepted 5.0.1 candidate.
+const ROLE_TOOLS = {
+  "al-agent-builder": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-architect": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "web",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-conductor": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "web",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-developer-reviewer": [
+    "read",
+    "search",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*"
+  ],
+  "al-developer": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "web",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-implement-subagent": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-planning-subagent": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "web",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-presales": [
+    "read",
+    "search",
+    "edit",
+    "execute",
+    "task",
+    "web",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "al-review-subagent": [
+    "read",
+    "search",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*"
+  ],
+  "al-spec-agent": [
+    "read",
+    "search",
+    "edit",
+    "web",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*"
+  ],
+  "al-triage": [
+    "read",
+    "search",
+    "execute",
+    "edit",
+    "task",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "list_agents",
+    "read_agent"
+  ],
+  "dredd": [
+    "read",
+    "search",
+    "al-symbols-mcp/*",
+    "context7/*",
+    "microsoft-docs/*",
+    "edit"
+  ]
+};
+function toolsForRole(name) {
+  if (!Object.hasOwn(ROLE_TOOLS, name)) throw new Error(`Unmapped Copilot CLI role: ${name}`);
+  return [...ROLE_TOOLS[name]];
+}
+module.exports.toolsForRole = toolsForRole;
