@@ -71,6 +71,11 @@ second LSP server and does not change user or project provider configuration.
 **microsoft-docs** (Microsoft Learn). A declaration in the manifest is not proof
 of connection: a server that is not loaded is `unavailable`, never simulated.
 
+The Microsoft AL MCP is optional and separately configured under user/project
+alias `al`; see [setup and role grants](docs/claude-al-tooling.md). ALDC grants
+its query operations explicitly and compilation/build/restore only to Developer
+and Implementer. It does not start that server or grant publish/authentication.
+
 ## Requirements
 
 Claude Code CLI, Node 20+, and — for AL compilation — the AL command-line tool.

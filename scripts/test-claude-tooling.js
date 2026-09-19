@@ -51,3 +51,18 @@ test('Claude initialization, update, verification and rollback preserve provider
     }
   }
 });
+
+
+test('official AL MCP writes belong only to implementation, never a wildcard', () => {
+  const queries = ['al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependencies'];
+  const writes = ['al_compile', 'al_build', 'al_downloadsymbols'];
+  for (const { id } of AGENTS) {
+    const names = tools(id);
+    const expected = id === 'al-conductor' ? [] : queries.map(n => `mcp__al__${n}`);
+    if (['al-developer', 'al-implement-subagent'].includes(id)) expected.push(...writes.map(n => `mcp__al__${n}`));
+    assert.deepEqual(names.filter(n => n.startsWith('mcp__al__')).sort(), expected.sort(), id);
+    for (const field of ['hooks', 'mcpServers', 'permissionMode']) {
+      assert.equal(split(files.get(`agents/${id}.md`)).data[field], undefined, `${id}: unsupported ${field}`);
+    }
+  }
+});

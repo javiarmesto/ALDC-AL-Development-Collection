@@ -63,21 +63,26 @@ const DEST = 'claude-plugin';
  * own the human gates; `subagent` roles are launched stateless by the Conductor.
  */
 const MCP_ALL = 'mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*';
-const READ_ONLY = `Read, Glob, Grep, LSP, ${MCP_ALL}`;
-const FULL = `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, WebSearch, WebFetch, ${MCP_ALL}`;
+// Optional user/project server alias `al`; no server is installed by this adapter.
+const AL_QUERY = ['al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependencies']
+  .map(name => `mcp__al__${name}`).join(', ');
+const AL_IMPLEMENT = ['al_compile', 'al_build', 'al_downloadsymbols']
+  .map(name => `mcp__al__${name}`).join(', ');
+const READ_ONLY = `Read, Glob, Grep, LSP, ${MCP_ALL}, ${AL_QUERY}`;
+const FULL = `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, WebSearch, WebFetch, ${MCP_ALL}, ${AL_QUERY}`;
 
 const AGENTS = [
-  { id: 'al-agent-builder', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, ${MCP_ALL}` },
+  { id: 'al-agent-builder', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, ${MCP_ALL}, ${AL_QUERY}` },
   { id: 'al-architect', mode: 'main', model: 'sonnet', color: 'blue', tools: FULL },
   { id: 'al-conductor', mode: 'main', model: 'haiku', color: 'purple', tools: 'Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch' },
-  { id: 'al-developer', mode: 'main', model: 'sonnet', color: 'green', tools: FULL },
+  { id: 'al-developer', mode: 'main', model: 'sonnet', color: 'green', tools: `${FULL}, ${AL_IMPLEMENT}` },
   { id: 'al-developer-reviewer', mode: 'main', model: 'sonnet', color: 'yellow', tools: READ_ONLY },
-  { id: 'al-implement-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, ${MCP_ALL}` },
+  { id: 'al-implement-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, ${MCP_ALL}, ${AL_QUERY}, ${AL_IMPLEMENT}` },
   { id: 'al-planning-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `${READ_ONLY}, WebSearch, WebFetch` },
   { id: 'al-presales', mode: 'main', model: 'sonnet', color: 'red', tools: FULL },
   { id: 'al-review-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: READ_ONLY },
-  { id: 'al-spec-agent', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, LSP, Write, Edit, WebSearch, WebFetch, ${MCP_ALL}` },
-  { id: 'al-triage', mode: 'main', model: 'sonnet', color: 'orange', tools: `Read, Glob, Grep, LSP, Bash, Write, Task, ${MCP_ALL}` },
+  { id: 'al-spec-agent', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, LSP, Write, Edit, WebSearch, WebFetch, ${MCP_ALL}, ${AL_QUERY}` },
+  { id: 'al-triage', mode: 'main', model: 'sonnet', color: 'orange', tools: `Read, Glob, Grep, LSP, Bash, Write, Task, ${MCP_ALL}, ${AL_QUERY}` },
   { id: 'dredd', mode: 'auditor', model: 'sonnet', color: 'yellow', tools: `${READ_ONLY}, Write` },
 ];
 
@@ -181,10 +186,10 @@ function mappingTable(plansRoot) {
 > | ${mentions} | ${roles} (or \`claude --agent ${PLUGIN}:<agent>\`) |
 > | \`@workspace use <workflow>\` | \`/${PLUGIN}:<workflow>\` with dots replaced by dashes (\`al-spec.create\` -> \`/${PLUGIN}:al-spec-create\`); already rewritten below |
 > | \`\${input:Name}\` prompt variables | Take the value from \`$ARGUMENTS\`; ask through \`AskUserQuestion\` when missing. Already rewritten below as \`<Name from $ARGUMENTS>\` |
-> | \`execute\` / \`runInTerminal\` / \`al_build\`, \`al_publish\`, \`al_downloadsymbols\` | \`Bash\`, bounded exactly as the contract bounds it; AL compile/publish only through a real \`al\` CLI or AL-Go script present in the environment, otherwise \`unavailable\` |
+> | \`execute\` / \`runInTerminal\`, AL compilation or symbol restore | Developer/Implementer: discovered official AL MCP \`mcp__al__al_compile\` / \`al_build\` / \`al_downloadsymbols\`, or an installed ALTool/AL-Go runner through \`Bash\`. Use the correct App/Test project; unavailable capabilities are never simulated. Publishing retains its separate human/CI gate and is not granted by this adapter |
 > | \`edit\`, \`read/readFile\`, \`search\`, \`#codebase\`, \`#usages\` | \`Edit\`/\`Write\`, \`Read\`, \`Grep\`/\`Glob\` |
 > | \`#changes\`, \`changes\`, \`search/changes\` | Read-only \`git status\` / \`git diff\` through \`Bash\` |
-> | \`read/problems\`, \`al_get_diagnostics\`, \`#testFailure\` | Compiler/test output produced by an actual run when a runner exists; otherwise record \`not-run\` / \`unavailable\`, never infer |
+> | \`read/problems\`, \`al_get_diagnostics\`, \`#testFailure\` | Discovered \`mcp__al__al_getdiagnostics\` for the explicit project, or actual compiler/test output. Diagnostics are not evidence of a fresh compile or executed tests. No result: record \`not-run\` / \`unavailable\` |
 > | \`al-symbols-mcp/*\`, \`upstash/context7/*\`, \`microsoft-learn/*\`, \`microsoft-docs/*\` | Tools named \`mcp__al-symbols-mcp__*\`, \`mcp__context7__*\`, \`mcp__microsoft-docs__*\` (or the \`mcp__plugin_${PLUGIN}_…\` form). A server that is not loaded is \`unavailable\`; do not simulate it |
 > | \`sshadowsdk.al-lsp-for-agents/*\`, semantic definition/reference queries | Claude \`LSP\` with the existing AL LSP for Agents companion; discover the actual operations and project context first. VS Code tool identifiers are not Claude tool names |
 > | \`ms-dynamics-smb.al/*\`, \`vscode.mermaid-chat-features/*\` | VS Code tool identifiers do not exist here. Use only a separately discovered Claude capability; never rename community tools as Microsoft tools |
@@ -585,6 +590,11 @@ second LSP server and does not change user or project provider configuration.
 **al-symbols-mcp** (read-only AL symbol queries), **context7** (library docs) and
 **microsoft-docs** (Microsoft Learn). A declaration in the manifest is not proof
 of connection: a server that is not loaded is \`unavailable\`, never simulated.
+
+The Microsoft AL MCP is optional and separately configured under user/project
+alias \`al\`; see [setup and role grants](docs/claude-al-tooling.md). ALDC grants
+its query operations explicitly and compilation/build/restore only to Developer
+and Implementer. It does not start that server or grant publish/authentication.
 
 ## Requirements
 
