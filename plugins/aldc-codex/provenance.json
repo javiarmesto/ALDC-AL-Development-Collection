@@ -100,7 +100,7 @@
     "scripts/install-transaction.js": "581fcb928c0c2d72d6cd4849f9e394be5037c1115dd39a51f0ca0c61c904dca3",
     "scripts/package-provenance.js": "ebe10ba86d44f2e552e3cc08683be32f52c2bbc4a2615201351721349c309f4e",
     "scripts/sync-codex.js": "b71884d2fc4f14fa9a8ca6931b2485ea499c98b6c350589bd1cde75cb7ede790",
-    "scripts/sync-copilot-cli.js": "7fe0624571b1b852e72810e8ca4667370f91f32dc54a65e164d2542dfb4466fe",
+    "scripts/sync-copilot-cli.js": "d86105da383a9a621e7ac79a6621995b472c00fa132994c6362964682fc600d3",
     "scripts/sync-plugin-support.js": "943375c44dc4d198f2cc8af8b31bfba6cd169d92136949f12a7882e842c2e775",
     "tools/aldc-validate/index.js": "21a345bedfeb80ac365d3665ae18e615d12e099348c95902306296d061030c76",
     "tools/aldc-validate/package.json": "a5446551001b8d5738441e4781a960e85770e9f708a3ac9fd97e1e5da61e806e",

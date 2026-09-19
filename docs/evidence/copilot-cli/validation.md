@@ -9,8 +9,8 @@ project. No Windows machine or Business Central environment was accessed.
 ## Result
 
 **Adaptation implemented; not yet certified as a fully supported runtime.**
-Authenticated custom-agent acceptance and one cross-generator provenance gate
-remain blocked. The PR must not merge as a fully validated CLI release yet.
+Authenticated custom-agent acceptance remains blocked. The cross-generator
+provenance gate was resolved by the authorized metadata-only refresh below. The PR must not merge as a fully validated CLI release yet.
 
 | Check | Observed result |
 | --- | --- |
@@ -36,8 +36,8 @@ remain blocked. The PR must not merge as a fully validated CLI release yet.
 | Generator | 103 outputs; repeated CLI check reports zero differences |
 | CLI regressions | 353 packaging checks plus 5 CLI MCP/bootstrap/permission tests pass |
 | Shared acceptance tests | Spec 114 checks; review contract checks; 59 transaction/layout/validator tests pass, 2 skip |
-| Other payloads | No tracked changes to Claude, Codex, VSIX/foundation or shared canonical sources |
-| Global `npm test` | Fails at the Codex provenance check described below; not reported green |
+| Other payloads | Claude, Codex runtime payload, VSIX/foundation and shared canonical sources unchanged; only the authorized Codex provenance source hash is refreshed |
+| Global `npm test` | Passed locally after the authorized provenance refresh (Node 24.19.0); existing warnings and 2 skipped tests remain |
 
 ## Blockers
 
@@ -49,16 +49,36 @@ remain blocked. The PR must not merge as a fully validated CLI release yet.
    token or simulated custom agent was used. Complete the two checks in the
    [installation guide](../../copilot-cli-plugin.md) in an authenticated session.
 
-2. **Codex hashes the CLI generator as an input.** Its shared source imports only
-   `split` and `stripAdapterPreamble`, whose behavior is unchanged. A read-only
-   comparison of all expected Codex outputs against the tracked distribution
-   finds **only** `provenance.json` different, specifically the source hash of
-   `scripts/sync-copilot-cli.js`. Every payload output hash is identical. The user
-   explicitly requested no changes to Codex/Claude/VSIX, so even that metadata file
-   was left untouched. Consequently `sync-codex --check` and the enclosing global
-   gate remain red. Resolving this requires an explicit exception for the single
-   provenance source hash, or a separately agreed refactor of generator coupling.
-   Do not weaken the check or falsify the hash to hide this dependency.
+## Resolved provenance blocker — authorized metadata-only refresh
+
+On 2026-09-19 the user approved updating the single Codex provenance source hash,
+with generator decoupling left for a separate PR. Running
+`node scripts/sync-codex.js` against candidate `eee9c67` changed exactly one
+source entry in `plugins/aldc-codex/provenance.json`:
+
+- Source: `scripts/sync-copilot-cli.js`.
+- Previous SHA-256: `7fe0624571b1b852e72810e8ca4667370f91f32dc54a65e164d2542dfb4466fe`.
+- Current SHA-256: `d86105da383a9a621e7ac79a6621995b472c00fa132994c6362964682fc600d3`.
+
+All 121 Codex payload files remain byte-identical, and every output hash is
+unchanged. No generator, check, role, permission, MCP configuration or version
+was edited. Claude and VSIX/foundation are unchanged. The original
+`isolation.json` records the earlier candidate and remains historical evidence.
+
+Local validation after the refresh (Node 24.19.0):
+
+- `npm ci --offline --ignore-scripts --no-audit --no-fund`: passed.
+- `npm test`: passed, including CLI packaging (353 checks), 5 CLI regressions,
+  Spec (114 checks), review, BCQuality and generator checks; final Node test
+  suite: 59 passed, 2 skipped, 0 failed. Existing collection warnings remain.
+- `node scripts/sync-codex.js --check`: 122 generated files, zero differences.
+- `git diff --check`: passed.
+
+CI on the resulting commit must also pass before merge. The remaining runtime
+checks are the two bounded Architect and Conductor invocations in the
+[installation guide](../../copilot-cli-plugin.md#two-bounded-invocation-checks).
+Run `copilot login` in the same test profile before starting them. Authentication,
+complete role loading and native delegation are not certified by these tests.
 
 ## Symbol MCP correction from PR #108
 
@@ -81,7 +101,7 @@ loading packages. See [full evidence](mcp-pr108.json) and the installation guide
 The source PR's Claude `.in_use` provenance exception, shared development config,
 ALMCP integration and other-host/version changes were not imported. The original
 [host log extracts](host-observations.json) remain unchanged as historical
-pre-fix evidence. The two blockers above remain open.
+pre-fix evidence. Only the authenticated custom-agent acceptance blocker remains open.
 
 ## Changes and evidence
 
