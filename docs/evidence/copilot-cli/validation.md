@@ -18,6 +18,7 @@ remain blocked. The PR must not merge as a fully validated CLI release yet.
 | Local install/reinstall | Passed; `aldc-cli`, 5.0.0, enabled; source and cached provenance hashes match |
 | Plugin JSON fields | `name`, `marketplace`, `version`, `enabled`, `source` emitted; `installedFrom` absent on this host |
 | Marketplace main | Registered repository, installed `aldc-cli@aldc-marketplace`; catalog source retained |
+| Marketplace candidate | Branch 524596f installed by marketplace; refresh/update passed; cached provenance matches candidate |
 | Enable/disable | Actual CLI commands and subsequent JSON listings verify both states |
 | Domain skills | 16 discovered with plugin source paths |
 | Commands | 11 discovered as commands in skill inventory; not invoked |
@@ -80,6 +81,7 @@ remain blocked. The PR must not merge as a fully validated CLI release yet.
 - [Local installation and catalogs](local-install.json),
   [marketplace registration](marketplace-main-marketplace.json),
   [marketplace install listing](marketplace-main-list.json),
+  [candidate marketplace install/update](marketplace-candidate.json),
   [bootstrap transactions](bootstrap.json),
   [instruction catalog](instructions.json),
   [bounded invocation attempts](invocation-attempts.json),
