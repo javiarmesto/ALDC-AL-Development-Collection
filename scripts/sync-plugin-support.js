@@ -35,6 +35,8 @@ const crypto = require('crypto');
 const yaml = require('js-yaml');
 const { walk, provenance, normalized } = require('./package-provenance');
 const root = path.resolve(__dirname, '..');
+const { split, WORKFLOWS, workflowSkillName } = require('./generation-utils');
+const { support, projectGuidance, plansRootFor, auditsRootFor } = require('./plugin-runtime');
 
 const PLUGIN = 'aldc';
 const DEST = 'claude-plugin';
@@ -97,22 +99,6 @@ const ENTRY_SKILLS = [
   { name: 'audit', agent: 'dredd' },
 ];
 
-/** Copilot prompt workflows -> explicitly invoked skills. */
-const WORKFLOWS = [
-  'al-spec.create',
-  'al-build',
-  'al-pr-prepare',
-  'al-memory.create',
-  'al-context.create',
-  'al-initialize',
-  'al-agent.create',
-  'al-agent.task',
-  'al-agent.instructions',
-  'al-agent.build-instructions',
-  'al-agent.test',
-];
-const workflowSkillName = (prompt) => prompt.replace(/\./g, '-');
-
 /** Runtime helpers shipped verbatim; `tools/` layout is preserved. */
 const RUNTIME_FILES = [
   'tools/context-doctor/aldc_context_doctor.py',
@@ -142,12 +128,6 @@ const sha256 = (buffer) => crypto.createHash('sha256').update(buffer).digest('he
 const yamlString = (value) => JSON.stringify(value);
 const withPeriod = (text) => (/[.!?]$/.test(text.trim()) ? text.trim() : `${text.trim()}.`);
 const oneLine = (text) => text.replace(/\s*\n\s*/g, ' ').trim();
-
-function split(text) {
-  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---([\s\S]*)$/);
-  if (!match) throw Error('Missing frontmatter');
-  return { data: yaml.load(match[1]) || {}, body: match[2] };
-}
 
 /**
  * Path rewrites from the Copilot deployment layout to the plugin layout.
@@ -340,8 +320,7 @@ function buildWorkflow(prompt, ctx, plansRoot) {
     'with the requirement, complexity and scope in `$ARGUMENTS`');
   // Installing rules into a project is a distribution step, so each surface owns
   // its own Phase 0. The canonical prompt starts at Phase 1 because a Copilot
-  // deployment has no installer to run. Copilot CLI and Codex replace this block
-  // with theirs; the anchor is the contract between the three generators.
+  // deployment has no installer to run. Copilot CLI and Codex inject their own block directly; the anchor is the contract between the three generators.
   if (name === 'al-initialize') text = injectInitPhase(text, plansRoot);
   ctx.put(`skills/${name}/SKILL.md`,
     `${fm}\n${workflowPreamble(sourceRel, hash, plansRoot)}\n${rewritePaths(text, plansRoot)}`);
@@ -351,7 +330,7 @@ function buildWorkflow(prompt, ctx, plansRoot) {
  * The Claude Code initialization step. The canonical prompt starts at Phase 1
  * because a Copilot deployment installs nothing; every plugin distribution has an
  * installer and injects its own Phase 0 here, against the same `## Phase 1:`
- * anchor that sync-copilot-cli.js and sync-codex.js replace it with theirs.
+ * anchor used independently by the CLI and Codex initializers.
  */
 function injectInitPhase(body, plansRoot) {
   const anchor = body.indexOf('## Phase 1:');
@@ -610,105 +589,7 @@ MIT · [javiarmesto](https://github.com/javiarmesto)
 `);
 }
 
-// ---------------------------------------------------------------------------
-// Non-Claude surfaces (Copilot CLI, Codex) — shared runtime payload
-// ---------------------------------------------------------------------------
-
-/**
- * Runtime/tooling payload shared by the Copilot CLI and Codex distributions.
- * The Claude Code plugin builds its own tree in `build()`; this function only
- * serves the two generators that consume `claude-plugin/` as their source.
- */
-function support(surface, rootDir = root) {
-  if (surface === 'claude') throw Error('Use build() for the Claude Code plugin');
-  const files = new Map();
-  for (const rel of ['aldc_context_doctor.py', 'README.md']) {
-    const dest = surface === 'codex' ? (rel.endsWith('.py') ? 'skills/aldc/scripts/' + rel : 'skills/aldc/references/doctor.md') : 'tools/context-doctor/' + rel;
-    let body = fs.readFileSync(path.join(rootDir, 'tools/context-doctor', rel), 'utf8');
-    if (surface === 'codex' && rel === 'README.md') body = body.replaceAll('../../docs/templates/', 'templates/');
-    files.set(dest, body);
-  }
-  for (const rel of ['bcquality/precondition_hook.sh', 'bcquality/precondition_hook.ps1', 'bcquality/config.js', 'bcquality/index-state.js', 'bcquality/validate_evidence.py', 'bcquality/install.sh', 'bcquality/install.ps1', 'aldc-validate/package.json', 'aldc-validate/index.js']) {
-    const dest = surface === 'codex' ? 'skills/aldc/scripts/' + rel : 'tools/' + rel;
-    files.set(dest, fs.readFileSync(path.join(rootDir, 'tools', rel), 'utf8'));
-  }
-  for (const name of ['install-transaction.js', 'package-provenance.js']) files.set(`scripts/${name}`, fs.readFileSync(path.join(rootDir, 'scripts', name), 'utf8'));
-  files.set('scripts/init.js', fs.readFileSync(path.join(rootDir, 'scripts/init-plugin.js'), 'utf8'));
-  const plansRoot = plansRootFor(rootDir, surface);
-  // Templates stay byte-identical to canonical on every surface; the seed lands at
-  // `${plansRoot}/memory.md`, which is what actually places it.
-  for (const p of walk(rootDir, 'docs/templates')) files.set(p, fs.readFileSync(path.join(rootDir, p), 'utf8'));
-  files.set('templates/memory-template.md', fs.readFileSync(path.join(rootDir, 'docs/templates/memory-template.md'), 'utf8'));
-  files.set('surface.json', JSON.stringify({ surface, plansRoot }, null, 2) + '\n');
-  files.set('project-guidance.md', projectGuidance(surface, plansRoot));
-  // Consumers (tools/bcquality/config.js, aldc-validate, install.js) read the root
-  // from `aldc.yaml -> plans.root`. Only a surface that moves off the canonical root
-  // needs to declare it; the CLI keeps .github/plans and its consumers already default there.
-  const auditsRoot = auditsRootFor(rootDir, surface);
-  if (plansRoot !== CANONICAL_PLANS_ROOT || auditsRoot !== CANONICAL_AUDITS_ROOT) {
-    files.set('aldc.yaml', surfaceAldcYaml(rootDir, surface, plansRoot, auditsRoot));
-  }
-  return files;
-}
-
-const CANONICAL_PLANS_ROOT = '.github/plans';
-const CANONICAL_AUDITS_ROOT = '.github/audits';
-
-/** The `aldc.yaml` a non-Claude plugin ships so its work-product roots are declared, not implied. */
-function surfaceAldcYaml(rootDir, surface, plansRoot, auditsRoot) {
-  const sourceRel = 'aldc.yaml';
-  const name = surface === 'codex' ? 'Codex' : 'Copilot CLI';
-  const raw = fs.readFileSync(path.join(rootDir, sourceRel));
-  const text = raw.toString('utf8')
-    .replace(/^toolkitRoot:.*$/m, 'toolkitRoot: "."')
-    .replace(/^(plans:\n\s+root:\s*)"[^"]*"/m, `$1"${plansRoot}"`)
-    .replace(/^(audits:\n\s+root:\s*)"[^"]*"/m, `$1"${auditsRoot}"`);
-  return `# ALDC — ${name} toolkit root configuration.\n` +
-    `# Generated by scripts/sync-plugin-support.js from the repository aldc.yaml\n` +
-    `# (sha256 ${sha256(raw)}). Do not edit; edit the source and re-run the generator.\n` +
-    `#\n` +
-    `# Requirement artifacts live under ${plansRoot} and audit reports under ${auditsRoot}\n` +
-    `# in a ${name} deployment (plans.root and audits.root below). The canonical file keeps\n` +
-    `# ${CANONICAL_PLANS_ROOT} and ${CANONICAL_AUDITS_ROOT}, which is correct for the Copilot\n` +
-    `# deployment and the VS Code extension package.\n\n${text}`;
-}
-
-function projectGuidance(surface, plansRoot) {
-  const base = surface === 'codex'
-    ? `Use the ALDC skill at .agents/skills/aldc/SKILL.md for Business Central development. Read the relevant role, workflow and AL rules there before acting. Preserve approved plans and ${plansRoot}/memory.md. Human gates and the current session authorization apply.\n`
-    : `This project uses the ALDC ${surface === 'claude' ? 'Claude Code' : 'Copilot CLI'} plugin. Discover its installed agents, skills and workflows and read their full contracts. Use al-architect for design, al-spec-agent (via al-spec-create) for specification, al-developer for implementation and al-conductor for TDD orchestration. Keep approved artifacts and memory in ${plansRoot}/. Read the ${surface === 'claude' ? '.claude/rules' : '.github/instructions'} AL rules for the affected files. Host loading and tool availability must be observed; installation does not certify them. Preserve material human gates.\n`;
-  return base +
-    `At session start or after an environment change, run the read-only ALDC Doctor with an available Python 3.9+ interpreter. Use --workspace for this project and --host ${surface}; --toolkit names the installed plugin root (or this project for Codex local bootstrap). See ${surface === 'codex' ? '.agents/skills/aldc/references/doctor.md; script .agents/skills/aldc/scripts/aldc_context_doctor.py' : 'tools/context-doctor/README.md and aldc_context_doctor.py in the installed plugin'}. Repeat only affected --operation checks. File presence and exit 0 do not certify host loading or execution. Do not install an interpreter automatically.\n`;
-}
-
-// ---------------------------------------------------------------------------
-// Build
-// ---------------------------------------------------------------------------
-
-/** Read plans.root for the Claude Code surface from the canonical aldc.yaml knob. */
-// Per-surface plans root: Claude Code keeps requirement artifacts beside its own
-// configuration, Codex beside the `.agents/` tree that already holds its skill,
-// Copilot and the VSIX keep the canonical .github/plans. Only the surface prefix
-// is host vocabulary; the canonical aldc.yaml still names the folder itself.
-const SURFACE_PLANS_PREFIX = { claude: '.claude/', codex: '.agents/' };
-function plansRootFor(rootDir, surface = 'claude') {
-  const cfg = yaml.load(fs.readFileSync(path.join(rootDir, 'aldc.yaml'), 'utf8')) || {};
-  const canonical = cfg.plans?.root || '.github/plans';
-  const prefix = SURFACE_PLANS_PREFIX[surface];
-  return prefix ? canonical.replace(/^\.github\//, prefix) : canonical;
-}
-
-// Dredd's audit reports are the other work product. Only Codex relocates them: the
-// Claude Code plugin moved its plans in #104 but nothing decided the same for its
-// audits, and inventing that here would change a surface nobody asked about.
-const SURFACE_AUDITS_PREFIX = { codex: '.agents/' };
-function auditsRootFor(rootDir, surface = 'codex') {
-  const cfg = yaml.load(fs.readFileSync(path.join(rootDir, 'aldc.yaml'), 'utf8')) || {};
-  const canonical = cfg.audits?.root || '.github/audits';
-  const prefix = SURFACE_AUDITS_PREFIX[surface];
-  return prefix ? canonical.replace(/^\.github\//, prefix) : canonical;
-}
-
+// Build the Claude distribution only.
 /** Build every derived plugin file in memory. Returns { files, sources }. */
 function build(rootDir = root) {
   const files = new Map();
@@ -748,7 +629,7 @@ function build(rootDir = root) {
     rules: rules.length,
   });
 
-  files.set('provenance.json', provenance(rootDir, [...sources], files, 'scripts/sync-plugin-support.js'));
+  files.set('provenance.json', provenance(rootDir, [...sources, 'scripts/plugin-runtime.js', 'scripts/generation-utils.js'], files, 'scripts/sync-plugin-support.js'));
   return { files, sources, modes };
 }
 

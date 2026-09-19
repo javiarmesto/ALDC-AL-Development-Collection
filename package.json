@@ -13,7 +13,12 @@
     "sync:copilot-cli": "node scripts/sync-copilot-cli.js",
     "test:package": "node scripts/test-npm-package.js",
     "build:known-hashes": "node scripts/build-known-hashes.js",
-    "sync:plugins": "node scripts/sync-plugin-support.js && node scripts/sync-copilot-cli.js && node scripts/sync-codex.js && node scripts/sync-claude-workspace.js"
+    "sync:plugins": "npm run sync:claude && npm run sync:copilot-cli && npm run sync:codex",
+    "sync:claude": "node scripts/sync-plugin-support.js",
+    "sync:codex": "node scripts/sync-codex.js",
+    "sync:foundation": "node scripts/sync-foundation.js",
+    "sync:claude-workspace": "node scripts/sync-claude-workspace.js",
+    "test:surface-isolation": "node --test scripts/test-surface-isolation.js"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

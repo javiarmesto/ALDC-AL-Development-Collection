@@ -5,13 +5,13 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { split, stripAdapterPreamble } = require('./sync-copilot-cli');
-const { support, plansRootFor, auditsRootFor } = require('./sync-plugin-support');
+const { split, WORKFLOWS, workflowSkillName, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
+const { support, plansRootFor, auditsRootFor } = require('./plugin-runtime');
 const { walk, provenance, normalized } = require('./package-provenance');
 const ROOT = path.resolve(__dirname,'..'), DEST = 'plugins/aldc-codex';
 const REF = '.agents/skills/aldc/references';
 // Requirement artifacts follow the surface, beside the `.agents/skills/aldc` tree.
-// The Claude adapter is this adapter's input, so both spellings reach us here.
+// Canonical source paths are translated directly into this surface layout.
 const PLANS = plansRootFor(ROOT, 'codex');
 const AUDITS = auditsRootFor(ROOT, 'codex');
 const toPlansRoot = (text) => text.split('.claude/plans').join(PLANS).split('.github/plans').join(PLANS);
@@ -61,7 +61,7 @@ automatically. A successful ALDC Doctor report does not verify MCP connectivity.
 ` + body.slice(end);
 }
 function bodyFor(text) {
-  // Plugin-layout paths first: the Claude Code adapter emits ${CLAUDE_PLUGIN_ROOT}.
+  // Preserve legacy references inside canonical prose; no Claude output is read.
   return text
     .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/rules\//g, `${REF}/rules/`)
     .replace(/\$\{CLAUDE_PLUGIN_ROOT\}\/skills\//g, `${REF}/skills/`)
@@ -85,6 +85,15 @@ function bodyFor(text) {
     .replace(/instructions\/al-\*\.instructions\.md/g,'.agents/skills/aldc/references/rules/al-*.md')
     .replace(/docs\/templates\//g,'.agents/skills/aldc/references/templates/')
     .replace(/(skill-[a-z0-9-]+\/)SKILL\.md/g,'$1GUIDE.md').replace(/[\t ]+$/gm,'');
+}
+function canonicalPaths(text) {
+  return rewritePaths(text, {
+    instructions: '.agents/skills/aldc/docs/copilot-instructions.md',
+    rules: `${REF}/rules/`, rule: name => `${REF}/rules/${name}.md`,
+    workflow: name => `${REF}/skills/${name}/SKILL.md`, invoke: name => `/${name}`,
+    agent: name => `${REF}/agents/${name}.md`, templates: `${REF}/templates/`,
+    skills: `${REF}/skills/`, tools: name => `.agents/skills/aldc/scripts/${name}/`, plans: PLANS,
+  });
 }
 function expected(root = ROOT) {
   const files = support('codex', root), sources = [];
@@ -114,60 +123,60 @@ function expected(root = ROOT) {
     files.delete(p); // Codex has one reference tree; no extra discovery roots.
   }
   const preface = `## Codex host contract\n\nResolve .agents/skills/aldc paths below against the installed ALDC skill root\nif using plugin discovery instead of local bootstrap. Workflow names below are\nreference files in commands/, not automatically registered slash commands.\nPackaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md\nunder references/skills/. This alias applies only when reading packaged guidance;\nnew discoverable skills must still be created with SKILL.md.\n\nRead the terminal-host contract at\n\`.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md\`\nbefore choosing AL tools, changing dependencies or reporting BC29 / AL18\nvalidation. Use only tools actually exposed by this session. Model, reasoning and approval\nsettings inherit from the parent; this profile grants no extra tools. Its\n\`sandbox_mode\` is derived from the write scope the canonical contract grants this\nrole, and the session's own permission profile is reapplied over it, so that key\nnarrows and never grants. The narrower role write scopes stated below are still\nbehavioral: \`sandbox_mode\` cannot express them, and honouring them is yours. Discover MCP\nproviders before using their examples; none are installed by this package.\nIf delegation is unavailable, report that the affected independent review or\nConductor workflow is pending; do not certify self-review as independent review.\n\nThe \`handoffs:\` entries of the canonical contract, and the \`send: false\` on some\nof them, have no equivalent here. In Copilot a handoff is a button the human\nclicks, and \`send: false\` additionally hands them the prompt to review before it\nis sent: the host supplies the approval. Codex has no such step, so the gate is\nyours to keep — never auto-delegate. Present your output, get explicit approval,\nand only then delegate or switch role.\n`;
-  for (const p of walk(root,'claude-plugin/agents')) {
-    const src = split(read(p)), name = path.basename(p,'.md');
+  for (const p of walk(root,'agents').filter(p => p.endsWith('.agent.md'))) {
+    const src = split(read(p)), name = path.basename(p,'.agent.md');
     if (!fs.existsSync(path.join(root,`agents/${name}.agent.md`))) throw Error(`Noncanonical role: ${name}`);
-    // sandbox_mode is derived from the canonical tool grant, not from the adapter's
-    // frontmatter: the Claude adapter has already rewritten `tools` into Claude Code's
-    // vocabulary, where the `edit`/`execute` grant this reads no longer exists.
-    const canonical = split(read(`agents/${name}.agent.md`));
-    let adapted = bodyFor(stripAdapterPreamble(src.body));
+    // Derive sandbox_mode directly from the canonical permission grant.
+    const canonical = src;
+    let adapted = bodyFor(canonicalPaths(src.body.replace(/^\n/, '')));
     if (name === 'al-presales') adapted = presalesMcpForCodex(adapted);
     const body = preface + adapted;
     files.set(`skills/aldc/references/agents/${name}.md`,body);
     const instructions = 'Resolve relative links in this profile from .agents/skills/aldc/references/agents/.\n\n' + body;
     // JSON basic strings are TOML-compatible for these strings; validate with tomllib.
-    files.set(`agents/${name}.toml`,`name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(bodyFor(src.data.description))}\nsandbox_mode = ${JSON.stringify(sandboxModeFor(canonical.data.tools))}\ndeveloper_instructions = ${JSON.stringify(instructions)}\n`);
-    roles.push([name,bodyFor(src.data.description).trim()]);
+    files.set(`agents/${name}.toml`,`name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(bodyFor(oneLine(src.data.description)))}\nsandbox_mode = ${JSON.stringify(sandboxModeFor(canonical.data.tools))}\ndeveloper_instructions = ${JSON.stringify(instructions)}\n`);
+    roles.push([name,bodyFor(oneLine(src.data.description)).trim()]);
   }
-  const { WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
   for (const prompt of WORKFLOWS) {
     const name = workflowSkillName(prompt);
-    const src = split(read(`claude-plugin/skills/${name}/SKILL.md`));
-    let body = bodyFor(stripAdapterPreamble(src.body));
+    const src = split(read(`prompts/${prompt}.prompt.md`));
+    const text = src.body.replace(/^\n/, '').replace('for `${input:req_name}` (complexity `${input:Complexity}`)',
+      'with the requirement, complexity and scope in `$ARGUMENTS`');
+    let body = bodyFor(canonicalPaths(text));
     if (name === 'al-spec-create') body = body.replace('with the requirement, complexity and scope in `$ARGUMENTS`', 'with the requirement, complexity and scope supplied in the current request');
     if (name === 'al-initialize') {
-      const a=body.indexOf('## Phase 0:'), b=body.indexOf('## Phase 1:');
-      if (a < 0 || b < a) throw Error('Initialization structure changed');
+      const a=body.indexOf('## Phase 1:'), b=a;
+      if (a < 0) throw Error('Initialization structure changed');
       body = body.slice(0,a) + `## Phase 0: Codex project initialization\n\nRun the installed package scripts/init.js with --project <directory> to preview.\nAfter reviewing the plan, repeat with --apply. Preserve collisions unless the\nuser authorizes --force replacement. Use --verify for drift and --rollback for\nthe preceding transaction. Do not combine plugin discovery with local bootstrap\ncopies of the same ALDC skill. Confirm loaded sources before environment setup.\n\n` + body.slice(b);
     }
     files.set(`skills/aldc/references/commands/${name}.md`,preface+body);
-    commands.push([name,bodyFor(src.data.description).trim()]);
+    commands.push([name,bodyFor(`${withPeriod(oneLine(src.data.description || ''))} ALDC workflow (Copilot prompt ${prompt}); invoke explicitly.`).trim()]);
   }
-  for (const p of walk(root,'claude-plugin/skills')) {
-    const rel = p.slice('claude-plugin/skills/'.length).replace(/SKILL\.md$/,'GUIDE.md');
+  for (const p of walk(root,'skills')) {
+    const rel = p.slice('skills/'.length).replace(/SKILL\.md$/,'GUIDE.md');
     // Workflow skills become commands above; role entry skills are Claude-only.
     if (!rel.startsWith('skill-')) continue;
     const neutral = ['cli-al-tools.md','al18-capabilities.md'].includes(path.basename(p));
-    files.set(`skills/aldc/references/skills/${rel}`,neutral ? read(p) : bodyFor(read(p)));
+    files.set(`skills/aldc/references/skills/${rel}`,neutral ? read(p) : bodyFor(knowledgeContent(p, read(p), canonicalPaths)));
   }
-  for (const p of walk(root,'claude-plugin/rules')) {
+  for (const p of walk(root,'instructions').filter(p => p.endsWith('.instructions.md'))) {
     const src = split(read(p));
-    const content = `Applies to: ${src.data.paths.join(', ')}\n` + bodyFor(stripAdapterPreamble(src.body));
-    files.set(`rules-templates/${path.basename(p)}`,content);
-    files.set(`skills/aldc/references/rules/${path.basename(p)}`,content);
+    const paths = String(src.data.applyTo || '**/*.al').split(',').map(p => p.trim()).filter(Boolean);
+    const content = `Applies to: ${paths.join(', ')}\n` + bodyFor(canonicalPaths(src.body.replace(/^\n+/, '')));
+    files.set(`rules-templates/${path.basename(p).replace('.instructions.md', '.md')}`,content);
+    files.set(`skills/aldc/references/rules/${path.basename(p).replace('.instructions.md', '.md')}`,content);
   }
   const links = (items,dir) => items.map(([name,description])=>`- [${name}](references/${dir}/${name}.md): ${description.replace(/\n/g,' ')}`).join('\n');
   files.set('skills/aldc/SKILL.md', '---\n' + yaml.dump({name:'aldc',description:'Use canonical ALDC architecture, implementation, TDD orchestration, review and specification workflows for AL / Business Central projects.'},{lineWidth:-1}) + '---\n\n' +
     `Read the relevant role or workflow below in full before acting. Resolve these\nlinks from this skill directory, including when a plugin cache holds it. Load\napplicable rules from references/rules/ and domain guidance from\nreferences/skills/ (GUIDE.md) on demand. These domain references are not duplicate\ndiscoverable skills. Recover approved work from ${PLANS}/ and memory.md.\n\nFor MEDIUM/HIGH work, preserve architecture → specification → Conductor order.\nThe al-spec-create workflow loads the same al-spec-agent contract as direct role invocation.\nHuman material gates and current session authorization govern actions. Plugin\ninstallation alone does not authorize compilation, publishing or deployment.\n\nUse discovered project custom agents when available. Otherwise read the selected\nrole as instructions in this session; when independent subagents are required\nand unavailable, report the affected step as pending. Do not invent a tool name\nor claim independent review from a sequential role change.\n\n## Roles\n\n${links(roles,'agents')}\n\n## Workflows\n\n${links(commands,'commands')}\n`);
   files.set('README.md', `# ALDC for Codex\n\nGenerated by scripts/sync-codex.js from canonical terminal sources. No manual\nedits. Node 20+ is the only bootstrap interpreter; no Python/PATH setup is needed.\n\nFrom a checkout, preview a separate project:\n\n\`node plugins/aldc-codex/scripts/init.js --project /path/to/project\`\n\nRepeat with --apply after reviewing the plan. This installs one local ALDC skill,\n${roles.length} .codex/agents profiles, AL rules and a managed AGENTS.md block (or the existing\nAGENTS.override.md). Models, sandbox, approvals and MCP settings are inherited.\n--force backs up reviewed collisions; --verify checks receipt drift; --rollback\nrestores the preceding transaction if later project edits would not be lost.\n\nThe package manifest supports plugin distribution, but no marketplace entry is\ncreated. Use either plugin skill discovery or local bootstrap, never both in the\nsame project. Plugin discovery alone does not install the project TOML profiles.\n\nRestart Codex, inspect /skills and loaded instruction sources, then request a\nbounded read-only role invocation and inspect its full loaded profile. Counting\nfiles is not this host test. Full Conductor/Architect bodies remain intact and\nmust load completely in the installed host. See ../../docs/plugin-packaging.md\nfor installation behavior and compatibility requirements.\n`);
   files.set('README.md', files.get('README.md') + `\n## MCP setup and verification\n\nALDC for Codex declares no MCP servers and does not copy the repository's\n\`.mcp.json\` or another host's plugin manifest. Existing Codex providers are inherited.\nSee [MCP setup](skills/aldc/references/mcp-setup.md) for the corrected AL symbols\npackage from PR #108, official documentation endpoints and a bounded smoke check.\nDoctor does not inspect Codex MCP configuration or establish connectivity.\n`);
-  sources.push(...walk(root,'tools/bcquality'),'tools/aldc-validate/package.json','tools/aldc-validate/index.js',...walk(root,'tools/context-doctor'),'scripts/sync-plugin-support.js','scripts/install-transaction.js','scripts/init-plugin.js','scripts/sync-copilot-cli.js','docs/templates/memory-template.md');
+  sources.push(...walk(root,'tools/bcquality'),'tools/aldc-validate/package.json','tools/aldc-validate/index.js',...walk(root,'tools/context-doctor'),'scripts/plugin-runtime.js','scripts/generation-utils.js','aldc.yaml','scripts/install-transaction.js','scripts/init-plugin.js','docs/templates/memory-template.md');
   files.set('provenance.json',provenance(root,sources,files,'scripts/sync-codex.js'));
   return files;
 }
-function sync(check = false) {
-  const files=expected(), dest=path.join(ROOT,DEST);let drift=0;
+function sync(check = false, root = ROOT) {
+  const files=expected(root), dest=path.join(root,DEST);let drift=0;
   for (const [rel,b] of files) {
     const p=path.join(dest,rel);
     if(fs.existsSync(p)&&normalized(fs.readFileSync(p)).equals(normalized(Buffer.from(b))))continue;

@@ -176,22 +176,23 @@ something it assumed. `scripts/test-plans-root.js` pins that contract.
 
 ## Regenerating
 
-```bash
-node scripts/sync-foundation.js
-node scripts/sync-claude-workspace.js
-node scripts/sync-copilot-cli.js
-node scripts/sync-codex.js
-node scripts/sync-plugin-support.js
-# repeat until all five report 0 — they do not converge in a single pass
-node scripts/check-conformance.js
-npm test
-```
+Each surface reads the canonical source trees directly and owns its adaptations.
+Use `npm run sync:claude`, `npm run sync:copilot-cli` or `npm run sync:codex`
+for a surface-specific change. A shared source change can be regenerated with
+`npm run sync:plugins`; one pass is sufficient and does not update the workspace
+mirror or VSIX foundation.
 
-`copilot-cli-plugin/` and `plugins/aldc-codex/` are generated *from*
-`claude-plugin/`, so they move with it. Both strip the Claude Code adapter
-preamble — a table mapping Copilot surfaces onto themselves would be circular —
-and restate the terminal-host contract in their own host's terms.
+The repository's Claude development mirror is an explicit choice:
+`npm run sync:claude-workspace`. Run it after regenerating Claude when the mirror
+is intended to follow those changes. Its existing CI drift check remains active.
+`npm run sync:foundation` maintains the separate canonical-to-VSIX route.
 
-Codex has no `handoffs:` either, so it loses the same human gate for the same
-reason, and its own host preface carries it. Copilot CLI does not need it: a
-handoff there is still the button the host draws.
+All generator commands accept `-- --check` to detect drift without writing.
+Run `npm run test:surface-isolation` to verify sibling independence, write scope,
+idempotence and the separate mirror/foundation paths. Then run the existing
+conformance and package checks. See [surface generation](surface-generation.md)
+for the command and dependency matrix.
+
+CLI and Codex retain their own permission declarations, delegation behavior,
+initialization steps and human approval gates. They do not import the Claude
+adapter or read its generated payload.

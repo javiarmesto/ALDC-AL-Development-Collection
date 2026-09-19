@@ -4,15 +4,10 @@ description: AL Planning Subagent - AL-aware research and context gathering for 
 tools:
   - read
   - search
-  - edit
-  - execute
-  - task
   - web
   - al-symbols-mcp/*
   - context7/*
   - microsoft-docs/*
-  - list_agents
-  - read_agent
 model: claude-sonnet-4.6
 user-invocable: false
 disable-model-invocation: true

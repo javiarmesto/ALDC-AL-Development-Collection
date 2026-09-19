@@ -2,7 +2,7 @@
 'use strict';
 // Static installation contracts; this does not simulate model compliance.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const {split}=require('./sync-copilot-cli');
+const {split}=require('./generation-utils');
 const {resolveRef,refsIn}=require('./surface-refs');
 const root=path.resolve(__dirname,'..');
 // Each surface reaches the shared procedure through its own anchor; what matters is
