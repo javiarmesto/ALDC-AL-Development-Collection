@@ -1,5 +1,41 @@
 # ALDC Changelog
 
+## [5.0.1] - 2026-09-19
+
+### Fixed
+
+- **The `al-symbols-mcp` server never started, in any host.** Every distribution
+  launched it as `npx -y @nicholasglazer/al-symbols-mcp`, a package that does not
+  exist in the npm registry: hosts reported `CONNECTION_CLOSED` on every session,
+  so the AL symbol tools the agents declare were never actually reachable. The
+  server keeps its name, so agent prose and tool allowlists are unchanged; only the
+  package changes, to `al-mcp-server@2.5.0` — the published package of
+  `StefanMaron/AL-Dependency-MCP-Server`, which is the project this repository's
+  own README has linked all along. Affected both the Claude Code plugin and the
+  Copilot CLI distribution.
+
+- **`microsoft-docs` was broken in this repository's development config.** The
+  distributed manifests already used the official `learn.microsoft.com/api/mcp`
+  endpoint; only the root `.mcp.json`, used by contributors working on ALDC, still
+  pointed at another nonexistent package. Users were not affected.
+
+- **The installer could not verify itself from a real installation.** Claude Code
+  writes an `.in_use` lock into the installed plugin cache while a session holds
+  the plugin, and `verify()` rejected any file absent from `provenance.json`. So
+  `init.js --verify` — and the dry run — failed with `Unexpected file in plugin
+  payload` precisely where the installer's own commands run. `.in_use` is now
+  treated as derived, like `__pycache__`.
+
+### Added
+
+- **A packaging test that asks the registry whether declared packages exist.**
+  `scripts/test-mcp-packages.js` runs in `npm test` and `npm run validate`. It
+  checks shape offline (a distributed manifest must pin an exact version, never a
+  floating dist-tag) and then resolves every `npx`-launched package against npm.
+  When the registry is unreachable it says so and names each unverified package
+  rather than passing quietly. Nothing before this asked whether a shipped package
+  was real, which is why the defect above survived to release.
+
 ## [5.0.0] - 2026-09-18
 
 Supersedes the unreleased 4.3.1 and 4.4.0: neither was ever tagged or published,
