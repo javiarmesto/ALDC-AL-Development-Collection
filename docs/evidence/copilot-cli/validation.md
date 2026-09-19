@@ -8,9 +8,13 @@ project. No Windows machine or Business Central environment was accessed.
 
 ## Result
 
-**Adaptation implemented; not yet certified as a fully supported runtime.**
-Authenticated custom-agent acceptance remains blocked. The cross-generator
-provenance gate was resolved by the authorized metadata-only refresh below. The PR must not merge as a fully validated CLI release yet.
+**Accepted for integration by the project owner on 2026-09-19.** The owner
+explicitly accepted the Copilot CLI validation and authorized merging this PR.
+This closes the merge blocker; it does not turn the authenticated custom-agent
+checks below into executed tests. Their recorded authentication limits remain.
+The cross-generator provenance gate was resolved by the authorized refresh below
+and regenerated again when integrating #108 and #110. The historical observations
+retain their original candidate versions. No release or publication is implied.
 
 | Check | Observed result |
 | --- | --- |

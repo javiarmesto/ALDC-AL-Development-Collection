@@ -3,7 +3,7 @@
     "al-symbols-mcp": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@nicholasglazer/al-symbols-mcp"],
+      "args": ["-y", "al-mcp-server@2.5.0"],
       "env": {}
     },
     "context7": {
@@ -12,10 +12,9 @@
       "headers": {}
     },
     "microsoft-docs": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@nicholasglazer/microsoft-docs-mcp"],
-      "env": {}
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp",
+      "headers": {}
     },
     "playwright": {
       "type": "stdio",

@@ -235,35 +235,24 @@ If user provides similar repositories:
 
 ### 2.2 MCP Tools Verification
 
-**IMPORTANT**: Before using MCP tools, verify they're available. If not, inform the user:
+Discover the MCP providers and exact tool schemas exposed by this Codex session.
+Read `.agents/skills/aldc/references/mcp-setup.md` for provider endpoints,
+configuration examples and the bounded connection check. Resolve that path
+against the installed ALDC skill root when using plugin discovery.
 
-```markdown
-## 🔌 MCP Servers Check
+- AL symbols: query the configured provider against the target project's packages.
+- Context7: discover library resolution and documentation query tools; names vary
+  by server version. Do not assume the older get-library-docs tool exists.
+- Microsoft Learn: use the configured remote documentation provider. Installing
+  a VS Code extension does not register an MCP server with Codex.
+- GitHub: use an existing authorized repository connector if available; do not
+  require a new MCP server or request a Personal Access Token as a default.
 
-### Context7 (Library Documentation)
-- Tools: `mcp_context7/resolve-library-id`, `mcp_context7/get-library-docs`
-- Purpose: Get up-to-date documentation for libraries
-- **If not available**: "Por favor, instala Context7: `npx -y @anthropic-ai/context7-mcp`"
-
-### Microsoft Learn MCP
-- Tools: `mcp_microsoft_doc/microsoft_docs_search`, `mcp_microsoft_doc/microsoft_docs_fetch`
-- Purpose: Access official Microsoft/BC documentation
-- **If not available**: "Instala Microsoft Learn MCP desde VS Code extensions"
-
-### GitHub MCP
-- Tools: `mcp_github/search_repositories`, `mcp_github/search_code`
-- Purpose: Find similar projects and code patterns
-- **If not available**: "Configura GitHub MCP con tu Personal Access Token"
-
-### ⚠️ If Tools Not Found
-
-"He detectado que faltan los siguientes servidores MCP:
-- [ ] Context7 - Recomendado para documentación actualizada
-- [ ] Microsoft Docs - Esencial para mejores prácticas BC
-- [ ] GitHub - Necesario para buscar proyectos similares
-
-¿Quieres que te guíe en la instalación?"
-```
+Record configured, connected, tools discovered and read-only query executed as
+separate observations. If unavailable, identify the missing capability and use
+available source/documentation evidence; mark the affected estimates uncertain.
+Do not install servers, modify configuration or duplicate existing providers
+automatically. A successful ALDC Doctor report does not verify MCP connectivity.
 
 ### 2.3 Complexity Assessment
 
