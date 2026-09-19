@@ -88,7 +88,8 @@ function translateHost(text) {
 
 module.exports = { HOST_PREFACE, translateHost };
 
-// CLI-owned permission grants preserved from the accepted 5.0.1 candidate.
+// CLI-owned grants. Planning is narrowed to its canonical research-only scope;
+// other roles preserve the accepted 5.0.1 grants.
 const ROLE_TOOLS = {
   "al-agent-builder": [
     "read",
@@ -160,15 +161,10 @@ const ROLE_TOOLS = {
   "al-planning-subagent": [
     "read",
     "search",
-    "edit",
-    "execute",
-    "task",
     "web",
     "al-symbols-mcp/*",
     "context7/*",
-    "microsoft-docs/*",
-    "list_agents",
-    "read_agent"
+    "microsoft-docs/*"
   ],
   "al-presales": [
     "read",

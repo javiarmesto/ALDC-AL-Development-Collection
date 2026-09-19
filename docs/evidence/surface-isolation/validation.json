@@ -4,15 +4,20 @@
   "surface_comparison": {
     "claude-plugin": {
       "functional_files_compared": 115,
-      "changed_functional_files": []
+      "changed_functional_files": [],
+      "unchanged_functional_files": 115
     },
     "copilot-cli-plugin": {
       "functional_files_compared": 101,
-      "changed_functional_files": []
+      "changed_functional_files": [
+        "copilot-cli-plugin/agents/al-planning-subagent.agent.md"
+      ],
+      "unchanged_functional_files": 100
     },
     "plugins/aldc-codex": {
       "functional_files_compared": 121,
-      "changed_functional_files": []
+      "changed_functional_files": [],
+      "unchanged_functional_files": 121
     }
   },
   "generated_metadata_changes": [
@@ -33,5 +38,16 @@
   "limits": [
     "No new authenticated host invocation or AL runtime execution.",
     "No release, tag or Marketplace publication."
-  ]
+  ],
+  "functional_exception": "CLI Planning frontmatter: removed edit, execute, task, list_agents and read_agent; research tools and full body retained.",
+  "preexisting_review_findings": {
+    "copilot-cli-plugin/agents/dredd.agent.md": {
+      "baseline_sha256": "347c1daeb2d57392d39b3630fe019043285036ed2f47992eea756d483fbf20f6",
+      "current_sha256": "347c1daeb2d57392d39b3630fe019043285036ed2f47992eea756d483fbf20f6"
+    },
+    "plugins/aldc-codex/skills/aldc/references/commands/al-build.md": {
+      "baseline_sha256": "07397a14cc7dfb34172cd20aa6c2a8c4b5b36782425ff8eeeb29301bb655c1b0",
+      "current_sha256": "07397a14cc7dfb34172cd20aa6c2a8c4b5b36782425ff8eeeb29301bb655c1b0"
+    }
+  }
 }

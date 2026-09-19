@@ -109,6 +109,14 @@ for (const [file, text] of generated) {
     check(generated.has(target), `${file}: generated sibling rule link resolves: ${target}`);
   }
 }
+// These roles return findings to their caller; none owns persistent reports.
+// Keep Dredd separate: its existing report-persistence contract is behavioral.
+const queryTools = new Set(['read', 'search', 'web', 'al-symbols-mcp/*', 'context7/*', 'microsoft-docs/*']);
+for (const name of ['al-planning-subagent', 'al-review-subagent', 'al-developer-reviewer']) {
+  const role = split(generated.get(`copilot-cli-plugin/agents/${name}.agent.md`));
+  check(role.data.tools.every(tool => queryTools.has(tool)), `${name}: query-only tools, no edit, shell or delegation escape`);
+  check(role.data.tools.includes('read') && role.data.tools.includes('search'), `${name}: research capabilities retained`);
+}
 assert.throws(() => toolsForRole('unknown-role'), /Unmapped Copilot CLI role/); checks++;
 const oversized = [...generated].filter(([p, c]) => p.includes('/agents/') && split(c).body.length > 30000).map(([p]) => path.basename(p));
 console.log(`CLI plugin packaging: ${checks} checks passed (static only).`);
