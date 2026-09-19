@@ -1,0 +1,61 @@
+{
+  "extraction": "Selected host log excerpts only; connection events summarized by server identity; no MCP tool invocation claimed.",
+  "observations": [
+    {
+      "log": "process-1789840808670-16.log",
+      "excerpt": "2026-09-19T18:00:08.722Z [DEBUG] No model backend (auth, legacy provider, or BYOK registry) available, skipping custom agents load"
+    },
+    {
+      "log": "process-1789840808670-16.log",
+      "timestamp": "2026-09-19T18:00:17.401Z",
+      "event": "Service initialized as client",
+      "serverName": "Microsoft Learn MCP Server"
+    },
+    {
+      "log": "process-1789840808670-16.log",
+      "timestamp": "2026-09-19T18:00:17.581Z",
+      "event": "Service initialized as client",
+      "serverName": "Context7"
+    },
+    {
+      "log": "process-1789840808670-16.log",
+      "excerpt": "2026-09-19T18:00:18.281Z [WARNING] [rust:copilot_runtime::mcp::native_connector] MCP server connection failed {\"server_name\":\"al-symbols-mcp\",\"raw_error\":\"MCP server process exited before completing the MCP initialize handshake (exit code 1) (underlying transport failure: failed to initialize MCP client: transport failure during send initialize request: the server closed its input stream (broken pipe))\",\"stderr_detail\":\"npm warn Unknown env config \\\"http-proxy\\\". This will stop working in the next major version of npm.\\nnpm error code E404\\nnpm error 404 Not Found - GET https://registry.npmjs.org/@nicholasglazer%2fal-symbols-mcp - Not found\\nnpm error 404\\nnpm error 404  The requested resource '@nicholasglazer/al-symbols-mcp@*' could not be found or you do not have permission to access it.\\nnpm error 404\\nnpm error 404 Note that you can also install from a\\nnpm error 404 tarball, folder, http url, or git url.\\nnpm error A complete log of this run can be found in: /root/.npm/_logs/2026-09-19T18_00_08_950Z-debug-0.log\"}"
+    },
+    {
+      "log": "process-1789840808670-16.log",
+      "excerpt": "2026-09-19T18:00:26.610Z [WARNING] [rust:copilot_runtime::mcp::native_connector] MCP server connection failed {\"server_name\":\"al-symbols-mcp\",\"raw_error\":\"MCP server process exited before completing the MCP initialize handshake (exit code 1) (underlying transport failure: failed to initialize MCP client: transport failure during send initialize request: the server closed its input stream (broken pipe))\",\"stderr_detail\":\"npm warn Unknown env config \\\"http-proxy\\\". This will stop working in the next major version of npm.\\nnpm error code E404\\nnpm error 404 Not Found - GET https://registry.npmjs.org/@nicholasglazer%2fal-symbols-mcp - Not found\\nnpm error 404\\nnpm error 404  The requested resource '@nicholasglazer/al-symbols-mcp@*' could not be found or you do not have permission to access it.\\nnpm error 404\\nnpm error 404 Note that you can also install from a\\nnpm error 404 tarball, folder, http url, or git url.\\nnpm error A complete log of this run can be found in: /root/.npm/_logs/2026-09-19T18_00_18_359Z-debug-0.log\"}"
+    },
+    {
+      "log": "process-1789840119888-16.log",
+      "excerpt": "2026-09-19T17:48:49.061Z [WARNING] [rust:copilot_runtime::mcp::native_connector] MCP server connection failed {\"server_name\":\"al-symbols-mcp\",\"raw_error\":\"MCP server process exited before completing the MCP initialize handshake (exit code 1) (underlying transport failure: failed to initialize MCP client: transport failure during send initialize request: the server closed its input stream (broken pipe))\",\"stderr_detail\":\"npm warn Unknown env config \\\"http-proxy\\\". This will stop working in the next major version of npm.\\nnpm error code E404\\nnpm error 404 Not Found - GET https://registry.npmjs.org/@nicholasglazer%2fal-symbols-mcp - Not found\\nnpm error 404\\nnpm error 404  The requested resource '@nicholasglazer/al-symbols-mcp@*' could not be found or you do not have permission to access it.\\nnpm error 404\\nnpm error 404 Note that you can also install from a\\nnpm error 404 tarball, folder, http url, or git url.\\nnpm error A complete log of this run can be found in: /root/.npm/_logs/2026-09-19T17_48_40_173Z-debug-0.log\"}"
+    },
+    {
+      "log": "process-1789840119888-16.log",
+      "timestamp": "2026-09-19T17:48:49.935Z",
+      "event": "Service initialized as client",
+      "serverName": "Microsoft Learn MCP Server"
+    },
+    {
+      "log": "process-1789840119888-16.log",
+      "timestamp": "2026-09-19T17:48:51.227Z",
+      "event": "Service initialized as client",
+      "serverName": "Context7"
+    },
+    {
+      "log": "process-1789840119888-16.log",
+      "excerpt": "2026-09-19T17:48:58.855Z [WARNING] [rust:copilot_runtime::mcp::native_connector] MCP server connection failed {\"server_name\":\"al-symbols-mcp\",\"raw_error\":\"MCP server process exited before completing the MCP initialize handshake (exit code 1) (underlying transport failure: failed to initialize MCP client: transport failure during send initialize request: the server closed its input stream (broken pipe))\",\"stderr_detail\":\"npm warn Unknown env config \\\"http-proxy\\\". This will stop working in the next major version of npm.\\nnpm error code E404\\nnpm error 404 Not Found - GET https://registry.npmjs.org/@nicholasglazer%2fal-symbols-mcp - Not found\\nnpm error 404\\nnpm error 404  The requested resource '@nicholasglazer/al-symbols-mcp@*' could not be found or you do not have permission to access it.\\nnpm error 404\\nnpm error 404 Note that you can also install from a\\nnpm error 404 tarball, folder, http url, or git url.\\nnpm error A complete log of this run can be found in: /root/.npm/_logs/2026-09-19T17_48_51_311Z-debug-0.log\"}"
+    },
+    {
+      "log": "process-1789840810022-18.log",
+      "excerpt": "2026-09-19T18:00:10.090Z [DEBUG] No model backend (auth, legacy provider, or BYOK registry) available, skipping custom agents load"
+    },
+    {
+      "log": "process-1789840096613-16.log",
+      "excerpt": "2026-09-19T17:48:16.673Z [DEBUG] No model backend (auth, legacy provider, or BYOK registry) available, skipping custom agents load"
+    },
+    {
+      "log": "process-1789840810640-95.log",
+      "excerpt": "2026-09-19T18:00:10.702Z [DEBUG] No model backend (auth, legacy provider, or BYOK registry) available, skipping custom agents load"
+    }
+  ]
+}

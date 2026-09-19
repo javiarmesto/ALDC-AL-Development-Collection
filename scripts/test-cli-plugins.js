@@ -17,7 +17,11 @@ check(catalog.plugins.find(p => p.name === manifest.name)?.source === './copilot
 for (const component of ['agents', 'skills', 'commands']) {
   check([...generated.keys()].some(p => p.startsWith('copilot-cli-plugin/' + manifest[component])), `Manifest ${component} resolves`);
 }
-check(JSON.stringify(manifest.mcpServers) === JSON.stringify(JSON.parse(read('plugin.json')).mcpServers), 'MCP config retained without new servers');
+const sourceServers = JSON.parse(read('plugin.json')).mcpServers;
+const expectedServers = JSON.parse(JSON.stringify(sourceServers));
+expectedServers['al-symbols-mcp'].args = expectedServers['al-symbols-mcp'].args.map(a => a === '@nicholasglazer/al-symbols-mcp' ? 'al-mcp-server@2.5.0' : a);
+check(JSON.stringify(manifest.mcpServers) === JSON.stringify(expectedServers), 'Only PR108 symbol package correction; server identity, other providers and settings retained');
+require('./test-copilot-cli-mcp').validateManifest(manifest);
 check(!manifest.hooks, 'No incompatible Claude hooks imported');
 for (const [file, content] of generated) {
   if (!file.endsWith('.md')) continue;
@@ -35,14 +39,20 @@ for (const [file, content] of generated) {
     const agent = split(content);
     check(Array.isArray(agent.data.tools) && agent.data.tools.length > 0, `${file}: explicit tools`);
     check(!agent.data.tools.includes('*'), `${file}: no unrestricted grant`);
-    check(agent.data.tools.every(t => /^(read|search|edit|execute|agent|web)$/.test(t) || /^(al-symbols-mcp|context7|microsoft-docs)\/\*$/.test(t)), `${file}: host tool vocabulary`);
+    check(agent.data.tools.every(t => /^(read|search|edit|execute|task|list_agents|read_agent|web)$/.test(t) || /^(al-symbols-mcp|context7|microsoft-docs)\/\*$/.test(t)), `${file}: host tool vocabulary`);
     check(agent.data.model === 'claude-sonnet-4.6', `${file}: retains canonical Copilot model`);
     const source = split(read(`claude-plugin/agents/${agent.data.name}.md`));
-    check(agent.body === agentBody(source.body), `${file}: complete source workflow retained`);
+    const contractPath = `copilot-cli-plugin/references/agent-contracts/${agent.data.name}.md`;
+    const fullBody = generated.get(contractPath) || agent.body;
+    check(fullBody === agentBody(source.body), `${file}: complete source workflow retained`);
+    check(agent.body.length <= 29000, `${file}: host entry size`);
+    if (generated.has(contractPath)) check(agent.body.includes('${PLUGIN_ROOT}/references/agent-contracts/' + agent.data.name + '.md'), `${file}: mandatory full contract is reachable`);
+    check(!/@(?:al-|dredd)|#runSubagent|vscode\/|#(?:search|usages|problems|changes|githubRepo)/.test(fullBody), `${file}: no operational Chat vocabulary`);
   }
   if (file.includes('/commands/')) {
     const command = split(content);
     check(!('allowed-tools' in command.data), `${file}: no Claude command permissions`);
+    check(command.data['disable-model-invocation'] === true, `${file}: explicit workflow stays explicit`);
     check(!content.includes('.claude/rules'), `${file}: no Claude instruction destination`);
   }
 }
@@ -99,4 +109,9 @@ for (const [file, text] of generated) {
 assert.throws(() => toolsFor('Read, UnknownTool'), /Unmapped Claude tool/); checks++;
 const oversized = [...generated].filter(([p, c]) => p.includes('/agents/') && split(c).body.length > 30000).map(([p]) => path.basename(p));
 console.log(`CLI plugin packaging: ${checks} checks passed (static only).`);
-console.log(`Pending host load/size verification: ${oversized.join(', ')}. No workflow was truncated.`);
+check(oversized.length === 0, 'All CLI agent entries fit the documented size guidance');
+console.log('Agent entry sizes verified; authenticated host loading/invocation remains a separate check. No workflow was truncated.');
+// Keep the CLI-specific bootstrap regressions in the existing CI entrypoint.
+const result = require('child_process').spawnSync(process.execPath,
+  ['--test', path.join(__dirname, 'test-copilot-cli-surface.js')], { stdio: 'inherit' });
+if (result.status !== 0) process.exit(result.status || 1);

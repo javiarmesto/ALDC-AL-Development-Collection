@@ -1,0 +1,25 @@
+{
+  "base": "2a868a9aad1436c0fd76a98edfe619a9077a6b40",
+  "protectedRoots": [
+    "claude-plugin/",
+    "plugins/aldc-codex/",
+    ".claude/",
+    "packages/",
+    "agents/",
+    "prompts/",
+    "instructions/",
+    "skills/",
+    "tools/",
+    "package.json",
+    "package-lock.json",
+    "plugin.json",
+    ".github/plugin/marketplace.json",
+    "scripts/init-plugin.js",
+    "scripts/sync-plugin-support.js",
+    "scripts/sync-codex.js",
+    "scripts/sync-foundation.js",
+    "scripts/native-profile.js",
+    "scripts/install.js"
+  ],
+  "changedProtectedFiles": []
+}

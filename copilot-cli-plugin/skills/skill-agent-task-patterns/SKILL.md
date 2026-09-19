@@ -37,7 +37,7 @@ OnPrem-only methods are documented but throw at runtime when invoked from a clou
 | `Agent Task`                   | Query/manage existing tasks                  | `GetTaskByExternalId(Guid, Text)`, `CanSetStatusToReady(Record)`, `SetStatusToReady(Record)` |
 | `Agent Message`                | Read/update message text                     | `GetText(Record)`, `UpdateText(Record, Text)`              |
 | `Agent Setup`                  | Agent lookup + setup management              | `OpenAgentLookup(Enum, var Guid)`, `GetSetupRecord(...)`, `SaveChanges(...)` |
-| `Agent`                        | Core agent operations                        | `SetInstructions(Guid, SecretText)`, `Deactivate(Guid)`, `IsActive(Guid)`, `GetDisplayName(Guid)`, `PopulateDefaultProfile(...)` |
+| `task`                        | Core agent operations                        | `SetInstructions(Guid, SecretText)`, `Deactivate(Guid)`, `IsActive(Guid)`, `GetDisplayName(Guid)`, `PopulateDefaultProfile(...)` |
 | `Agent Session`                | Detect agent runtime context                 | `IsAgentSession(var Enum)`, `IsAgentSession(Enum)`, `GetCurrentSessionAgentTaskId()` |
 
 ## 8 integration patterns

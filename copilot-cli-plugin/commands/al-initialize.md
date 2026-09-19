@@ -1,11 +1,46 @@
 ---
 description: Initialize AL development environment and workspace for Business Central. ALDC workflow (Copilot prompt al-initialize); invoke explicitly.
+disable-model-invocation: true
 ---
+
+> **Copilot CLI adapter — generated; do not edit this distribution.**
+> Select a role using /agent or copilot --agent <id>. Role names in this contract
+> are routing destinations, never chat mentions or evidence of an invocation.
+> Delegate only through the native task tool, using the exact discovered agent ID
+> as agent_type (for example al-planning-subagent). Inspect list_agents and the
+> actual task schema first. Keep all canonical human gates. Pass bounded context
+> inline; wait for completion (read_agent for a background task) before consuming
+> the result. A delegated role returns questions to its caller for the human gate.
+> If task or the requested custom agent is unavailable in this context, return
+> the blocked handoff to the caller/user. Never impersonate a missing subagent,
+> silently substitute general-purpose, or launch another CLI process to fake it.
+> Tool aliases in frontmatter select capabilities; call the actual tools exposed
+> by the host: view, glob, grep/rg, edit/create/apply_patch, bash/powershell,
+> web_fetch, task. Use a capability only when granted to this role and available.
+> Load domain skills through the host's skill mechanism when exposed, otherwise
+> read the complete bundled SKILL.md. A read is not a native skill invocation.
+> Resolve PLUGIN_ROOT to this installed agent's plugin directory (not the project
+> or original checkout). It is a path placeholder here, not a promised global
+> shell variable. Read skills/skill-migrate/references/cli-al-tools.md there.
+> Project instructions and matching .github/instructions rules remain binding;
+> pass the relevant excerpts to delegated roles. Canonical artifacts remain in
+> .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
+> AL execution requires a verified terminal command/runner or an actually exposed
+> MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
+> provisioned; this provider may auto-install AL tools on first use. A read-only
+> role must return that prerequisite to the caller, never bootstrap software.
+> Load symbols via al_packages(action: load, path: absolute consumer path).
+> The MCP process may run from the plugin cache; never assume its cwd is the
+> consumer. Use the discovered schema and report missing .app packages explicitly.
+> Record missing capabilities and unexecuted checks explicitly; never simulate.
+
+
 # AL Environment Initialization
 
 Your goal is to initialize the AL development environment and workspace for `<ProjectName from $ARGUMENTS>`.
 
-This workflow covers both initial environment setup (VS Code, GitHub Copilot) and AL workspace configuration (project structure, symbols, dependencies).
+This workflow configures Copilot CLI and the approved AL project. Bootstrap alone adds no AL sources or manifest; project scaffolding below requires its own approved scope.
 
 ## Phase 0: ALDC instructions (Copilot CLI)
 
@@ -13,75 +48,19 @@ Locate the installed plugin root through the plugin list. Run its scripts/init.j
 with Node 20+ and --project <directory> to preview project changes. After reviewing
 the plan, repeat with --apply. Existing customized rules remain visible collisions;
 use --force only for reviewed replacement, with a recoverable backup. This adds a
-managed AGENTS.md block (or updates AGENTS.override.md when present), preserving
+managed AGENTS.md block, preserving
 surrounding project instructions and .github/plans/memory.md. Use --verify for
 receipt drift and --rollback to restore the preceding initialization. Neither
 operation installs software or configures MCP servers. Discover command labels in
 the installed CLI. Confirm instruction loading and the human review gate.
 
-## Phase 1: Environment Setup
+## Phase 1: Copilot CLI environment
 
-### Prerequisites Check
-
-Verify the following are available:
-
-**Required Tools:**
-- [ ] Visual Studio Code (latest version)
-- [ ] AL Language Extension (Microsoft's official extension)
-- [ ] GitHub Copilot or compatible AI assistant
-- [ ] Git for version control
-
-**Recommended Tools:**
-- [ ] AL Test Runner for test management
-- [ ] Business Central Docker Container for local development
-- [ ] AL Object Designer for navigation
-- [ ] GitLens for enhanced git integration
-
-### GitHub Copilot Installation
-
-**Step 1: Install VS Code Extensions**
-- Open Visual Studio Code
-- Access Extensions marketplace (`Ctrl+Shift+X` or `Cmd+Shift+X`)
-- Install:
-  - **GitHub Copilot** - Code completion
-  - **GitHub Copilot Chat** - Interactive assistance
-  - **AL Language** - Business Central development
-
-**Step 2: Authentication**
-- Sign in to GitHub when prompted
-- Authorize the extension
-- Verify connection is active
-
-### VS Code Workspace Configuration
-
-Create or update `.vscode/settings.json` in the workspace root:
-
-```json
-{
-  // AL Language settings
-  "al.enableCodeAnalysis": true,
-  "al.codeAnalyzers": ["${CodeCop}", "${PerTenantExtensionCop}", "${UICop}"],
-
-  // GitHub Copilot settings
-  "github.copilot.enable": {
-    "*": true,
-    "al": true
-  },
-
-  // Editor settings for better AI integration
-  "editor.inlineSuggest.enabled": true,
-  "editor.quickSuggestions": {
-    "other": true,
-    "comments": true,
-    "strings": true
-  }
-}
-```
-
-**Configuration Benefits:**
-- Code analysis with CodeCop, PerTenantExtensionCop, and UICop
-- AI suggestions optimized for AL files
-- Enhanced inline completion
+Verify copilot --version, authentication, plugin installation and the actual
+/agent, /skills list and /mcp catalogs in a new session. Node 20+ is required by
+the bootstrap. Inspect the project's AL compiler, symbol-download and test
+commands; record missing operations as unavailable. No Copilot Chat extension
+is required. Do not install software or change credentials automatically.
 
 ## Phase 2: Project Initialization
 
@@ -89,12 +68,12 @@ Create or update `.vscode/settings.json` in the workspace root:
 
 **For New Projects:**
 ```
-al_new_project
+reviewed project scaffolding through file tools
 ```
 
 **For Existing Folders:**
 ```
-al_go
+reviewed project scaffolding through file tools
 ```
 
 ### Project Structure
@@ -128,7 +107,7 @@ Implement feature-based organization:
 
 Download required symbols:
 ```
-al_download_symbols
+verified terminal symbol/source-download command (if available)
 ```
 
 Verify all base application dependencies are available.
@@ -137,85 +116,17 @@ Verify all base application dependencies are available.
 
 Create manifest file:
 ```
-al_generate_manifest
+reviewed project scaffolding through file tools
 ```
 
 **Human Review:** Validate manifest contents before proceeding.
 
-## Phase 3: Launch Configuration
+## Phase 3: Runtime configuration
 
-### 🔒 Human Gate: Authentication Configuration Review
-
-**SECURITY CHECKPOINT - Configuration contains sensitive information**
-
-Before creating launch.json:
-1. **Review authentication method** with stakeholder
-2. **Confirm server URLs** are correct for target environment
-3. **Verify credentials handling** follows security policies
-4. **Obtain approval** before saving configuration
-
-### Configure Debugging
-
-Create `.vscode/launch.json` based on your environment:
-
-**For Cloud Sandbox:**
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "al",
-            "request": "launch",
-            "name": "Your own server",
-            "server": "https://businesscentral.dynamics.com",
-            "serverInstance": "BC",
-            "authentication": "AAD",
-            "startupObjectType": "Page",
-            "startupObjectId": 22,
-            "schemaUpdateMode": "Synchronize",
-            "tenant": "default"
-        }
-    ]
-}
-```
-
-**For On-Premises:**
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "al",
-            "request": "launch",
-            "name": "Local server",
-            "server": "http://localhost",
-            "serverInstance": "BC210",
-            "authentication": "Windows",
-            "startupObjectType": "Page",
-            "startupObjectId": 22,
-            "schemaUpdateMode": "Synchronize"
-        }
-    ]
-}
-```
-
-**For Agent Debugging (Copilot features):**
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "al",
-            "request": "attach",
-            "name": "Attach to agent (Sandbox)",
-            "clientType": "Agent",
-            "environmentType": "Sandbox",
-            "environmentName": "<EnvironmentName from $ARGUMENTS>",
-            "breakOnNext": "WebClient"
-        }
-    ]
-}
-```
+Review target environment, authentication and credential handling with the
+human before writing runtime configuration or deploying. Use the existing
+terminal/CI runner's configuration. Editor launch.json is optional, only when
+explicitly requested for editor debugging; it does not configure this CLI.
 
 ## Phase 4: Best Practices Setup
 
@@ -233,7 +144,7 @@ rad.json
 
 # VS Code settings (optional)
 .vscode/launch.json
-.vscode/*.log
+.unavailable editor API.log
 
 # Build artifacts
 .netFramework/
@@ -304,77 +215,23 @@ end;
 
 ## Phase 5: Verification
 
-### Test Your Setup
-
-1. **Open an AL File**
-   - Navigate to any `.al` file in the project
-   - Ensure syntax highlighting is active
-
-2. **Test Code Completion**
-   - Start typing a procedure declaration
-   - Verify inline suggestions appear from Copilot
-
-3. **Test Copilot Chat**
-   - Open Copilot Chat (`Ctrl+Shift+I`)
-   - Ask: "Explain this AL code"
-   - Verify you receive a response
-
-4. **Verify Code Analysis**
-   - Introduce a small code issue
-   - Check that warnings appear
-
-5. **Test Build**
-   - Run AL: Download Symbols
-   - Attempt to compile the project
-   - Verify no configuration errors
+Inspect loaded project instructions and the selected plugin source. Verify
+Doctor readiness and run only the approved available build/test commands.
+Distinguish configured, loaded, invoked and result-verified. A successful
+bootstrap or compiler run does not certify agents or Business Central runtime.
 
 ## Troubleshooting
 
-### Authentication Issues
-
-If authentication fails:
-- Use `al_clear_credentials_cache` to clear cached credentials
-- Re-authenticate when prompted
-- Verify launch.json authentication method is correct
-
-### Symbol Issues
-
-If symbols are missing:
-1. Download symbols: `al_download_symbols`
-2. If persistent, download source: `al_download_source`
-3. Verify app.json dependencies match BC version
-
-### AI Suggestions Not Appearing
-
-Check:
-- AI extension is installed and enabled
-- You're signed in to AI service
-- `editor.inlineSuggest.enabled` is `true`
-- Restart VS Code if needed
-
-### Poor Quality Suggestions
-
-Improvements:
-- Use descriptive file names
-- Add code comments and XML documentation
-- Keep related files open for better context
-- Follow naming conventions consistently
+For authentication, use the host's /login flow. For missing symbols, inspect
+the configured terminal runner and actual app.json dependencies. For missing
+roles or outdated behavior, check first-found-wins collisions, reinstall the
+local plugin or update the marketplace plugin, and restart the session. Never
+clear credentials or reinstall software automatically.
 
 ## Success Criteria
 
-Verify the setup is complete:
-
-- ✅ Visual Studio Code is installed and configured
-- ✅ AL Language extension is active
-- ✅ GitHub Copilot is installed and authenticated
-- ✅ Workspace settings are configured
-- ✅ Project structure is organized
-- ✅ Symbols downloaded successfully
-- ✅ Manifest generated
-- ✅ Launch.json configured
-- ✅ README.md exists with project documentation
-- ✅ Code completion is working
-- ✅ Build succeeds without errors
+Report observed CLI version, selected sources, instruction loading, symbol
+availability and actual build/test results. List every unverified operation.
 
 ## Next Steps
 
@@ -382,18 +239,18 @@ Once your environment is initialized:
 
 **For Development:**
 ```
-@AL Implementation Specialist                    # Implement features (loads page/event skills on demand)
+al-developer                    # Implement features (loads page/event skills on demand)
 /al-build          # Build and deploy
 ```
 
 **For Architecture:**
 ```
-@AL Architecture & Design Specialist                    # Design solutions
+al-architect                    # Design solutions
 ```
 
 **For TDD Orchestration:**
 ```
-@AL Development Conductor                    # Plan → Implement → Review → Commit
+al-conductor                    # Plan → Implement → Review → Commit
 ```
 
 ## Security Considerations
@@ -416,6 +273,4 @@ Once your environment is initialized:
 
 ---
 
-**Environment Initialization Complete! 🎉**
-
-Your AL development environment is ready for Business Central development with optimized AI assistance.
+**Report initialization results and remaining unavailable operations.**
