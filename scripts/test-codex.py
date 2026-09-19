@@ -60,7 +60,9 @@ manifest = json.loads((root / '.codex-plugin/plugin.json').read_text())
 assert 'mcpServers' not in manifest
 assert not (root / '.mcp.json').exists()
 guide = (root / 'skills/aldc/references/mcp-setup.md').read_text()
-config = tomllib.loads(re.search(r'```toml\n(.*?)\n```', guide, re.DOTALL).group(1))
+example = re.search(r'```toml\n(.*?)\n```', guide, re.DOTALL)
+assert example is not None, 'Codex MCP setup guide must include a fenced TOML configuration example'
+config = tomllib.loads(example.group(1))
 servers = config['mcp_servers']
 assert servers['al-symbols-mcp']['command'] == 'npx'
 assert servers['al-symbols-mcp']['args'] == ['-y', 'al-mcp-server@2.5.0']
