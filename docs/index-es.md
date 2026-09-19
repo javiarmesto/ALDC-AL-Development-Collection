@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#novedades">
   <span class="hero-banner__badge">NUEVO</span>
-  <span class="hero-banner__text">ALDC 4.3.0 · ya disponible</span>
+  <span class="hero-banner__text">ALDC 5.0.0 · ya disponible</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="../">English</a></div>
@@ -21,16 +21,16 @@ hide:
   <a class="md-button" href="#novedades">Explora las novedades</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">La versión 4.3.0 está disponible para VS Code desde el Marketplace y para Copilot CLI, Claude Code y Codex desde el código etiquetado.</p>
+<p class="hero-subnote">La versión 5.0.0 está disponible para VS Code desde el Marketplace y para Copilot CLI, Claude Code y Codex desde el código etiquetado.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>4.3.0</b> · MIT</span>
+  <span class="pill pill--version"><b>5.0.0</b> · MIT</span>
 </div>
 </div>
 
-## Novedades de 4.3.0 { #novedades .section-title }
+## Novedades de 5.0.0 { #novedades .section-title }
 
 <div class="grid cards" markdown="1">
 

@@ -21,8 +21,8 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release status:** canonical package and plugin manifests declare **4.3.0**.
-These changes are released as [4.3.0](CHANGELOG.md).
+**Release status:** canonical package and plugin manifests declare **5.0.0**.
+These changes are released as [5.0.0](CHANGELOG.md).
 Previously built VSIX files retain their original version and packaged snapshot.
 Installing newer source content does not itself publish a Marketplace update.
 
@@ -66,7 +66,7 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 ---
 
-## Updating to 4.3.0
+## Updating to 5.0.0
 
 The VS Code extension and each host plugin are separate distribution channels.
 Updating the VSIX does not refresh installed Claude Code, Copilot CLI or Codex plugins.
@@ -533,10 +533,14 @@ AL-Development-Collection-for-GitHub-Copilot/
 
 ## What's New
 
-### Planned 4.3.0 — specifications, diagnostics and host integration
+### 5.0.0 — one delivery across every surface
 
 Dedicated Spec Agent, per-operation Doctor, BC29-native tooling, terminal adapters
-and recoverable initialization. These changes are described in the [4.3.0 changelog](CHANGELOG.md).
+and recoverable initialization, plus the VS Code Project Manager and Visor, BCQuality
+read as context in the design phases, and a Claude Code plugin that is generated
+rather than hand-written. It supersedes the unreleased 4.3.0 and 4.3.1, neither of
+which was ever tagged or published. Major for the plugin layout and the per-surface
+plans and audits roots; see the [5.0.0 changelog](CHANGELOG.md).
 
 
 ### 4.2.0 — Conformance release
@@ -589,7 +593,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 4.3.0
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 5.0.0
 
 </div>
 
