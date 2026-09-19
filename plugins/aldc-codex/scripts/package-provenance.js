@@ -9,7 +9,12 @@ const normalized = b => Buffer.from(b.toString('utf8').replace(/\r\n/g, '\n'));
 // never in a clean checkout - .gitignore excludes it. Listing one as a provenance
 // source makes every sync --check drift on CI while passing locally, and makes a
 // user's own installation look tampered with. The .py itself stays hash-checked.
-const DERIVED = /^(?:__pycache__|\.DS_Store|Thumbs\.db)$|\.py[co]$/;
+// `.in_use` is the same case from the host side: Claude Code writes it into the
+// installed plugin cache while a session holds the plugin, so verify() ran from a
+// real installation - the only place the installer's own commands run - failed with
+// `Unexpected file in plugin payload` whenever the plugin was in use, which is
+// always. It is a host lock, not payload.
+const DERIVED = /^(?:__pycache__|\.DS_Store|Thumbs\.db|\.in_use)$|\.py[co]$/;
 function walk(root, prefix = '') {
   if (!fs.existsSync(path.join(root, prefix))) return [];
   return fs.readdirSync(path.join(root, prefix), { withFileTypes: true }).sort((a,b) => a.name < b.name ? -1 : 1).flatMap(e => {

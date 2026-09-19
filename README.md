@@ -514,7 +514,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 | ------ | ------- |
 | [al-symbols-mcp](https://github.com/StefanMaron/AL-Dependency-MCP-Server) | AL object analysis from compiled .app packages |
 | [context7](https://github.com/upstash/context7) | Up-to-date library documentation retrieval |
-| [microsoft-docs](https://github.com/nicholasglazer/microsoft-docs-mcp) | Official Microsoft/Azure documentation search |
+| [microsoft-docs](https://learn.microsoft.com/training/support/mcp) | Official Microsoft/Azure documentation search |
 
 ### Requirements
 
