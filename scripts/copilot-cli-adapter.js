@@ -22,12 +22,17 @@ const HOST_PREFACE = `
 > read the complete bundled SKILL.md. A read is not a native skill invocation.
 > Resolve PLUGIN_ROOT to this installed agent's plugin directory (not the project
 > or original checkout). It is a path placeholder here, not a promised global
-> shell variable. Read skills/skill-migrate/references/cli-al-tools.md there.
+> shell variable. Read docs/copilot-cli-al-tooling.md there for LSP/MCP bindings;
+> it supersedes older availability examples in the shared terminal contract at
+> skills/skill-migrate/references/cli-al-tools.md, never role duties or human gates.
 > Project instructions and matching .github/instructions rules remain binding;
 > pass the relevant excerpts to delegated roles. Canonical artifacts remain in
 > .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
 > AL execution requires a verified terminal command/runner or an actually exposed
-> MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> MCP capability. Reuse the configured AL LSP for Agents wrapper through native
+> CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
+> tool aliases or broaden read-only grants to enable rename/write operations.
+> Editor debugger controls remain separate from semantic navigation.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -41,13 +46,13 @@ const HOST_PREFACE = `
 function translateHost(text) {
   text = text
     .replace(/\*\*CAN:\*\* create\/edit AL objects[^\n]+/,
-      '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through verified project commands when authorized; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; editor debugging and AL LSP navigation are unavailable here.')
+      '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through verified project commands when authorized; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; use configured native AL LSP navigation when exposed, keeping editor debugger controls separate.')
     .replace(/4\. \*\*Build & validate\*\*[^\n]+/,
       '4. **Build & validate** — use the verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; request a human debugger capture when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
-    .replace(/; navigate via AL LSP/g, '; inspect available symbols or text references');
+    .replace(/; navigate via AL LSP/g, '; use native LSP references when available, otherwise identify text/symbol evidence as a fallback');
   // This section is exclusively a host tool declaration, not a role workflow.
   text = text.replace(/## Tool surface \(authoritative[^\n]*\)[\s\S]*?(?=## CAN \/ CANNOT)/,
-    `## Tool surface (Copilot CLI)\n\nUse the granted file/search/shell tools and the actually loaded al-symbols-mcp,\ncontext7 and microsoft-docs tools. Inspect their current schemas before calling.\nCompile, symbol download, tests and publishing require a verified terminal command\nfor this project and the canonical authorization. No editor debugging or semantic\nAL LSP tool is bundled. Missing runners or tools are unavailable, never inferred.\n\n`);
+    `## Tool surface (Copilot CLI)\n\nUse the granted file/search/shell tools and the configured native LSP and actually loaded MCP tools. Read\ndocs/copilot-cli-al-tooling.md for role-specific capabilities. Inspect their current schemas before calling.\nCompile, symbol download, tests and publishing require a verified terminal command\nfor this project and the canonical authorization. The AL LSP provider is external; verify its configuration and the effective\nsemantic tools for this role. Editor debugger controls are not bundled. Missing runners or tools are unavailable, never inferred.\n\n`);
   return text
     .replace(/@(?:al-[a-z-]+|dredd)\b/g, s => s.slice(1))
     .replace(/@AL Architecture & Design Specialist/g, 'al-architect')
@@ -58,7 +63,8 @@ function translateHost(text) {
     .replace(/`(?:Task|Agent|agent)`/g, '`task`')
     .replace(/#(?:todos|todo)\b/g, 'plan progress tracking')
     .replace(/#?(?:vscode\/)?askQuestions\b|\bAskUserQuestion\b/g, 'ask_user (or return questions to the caller)')
-    .replace(/#(?:search|codebase|usages)\b/g, 'glob/grep text search (not semantic AL navigation)')
+    .replace(/#usages\b/g, 'native LSP references when exposed (otherwise label text-search evidence)')
+    .replace(/#(?:search|codebase)\b/g, 'glob/grep source search')
     .replace(/#(?:problems|testFailure)\b|\bread\/problems\b/g, 'actual compiler/test output (unverified until run)')
     .replace(/#changes\b|\bsearch\/changes\b/g, 'git diff through an available shell (or a supplied diff)')
     .replace(/#githubRepo\b/g, 'repository files/history through available read tools')
@@ -77,7 +83,7 @@ function translateHost(text) {
     .replace(/\bal_debug\b|\bal_setbreakpoint\b|\bal_snapshotdebugging\b|\bbclsp_\w+\b/g, 'editor-only capability (unavailable in CLI)')
     .replace(/\brunInTerminal\b/g, 'bash/powershell')
     .replace(/`execute`/g, '`bash/powershell`')
-    .replace(/`usages` tool/g, 'available text search (not semantic references)')
+    .replace(/`usages` tool/g, 'native LSP references when exposed (otherwise label text-search evidence)')
     .replace(/\bupstash\/context7\//g, 'context7/')
     .replace(/\bmicrosoft-learn\//g, 'microsoft-docs/')
     .replace(/\bweb\/githubTextSearch\b/g, 'available repository search')

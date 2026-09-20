@@ -31,12 +31,17 @@ disable-model-invocation: true
 > read the complete bundled SKILL.md. A read is not a native skill invocation.
 > Resolve PLUGIN_ROOT to this installed agent's plugin directory (not the project
 > or original checkout). It is a path placeholder here, not a promised global
-> shell variable. Read skills/skill-migrate/references/cli-al-tools.md there.
+> shell variable. Read docs/copilot-cli-al-tooling.md there for LSP/MCP bindings;
+> it supersedes older availability examples in the shared terminal contract at
+> skills/skill-migrate/references/cli-al-tools.md, never role duties or human gates.
 > Project instructions and matching .github/instructions rules remain binding;
 > pass the relevant excerpts to delegated roles. Canonical artifacts remain in
 > .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
 > AL execution requires a verified terminal command/runner or an actually exposed
-> MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> MCP capability. Reuse the configured AL LSP for Agents wrapper through native
+> CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
+> tool aliases or broaden read-only grants to enable rename/write operations.
+> Editor debugger controls remain separate from semantic navigation.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -78,8 +83,8 @@ Research Business Central AL codebases to understand:
 - Review app.json for dependencies
 
 **Use These Tools:**
-- `glob/grep text search (not semantic AL navigation)` - Semantic search for AL patterns and object names
-- `glob/grep text search (not semantic AL navigation)` - Find where AL objects are referenced
+- `glob/grep source search` - Semantic search for AL patterns and object names
+- `native LSP references when exposed (otherwise label text-search evidence)` - Find where AL objects are referenced
 - `verified manifest/symbol dependency inspection` - Analyze extension dependencies
 - `available source or loaded symbol MCP inspection` - Examine existing AL implementations
 - `actual compiler/test output (unverified until run)` - Identify current AL compilation or runtime issues

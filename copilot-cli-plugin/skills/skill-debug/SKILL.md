@@ -46,7 +46,7 @@ Scenario: "Value is wrong after posting"
 
 1. Set breakpoint at final location (where value is wrong)
 2. Work backwards to find where value is set
-3. Use available text search (not semantic references) to find all assignments
+3. Use native LSP references when exposed (otherwise label text-search evidence) to find all assignments
 4. Set breakpoints at each assignment point
 5. Step through to find which execution path is taken
 6. Inspect conditions and variable states at each point
@@ -132,7 +132,7 @@ Gather issue information:
 
 ### Step 2a: Isolate the Problem (Runtime / Logic)
 
-1. Narrow down scope with `search` and available text search (not semantic references)s
+1. Narrow down scope with `search` and native LSP references when exposed (otherwise label text-search evidence)s
 2. Identify suspect objects (tables, pages, codeunits, event subscribers)
 3. Attach debugger with selected strategy (Pattern 1)
 4. Set strategic breakpoints:

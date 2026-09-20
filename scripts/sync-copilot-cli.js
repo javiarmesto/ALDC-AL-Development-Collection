@@ -172,7 +172,9 @@ Reinstall the local path after updates (the CLI caches plugins). Use a separate
 test project; existing project/personal agents or skills can shadow the plugin.
 Do not install both aldc and aldc-cli into the same CLI test session.
 
-Read skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
+Read [CLI AL tooling](docs/copilot-cli-al-tooling.md) for native LSP reuse,
+optional official AL MCP and Triage. Then read the shared
+skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
 scope, evidence and graph ownership. No VS Code language-model tools are bundled.
 The existing community/documentation MCP servers retain their configuration.
 No Claude hooks are imported; the agents retain their optional BCQuality backstop.
@@ -194,6 +196,7 @@ need host evidence; installation and catalogs alone do not certify them.
   put('scripts/init.js', adaptInitializer(read('scripts/init-plugin.js')));
   put('scripts/cli-bootstrap.js', read('scripts/copilot-cli-bootstrap.js'));
   put('docs/copilot-cli-plugin.md', read('docs/copilot-cli-plugin.md'));
+  put('docs/copilot-cli-al-tooling.md', read('scripts/copilot-cli-al-tooling.md'));
   const { walk: paths, provenance } = require('./package-provenance');
   sources.push(...paths(root, 'tools/bcquality'), 'tools/aldc-validate/package.json', 'tools/aldc-validate/index.js', ...paths(root, 'tools/context-doctor'),
     'aldc.yaml', 'scripts/plugin-runtime.js', 'scripts/generation-utils.js', 'scripts/copilot-cli-adapter.js', 'scripts/copilot-cli-bootstrap.js',

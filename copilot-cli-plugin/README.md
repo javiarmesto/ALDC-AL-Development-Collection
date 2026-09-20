@@ -15,7 +15,9 @@ Reinstall the local path after updates (the CLI caches plugins). Use a separate
 test project; existing project/personal agents or skills can shadow the plugin.
 Do not install both aldc and aldc-cli into the same CLI test session.
 
-Read skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
+Read [CLI AL tooling](docs/copilot-cli-al-tooling.md) for native LSP reuse,
+optional official AL MCP and Triage. Then read the shared
+skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
 scope, evidence and graph ownership. No VS Code language-model tools are bundled.
 The existing community/documentation MCP servers retain their configuration.
 No Claude hooks are imported; the agents retain their optional BCQuality backstop.
