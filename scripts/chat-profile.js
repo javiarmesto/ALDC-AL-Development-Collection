@@ -54,7 +54,7 @@ function project(relative, input, profile) {
     .replace('Use only the native operations declared here;', 'Use only the operations declared here;')
     .replace('Use the granted native AL tools under the shared native contract.', 'Use the granted AL tools under the Chat contract.')
     .replace('Inspect app.json, available symbols and the installed native build schema.', 'Inspect app.json, available symbols and the selected provider’s build schema.')
-    .replace('Use `al_build` with `scope: current` for the selected project; use\n   `scope: all` only when every project in the workspace is authorized.', 'Use the selected provider’s `al_build` schema for the authorized project.\n   Native `scope` and MCP `projectPath` are different schemas; never transpose them.')
+    .replace('Use `al_build` with `scope: current` for the selected project; use\n   `scope: all` only when every project in the workspace is authorized.', 'Use the selected provider’s `al_build` schema for the authorized project.\n   Discover supported `scope`, `projectPath` and output options for that provider; never transpose schemas.')
     .replace('installed `al_downloadsymbols` schema', 'selected provider’s `al_downloadsymbols` schema');
   const scope = coordinator ? 'Coordinate and consume evidence; do not execute AL providers.' :
     implementation ? 'Query AL and compile/build/restore only the authorized App/Test scope. Publication and authentication are separate human steps.' :

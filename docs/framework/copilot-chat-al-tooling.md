@@ -61,13 +61,54 @@ source evidence without assuming BC29 native availability. Both profiles reuse
 the existing normalization of obsolete tool names and the build/publication gate.
 This changes installed Chat output, not the shared canonical agent files.
 
-Select one provider for an operation and inspect its schema. MCP symbol search
-can use a `parameters` wrapper and an absolute `projectPath`; native build uses
-`scope`. Never transpose schemas. Handle App/Test and matching dependencies
-separately. Diagnostics, fresh compilation and runtime tests are distinct claims.
-Use only the supported operations actually exposed by the installed AL version.
-Publish, login/logout and credential reset are not granted by this package.
-Setup requiring authentication remains a separately authorized human step.
+### Server workspace and live schemas
+
+A connected server is not necessarily a loaded AL workspace. In the owner's
+2026-09-20 Claude smoke, a dependency query with an absolute `projectPath` returned
+`No projects are loaded`. A separately authorized setup call to `al_addproject`
+with the existing App folder loaded it; subsequent delegated queries succeeded.
+This is a provider prerequisite to check in this host, not runtime validation of
+this surface. Read the installed tool's description first: register an existing
+folder containing `app.json`; do not scaffold an application, change files,
+download symbols or initiate authentication as a query fallback.
+
+Prepare the same live server connection that the specialist will use. Another
+alias, a separate setup process or a restarted server may have different state.
+Recheck after reconnecting. Keep App and Test identities explicit: do not assume
+`scope: project` selects one particular folder when several projects are loaded.
+An ambiguous workspace-wide operation must stop until its scope is resolved.
+
+Discover every operation's schema, including any wrapper. The following behavior
+was observed in Claude against the installed Microsoft server; its executable
+version was not captured, so verify it again in each host/version:
+
+| Operation | Observed input and effect |
+| --- | --- |
+| `al_addproject` | Required `projectPath`; registers an existing project in the live server workspace |
+| `al_symbolsearch` | Top-level `query` and optional `filters`; `parameters` deprecated; no `projectPath`; `filters.scope` uses the loaded workspace |
+| `al_getpackagedependencies` | Optional `projectPath` and `name`; a path does not itself load the project |
+| `al_getdiagnostics` | Project/folder/file filters according to schema; existing server diagnostics, not a fresh compile |
+| `al_compile` | Validates the loaded workspace without a `.app`; no `projectPath` in the observed schema; inspect the exact options shape |
+| `al_build` | Observed flat `projectPath` and `scope: current`; generates a `.app` |
+
+A no-diagnostics response does not establish analyzer execution. Enable CodeCop
+or AppSourceCop only for authorized work and record their actual configuration.
+A package path reported by `al_build` and a subsequent file-existence check are
+separate evidence. Neither compilation nor packaging proves tests were run.
+Never copy a Claude wire prefix, execution-mode setting or runtime PASS into
+this host's acceptance record.
+
+Select the actual provider/tool-picker entry and inspect its schema; native tools
+and MCP can both use `scope`, but their full schemas must not be transposed.
+For a standalone MCP that needs registration, a human or explicitly authorized
+setup conversation can select the exact `al_addproject` tool to load the existing
+folder on that same connection. Packaged specialist and prompt grants do not add
+this operation; do not bypass their scope with terminal or generic delegation.
+An editor workspace may already be loaded by a native provider, but that does not
+prove the standalone MCP is initialized. Inspect each connection independently.
+Keep `.vscode/mcp.json` user-owned. Publish, login/logout and credential reset
+remain ungranted; setup requiring authentication is a separate human step.
+
 
 These selectors constrain the Chat tool selection, not the whole machine. Some
 existing roles retain terminal/editor/delegation tools for their original work;
