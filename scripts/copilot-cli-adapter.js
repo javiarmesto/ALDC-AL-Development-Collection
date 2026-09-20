@@ -35,7 +35,10 @@ const HOST_PREFACE = `
 > Editor debugger controls remain separate from semantic navigation. Official AL
 > MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
 > restore. Discover the actual callable names and pass the correct App/Test path.
-> No official publish/authentication tool is granted by this adapter.
+> No official publish/authentication tool is granted by this adapter. Triage alone
+> receives the optional dedicated bc-profiling and bc-snapshot proxies; discover
+> their schemas and confirm an authorized target/window before capture. Other
+> roles consume evidence. Capture does not prove autonomous snapshot debugging.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -51,7 +54,7 @@ function translateHost(text) {
     .replace(/\*\*CAN:\*\* create\/edit AL objects[^\n]+/,
       '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through authorized official AL MCP or verified project commands; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; use configured native AL LSP navigation when exposed, keeping editor debugger controls separate.')
     .replace(/4\. \*\*Build & validate\*\*[^\n]+/,
-      '4. **Build & validate** — use the discovered official AL MCP or verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; request a human debugger capture when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
+      '4. **Build & validate** — use the discovered official AL MCP or verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; hand an authorized capture request to Triage or the human when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
     .replace(/; navigate via AL LSP/g, '; use native LSP references when available, otherwise identify text/symbol evidence as a fallback');
   // This section is exclusively a host tool declaration, not a role workflow.
   text = text.replace(/## Tool surface \(authoritative[^\n]*\)[\s\S]*?(?=## CAN \/ CANNOT)/,
@@ -83,7 +86,8 @@ function translateHost(text) {
     .replace(/\bal_clear_credentials_cache\b/g, 'the documented credential recovery procedure for the actual runner (human action)')
     .replace(/\bal_generatepermissionset\b/g, 'reviewed permission-set authoring through file tools')
     .replace(/\bal_symbolsearch\b|\bal_symbolrelations\b/g, 'discovered official/community symbol query when granted')
-    .replace(/\bal_debug\b|\bal_setbreakpoint\b|\bal_snapshotdebugging\b|\bbclsp_\w+\b/g, 'editor-only capability (unavailable in CLI)')
+    .replace(/\bal_snapshotdebugging\b/g, 'optional snapshot capture through Triage with authorization')
+    .replace(/\bal_debug\b|\bal_setbreakpoint\b|\bbclsp_\w+\b/g, 'editor-only capability (unavailable in CLI)')
     .replace(/\brunInTerminal\b/g, 'bash/powershell')
     .replace(/`execute`/g, '`bash/powershell`')
     .replace(/`usages` tool/g, 'native LSP references when exposed (otherwise label text-search evidence)')
@@ -97,8 +101,8 @@ function translateHost(text) {
 
 module.exports = { HOST_PREFACE, translateHost };
 
-// CLI-owned grants. Planning is narrowed to its canonical research-only scope;
-// other roles preserve the accepted 5.0.1 grants.
+// CLI-owned grants. Planning and Dredd stay read-only; optional AL providers
+// are selected below by role without auto-configuring or starting servers.
 const ROLE_TOOLS = {
   "al-agent-builder": [
     "read",
@@ -221,8 +225,7 @@ const ROLE_TOOLS = {
     "search",
     "al-symbols-mcp/*",
     "context7/*",
-    "microsoft-docs/*",
-    "edit"
+    "microsoft-docs/*"
   ]
 };
 function toolsForRole(name) {
@@ -230,6 +233,29 @@ function toolsForRole(name) {
   const tools = [...ROLE_TOOLS[name]];
   if (name !== 'al-conductor') tools.push('al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies');
   if (['al-developer', 'al-implement-subagent'].includes(name)) tools.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
+  if (name === 'al-triage') tools.push('bc-profiling/*', 'bc-snapshot/*');
   return tools;
 }
 module.exports.toolsForRole = toolsForRole;
+
+
+// CLI cannot restrict its edit alias to an audit-report directory. Preserve the
+// report contract while moving persistence to an explicit caller/human operation.
+function adaptDreddPersistence(body) {
+  const replacements = [
+    [/Your `edit` tool is used for \*\*one thing only\*\*:[^\n]+/,
+      'On Copilot CLI you have no edit, shell or delegation tool. Return your complete Audit-Report JSON; persistence is an explicit caller/human operation using the bundled save-audit.js helper. Do not write files or claim persistence without a save receipt.'],
+    [/^1\. If the user forbids writes,[^\n]+/m,
+      '1. Return the complete Audit-Report JSON verbatim. If the user forbids writes, state persistence skipped; chat delivery completes reporting. Otherwise state persistence pending and hand the JSON to the caller/human for explicit saving with `${PLUGIN_ROOT}/scripts/save-audit.js` (see `${PLUGIN_ROOT}/docs/copilot-cli-al-tooling.md`). The helper creates a new report under `.github/audits/`; Dredd does not run it. A save receipt establishes persistence, not correctness of findings or provider execution.'],
+    [/The path of the persisted report, and the full `### Audit-Report \(JSON\)` block\./,
+      'The actual saved path/hash only if a receipt is supplied, otherwise the pending/skipped persistence status, and the full `### Audit-Report (JSON)` block.'],
+    [/3\. Close the reporting task once the report is delivered \(persisted when allowed\)\./,
+      '3. Close reporting after chat delivery when writes are forbidden, or after the caller confirms saving when persistence is allowed. Until then, keep persistence pending.']
+  ];
+  for (const [pattern, replacement] of replacements) {
+    if (!pattern.test(body)) throw Error(`Dredd persistence anchor changed: ${pattern}`);
+    body = body.replace(pattern, () => replacement);
+  }
+  return body;
+}
+module.exports.adaptDreddPersistence = adaptDreddPersistence;

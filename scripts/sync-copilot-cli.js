@@ -8,13 +8,13 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { HOST_PREFACE, translateHost, toolsForRole } = require('./copilot-cli-adapter');
+const { HOST_PREFACE, translateHost, toolsForRole, adaptDreddPersistence } = require('./copilot-cli-adapter');
 const { split, WORKFLOWS, workflowSkillName, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
 const { support } = require('./plugin-runtime');
 const ROOT = path.resolve(__dirname, '..');
 const DEST = 'copilot-cli-plugin';
 const CLI_PREFACE = HOST_PREFACE;
-const agentBody = (body) => HOST_PREFACE + bodyFor(canonicalPaths(body.replace(/^\n/, '')));
+const agentBody = (body, name) => HOST_PREFACE + bodyFor(canonicalPaths((name === 'dredd' ? adaptDreddPersistence(body) : body).replace(/^\n/, '')));
 function bodyFor(text) {
   text = text.replace(/\]\(\.\.\/agents\/([a-z0-9-]+)\.md\)/g, '](../agents/$1.agent.md)');
   return translateHost(text
@@ -84,7 +84,7 @@ function expected(root = ROOT) {
     for (const field of ['user-invocable', 'disable-model-invocation']) {
       if (canonical.data[field] !== undefined) data[field] = canonical.data[field];
     }
-    let body = agentBody(src.body);
+    let body = agentBody(src.body, name);
     // Keep the host profile below the documented size limit without deleting
     // workflow steps. Reading the complete external contract is mandatory.
     if (body.length > 29000) {
@@ -181,8 +181,10 @@ No Claude hooks are imported; the agents retain their optional BCQuality backsto
 
 Role write scopes are behavioral contracts, not filesystem sandboxes. The CLI
 edit capability translates Claude Write/Edit, both of which can overwrite files;
-execute/Bash is also broader than a report directory. Dredd and Triage must write
-only their reports as specified. Host tool/path approvals remain necessary;
+execute/Bash is also broader than a report directory. Dredd has no edit, shell or
+delegation grant: it returns its complete JSON for explicit caller/human saving
+with scripts/save-audit.js, which writes only a new report under .github/audits/.
+Triage retains behavioral report-write limits. Host approvals remain necessary;
 this package does not claim an enforced per-role filesystem boundary.
 
 Install, update, precedence, bootstrap and validation: [Copilot CLI guide](docs/copilot-cli-plugin.md).
@@ -197,6 +199,7 @@ need host evidence; installation and catalogs alone do not certify them.
   put('scripts/cli-bootstrap.js', read('scripts/copilot-cli-bootstrap.js'));
   put('docs/copilot-cli-plugin.md', read('docs/copilot-cli-plugin.md'));
   put('docs/copilot-cli-al-tooling.md', read('scripts/copilot-cli-al-tooling.md'));
+  put('scripts/save-audit.js', read('scripts/copilot-cli-save-audit.js'));
   const { walk: paths, provenance } = require('./package-provenance');
   sources.push(...paths(root, 'tools/bcquality'), 'tools/aldc-validate/package.json', 'tools/aldc-validate/index.js', ...paths(root, 'tools/context-doctor'),
     'aldc.yaml', 'scripts/plugin-runtime.js', 'scripts/generation-utils.js', 'scripts/copilot-cli-adapter.js', 'scripts/copilot-cli-bootstrap.js',

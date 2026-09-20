@@ -34,7 +34,10 @@ disable-model-invocation: true
 > Editor debugger controls remain separate from semantic navigation. Official AL
 > MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
 > restore. Discover the actual callable names and pass the correct App/Test path.
-> No official publish/authentication tool is granted by this adapter.
+> No official publish/authentication tool is granted by this adapter. Triage alone
+> receives the optional dedicated bc-profiling and bc-snapshot proxies; discover
+> their schemas and confirm an authorized target/window before capture. Other
+> roles consume evidence. Capture does not prove autonomous snapshot debugging.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.

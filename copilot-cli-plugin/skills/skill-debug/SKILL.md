@@ -34,7 +34,7 @@ Select the right tool before starting:
 | Consistent runtime error | Standard debugger | `editor-only capability (unavailable in CLI)` |
 | Already deployed code | Debug without publish | `editor-only capability (unavailable in CLI)` |
 | Rapid dev cycle | Incremental publish | `verified deployment command (requires authorization and an available runner)` (incremental) |
-| Intermittent / hard-to-reproduce | Snapshot debugging | `editor-only capability (unavailable in CLI)` |
+| Intermittent / hard-to-reproduce | Snapshot debugging | `optional snapshot capture through Triage with authorization` |
 | Slow performance | CPU profiling | VS Code command (not an agent tool) |
 | Auth / symbols / build | Configuration troubleshoot | See Workflow Step 2b |
 | Copilot AI feature | Agent session debug | `launch.json` with `clientType: Agent` |
@@ -98,11 +98,11 @@ Before initializing:
 2. Security review for sensitive information
 3. Obtain explicit user approval
 
-Commands (one tool — `editor-only capability (unavailable in CLI)` — covers initialize / finish / view):
-  editor-only capability (unavailable in CLI) (initialize)   ← start capture session
+Commands (one tool — `optional snapshot capture through Triage with authorization` — covers initialize / finish / view):
+  optional snapshot capture through Triage with authorization (initialize)   ← start capture session
   [reproduce scenario 10-20 times]
-  editor-only capability (unavailable in CLI) (finish)       ← end capture
-  editor-only capability (unavailable in CLI) (view)         ← view and compare
+  optional snapshot capture through Triage with authorization (finish)       ← end capture
+  optional snapshot capture through Triage with authorization (view)         ← view and compare
 
 Compare snapshots between success and failure cases:
 - Variable values at failure point

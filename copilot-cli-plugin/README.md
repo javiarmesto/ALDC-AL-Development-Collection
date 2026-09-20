@@ -24,8 +24,10 @@ No Claude hooks are imported; the agents retain their optional BCQuality backsto
 
 Role write scopes are behavioral contracts, not filesystem sandboxes. The CLI
 edit capability translates Claude Write/Edit, both of which can overwrite files;
-execute/Bash is also broader than a report directory. Dredd and Triage must write
-only their reports as specified. Host tool/path approvals remain necessary;
+execute/Bash is also broader than a report directory. Dredd has no edit, shell or
+delegation grant: it returns its complete JSON for explicit caller/human saving
+with scripts/save-audit.js, which writes only a new report under .github/audits/.
+Triage retains behavioral report-write limits. Host approvals remain necessary;
 this package does not claim an enforced per-role filesystem boundary.
 
 Install, update, precedence, bootstrap and validation: [Copilot CLI guide](docs/copilot-cli-plugin.md).

@@ -53,7 +53,10 @@ model: claude-sonnet-4.6
 > Editor debugger controls remain separate from semantic navigation. Official AL
 > MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
 > restore. Discover the actual callable names and pass the correct App/Test path.
-> No official publish/authentication tool is granted by this adapter.
+> No official publish/authentication tool is granted by this adapter. Triage alone
+> receives the optional dedicated bc-profiling and bc-snapshot proxies; discover
+> their schemas and confirm an authorized target/window before capture. Other
+> roles consume evidence. Capture does not prove autonomous snapshot debugging.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -128,7 +131,7 @@ If you loaded no skills, omit the line entirely (don't write "no skills loaded")
 1. **Understand** — confirm the feature/fix, existing patterns to follow, files to touch, and business rules. If unclear, ask targeted questions; if it needs design, recommend `al-architect` first.
 2. **Load context** — read `.github/plans/` when present and follow it exactly: `*.architecture.md` (patterns), `*.spec.md` (object IDs/structure), `*-plan.md` (phases), `*.test-plan.md` (coverage), `memory.md` (cross-session decisions). If absent, proceed on standard AL practice and ask for object-ID ranges. Use `search` / `discovered official/community symbol query when granted` / `editor-only capability (unavailable in CLI)` to locate existing code; `microsoft-docs/*` and `context7/*` for docs. You don't author these context files — `al-architect`, `al-conductor`, and `al-spec.create` do.
 3. **Implement** — code following the auto-applied instructions and any loaded skill. **Naming is infrastructure**: files MUST be `<ObjectName>.<ObjectType>.al`, or they silently miss their type-specific instructions. Extensions only — never modify base objects.
-4. **Build & validate** — use the discovered official AL MCP or verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; request a human debugger capture when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.
+4. **Build & validate** — use the discovered official AL MCP or verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; hand an authorized capture request to Triage or the human when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.
 5. **Report** — summarize what changed, declare loaded skills, and suggest next steps.
 
 ## Response style
