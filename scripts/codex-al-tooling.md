@@ -43,10 +43,53 @@ args = ["launchmcpserver", "--transport", "stdio"]
 enabled_tools = ["al_symbolsearch", "al_getdiagnostics", "al_getpackagedependencies"]
 ```
 
-Inspect the discovered schema, including the `parameters` wrapper for symbol
-search. Pass the selected project's absolute `projectPath` where supported;
-handle App/Test separately and use matching dependency packages. A diagnostics
-query does not prove a fresh compilation. Record tool, project and actual result.
+### Server workspace and live schemas
+
+A connected server is not necessarily a loaded AL workspace. In the owner's
+2026-09-20 Claude smoke, a dependency query with an absolute `projectPath` returned
+`No projects are loaded`. A separately authorized setup call to `al_addproject`
+with the existing App folder loaded it; subsequent delegated queries succeeded.
+This is a provider prerequisite to check in this host, not runtime validation of
+this surface. Read the installed tool's description first: register an existing
+folder containing `app.json`; do not scaffold an application, change files,
+download symbols or initiate authentication as a query fallback.
+
+Prepare the same live server connection that the specialist will use. Another
+alias, a separate setup process or a restarted server may have different state.
+Recheck after reconnecting. Keep App and Test identities explicit: do not assume
+`scope: project` selects one particular folder when several projects are loaded.
+An ambiguous workspace-wide operation must stop until its scope is resolved.
+
+Discover every operation's schema, including any wrapper. The following behavior
+was observed in Claude against the installed Microsoft server; its executable
+version was not captured, so verify it again in each host/version:
+
+| Operation | Observed input and effect |
+| --- | --- |
+| `al_addproject` | Required `projectPath`; registers an existing project in the live server workspace |
+| `al_symbolsearch` | Top-level `query` and optional `filters`; `parameters` deprecated; no `projectPath`; `filters.scope` uses the loaded workspace |
+| `al_getpackagedependencies` | Optional `projectPath` and `name`; a path does not itself load the project |
+| `al_getdiagnostics` | Project/folder/file filters according to schema; existing server diagnostics, not a fresh compile |
+| `al_compile` | Validates the loaded workspace without a `.app`; no `projectPath` in the observed schema; inspect the exact options shape |
+| `al_build` | Observed flat `projectPath` and `scope: current`; generates a `.app` |
+
+A no-diagnostics response does not establish analyzer execution. Enable CodeCop
+or AppSourceCop only for authorized work and record their actual configuration.
+A package path reported by `al_build` and a subsequent file-existence check are
+separate evidence. Neither compilation nor packaging proves tests were run.
+Never copy a Claude wire prefix, execution-mode setting or runtime PASS into
+this host's acceptance record.
+
+The query-only example intentionally omits `al_addproject`. Where registration
+is required, use a reviewed parent setup binding whose `enabled_tools` additionally
+includes only `al_addproject`, and prepare the same live connection before queries.
+Retain the query-only child filter and verify actual inheritance/connection state;
+no generated role gains this setup operation. If the child uses another server
+instance, report the missing preparation route instead of assuming state survived.
+Do not restart a prepared connection merely to switch filters and claim its state
+was retained. This parent/child setup route remains unvalidated in Codex; existing
+filesystem sandbox modes do not enforce it. Keep credentials and denials intact.
+
 
 ALDC's intended scopes are:
 
