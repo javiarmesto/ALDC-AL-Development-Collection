@@ -3,7 +3,7 @@
   "surface": "claude",
   "base_commit": "e21fbf6185ebbcdeed590a2e52022541c11c5cbf",
   "package_version": "5.0.1",
-  "status": "draft-host-validation-pending",
+  "status": "draft-partial-owner-host-validation",
   "tests": {
     "npm_test": "passed; final suite 59 passed, 2 existing PowerShell skips",
     "claude_tooling": "5 passed; grants, no duplicate declarations, provider configuration preserved through initialize/update/verify/rollback",
@@ -41,5 +41,12 @@
     "Existing Dredd report Write permission is behavioral, not a path sandbox.",
     "Existing shell grants and community server grants are not made into hard role sandboxes by this change."
   ],
-  "release": "No tag, release, Marketplace publication, VSIX or BC mutation."
+  "release": "No tag, release, Marketplace publication, VSIX or BC mutation.",
+  "owner_host_smoke": {
+    "date": "2026-09-20",
+    "record": "host-smoke-2026-09-20.md",
+    "source": "owner-supplied screenshots and reports; not executed by packaging environment",
+    "coverage": "basic LSP/MCP smoke; mode-dependent; remaining acceptance gates in record"
+  },
+  "runtime_note": "runtime fields below describe the original packaging environment only; see owner_host_smoke for later Windows observations"
 }

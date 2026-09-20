@@ -545,7 +545,7 @@ From a clone, register this directory as a local marketplace:
 /plugin install ${PLUGIN}@${PLUGIN}-marketplace
 \`\`\`
 
-Verify with \`/plugin\`, \`/agents\` and \`/\`. You should see ${counts.agents} agents,
+Verify with \`/plugin\`, the actual Agent catalog and \`/\`. Claude 2.1.278 removed the \`/agents\` wizard. You should see ${counts.agents} agents,
 ${counts.entry} role entry skills, ${counts.workflows} workflow skills and
 ${counts.knowledge} knowledge skills, all prefixed \`${PLUGIN}:\`. Plugin loading,
 tool availability and any Business Central operation still need local

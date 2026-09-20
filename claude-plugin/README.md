@@ -22,7 +22,7 @@ From a clone, register this directory as a local marketplace:
 /plugin install aldc@aldc-marketplace
 ```
 
-Verify with `/plugin`, `/agents` and `/`. You should see 12 agents,
+Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 12 agents,
 9 role entry skills, 11 workflow skills and
 16 knowledge skills, all prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local

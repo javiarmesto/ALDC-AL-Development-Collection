@@ -1,6 +1,6 @@
 # Claude Code AL tooling
 
-Claude-specific bindings, reviewed 2026-09-19. This guide overrides older
+Claude-specific bindings, reviewed 2026-09-20. This guide overrides older
 availability examples in the shared terminal contract; its role responsibilities,
 human gates and evidence requirements still apply. Providers remain external and
 optional. Missing tooling does not prevent source-based work.
@@ -24,6 +24,34 @@ Verify main-session, foreground-subagent and any used background-subagent access
 separately. A declared tool is not proof of availability in every mode. If a mode
 cannot access LSP, return that limitation and the unresolved query to the caller;
 do not claim semantic success or install a bridge to conceal it.
+
+### Execution mode on Claude Code 2.1.278
+
+The owner's Windows smoke found LSP in the main Architect session and in a
+foreground Architect subagent, but not in newly spawned background Architect or
+Reviewer agents. Claude's documented background built-in filter excludes LSP;
+listing it in frontmatter does not override that filter. MCP queries remained
+available in background agents. See [available tools and execution mode](https://code.claude.com/docs/en/sub-agents#available-tools).
+
+For an explicitly selected foreground test, launch from the consumer directory
+in Windows Terminal (not PowerShell ISE). This setting lasts only in the child
+process and makes delegated work foreground, affecting concurrency:
+
+```powershell
+cmd /c "set CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1&& claude --plugin-dir C:\ALDC-Lab-20260920\fuentes\claude\claude-plugin"
+```
+
+Adapt the example path to the actual candidate. Do not persist this setting or
+change user defaults during initialization. In this mode Architect discovered
+LSP with `ToolSearch` and executed `documentSymbol`. A resumed instance then
+executed definition/reference queries; that is not evidence for a newly spawned
+background agent. Keep normal MCP background work available as a separate choice.
+Do not broaden agent grants or replace the native role with a conversation fork
+to evade these differences.
+
+On this version `/agents` reports that its wizard was removed. Inspect `/plugin`
+and the actual Agent/skill catalog; absence from that old wizard is not a loading
+failure. Confirm the candidate directory as well as the plugin name/version.
 
 ## Role loading and permissions
 
@@ -73,13 +101,48 @@ restore still needs the implementation task's authorization. Agent allowlists
 limit exposed MCP names, not filesystem paths or commands reachable through a
 role's existing shell. Entry skills do not apply those allowlists.
 
-Pass the consumer project's absolute `projectPath` according to each discovered
-schema, selecting App or Test deliberately. `al_symbolsearch` uses a `parameters`
-wrapper; do not copy that shape to other tools. Keep cache/project identities in
-the evidence. Diagnostic results can reflect the server's existing session and
-are not proof of a fresh build. Preserve BC28; do not change runtime, manifests or
-dependencies just to exercise a tool. No connection/authentication is attempted by
-Doctor or installation on behalf of this guide.
+### Prepare the live MCP workspace before role queries
+
+A connection and an absolute `projectPath` do not load a project automatically.
+The host smoke first returned `No projects are loaded`. From an authorized setup
+conversation, inspect `mcp__al__al_addproject` and register the existing folder
+containing `app.json`. The observed schema required only `projectPath`; the call
+succeeded without scaffolding or source changes. Then delegate the query to the
+native specialist on the same live connection. A restricted `--agent` session
+may not expose this setup operation; return the prerequisite rather than using
+shell, another alias or a generic delegate to bypass that role's tool list.
+
+`al_addproject` remains outside specialist grants. Preparation is an explicit
+caller/human action, not a query fallback or an automatic initializer action.
+Do not download symbols, change credentials or create a new project as setup
+side effects. A second alias or restarted server may have a separate workspace;
+recheck registration after reconnecting. An editor opening the folder does not
+prove that this standalone MCP connection loaded it.
+
+### Discover schemas per operation
+
+The owner's installed server exposed the following behavior; its executable
+version was not retained, so these are observations, not version-wide promises:
+
+| Operation | Observed behavior |
+| --- | --- |
+| `al_symbolsearch` | Top-level `query` and optional `filters`; `parameters` deprecated, no `projectPath`; scope is relative to the loaded workspace |
+| `al_getpackagedependencies` | Optional `projectPath` and `name`; successful after registration |
+| `al_getdiagnostics` | Supports project/folder/file filters; reports existing server diagnostics |
+| `al_compile` | Validates the loaded workspace, no `.app` output and no `projectPath`; inspect its actual options envelope |
+| `al_build` | Flat `projectPath` and `scope: current` produced a `.app` |
+
+Do not hard-code an old `parameters` wrapper or transpose inputs between tools.
+The copied compile report described an `options` envelope but displayed a flat
+argument; the exact raw request remains unverified. Preserve this uncertainty
+instead of turning that snippet into an example. Record expanded tool inputs.
+
+Select App/Test deliberately. For operations without a path parameter, establish
+which projects the live workspace covers; stop if the requested scope is
+ambiguous. Zero diagnostics does not prove CodeCop/AppSourceCop ran. Compiler
+validation, package generation, file-existence checks and executed tests are
+separate claims. Preserve BC28, manifests and approved dependencies. Doctor and
+installation do not connect, register projects or authenticate automatically.
 
 To undo a manually added connection, remove only that entry from its original
 configuration scope; retain pre-existing entries, credentials and LSP configuration.
@@ -158,7 +221,13 @@ references. Static packaging tests do not satisfy this host smoke test.
 - Check a background mode separately if it is part of the intended workflow.
 - Initialize/update ALDC and verify existing MCP and LSP settings are unchanged.
 
-No authenticated Claude/LSP invocation has been performed by the packaging tests.
+Packaging tests do not perform authenticated host calls. The owner supplied a
+separate Windows host smoke on 2026-09-20: main/foreground Architect LSP, background
+MCP queries, nested Conductor-to-Planning MCP, Developer compile/build and a
+Reviewer tool-catalog check. This is partial acceptance: Spec, Planning LSP,
+App/Test crossings, dependency LSP, BCQuality, human gates, analyzer execution and
+optional captures still require their own evidence. The repo evidence is at
+`docs/evidence/claude-al-tooling/host-smoke-2026-09-20.md` (not a packaged path).
 
 ## Sources
 
