@@ -31,7 +31,10 @@ disable-model-invocation: true
 > MCP capability. Reuse the configured AL LSP for Agents wrapper through native
 > CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
 > tool aliases or broaden read-only grants to enable rename/write operations.
-> Editor debugger controls remain separate from semantic navigation.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -52,21 +55,21 @@ Ask and confirm with the user before proceeding.
 Based on the deployment type, use the appropriate strategy:
 
 ### Development Environment
-1. **Build**: Use `verified project build/package command (if available)` to compile the project
+1. **Build**: Use `official AL MCP build when granted, or verified project build/package command` to compile the project
 2. **Review**: Present build results for human approval
 3. **Deploy**: Use `verified deployment command (requires authorization and an available runner)` for rapid iteration (requires approval)
 4. **Verify**: Check for any compilation errors
 
 ### Testing Environment
-1. **Build**: Use `verified project build/package command (if available)` with full validation
-2. **Package**: Create .app file with `verified project build/package command (if available)`
+1. **Build**: Use `official AL MCP build when granted, or verified project build/package command` with full validation
+2. **Package**: Create .app file with `official AL MCP build when granted, or verified project build/package command`
 3. **Review**: Present package details for human approval
 4. **Deploy**: Use `verified deployment command (requires authorization and an available runner)` to deploy with debugging enabled (requires approval)
 5. **Test**: Ensure all unit tests pass
 
 ### Production Environment
-1. **Build**: Use `verified project build/package command (if available)` with strict validation
-2. **Package**: Create release package with `verified project build/package command (if available)`
+1. **Build**: Use `official AL MCP build when granted, or verified project build/package command` with strict validation
+2. **Package**: Create release package with `official AL MCP build when granted, or verified project build/package command`
 3. **Validation**: Verify package integrity and dependencies
 4. **Documentation**: Generate deployment checklist and present for review
 5. **Human Gate**: **MANDATORY** - Manual approval required before any production action
@@ -78,7 +81,7 @@ Based on the deployment type, use the appropriate strategy:
 - Verify package compatibility with target environment
 
 ### Full Dependency Package
-- Use `verified project build/package command (if available)` when creating packages with all dependencies
+- Use `official AL MCP build when granted, or verified project build/package command` when creating packages with all dependencies
 - Useful for offline installations or isolated environments
 
 ## Error Handling

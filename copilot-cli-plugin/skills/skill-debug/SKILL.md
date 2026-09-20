@@ -154,9 +154,9 @@ Then re-authenticate and verify launch.json authentication method.
 
 **Missing symbols** (unresolved references, red squiggles):
 ```
-verified terminal symbol-download command (if available)                      ← first attempt
-verified terminal symbol-download command (if available) (globalSourcesOnly)  ← if no BC server connection is available
-verified project build/package command (if available)                                ← verify compilation
+official AL MCP symbol restore when granted, or verified terminal restore                      ← first attempt
+official AL MCP symbol restore when granted, or verified terminal restore (globalSourcesOnly)  ← if no BC server connection is available
+official AL MCP build when granted, or verified project build/package command                                ← verify compilation
 ```
 Check `app.json` dependencies version alignment.
 

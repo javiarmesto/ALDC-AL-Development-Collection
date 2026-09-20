@@ -88,3 +88,17 @@ test('candidate does not broaden reviewer or Spec execution grants', () => {
     assert.equal(split(read(pluginRoot, `agents/${id}.agent.md`)).data['user-invocable'], false);
   }
 });
+
+
+test('official AL MCP grants are explicit and compilation belongs to implementation', () => {
+  const { toolsForRole } = require('./copilot-cli-adapter');
+  const roles = fs.readdirSync(path.join(pluginRoot, 'agents')).map(n => n.replace('.agent.md', ''));
+  for (const id of roles) {
+    const expected = id === 'al-conductor' ? [] : ['al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies'];
+    if (['al-developer', 'al-implement-subagent'].includes(id)) expected.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
+    assert.deepEqual(toolsForRole(id).filter(t => t.startsWith('al/')).sort(), expected.sort(), id);
+  }
+  const manifest = JSON.parse(read(pluginRoot, 'plugin.json'));
+  assert.equal(manifest.lspServers, undefined, 'no duplicate AL LSP registration');
+  for (const server of ['al', 'bc-profiling', 'bc-snapshot']) assert.equal(manifest.mcpServers[server], undefined, 'optional providers do not autostart');
+});

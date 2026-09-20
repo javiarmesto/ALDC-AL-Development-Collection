@@ -28,7 +28,10 @@
 > MCP capability. Reuse the configured AL LSP for Agents wrapper through native
 > CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
 > tool aliases or broaden read-only grants to enable rename/write operations.
-> Editor debugger controls remain separate from semantic navigation.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -203,7 +206,7 @@ Invoke **AL Code Review Subagent** (✅) via `task` with:
 - **BCQuality selection + task-context inline.** Pass the current mode, enabled value, exact plugin ID/skill or external root, expected identity and scoped observations. Build task-context only for an applicable review. The reviewer loads its own instructions and records actual results; disabled/unavailable uses native A–G.
 - **Declared review criteria.** Pass `.github/plans/<req>/<req>.bcq-criteria.json` inline when it exists. The reviewer reports each criterion as met, unmet or not evaluated; the Conductor renders that as the criteria delta in the phase-complete document. Absent file: no delta, nothing else changes.
 - Modified/created files
-- **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events by `loaded symbol MCP query (if available)` (a measured token sink — trial-and-error symbol searches). Tell it to symbol-search only to spot-confirm a signature it cannot resolve from the list.
+- **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events by `discovered official/community symbol query when granted` (a measured token sink — trial-and-error symbol searches). Tell it to symbol-search only to spot-confirm a signature it cannot resolve from the list.
 - AL validation requirements:
   - Event-driven patterns (no base modifications)
   - Naming conventions (26-char limit, PascalCase)

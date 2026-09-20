@@ -13,6 +13,9 @@ tools:
   - microsoft-docs/*
   - list_agents
   - read_agent
+  - al/al_symbolsearch
+  - al/al_getdiagnostics
+  - al/al_getpackagedependencies
 model: claude-sonnet-4.6
 ---
 
@@ -44,7 +47,10 @@ model: claude-sonnet-4.6
 > MCP capability. Reuse the configured AL LSP for Agents wrapper through native
 > CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
 > tool aliases or broaden read-only grants to enable rename/write operations.
-> Editor debugger controls remain separate from semantic navigation.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.

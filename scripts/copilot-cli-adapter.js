@@ -32,7 +32,10 @@ const HOST_PREFACE = `
 > MCP capability. Reuse the configured AL LSP for Agents wrapper through native
 > CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
 > tool aliases or broaden read-only grants to enable rename/write operations.
-> Editor debugger controls remain separate from semantic navigation.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -46,13 +49,13 @@ const HOST_PREFACE = `
 function translateHost(text) {
   text = text
     .replace(/\*\*CAN:\*\* create\/edit AL objects[^\n]+/,
-      '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through verified project commands when authorized; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; use configured native AL LSP navigation when exposed, keeping editor debugger controls separate.')
+      '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through authorized official AL MCP or verified project commands; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; use configured native AL LSP navigation when exposed, keeping editor debugger controls separate.')
     .replace(/4\. \*\*Build & validate\*\*[^\n]+/,
-      '4. **Build & validate** — use the verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; request a human debugger capture when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
+      '4. **Build & validate** — use the discovered official AL MCP or verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; request a human debugger capture when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
     .replace(/; navigate via AL LSP/g, '; use native LSP references when available, otherwise identify text/symbol evidence as a fallback');
   // This section is exclusively a host tool declaration, not a role workflow.
   text = text.replace(/## Tool surface \(authoritative[^\n]*\)[\s\S]*?(?=## CAN \/ CANNOT)/,
-    `## Tool surface (Copilot CLI)\n\nUse the granted file/search/shell tools and the configured native LSP and actually loaded MCP tools. Read\ndocs/copilot-cli-al-tooling.md for role-specific capabilities. Inspect their current schemas before calling.\nCompile, symbol download, tests and publishing require a verified terminal command\nfor this project and the canonical authorization. The AL LSP provider is external; verify its configuration and the effective\nsemantic tools for this role. Editor debugger controls are not bundled. Missing runners or tools are unavailable, never inferred.\n\n`);
+    `## Tool surface (Copilot CLI)\n\nUse the granted file/search/shell tools and the configured native LSP and actually loaded MCP tools. Read\ndocs/copilot-cli-al-tooling.md for role-specific capabilities. Inspect their current schemas before calling.\nCompile and symbol restore use authorized official AL MCP or a verified runner.\nTests need a real test runner; publishing retains its separate human/CI gate. The AL LSP provider is external; verify its configuration and the effective\nsemantic tools for this role. Editor debugger controls are not bundled. Missing runners or tools are unavailable, never inferred.\n\n`);
   return text
     .replace(/@(?:al-[a-z-]+|dredd)\b/g, s => s.slice(1))
     .replace(/@AL Architecture & Design Specialist/g, 'al-architect')
@@ -68,18 +71,18 @@ function translateHost(text) {
     .replace(/#(?:problems|testFailure)\b|\bread\/problems\b/g, 'actual compiler/test output (unverified until run)')
     .replace(/#changes\b|\bsearch\/changes\b/g, 'git diff through an available shell (or a supplied diff)')
     .replace(/#githubRepo\b/g, 'repository files/history through available read tools')
-    .replace(/#?ms-dynamics-smb\.al\/al_get_package_dependencies\b/g, 'verified manifest/symbol dependency inspection')
-    .replace(/@?al_get_package_dependencies\b/g, 'verified manifest/symbol dependency inspection')
+    .replace(/#?ms-dynamics-smb\.al\/al_get_package_dependencies\b/g, 'official AL MCP dependency query when granted, or manifest/symbol inspection')
+    .replace(/@?al_get_package_dependencies\b/g, 'official AL MCP dependency query when granted, or manifest/symbol inspection')
     .replace(/#?ms-dynamics-smb\.al\/al_download_source\b/g, 'available source or loaded symbol MCP inspection')
-    .replace(/\bal_get_diagnostics\b|\bbclsp_codeQualityDiagnostics\b/g, 'actual compiler diagnostics (only after execution)')
-    .replace(/\bal_downloadsymbols\b/g, 'verified terminal symbol-download command (if available)')
+    .replace(/\bal_get_diagnostics\b|\bbclsp_codeQualityDiagnostics\b/g, 'official AL MCP diagnostics when granted, or recorded compiler diagnostics; not proof of fresh compilation')
+    .replace(/\bal_downloadsymbols\b/g, 'official AL MCP symbol restore when granted, or verified terminal restore')
     .replace(/\bal_download_symbols\b|\bal_download_source\b/g, 'verified terminal symbol/source-download command (if available)')
-    .replace(/\bal_build\b|\bal_package\b|\bal_full_package\b/g, 'verified project build/package command (if available)')
+    .replace(/\bal_build\b|\bal_package\b|\bal_full_package\b/g, 'official AL MCP build when granted, or verified project build/package command')
     .replace(/\bal_publish\b|\bal_incremental_publish\b|\bal_publish_existing_extension\b/g, 'verified deployment command (requires authorization and an available runner)')
     .replace(/\bal_new_project\b|\bal_go\b|\bal_generate_manifest\b/g, 'reviewed project scaffolding through file tools')
     .replace(/\bal_clear_credentials_cache\b/g, 'the documented credential recovery procedure for the actual runner (human action)')
     .replace(/\bal_generatepermissionset\b/g, 'reviewed permission-set authoring through file tools')
-    .replace(/\bal_symbolsearch\b|\bal_symbolrelations\b/g, 'loaded symbol MCP query (if available)')
+    .replace(/\bal_symbolsearch\b|\bal_symbolrelations\b/g, 'discovered official/community symbol query when granted')
     .replace(/\bal_debug\b|\bal_setbreakpoint\b|\bal_snapshotdebugging\b|\bbclsp_\w+\b/g, 'editor-only capability (unavailable in CLI)')
     .replace(/\brunInTerminal\b/g, 'bash/powershell')
     .replace(/`execute`/g, '`bash/powershell`')
@@ -224,6 +227,9 @@ const ROLE_TOOLS = {
 };
 function toolsForRole(name) {
   if (!Object.hasOwn(ROLE_TOOLS, name)) throw new Error(`Unmapped Copilot CLI role: ${name}`);
-  return [...ROLE_TOOLS[name]];
+  const tools = [...ROLE_TOOLS[name]];
+  if (name !== 'al-conductor') tools.push('al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies');
+  if (['al-developer', 'al-implement-subagent'].includes(name)) tools.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
+  return tools;
 }
 module.exports.toolsForRole = toolsForRole;

@@ -8,6 +8,9 @@ tools:
   - al-symbols-mcp/*
   - context7/*
   - microsoft-docs/*
+  - al/al_symbolsearch
+  - al/al_getdiagnostics
+  - al/al_getpackagedependencies
 model: claude-sonnet-4.6
 user-invocable: false
 disable-model-invocation: true
@@ -41,7 +44,10 @@ disable-model-invocation: true
 > MCP capability. Reuse the configured AL LSP for Agents wrapper through native
 > CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
 > tool aliases or broaden read-only grants to enable rename/write operations.
-> Editor debugger controls remain separate from semantic navigation.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -58,7 +64,7 @@ You are an **AL PLANNING SUBAGENT** called by a parent **AL Development Conducto
 
 Your **SOLE job** is to gather comprehensive AL-specific context about the requested task and return structured findings to the parent agent. DO NOT write plans, implement code, or pause for user feedback.
 
-> **When a spec or architecture exists, it is the authority — validate against it, don't re-derive it.** Your value then is confirming the design holds against the real codebase and **flagging gaps/contradictions** (per §"Flag Uncertainties"), not rediscovering decisions already made. You can still resolve genuine gaps — just **efficiently, not by trial-and-error.** For a symbol fact (event signature, base-object member) the **symbols are authoritative**: use `loaded symbol MCP query (if available)` / `al-symbols-mcp/*` against `.alpackages/`. Reserve `githubTextSearch` / `microsoft-learn` for genuine **conceptual** gaps (how a pattern or API works), not for resolving a symbol that lives in `.alpackages/`, and never as repeated name-variant guessing (`OnAfter…`, `OnBefore…` ×N — it returns "no results" and burns turns). If a symbol or event the spec names can't be resolved in symbols, **stop and record it as an Uncertainty** for the Conductor — don't escalate into a search burst. (Measured: a nonexistent event name once triggered ~10 blind mirror searches here; one symbol probe + a flag is the correct response.)
+> **When a spec or architecture exists, it is the authority — validate against it, don't re-derive it.** Your value then is confirming the design holds against the real codebase and **flagging gaps/contradictions** (per §"Flag Uncertainties"), not rediscovering decisions already made. You can still resolve genuine gaps — just **efficiently, not by trial-and-error.** For a symbol fact (event signature, base-object member) the **symbols are authoritative**: use `discovered official/community symbol query when granted` / `al-symbols-mcp/*` against `.alpackages/`. Reserve `githubTextSearch` / `microsoft-learn` for genuine **conceptual** gaps (how a pattern or API works), not for resolving a symbol that lives in `.alpackages/`, and never as repeated name-variant guessing (`OnAfter…`, `OnBefore…` ×N — it returns "no results" and burns turns). If a symbol or event the spec names can't be resolved in symbols, **stop and record it as an Uncertainty** for the Conductor — don't escalate into a search burst. (Measured: a nonexistent event name once triggered ~10 blind mirror searches here; one symbol probe + a flag is the correct response.)
 
 ## Core Mission
 
@@ -85,7 +91,7 @@ Research Business Central AL codebases to understand:
 **Use These Tools:**
 - `glob/grep source search` - Semantic search for AL patterns and object names
 - `native LSP references when exposed (otherwise label text-search evidence)` - Find where AL objects are referenced
-- `verified manifest/symbol dependency inspection` - Analyze extension dependencies
+- `official AL MCP dependency query when granted, or manifest/symbol inspection` - Analyze extension dependencies
 - `available source or loaded symbol MCP inspection` - Examine existing AL implementations
 - `actual compiler/test output (unverified until run)` - Identify current AL compilation or runtime issues
 - `git diff through an available shell (or a supplied diff)` - Review recent modifications to AL code

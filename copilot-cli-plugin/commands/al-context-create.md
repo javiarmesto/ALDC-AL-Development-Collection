@@ -31,7 +31,10 @@ disable-model-invocation: true
 > MCP capability. Reuse the configured AL LSP for Agents wrapper through native
 > CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
 > tool aliases or broaden read-only grants to enable rename/write operations.
-> Editor debugger controls remain separate from semantic navigation.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -66,7 +69,7 @@ This enables AI assistants to load complete project context quickly and make inf
 @read_file app.json
 
 # Understand dependencies
-verified manifest/symbol dependency inspection
+official AL MCP dependency query when granted, or manifest/symbol inspection
 
 # Map directory structure
 @list_dir src/
@@ -326,10 +329,10 @@ src/
 
 ```powershell
 # Build project
-verified project build/package command (if available)
+official AL MCP build when granted, or verified project build/package command
 
 # Download symbols
-verified terminal symbol-download command (if available)
+official AL MCP symbol restore when granted, or verified terminal restore
 
 # Run tests
 /al-test
