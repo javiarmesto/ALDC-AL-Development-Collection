@@ -371,7 +371,7 @@ Create `.agents/plans/{req_name}.test-plan.md` using `.agents/skills/aldc/refere
 ```
 RED phase:
   1. Write failing test(s) for the current requirement
-  2. Run: al_build → verify compilation
+  2. Run: authorized build/package through Developer/Implementer → verify compilation
   3. Run test → confirm it FAILS (no implementation yet)
 
 GREEN phase:
@@ -388,7 +388,7 @@ REFACTOR phase:
 2. Create library codeunit per domain: `"Library - Feature Name"`
 3. Implement tests following GWT pattern (Pattern 1)
 4. Add handlers (Pattern 4) for any dialogs
-5. Run: `al_build` + test execution
+5. Run: `authorized build/package through Developer/Implementer` + test execution
 
 ### Step 4: Test Isolation
 

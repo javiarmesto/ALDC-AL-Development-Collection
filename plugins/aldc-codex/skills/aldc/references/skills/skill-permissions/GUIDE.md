@@ -236,7 +236,7 @@ Justify each permission and confirm the principle of least privilege is respecte
 2. Split into role-based layers (Pattern 2)
 3. Create `permissionsetextension` for standard BC roles if needed (Pattern 3)
 4. Add indirect permissions to codeunits (Pattern 5)
-5. Build: `al_build` — verify no errors
+5. Build: `authorized build/package through Developer/Implementer` — verify no errors
 
 ### Step 4: Test with Restrictive Permissions
 

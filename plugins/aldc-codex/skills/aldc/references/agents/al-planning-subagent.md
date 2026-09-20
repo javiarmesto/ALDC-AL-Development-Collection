@@ -5,16 +5,22 @@ if using plugin discovery instead of local bootstrap. Workflow names below are
 reference files in commands/, not automatically registered slash commands.
 Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
-new discoverable skills must still be created with SKILL.md.
+new discoverable skills must still be created with SKILL.md. Role names are
+routing destinations, not chat mentions. Use the discovered native delegation
+schema and exact custom-agent identity; do not launch nested CLI processes or
+substitute a general agent to simulate a missing independent role.
 
 Read the terminal-host contract at
 `.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
 before choosing AL tools, changing dependencies or reporting BC29 / AL18
 validation. Use only tools actually exposed by this session. Model, reasoning and approval
-settings inherit from the parent; this profile grants no extra tools. Its
-`sandbox_mode` is derived from the write scope the canonical contract grants this
-role, and the session's own permission profile is reapplied over it, so that key
-narrows and never grants. The narrower role write scopes stated below are still
+settings inherit from the parent; this profile grants no extra tools. Read
+`.agents/skills/aldc/references/al-tooling.md` for Codex-specific AL availability.
+It supersedes availability examples in the shared terminal contract. A read-only
+filesystem mode is not an MCP tool allowlist. Its
+`sandbox_mode` follows canonical write grants, and the session's own permission profile is reapplied over it, so that key
+does not establish the effective runtime policy by itself. Inspect the actual
+loaded permissions, including parent overrides. The narrower role write scopes stated below are still
 behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
@@ -26,6 +32,22 @@ clicks, and `send: false` additionally hands them the prompt to review before it
 is sent: the host supplies the approval. Codex has no such step, so the gate is
 yours to keep — never auto-delegate. Present your output, get explicit approval,
 and only then delegate or switch role.
+
+## Codex AL tooling scope
+
+Read .agents/skills/aldc/references/al-tooling.md before AL tool selection.
+This is a behavioral role contract, not an MCP allowlist. Reading this role
+as a skill does not load its TOML profile or change the session's permissions.
+Official AL MCP query operations: al_symbolsearch, al_getdiagnostics, al_getpackagedependencies.
+Do not invoke official AL MCP compile, build or symbol-download operations; request implementation evidence from Developer/Implementer.
+Do not start profiling/snapshot captures; consume supplied evidence or hand a capture request to Triage/the human.
+No role gains publication, authentication or credential-reset authority from this
+package. Inspect actual MCP aliases, filters and inherited tools; the filesystem
+sandbox does not constrain remote MCP effects. If role isolation cannot be
+established, use a separately configured bounded session and return evidence.
+AL LSP for Agents speaks LSP, not MCP. Its native Codex route remains unresolved;
+use existing symbol MCP/source evidence and label the fallback accurately.
+
 # AL Planning Subagent - AL-Aware Context Gathering
 
 <research_workflow>
@@ -34,7 +56,7 @@ You are an **AL PLANNING SUBAGENT** called by a parent **AL Development Conducto
 
 Your **SOLE job** is to gather comprehensive AL-specific context about the requested task and return structured findings to the parent agent. DO NOT write plans, implement code, or pause for user feedback.
 
-> **When a spec or architecture exists, it is the authority — validate against it, don't re-derive it.** Your value then is confirming the design holds against the real codebase and **flagging gaps/contradictions** (per §"Flag Uncertainties"), not rediscovering decisions already made. You can still resolve genuine gaps — just **efficiently, not by trial-and-error.** For a symbol fact (event signature, base-object member) the **symbols are authoritative**: use `al_symbolsearch` / `al-symbols-mcp/*` against `.alpackages/`. Reserve `githubTextSearch` / `microsoft-learn` for genuine **conceptual** gaps (how a pattern or API works), not for resolving a symbol that lives in `.alpackages/`, and never as repeated name-variant guessing (`OnAfter…`, `OnBefore…` ×N — it returns "no results" and burns turns). If a symbol or event the spec names can't be resolved in symbols, **stop and record it as an Uncertainty** for the Conductor — don't escalate into a search burst. (Measured: a nonexistent event name once triggered ~10 blind mirror searches here; one symbol probe + a flag is the correct response.)
+> **When a spec or architecture exists, it is the authority — validate against it, don't re-derive it.** Your value then is confirming the design holds against the real codebase and **flagging gaps/contradictions** (per §"Flag Uncertainties"), not rediscovering decisions already made. You can still resolve genuine gaps — just **efficiently, not by trial-and-error.** For a symbol fact (event signature, base-object member) the **symbols are authoritative**: use `the discovered symbol query (inspect its supported operations)` / `the discovered provider tool` against `.alpackages/`. Reserve `authorized repository search` / `microsoft-learn` for genuine **conceptual** gaps (how a pattern or API works), not for resolving a symbol that lives in `.alpackages/`, and never as repeated name-variant guessing (`OnAfter…`, `OnBefore…` ×N — it returns "no results" and burns turns). If a symbol or event the spec names can't be resolved in symbols, **stop and record it as an Uncertainty** for the Conductor — don't escalate into a search burst. (Measured: a nonexistent event name once triggered ~10 blind mirror searches here; one symbol probe + a flag is the correct response.)
 
 ## Core Mission
 
@@ -59,13 +81,13 @@ Research Business Central AL codebases to understand:
 - Review app.json for dependencies
 
 **Use These Tools:**
-- `#search` - Semantic search for AL patterns and object names
-- `#usages` - Find where AL objects are referenced
-- `#ms-dynamics-smb.al/al_get_package_dependencies` - Analyze extension dependencies
-- `#ms-dynamics-smb.al/al_download_source` - Examine existing AL implementations
-- `#problems` - Identify current AL compilation or runtime issues
-- `#changes` - Review recent modifications to AL code
-- `#githubRepo` - Understand development history and team patterns
+- `source search` - Semantic search for AL patterns and object names
+- `available reference evidence (identify symbol/source fallback)` - Find where AL objects are referenced
+- `the discovered AL MCP dependency query or manifest inspection` - Analyze extension dependencies
+- `available source/symbol inspection` - Examine existing AL implementations
+- `recorded compiler/test diagnostics` - Identify current AL compilation or runtime issues
+- `the actual git diff or supplied diff` - Review recent modifications to AL code
+- `available repository files/history` - Understand development history and team patterns
 
 **AL Object Discovery Pattern:**
 ```
@@ -239,7 +261,7 @@ Before starting your research, **ALWAYS check for existing context** in `.agents
 ```
 Checking for context:
 1. .agents/plans/memory.md → Global memory (decisions, context, cross-session state — append-only)
-2. .agents/plans/*.architecture.md → Architectural designs (from @al-architect)
+2. .agents/plans/*.architecture.md → Architectural designs (from al-architect)
 3. .agents/plans/*.spec.md → Technical specifications
 4. .agents/plans/*.test-plan.md → Test strategies
 ```
@@ -267,12 +289,12 @@ Checking for context:
 **Your research may be used by**:
 - **AL Development Conductor** → Creates implementation plan from your findings
 - **AL Architecture & Design Specialist** → May reference your research for design decisions
-- **@al-developer** → Uses your findings during implementation
+- **al-developer** → Uses your findings during implementation
 - **AL Code Review Subagent** → Validates against patterns you identified
 
 **Integration Pattern:**
 ```markdown
-1. @al-conductor delegates research task → You receive objective
+1. al-conductor delegates research task → You receive objective
 2. Check .agents/plans/ for existing context → Read *.architecture.md, *.spec.md, memory.md
 3. Conduct AL-specific research → Objects, events, structure
 4. Stop at 90% confidence → Don't over-research

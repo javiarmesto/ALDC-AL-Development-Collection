@@ -5,16 +5,22 @@ if using plugin discovery instead of local bootstrap. Workflow names below are
 reference files in commands/, not automatically registered slash commands.
 Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
-new discoverable skills must still be created with SKILL.md.
+new discoverable skills must still be created with SKILL.md. Role names are
+routing destinations, not chat mentions. Use the discovered native delegation
+schema and exact custom-agent identity; do not launch nested CLI processes or
+substitute a general agent to simulate a missing independent role.
 
 Read the terminal-host contract at
 `.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
 before choosing AL tools, changing dependencies or reporting BC29 / AL18
 validation. Use only tools actually exposed by this session. Model, reasoning and approval
-settings inherit from the parent; this profile grants no extra tools. Its
-`sandbox_mode` is derived from the write scope the canonical contract grants this
-role, and the session's own permission profile is reapplied over it, so that key
-narrows and never grants. The narrower role write scopes stated below are still
+settings inherit from the parent; this profile grants no extra tools. Read
+`.agents/skills/aldc/references/al-tooling.md` for Codex-specific AL availability.
+It supersedes availability examples in the shared terminal contract. A read-only
+filesystem mode is not an MCP tool allowlist. Its
+`sandbox_mode` follows canonical write grants, and the session's own permission profile is reapplied over it, so that key
+does not establish the effective runtime policy by itself. Inspect the actual
+loaded permissions, including parent overrides. The narrower role write scopes stated below are still
 behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
@@ -29,7 +35,7 @@ and only then delegate or switch role.
 
 # AL Pull Request Preparation
 
-Your goal is to prepare a **pull request draft** for the branch `<Branch from $ARGUMENTS>` summarizing all modifications, test evidence, and validation steps.
+Your goal is to prepare a **pull request draft** for the branch `<Branch from the current request>` summarizing all modifications, test evidence, and validation steps.
 
 ## 🔒 Human Gate: Pre-PR Review
 
@@ -48,7 +54,7 @@ Your goal is to prepare a **pull request draft** for the branch `<Branch from $A
 
 Use `codebase` to analyze modifications:
 ```
-codebase: Compare <Branch from $ARGUMENTS> with main branch
+codebase: Compare <Branch from the current request> with main branch
 ```
 
 Use `githubRepo` to gather context:
@@ -87,7 +93,7 @@ Scan commit messages for:
 - Related to WORK-789
 
 **Identify Reviewers:**
-If `<Reviewer from $ARGUMENTS>` is specified, include in the draft.
+If `<Reviewer from the current request>` is specified, include in the draft.
 
 ### 3. Generate PR Draft
 
@@ -96,7 +102,7 @@ Create `/reports/pr-draft.md` with this structure:
 ```markdown
 # Pull Request: [Feature/Fix Title]
 
-**Branch:** `<Branch from $ARGUMENTS>`
+**Branch:** `<Branch from the current request>`
 **Target:** `main`
 **Author:** [Author Name]
 **Date:** [Current Date]
@@ -279,7 +285,7 @@ Create `/reports/pr-draft.md` with this structure:
 ## Reviewer Notes
 
 **Suggested Reviewers:**
-- <Reviewer from $ARGUMENTS> - [Reason]
+- <Reviewer from the current request> - [Reason]
 
 **Focus Areas:**
 1. [Area to review carefully]
@@ -351,8 +357,8 @@ Create `/reports/pr-draft.md` with this structure:
 
 **For final validation:**
 ```
-@AL Development Conductor   # TDD orchestration with review subagent
-@AL Implementation Specialist   # Direct testing and fixes
+al-conductor   # TDD orchestration with review subagent
+al-developer   # Direct testing and fixes
 ```
 
 ---
