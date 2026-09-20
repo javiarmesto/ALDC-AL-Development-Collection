@@ -1,0 +1,34 @@
+{
+  "surface": "copilot-chat-vscode",
+  "date": "2026-09-20",
+  "baseCommit": "e21fbf6185ebbcdeed590a2e52022541c11c5cbf",
+  "status": "draft; host and release acceptance pending",
+  "observed": {
+    "npmTest": "passed; final suite 59 passed, 2 existing skips",
+    "installerChecks": 280,
+    "chatAgentAndPromptProjections": 46,
+    "surfaceIsolationTests": 5,
+    "conformanceChecks": 60,
+    "npmArchive": "extracted and validated offline; not published",
+    "foundationEntriesUnchanged": 87,
+    "claudeWorkspaceEntriesUnchanged": 72,
+    "mcpConfig": "existing .vscode/mcp.json bytes preserved through install, update, force, profile switch and receipt rollback",
+    "extensionPlumbing": "real prepare-package and packaged installer executed in disposable source fixtures; version mismatch and missing Chat module rejected"
+  },
+  "scope": {
+    "lsp": "explicit AL LSP for Agents query selectors in specialists and prompts; no rename or second server",
+    "officialAlMcp": "explicit query selectors; compile/build/restore in implementation; approved restore in initialization",
+    "capture": "optional dedicated profiling/snapshot selectors only in Triage",
+    "isolation": "canonical primitives, foundation, terminal plugin outputs, mirror, manifests and versions unchanged",
+    "limitations": "selectors require observed host catalog/alias matching; inherited terminal, editor and delegation tools mean AL operation limits are also behavioral"
+  },
+  "pending": [
+    "Real Copilot Chat agent, prompt and subagent catalogs and role-scope observations",
+    "AL LSP for Agents semantic query across App/Test",
+    "Official AL MCP connection, query and authorized compilation",
+    "Separate optional profiling/snapshot capture and cleanup observations",
+    "Select matching canonical/extension release versions: current sources are 5.0.1 and 5.0.0",
+    "Build and inspect final VSIX with clean pinned inputs and provenance; test in an isolated VS Code profile"
+  ],
+  "notPerformed": ["merge", "version bump", "tag", "release", "Marketplace publication", "current-profile installation", "tenant deployment"]
+}
