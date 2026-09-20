@@ -57,12 +57,52 @@ in frontmatter are selectors; call the actual names/schema discovered by CLI.
 An existing different alias needs a matching reviewed host-local agent binding,
 not a duplicate connection. Leave other MCP settings and tokens intact.
 
-Choose the absolute App or Test `projectPath` deliberately. Symbol search uses
-the discovered `parameters` wrapper; other operations use their own schemas.
-Compilation is an implementation operation even without a package output.
-Diagnostics may describe an existing compilation session; they do not prove a
-fresh build or tests. Preserve BC28 and approved dependencies. Missing auth is a
-reported prerequisite, not authorization to sign in, clear caches or publish.
+### Server workspace and live schemas
+
+A connected server is not necessarily a loaded AL workspace. In the owner's
+2026-09-20 Claude smoke, a dependency query with an absolute `projectPath` returned
+`No projects are loaded`. A separately authorized setup call to `al_addproject`
+with the existing App folder loaded it; subsequent delegated queries succeeded.
+This is a provider prerequisite to check in this host, not runtime validation of
+this surface. Read the installed tool's description first: register an existing
+folder containing `app.json`; do not scaffold an application, change files,
+download symbols or initiate authentication as a query fallback.
+
+Prepare the same live server connection that the specialist will use. Another
+alias, a separate setup process or a restarted server may have different state.
+Recheck after reconnecting. Keep App and Test identities explicit: do not assume
+`scope: project` selects one particular folder when several projects are loaded.
+An ambiguous workspace-wide operation must stop until its scope is resolved.
+
+Discover every operation's schema, including any wrapper. The following behavior
+was observed in Claude against the installed Microsoft server; its executable
+version was not captured, so verify it again in each host/version:
+
+| Operation | Observed input and effect |
+| --- | --- |
+| `al_addproject` | Required `projectPath`; registers an existing project in the live server workspace |
+| `al_symbolsearch` | Top-level `query` and optional `filters`; `parameters` deprecated; no `projectPath`; `filters.scope` uses the loaded workspace |
+| `al_getpackagedependencies` | Optional `projectPath` and `name`; a path does not itself load the project |
+| `al_getdiagnostics` | Project/folder/file filters according to schema; existing server diagnostics, not a fresh compile |
+| `al_compile` | Validates the loaded workspace without a `.app`; no `projectPath` in the observed schema; inspect the exact options shape |
+| `al_build` | Observed flat `projectPath` and `scope: current`; generates a `.app` |
+
+A no-diagnostics response does not establish analyzer execution. Enable CodeCop
+or AppSourceCop only for authorized work and record their actual configuration.
+A package path reported by `al_build` and a subsequent file-existence check are
+separate evidence. Neither compilation nor packaging proves tests were run.
+Never copy a Claude wire prefix, execution-mode setting or runtime PASS into
+this host's acceptance record.
+
+The normal server filter above intentionally excludes workspace preparation.
+If registration is required, an authorized parent setup context must explicitly
+include `al_addproject` in that server's `tools` list before starting the shared
+connection. Packaged role selectors remain query/implementation-specific and do
+not grant `al/al_addproject` to specialists. Verify the actual parent/child
+catalogs and shared connection in CLI; stop if preparation cannot be separated.
+Do not broaden a specialist to `al/*`, or assume a setup-only process initializes
+a later query-only process. Preserve BC28, approved dependencies and credentials.
+
 
 ## Triage: optional profiling and snapshot
 
