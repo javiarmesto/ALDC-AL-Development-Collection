@@ -3,7 +3,7 @@
   "base": "e21fbf6185ebbcdeed590a2e52022541c11c5cbf",
   "surface": "Codex",
   "version": "5.0.1 unchanged; no release",
-  "acceptance": "draft: unresolved LSP route and effective MCP role isolation; authenticated runtime checks pending",
+  "acceptance": "draft: owner verified native Architect setup and dependency query; LSP, effective role isolation and implementation runtime checks remain pending",
   "checks": {
     "npm test": "passed; final suite 59 passed and 2 existing PowerShell skips",
     "surface isolation": "5 passed",
@@ -38,7 +38,8 @@
     "lsp": "Provider standalone documentation at 6535989729036dfbbe99086bec93cb36c216ec79 states no Codex CLI LSP integration. No native registration found in current Codex config reference. Keep selected provider; no guessed MCP declaration or unapproved bridge. Codex IDE agent exposure must be proved separately from editor installation.",
     "mcp": "Role instructions describe query/implementation/capture scope, not enforced allowlists. Existing MCP config and role sandbox declarations remain unchanged. Guide contains reviewed opt-in query/implementation and Triage configuration examples. Actual inherited aliases and child filters require runtime validation.",
     "planning": "Existing read-only declaration retained; no permission change.",
-    "scope": "Codex-only source adapter, guide, generator, tests and distribution; neutral cross-host references remain byte-identical."
+    "scope": "Codex-only source adapter, guide, generator, tests and distribution; neutral cross-host references remain byte-identical.",
+    "preparation": "Explicitly authorized existing-project setup in the executing agent connection; no generated tool grants or config writes. Conductor delegates. One registration and one retry for no-projects-loaded, preserving denials and role execution limits."
   },
   "sources": [
     "https://github.com/SShadowS/al-lsp-for-agents/blob/6535989729036dfbbe99086bec93cb36c216ec79/docs/standalone.md",
@@ -46,5 +47,23 @@
     "https://developers.openai.com/codex/mcp/",
     "https://developers.openai.com/codex/config-reference/",
     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-mcp-server"
-  ]
+  ],
+  "host_evidence_scope": "Original 2026-09-20 execution environment only; see owner_host_followup for subsequent Windows host observations.",
+  "owner_host_followup": {
+    "observed": "2026-09-21",
+    "recorded": "2026-09-22",
+    "candidate": "f9d93d7be0e5799ed9f28507d28d9a332bb1074d",
+    "evidence": "host-smoke-2026-09-21.md",
+    "source": "Owner-supplied reports and literal responses; not independently replayed",
+    "result": "Native al-architect dependency query succeeded after explicitly authorized registration in its own live MCP connection. Parent preparation alone did not establish child readiness.",
+    "limits": "Diagnostic prompt tested; revised generated role behavior still requires a refreshed host session. No process topology or enforced per-role isolation established."
+  },
+  "followup_checks": {
+    "date": "2026-09-22",
+    "scope": "Per-connection preparation contract and owner evidence only; full npm suite above is historical",
+    "Codex validator": "passed: 12 TOML profiles, complete bodies, one skill, three MCP examples, config preservation through install/verify/rollback",
+    "surface isolation": "5 passed",
+    "sync-codex --check": "124 generated files; 0 differences",
+    "git diff --check": "passed"
+  }
 }

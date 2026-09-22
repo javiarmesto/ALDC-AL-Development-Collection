@@ -39,6 +39,7 @@ Read .agents/skills/aldc/references/al-tooling.md before AL tool selection.
 This is a behavioral role contract, not an MCP allowlist. Reading this role
 as a skill does not load its TOML profile or change the session's permissions.
 Official AL MCP query operations: al_symbolsearch, al_getdiagnostics, al_getpackagedependencies.
+Project preparation is separate from queries: only with explicit user authorization (including authorization carried by the delegation), an already exposed al_addproject tool and a confirmed existing App/Test folder containing app.json, register that exact folder in this agent's own live MCP connection. Inspect the actual schema. On a no-projects-loaded response, allow one authorized registration and one query retry in the same connection; otherwise report the blocker. Do not infer prepared state from the parent or another alias. Do not change filters, credentials or files, scaffold, download symbols, compile or publish as a preparation fallback.
 Do not invoke official AL MCP compile, build or symbol-download operations; request implementation evidence from Developer/Implementer.
 Triage may use the dedicated optional profiling/snapshot proxies after target, identity and capture window are authorized. Discover actual tool schemas; stop and collect owned captures and report cleanup state. Snapshot collection does not establish debugger playback.
 No role gains publication, authentication or credential-reset authority from this

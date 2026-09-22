@@ -39,6 +39,7 @@ Read .agents/skills/aldc/references/al-tooling.md before AL tool selection.
 This is a behavioral role contract, not an MCP allowlist. Reading this role
 as a skill does not load its TOML profile or change the session's permissions.
 Conductor delegates AL queries and execution; it does not perform them itself.
+Conductor delegates project preparation with the exact App/Test path and any existing user authorization; it does not invoke al_addproject itself. Parent preparation does not prove that a child connection is prepared.
 Do not invoke official AL MCP compile, build or symbol-download operations; request implementation evidence from Developer/Implementer.
 Do not start profiling/snapshot captures; consume supplied evidence or hand a capture request to Triage/the human.
 No role gains publication, authentication or credential-reset authority from this

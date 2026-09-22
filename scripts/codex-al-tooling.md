@@ -5,6 +5,23 @@ This Codex-specific guide takes precedence over host availability examples in
 workflow, independent reviews or human gates. Bootstrap does not install or
 configure providers. Keep existing aliases, credentials and unrelated settings.
 
+## Confirm the active installation
+
+Verify the session's working directory, actual skill path and native profile
+invocation separately from bootstrap's file verification. In the owner's Windows
+IDE smoke on 2026-09-21, starting in the App subfolder of a non-Git scenario still
+exposed an older globally enabled plugin from the 4.2.0 cache. The scenario-root
+plugin override existed on disk, but its use by that session was not established.
+Opening the scenario root in a new IDE window and starting a fresh session exposed
+the intended `.agents/skills/aldc/SKILL.md` and native `al-architect` profile.
+This is an observed recovery, not a guarantee about every host's config discovery.
+
+Before changing configuration, inspect the active skill path, project trust and
+effective plugin settings. Preserve unrelated global settings and other surfaces.
+Bootstrap `--verify` with no drift still reports `hostLoading: unverified`; it does
+not certify discovery. A missing Python interpreter blocked Doctor in this smoke,
+but did not prevent the Node bootstrap or subsequent AL MCP calls.
+
 ## LSP: explicit pending integration
 
 AL LSP for Agents is the chosen provider, wrapping the Microsoft AL language
@@ -80,15 +97,42 @@ separate evidence. Neither compilation nor packaging proves tests were run.
 Never copy a Claude wire prefix, execution-mode setting or runtime PASS into
 this host's acceptance record.
 
-The query-only example intentionally omits `al_addproject`. Where registration
-is required, use a reviewed parent setup binding whose `enabled_tools` additionally
-includes only `al_addproject`, and prepare the same live connection before queries.
-Retain the query-only child filter and verify actual inheritance/connection state;
-no generated role gains this setup operation. If the child uses another server
-instance, report the missing preparation route instead of assuming state survived.
-Do not restart a prepared connection merely to switch filters and claim its state
-was retained. This parent/child setup route remains unvalidated in Codex; existing
-filesystem sandbox modes do not enforce it. Keep credentials and denials intact.
+### Preparation belongs to the connection that executes the query
+
+The owner's 2026-09-21 Codex IDE smoke showed a successful parent registration,
+then `No projects are loaded` in native `al-architect`, while the parent could
+still query dependencies. Explicitly authorized `al_addproject` followed by
+`al_getpackagedependencies` in the child succeeded for SalesMargin (five BC 29
+dependencies). This demonstrates different observed workspace state; it does not
+establish process IDs, server topology or every host's lifecycle.
+
+The query-only example intentionally omits `al_addproject`. If preparation is
+needed, an explicitly reviewed binding may additionally expose that single setup
+operation to the executing agent. It is no longer a query-only binding. Generated
+profiles do not add transports or change tool filters, sandbox modes or denials.
+An absent/denied setup tool is a blocker, not permission to reconfigure the host.
+
+For a role that performs AL queries, preparation is allowed only when the user
+has explicitly authorized it, including authorization carried by a delegation.
+Use the exact existing App/Test folder containing `app.json`, confirmed by the
+owner or a permitted read-only check, and inspect the installed tool schema.
+Register it in that agent's own live connection. If a query returns the specific
+no-projects-loaded error, allow one authorized registration and one retry in the
+same connection. Other failures must be reported, not treated as setup requests.
+Do not scaffold, edit source, restore symbols, authenticate, compile or publish
+as a preparation fallback. Existing authorization need not be requested again.
+
+Conductor passes the target and existing authorization to the delegated role;
+it does not register projects itself. New children, aliases and reconnects must
+not assume they inherit prepared state. Never restart solely to switch filters
+and claim state survived. Inspect actual inherited catalogs: exposing setup does
+not establish per-role enforcement, and filesystem sandbox modes do not enforce
+remote MCP scopes. Preserve credentials and denials.
+
+The successful smoke used candidate `f9d93d7` with an explicit diagnostic prompt.
+The revised generated instructions still need a refreshed host session to prove
+their behavior without that prompt. See repository evidence
+`docs/evidence/codex-al-tooling/host-smoke-2026-09-21.md` for scope and limitations.
 
 
 ALDC's intended scopes are:
