@@ -76,3 +76,61 @@ Retain actual call/result traces. There is no ALTool/BC runtime execution here.
 
 No PR merge, version bump, release, VSIX build, marketplace publication or change
 to the owner's installed project is part of this delivery.
+
+## Capability contract and PR integration plan (2026-09-23)
+
+ALDC defines roles, sources, decisions, review and human gates. Provider names are
+surface bindings, not product-wide prerequisites. An optional selector in a role
+declares an allowed tool; only the executing host can establish discovery, a
+successful call and its result. Check a capability when a task needs it, in the
+role's live connection, and retain the exact project/version and response. Recheck
+after a connection, role or relevant project change; do not turn a Doctor report
+or a parent's successful call into child readiness.
+
+| Stage | Minimum evidence for the claim | Missing capability |
+| --- | --- | --- |
+| Design / architecture | Requirements, project sources and relevant domain rules | Continue with bounded design; mark exact event/member/version claims pending until target-version source or symbols resolve them. AL LSP and any named symbol MCP are optional routes. |
+| Spec | Approved decisions, target project/version and evidence for exact signatures | Record the affected signature as an open question; do not assert or invent it. Do not run BCQuality code review before code exists. |
+| Implementation | Authorized App/Test sources, dependencies and an actual compiler result to claim compile success | Continue bounded edits if appropriate; report build unverified and request the compiler/symbols needed for the selected project. No requirement for a particular MCP transport. |
+| Code review | Actual diff, native review domains and, when claiming BCQuality coverage, the selected provider's completed domain results | Continue native review on absent/incompatible BCQuality; report the missing provider if configured as expected. Reading a skill or entry is only load evidence. |
+| Tests / runtime | An actual runner/environment, executed cases and observed results for a functional PASS | Mark tests not run or blocked; a compile or .app file does not establish functional behavior. |
+
+BCQuality's design/spec read path selects contextual articles and cites decisions.
+Its code-review path requires dispatched checks and outcomes. Preserve the existing
+`enabled: false/auto/true` behavior and native A-G fallback in the BCQuality
+provider contract; never claim BCQuality review from corpus discovery or reading.
+Doctor remains read-only and its runtime observations remain caller reports.
+
+Bindings to validate when their surface PR is combined: Chat uses its exact
+installed extension tool ID for `bclsp_*`, plus the configured official AL MCP
+alias; Claude uses the host `LSP` tool and its actual MCP-prefixed operation IDs;
+Copilot CLI uses its native LSP integration and actual `al/<operation>` binding;
+Codex has official AL MCP operations but no demonstrated AL LSP route. The same
+operation name can have a different schema on a native VS Code tool and on the
+standalone MCP server. Inspect the real schema in the executing host. Source,
+downloaded symbols or compiler output can support narrower claims, but must not
+be labelled as an LSP call.
+
+**For 5.0.1:** keep this PR's bounded preparation mode. Merge #112 (Claude),
+#113 (Copilot CLI), #114 (Codex), #115 (Chat) one at a time after each PR's
+applicable checks, then #116 (Initialize). Regenerate all affected projections
+from combined sources and reconcile the older surface-guide statements that
+registration is always a separate human setup step. Preserve Codex's observed
+same-connection child recovery and Chat's exact tool selectors. Finally repin
+the extension PR #4 to the final canonical commit, package and test install,
+update, customizations and rollback. Do not advertise AL LSP as working on
+Codex; the route is a separate design decision. An optional LSP can remain
+unavailable without blocking unrelated design, but any advertised host-specific
+LSP capability needs a real semantic invocation before a PASS claim. BCQuality
+design selection and code review have distinct evidence gates.
+
+**After 5.0.1:** first make one common, capability-based contract change in
+canonical roles/guidance: replace tool-prescriptive examples with the required
+evidence and bounded fallbacks; keep exact provider selectors in each surface
+adapter. Then take one focused PR per affected terminal surface to remove Chat
+editor setup from full Initialize, correct surface-specific config/validator
+paths and redundant package content, and validate generated distribution plus
+a disposable install. Preserve useful AL/domain skills. Chat needs a separate
+PR only if that common change alters its projector. Keep the original product
+scope and human approvals; no new runtime, alternate LSP bridge or automatic
+provider install is part of this plan.
