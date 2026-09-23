@@ -20,15 +20,15 @@ for (const profile of ['bc28', 'bc29-native']) {
       const tools = meta.tools;
       assert.ok(!tools.some(t => /renameSymbol|^al\/\*|al_publish|al_login|al_logout/.test(t)), rel);
       assert.deepEqual(tools.filter(t => queries.includes(t)), none ? [] : queries, rel);
-      assert.equal(tools.some(t => t.endsWith('/bclsp_goToDefinition')), !none, rel);
-      assert.equal(tools.some(t => t.endsWith('/bclsp_findReferences')), !none, rel);
+      assert.equal(tools.includes('SShadowSdk.al-lsp-for-agents/bclsp_goToDefinition'), !none, rel);
+      assert.equal(tools.includes('SShadowSdk.al-lsp-for-agents/bclsp_findReferences'), !none, rel);
       const impl = ['al-developer', 'al-implement-subagent', 'al-build'].includes(role);
       assert.equal(tools.includes('al/al_compile'), impl, rel);
       assert.equal(tools.includes('al/al_build'), impl, rel);
       assert.equal(tools.includes('al/al_downloadsymbols'), impl || role === 'al-initialize', rel);
       assert.equal(tools.includes('bc-profiling/*'), role === 'al-triage', rel);
       assert.equal(tools.includes('bc-snapshot/*'), role === 'al-triage', rel);
-      if (none) assert.ok(!tools.some(t => /^(al\/|bc-|sshadowsdk|ms-dynamics-smb)/.test(t)), rel);
+      if (none) assert.ok(!tools.some(t => /^(al\/|bc-|SShadowSdk|ms-dynamics-smb)/.test(t)), rel);
       assert.ok(text.includes(`Profile: **${profile}**`), rel);
       assert.ok(text.includes('../docs/framework/copilot-chat-al-tooling.md'), rel);
       if (role === 'al-build') assert.ok(text.includes('Stop after build/package') && text.includes('human gate'));

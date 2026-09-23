@@ -40,7 +40,7 @@ function project(relative, input, profile) {
   tools = tools.filter(t => !t.startsWith('ms-dynamics-smb.al/') ||
     (profile === 'bc29-native' && !(triage && t.endsWith('/al_downloadsymbols'))));
   if (!coordinator) {
-    tools.push(...lspQueries.map(t => `sshadowsdk.al-lsp-for-agents/${t}`));
+    tools.push(...lspQueries.map(t => `SShadowSdk.al-lsp-for-agents/${t}`));
     tools.push(...queries.map(t => `al/${t}`));
   }
   if (implementation) tools.push(...writes.map(t => `al/${t}`));
