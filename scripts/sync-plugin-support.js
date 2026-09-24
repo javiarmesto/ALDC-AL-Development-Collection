@@ -63,21 +63,26 @@ const DEST = 'claude-plugin';
  * own the human gates; `subagent` roles are launched stateless by the Conductor.
  */
 const MCP_ALL = 'mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*';
-const READ_ONLY = `Read, Glob, Grep, ${MCP_ALL}`;
-const FULL = `Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch, ${MCP_ALL}`;
+// Optional user/project server alias `al`; no server is installed by this adapter.
+const AL_QUERY = ['al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependencies']
+  .map(name => `mcp__al__${name}`).join(', ');
+const AL_IMPLEMENT = ['al_compile', 'al_build', 'al_downloadsymbols']
+  .map(name => `mcp__al__${name}`).join(', ');
+const READ_ONLY = `Read, Glob, Grep, LSP, ${MCP_ALL}, ${AL_QUERY}`;
+const FULL = `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, WebSearch, WebFetch, ${MCP_ALL}, ${AL_QUERY}`;
 
 const AGENTS = [
-  { id: 'al-agent-builder', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, Write, Edit, Bash, Task, ${MCP_ALL}` },
+  { id: 'al-agent-builder', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, ${MCP_ALL}, ${AL_QUERY}` },
   { id: 'al-architect', mode: 'main', model: 'sonnet', color: 'blue', tools: FULL },
   { id: 'al-conductor', mode: 'main', model: 'haiku', color: 'purple', tools: 'Read, Glob, Grep, Write, Edit, Bash, Task, WebSearch, WebFetch' },
-  { id: 'al-developer', mode: 'main', model: 'sonnet', color: 'green', tools: FULL },
+  { id: 'al-developer', mode: 'main', model: 'sonnet', color: 'green', tools: `${FULL}, ${AL_IMPLEMENT}` },
   { id: 'al-developer-reviewer', mode: 'main', model: 'sonnet', color: 'yellow', tools: READ_ONLY },
-  { id: 'al-implement-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `Read, Glob, Grep, Write, Edit, Bash, Task, ${MCP_ALL}` },
-  { id: 'al-planning-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: FULL },
+  { id: 'al-implement-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `Read, Glob, Grep, LSP, Write, Edit, Bash, Task, ${MCP_ALL}, ${AL_QUERY}, ${AL_IMPLEMENT}` },
+  { id: 'al-planning-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: `${READ_ONLY}, WebSearch, WebFetch` },
   { id: 'al-presales', mode: 'main', model: 'sonnet', color: 'red', tools: FULL },
   { id: 'al-review-subagent', mode: 'subagent', model: 'sonnet', color: 'yellow', tools: READ_ONLY },
-  { id: 'al-spec-agent', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, ${MCP_ALL}` },
-  { id: 'al-triage', mode: 'main', model: 'sonnet', color: 'orange', tools: `Read, Glob, Grep, Bash, Write, Task, ${MCP_ALL}` },
+  { id: 'al-spec-agent', mode: 'main', model: 'sonnet', color: 'cyan', tools: `Read, Glob, Grep, LSP, Write, Edit, WebSearch, WebFetch, ${MCP_ALL}, ${AL_QUERY}` },
+  { id: 'al-triage', mode: 'main', model: 'sonnet', color: 'orange', tools: `Read, Glob, Grep, LSP, Bash, Write, Task, ${MCP_ALL}, ${AL_QUERY}, mcp__bc-profiling__*, mcp__bc-snapshot__*` },
   { id: 'dredd', mode: 'auditor', model: 'sonnet', color: 'yellow', tools: `${READ_ONLY}, Write` },
 ];
 
@@ -181,12 +186,13 @@ function mappingTable(plansRoot) {
 > | ${mentions} | ${roles} (or \`claude --agent ${PLUGIN}:<agent>\`) |
 > | \`@workspace use <workflow>\` | \`/${PLUGIN}:<workflow>\` with dots replaced by dashes (\`al-spec.create\` -> \`/${PLUGIN}:al-spec-create\`); already rewritten below |
 > | \`\${input:Name}\` prompt variables | Take the value from \`$ARGUMENTS\`; ask through \`AskUserQuestion\` when missing. Already rewritten below as \`<Name from $ARGUMENTS>\` |
-> | \`execute\` / \`runInTerminal\` / \`al_build\`, \`al_publish\`, \`al_downloadsymbols\` | \`Bash\`, bounded exactly as the contract bounds it; AL compile/publish only through a real \`al\` CLI or AL-Go script present in the environment, otherwise \`unavailable\` |
-> | \`edit\`, \`read/readFile\`, \`search\`, \`#codebase\`, \`#usages\` | \`Edit\`/\`Write\`, \`Read\`, \`Grep\`/\`Glob\` |
-> | \`#changes\`, \`changes\`, \`search/changes\` | Read-only \`git status\` / \`git diff\` through \`Bash\` |
-> | \`read/problems\`, \`al_get_diagnostics\`, \`#testFailure\` | Compiler/test output produced by an actual run when a runner exists; otherwise record \`not-run\` / \`unavailable\`, never infer |
+> | \`execute\` / \`runInTerminal\`, AL compilation or symbol restore | Developer/Implementer: discovered official AL MCP \`mcp__al__al_compile\` / \`mcp__al__al_build\` / \`mcp__al__al_downloadsymbols\`, or an installed ALTool/AL-Go runner through \`Bash\`. Use the correct App/Test project; unavailable capabilities are never simulated. Publishing retains its separate human/CI gate and is not granted by this adapter |
+> | \`edit\`, \`read/readFile\`, \`search\`, \`#codebase\` | \`Edit\`/\`Write\`, \`Read\`, \`Grep\`/\`Glob\` |
+> | \`#changes\`, \`changes\`, \`search/changes\` | Read-only \`git status\` / \`git diff\` through \`Bash\` only where granted; otherwise read the caller-supplied diff artifact or return the missing evidence request |
+> | \`read/problems\`, \`al_get_diagnostics\`, \`#testFailure\` | Discovered \`mcp__al__al_getdiagnostics\` for the explicit project, or actual compiler/test output. Diagnostics are not evidence of a fresh compile or executed tests. No result: record \`not-run\` / \`unavailable\` |
 > | \`al-symbols-mcp/*\`, \`upstash/context7/*\`, \`microsoft-learn/*\`, \`microsoft-docs/*\` | Tools named \`mcp__al-symbols-mcp__*\`, \`mcp__context7__*\`, \`mcp__microsoft-docs__*\` (or the \`mcp__plugin_${PLUGIN}_…\` form). A server that is not loaded is \`unavailable\`; do not simulate it |
-> | \`ms-dynamics-smb.al/*\`, \`sshadowsdk.al-lsp-for-agents/*\`, \`vscode.mermaid-chat-features/*\` | VS Code language-model tools; they do not exist in this harness. Never call one or rename a community tool to a Microsoft-native one |
+> | \`sshadowsdk.al-lsp-for-agents/*\`, \`#usages\`, semantic definition/reference queries | Claude \`LSP\` with the existing AL LSP for Agents companion; discover the actual operations and project context first. VS Code tool identifiers are not Claude tool names |
+> | \`ms-dynamics-smb.al/*\`, \`vscode.mermaid-chat-features/*\` | VS Code tool identifiers do not exist here. Use only a separately discovered Claude capability; never rename community tools as Microsoft tools |
 > | \`vscode/memory\`, \`vscode/*\` | Not available; keep state in the canonical \`${plansRoot}/\` artifacts of the project |
 > | \`todo\` | \`TodoWrite\` for in-session tracking; durable state stays in \`${plansRoot}/\` |
 > | "load \`skill-x\`" | The \`Skill\` tool (\`${PLUGIN}:<skill-name>\`) or read \`\${CLAUDE_PLUGIN_ROOT}/skills/<skill-name>/SKILL.md\` |
@@ -196,7 +202,7 @@ function mappingTable(plansRoot) {
 > | \`aldc.yaml\` | \`\${CLAUDE_PROJECT_DIR}/aldc.yaml\` when the project has one, otherwise \`\${CLAUDE_PLUGIN_ROOT}/aldc.yaml\` |`;
 }
 
-const HOST_CONTRACT = 'Read the terminal-host contract at `${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md` before choosing AL tools, changing dependencies or reporting BC29 / AL18 validation.';
+const HOST_CONTRACT = 'Read `${CLAUDE_PLUGIN_ROOT}/docs/claude-al-tooling.md` for this surface’s LSP/MCP bindings, then `${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md` for the shared role/evidence contract. The Claude guide supersedes older capability-availability examples, never role responsibilities or human gates.';
 
 function provenanceLine(sourceRel, sourceHash) {
   return `> **Claude Code adapter — generated by \`scripts/sync-plugin-support.js\`, do not edit.**
@@ -212,8 +218,12 @@ ${mappingTable(plansRoot)}
 >
 > ${HOST_CONTRACT}
 > The Copilot \`tools:\`/\`model:\`/\`agents:\` declarations of the source are superseded
-> by this file's frontmatter; the routing in \`handoffs:\` is carried by the plugin's
+> by this file's frontmatter when the host loads this agent definition. Reading
+> this file through a role entry skill does not apply its tool allowlist. The routing in \`handoffs:\` is carried by the plugin's
 > role entry skills and the human gate it relied on by the mapping row above.
+> Triage alone receives the optional dedicated \`bc-profiling\` and \`bc-snapshot\`
+> proxies. Read the Claude tooling guide before capture; use discovered schemas
+> and an authorized target/window. Other roles consume the resulting evidence.
 > Role write scopes are behavioral limits, not filesystem sandboxes. Human gates,
 > evidence semantics and the "never simulate a capability" rule do not change
 > with the harness.`;
@@ -299,7 +309,7 @@ function buildEntrySkill(entry, ctx, plansRoot) {
     `# /${PLUGIN}:${entry.name}\n\n` +
     `<!-- Generated by scripts/sync-plugin-support.js from the ${entry.agent} contract; edit ENTRY_SKILLS in the generator, not this file. -->\n\n` +
     `Read \`\${CLAUDE_PLUGIN_ROOT}/agents/${entry.agent}.md\` in full and act as that agent for the rest of this session. ` +
-    `The Copilot-to-Claude Code mappings at the top of that file are binding.\n\n` +
+    `The Copilot-to-Claude Code mappings at the top of that file are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch \`claude --agent ${PLUGIN}:${entry.agent}\` and verify its effective tools.\n\n` +
     `Input: **$ARGUMENTS**\n\n` +
     `Requirement artifacts live under \`${plansRoot}/\` in the project; run \`/${PLUGIN}:al-initialize\` once if that folder does not exist.\n`);
 }
@@ -535,7 +545,7 @@ From a clone, register this directory as a local marketplace:
 /plugin install ${PLUGIN}@${PLUGIN}-marketplace
 \`\`\`
 
-Verify with \`/plugin\`, \`/agents\` and \`/\`. You should see ${counts.agents} agents,
+Verify with \`/plugin\`, the actual Agent catalog and \`/\`. Claude 2.1.278 removed the \`/agents\` wizard. You should see ${counts.agents} agents,
 ${counts.entry} role entry skills, ${counts.workflows} workflow skills and
 ${counts.knowledge} knowledge skills, all prefixed \`${PLUGIN}:\`. Plugin loading,
 tool availability and any Business Central operation still need local
@@ -572,11 +582,24 @@ claude-plugin/
 └── README.md                       # this file
 \`\`\`
 
+## AL language tooling
+
+Read [Claude AL tooling](docs/claude-al-tooling.md) to reuse the existing AL LSP
+for Agents companion and verify access from each agent mode. ALDC declares no
+second LSP server and does not change user or project provider configuration.
+
 ## MCP servers
 
 **al-symbols-mcp** (read-only AL symbol queries), **context7** (library docs) and
 **microsoft-docs** (Microsoft Learn). A declaration in the manifest is not proof
 of connection: a server that is not loaded is \`unavailable\`, never simulated.
+
+The Microsoft AL MCP is optional and separately configured under user/project
+alias \`al\`; see [setup and role grants](docs/claude-al-tooling.md). ALDC grants
+its query operations explicitly and compilation/build/restore only to Developer
+and Implementer. It does not start that server or grant publish/authentication.
+Optional BC29 profiling/snapshot proxies are granted only to Triage after explicit
+connection setup; see the same guide for capture scope and runtime acceptance.
 
 ## Requirements
 
@@ -616,6 +639,7 @@ function build(rootDir = root) {
   for (const rel of walk(rootDir, 'docs/templates')) ctx.copy(rel);
   ctx.copy('docs/templates/memory-template.md', 'templates/memory-template.md');
   ctx.copy('instructions/copilot-instructions.md', 'docs/copilot-instructions.md');
+  ctx.copy('scripts/claude-al-tooling.md', 'docs/claude-al-tooling.md');
 
   buildAldcYaml(rootDir, ctx, plansRoot);
   buildManifest(rootDir, ctx);

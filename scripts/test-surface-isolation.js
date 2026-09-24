@@ -63,6 +63,7 @@ for (const target of SURFACES) {
       append(dir, 'scripts/copilot-cli-adapter.js');
       append(dir, 'scripts/copilot-cli-bootstrap.js');
     }
+    if (target.command !== 'sync:claude') append(dir, 'scripts/claude-al-tooling.md', '\nUnrelated Claude guide change.\n');
     if (target.command !== 'sync:codex') append(dir, 'scripts/codex-mcp-setup.md', '\nUnrelated Codex guide change.\n');
     append(dir, '.claude/agents/al-developer.md', '\nWorkspace-only change.\n');
     fs.rmSync(path.join(dir, target.output), { recursive: true });

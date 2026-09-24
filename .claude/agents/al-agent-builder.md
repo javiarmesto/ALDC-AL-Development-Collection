@@ -1,7 +1,7 @@
 ---
 name: al-agent-builder
 description: Agent Toolkit Builder — specialist in designing and coding Business Central agents using the AI Development Toolkit and Agent SDK. Follows the official Agent Template project structure. Handles both Designer (no-code) and SDK (pro-code) paths. Use when building BC agents or agent SDK integrations.
-tools: Read, Glob, Grep, Write, Edit, Bash, Task, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*
+tools: Read, Glob, Grep, LSP, Write, Edit, Bash, Task, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies
 model: sonnet
 color: cyan
 ---
@@ -19,12 +19,13 @@ color: cyan
 > | `@al-architect`, `@al-spec-agent`, `@al-conductor`, `@al-developer`, `@al-developer-reviewer`, `@al-triage`, `@al-presales`, `@al-agent-builder`, `@dredd` | `/aldc:architect`, `/aldc:spec`, `/aldc:conduct`, `/aldc:develop`, `/aldc:review`, `/aldc:triage`, `/aldc:presales`, `/aldc:agent-builder`, `/aldc:audit` (or `claude --agent aldc:<agent>`) |
 > | `@workspace use <workflow>` | `/aldc:<workflow>` with dots replaced by dashes (`al-spec.create` -> `/aldc:al-spec-create`); already rewritten below |
 > | `${input:Name}` prompt variables | Take the value from `$ARGUMENTS`; ask through `AskUserQuestion` when missing. Already rewritten below as `<Name from $ARGUMENTS>` |
-> | `execute` / `runInTerminal` / `al_build`, `al_publish`, `al_downloadsymbols` | `Bash`, bounded exactly as the contract bounds it; AL compile/publish only through a real `al` CLI or AL-Go script present in the environment, otherwise `unavailable` |
-> | `edit`, `read/readFile`, `search`, `#codebase`, `#usages` | `Edit`/`Write`, `Read`, `Grep`/`Glob` |
-> | `#changes`, `changes`, `search/changes` | Read-only `git status` / `git diff` through `Bash` |
-> | `read/problems`, `al_get_diagnostics`, `#testFailure` | Compiler/test output produced by an actual run when a runner exists; otherwise record `not-run` / `unavailable`, never infer |
+> | `execute` / `runInTerminal`, AL compilation or symbol restore | Developer/Implementer: discovered official AL MCP `mcp__al__al_compile` / `mcp__al__al_build` / `mcp__al__al_downloadsymbols`, or an installed ALTool/AL-Go runner through `Bash`. Use the correct App/Test project; unavailable capabilities are never simulated. Publishing retains its separate human/CI gate and is not granted by this adapter |
+> | `edit`, `read/readFile`, `search`, `#codebase` | `Edit`/`Write`, `Read`, `Grep`/`Glob` |
+> | `#changes`, `changes`, `search/changes` | Read-only `git status` / `git diff` through `Bash` only where granted; otherwise read the caller-supplied diff artifact or return the missing evidence request |
+> | `read/problems`, `al_get_diagnostics`, `#testFailure` | Discovered `mcp__al__al_getdiagnostics` for the explicit project, or actual compiler/test output. Diagnostics are not evidence of a fresh compile or executed tests. No result: record `not-run` / `unavailable` |
 > | `al-symbols-mcp/*`, `upstash/context7/*`, `microsoft-learn/*`, `microsoft-docs/*` | Tools named `mcp__al-symbols-mcp__*`, `mcp__context7__*`, `mcp__microsoft-docs__*` (or the `mcp__plugin_aldc_…` form). A server that is not loaded is `unavailable`; do not simulate it |
-> | `ms-dynamics-smb.al/*`, `sshadowsdk.al-lsp-for-agents/*`, `vscode.mermaid-chat-features/*` | VS Code language-model tools; they do not exist in this harness. Never call one or rename a community tool to a Microsoft-native one |
+> | `sshadowsdk.al-lsp-for-agents/*`, `#usages`, semantic definition/reference queries | Claude `LSP` with the existing AL LSP for Agents companion; discover the actual operations and project context first. VS Code tool identifiers are not Claude tool names |
+> | `ms-dynamics-smb.al/*`, `vscode.mermaid-chat-features/*` | VS Code tool identifiers do not exist here. Use only a separately discovered Claude capability; never rename community tools as Microsoft tools |
 > | `vscode/memory`, `vscode/*` | Not available; keep state in the canonical `.claude/plans/` artifacts of the project |
 > | `todo` | `TodoWrite` for in-session tracking; durable state stays in `.claude/plans/` |
 > | "load `skill-x`" | The `Skill` tool (`aldc:<skill-name>`) or read `${CLAUDE_PROJECT_DIR}/.claude/skills/<skill-name>/SKILL.md` |
@@ -33,10 +34,14 @@ color: cyan
 > | `python …` runtime helpers, `--aldc-root` | Paths already point at `${CLAUDE_PLUGIN_ROOT}`; use `python` or `python3`, whichever exists (stdlib only) |
 > | `aldc.yaml` | `${CLAUDE_PROJECT_DIR}/aldc.yaml` when the project has one, otherwise `${CLAUDE_PROJECT_DIR}/claude-plugin/aldc.yaml` |
 >
-> Read the terminal-host contract at `${CLAUDE_PROJECT_DIR}/.claude/skills/skill-migrate/references/cli-al-tools.md` before choosing AL tools, changing dependencies or reporting BC29 / AL18 validation.
+> Read `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/claude-al-tooling.md` for this surface’s LSP/MCP bindings, then `${CLAUDE_PROJECT_DIR}/.claude/skills/skill-migrate/references/cli-al-tools.md` for the shared role/evidence contract. The Claude guide supersedes older capability-availability examples, never role responsibilities or human gates.
 > The Copilot `tools:`/`model:`/`agents:` declarations of the source are superseded
-> by this file's frontmatter; the routing in `handoffs:` is carried by the plugin's
+> by this file's frontmatter when the host loads this agent definition. Reading
+> this file through a role entry skill does not apply its tool allowlist. The routing in `handoffs:` is carried by the plugin's
 > role entry skills and the human gate it relied on by the mapping row above.
+> Triage alone receives the optional dedicated `bc-profiling` and `bc-snapshot`
+> proxies. Read the Claude tooling guide before capture; use discovered schemas
+> and an authorized target/window. Other roles consume the resulting evidence.
 > Role write scopes are behavioral limits, not filesystem sandboxes. Human gates,
 > evidence semantics and the "never simulate a capability" rule do not change
 > with the harness.

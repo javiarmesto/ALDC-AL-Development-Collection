@@ -126,3 +126,8 @@ console.log('Agent entry sizes verified; authenticated host loading/invocation r
 const result = require('child_process').spawnSync(process.execPath,
   ['--test', path.join(__dirname, 'test-copilot-cli-surface.js')], { stdio: 'inherit' });
 if (result.status !== 0) process.exit(result.status || 1);
+
+// Claude-owned capability and configuration-preservation checks.
+const claudeResult = require('child_process').spawnSync(process.execPath,
+  ['--test', path.join(__dirname, 'test-claude-tooling.js')], { stdio: 'inherit' });
+if (claudeResult.status !== 0) process.exit(claudeResult.status || 1);

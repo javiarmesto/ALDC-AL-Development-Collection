@@ -1,0 +1,52 @@
+{
+  "date": "2026-09-19",
+  "surface": "claude",
+  "base_commit": "e21fbf6185ebbcdeed590a2e52022541c11c5cbf",
+  "package_version": "5.0.1",
+  "status": "draft-partial-owner-host-validation",
+  "tests": {
+    "npm_test": "passed; final suite 59 passed, 2 existing PowerShell skips",
+    "claude_tooling": "5 passed; grants, no duplicate declarations, provider configuration preserved through initialize/update/verify/rollback",
+    "surface_isolation": "5 passed",
+    "conformance": "60 passed",
+    "foundation": "87 unchanged",
+    "claude_workspace": "72 synchronized; explicit generation",
+    "git_diff_check": "passed"
+  },
+  "unchanged_trees": {
+    "copilot-cli-plugin": "f4271f3d9b3354ca72ed3bd56f71d976deae6e71",
+    "plugins/aldc-codex": "e88aa1107d4006d09802bf2e5b6f0c20e105c312",
+    "packages/foundation": "2147af1a64c493db5cb0e23609ea65089a628eb6",
+    "agents": "7da2c915552af15915283f732edc23cc7983b6f1",
+    "prompts": "d4586d5b0c44291d96d5fe4224822bf4185e4ebc",
+    "instructions": "c4e2e0d894fd4ea8829d8841e3afdb34b8b7a9a7",
+    "skills": "f95f2e9af10415116928bcd630523521b10f6470",
+    "plugin.json": "64538d1c05c436384346600120726d5bdf45f3a0",
+    "package.json": "8a9db8a988ba014e7c35f1b1211b6fe3d56f585d"
+  },
+  "runtime": {
+    "claude_host": "not-run; executable unavailable in this environment",
+    "lsp_main": "not-run",
+    "lsp_foreground_subagent": "not-run",
+    "lsp_background_subagent": "not-run; only claim support after mode-specific test",
+    "official_al_mcp_compile": "not-run; altool and .NET unavailable",
+    "profiling": "not-run; compatible authenticated sandbox unavailable",
+    "snapshot_capture": "not-run; compatible authenticated sandbox unavailable",
+    "snapshot_inspection": "not-run; capture does not certify debugger operation"
+  },
+  "limitations": [
+    "Role entry skills load instructions; host-loaded agents are required for declared tool allowlists.",
+    "Existing official server aliases other than al require a reviewed host-local binding; do not register duplicates.",
+    "Triage wildcards cover the entire dedicated profiling/snapshot proxy catalogs, not per-operation enforcement.",
+    "Existing Dredd report Write permission is behavioral, not a path sandbox.",
+    "Existing shell grants and community server grants are not made into hard role sandboxes by this change."
+  ],
+  "release": "No tag, release, Marketplace publication, VSIX or BC mutation.",
+  "owner_host_smoke": {
+    "date": "2026-09-20",
+    "record": "host-smoke-2026-09-20.md",
+    "source": "owner-supplied screenshots and reports; not executed by packaging environment",
+    "coverage": "basic LSP/MCP smoke; mode-dependent; remaining acceptance gates in record"
+  },
+  "runtime_note": "runtime fields below describe the original packaging environment only; see owner_host_smoke for later Windows observations"
+}
