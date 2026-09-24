@@ -5,16 +5,22 @@ if using plugin discovery instead of local bootstrap. Workflow names below are
 reference files in commands/, not automatically registered slash commands.
 Packaged domain entrypoints named SKILL.md in the source are stored as GUIDE.md
 under references/skills/. This alias applies only when reading packaged guidance;
-new discoverable skills must still be created with SKILL.md.
+new discoverable skills must still be created with SKILL.md. Role names are
+routing destinations, not chat mentions. Use the discovered native delegation
+schema and exact custom-agent identity; do not launch nested CLI processes or
+substitute a general agent to simulate a missing independent role.
 
 Read the terminal-host contract at
 `.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md`
 before choosing AL tools, changing dependencies or reporting BC29 / AL18
 validation. Use only tools actually exposed by this session. Model, reasoning and approval
-settings inherit from the parent; this profile grants no extra tools. Its
-`sandbox_mode` is derived from the write scope the canonical contract grants this
-role, and the session's own permission profile is reapplied over it, so that key
-narrows and never grants. The narrower role write scopes stated below are still
+settings inherit from the parent; this profile grants no extra tools. Read
+`.agents/skills/aldc/references/al-tooling.md` for Codex-specific AL availability.
+It supersedes availability examples in the shared terminal contract. A read-only
+filesystem mode is not an MCP tool allowlist. Its
+`sandbox_mode` follows canonical write grants, and the session's own permission profile is reapplied over it, so that key
+does not establish the effective runtime policy by itself. Inspect the actual
+loaded permissions, including parent overrides. The narrower role write scopes stated below are still
 behavioral: `sandbox_mode` cannot express them, and honouring them is yours. Discover MCP
 providers before using their examples; none are installed by this package.
 If delegation is unavailable, report that the affected independent review or
@@ -29,7 +35,7 @@ and only then delegate or switch role.
 
 # AL Environment Initialization
 
-Your goal is to initialize the AL development environment and workspace for `<ProjectName from $ARGUMENTS>`.
+Your goal is to initialize the AL development environment and workspace for `<ProjectName from the current request>`.
 
 This workflow covers both initial environment setup (VS Code, GitHub Copilot) and AL workspace configuration (project structure, symbols, dependencies).
 
@@ -111,12 +117,12 @@ Create or update `.vscode/settings.json` in the workspace root:
 
 **For New Projects:**
 ```
-al_new_project
+reviewed project scaffolding through file tools
 ```
 
 **For Existing Folders:**
 ```
-al_go
+reviewed project scaffolding through file tools
 ```
 
 ### Project Structure
@@ -124,7 +130,7 @@ al_go
 Implement feature-based organization:
 
 ```
-<ProjectName from $ARGUMENTS>/
+<ProjectName from the current request>/
 ├── .vscode/
 │   ├── settings.json          # Workspace settings
 │   └── launch.json            # Debug configurations
@@ -150,7 +156,7 @@ Implement feature-based organization:
 
 Download required symbols:
 ```
-al_download_symbols
+authorized symbol restore through Developer/Implementer
 ```
 
 Verify all base application dependencies are available.
@@ -159,7 +165,7 @@ Verify all base application dependencies are available.
 
 Create manifest file:
 ```
-al_generate_manifest
+reviewed project scaffolding through file tools
 ```
 
 **Human Review:** Validate manifest contents before proceeding.
@@ -232,7 +238,7 @@ Create `.vscode/launch.json` based on your environment:
             "name": "Attach to agent (Sandbox)",
             "clientType": "Agent",
             "environmentType": "Sandbox",
-            "environmentName": "<EnvironmentName from $ARGUMENTS>",
+            "environmentName": "<EnvironmentName from the current request>",
             "breakOnNext": "WebClient"
         }
     ]
@@ -255,7 +261,7 @@ rad.json
 
 # VS Code settings (optional)
 .vscode/launch.json
-.vscode/*.log
+.editor-only API (not a Codex grant).log
 
 # Build artifacts
 .netFramework/
@@ -277,7 +283,7 @@ TestResults/
 Create comprehensive `README.md`:
 
 ```markdown
-# <ProjectName from $ARGUMENTS>
+# <ProjectName from the current request>
 
 ## Overview
 [Project purpose and business value]
@@ -355,15 +361,15 @@ end;
 ### Authentication Issues
 
 If authentication fails:
-- Use `al_clear_credentials_cache` to clear cached credentials
+- Use `human credential recovery for the actual provider` to clear cached credentials
 - Re-authenticate when prompted
 - Verify launch.json authentication method is correct
 
 ### Symbol Issues
 
 If symbols are missing:
-1. Download symbols: `al_download_symbols`
-2. If persistent, download source: `al_download_source`
+1. Download symbols: `authorized symbol restore through Developer/Implementer`
+2. If persistent, download source: `available source/symbol inspection`
 3. Verify app.json dependencies match BC version
 
 ### AI Suggestions Not Appearing
@@ -404,18 +410,18 @@ Once your environment is initialized:
 
 **For Development:**
 ```
-@AL Implementation Specialist                    # Implement features (loads page/event skills on demand)
+al-developer                    # Implement features (loads page/event skills on demand)
 /al-build          # Build and deploy
 ```
 
 **For Architecture:**
 ```
-@AL Architecture & Design Specialist                    # Design solutions
+al-architect                    # Design solutions
 ```
 
 **For TDD Orchestration:**
 ```
-@AL Development Conductor                    # Plan → Implement → Review → Commit
+al-conductor                    # Plan → Implement → Review → Commit
 ```
 
 ## Security Considerations

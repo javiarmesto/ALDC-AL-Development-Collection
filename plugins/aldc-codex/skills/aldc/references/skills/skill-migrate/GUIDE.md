@@ -128,10 +128,10 @@ end;
 ```
 
 **Migration steps:**
-1. Build with `al_build` — signature mismatches produce `AL0482` errors
+1. Build with `authorized build/package through Developer/Implementer` — signature mismatches produce `AL0482` errors
 2. Use `al_get_object_definition` to inspect the new publisher signature
 3. Update parameter list to match exactly (name, type, order)
-4. Re-verify with `al_build`
+4. Re-verify with `authorized build/package through Developer/Implementer`
 
 ### Pattern 4: Obsolete Object Handling
 
@@ -261,7 +261,7 @@ Document and prepare rollback before executing migration:
 ### Step 1: Pre-Migration Assessment
 
 1. **Backup**: Ensure source control is up to date (`git status` clean)
-2. **Download current symbols**: `al_downloadsymbols`
+2. **Download current symbols**: `authorized symbol restore through Developer/Implementer`
 3. **Document dependencies**: `al_packages` — list loaded packages with current versions
 4. **Review release notes**: Check BC target version breaking changes
 5. **Create migration plan** in `.agents/plans/{project}-migration.md`
@@ -272,7 +272,7 @@ Document and prepare rollback before executing migration:
 
 1. Update `app.json` (Pattern 1) — platform, runtime, application, dependencies, features
 2. Download new symbols for target version
-3. Build: `al_build` — collect all errors
+3. Build: `authorized build/package through Developer/Implementer` — collect all errors
 
 ### Step 3: Fix Compilation Errors
 
@@ -287,7 +287,7 @@ For each fix, verify with incremental build.
 ### Step 4: Regenerate and Validate
 
 1. Update the manifest (`app.json`) — no agent tool; edit directly (or via the VS Code command)
-2. Full build: `al_build` — zero errors, zero new warnings; `al_build` also produces the `.app` package
+2. Full build: `authorized build/package through Developer/Implementer` — zero errors, zero new warnings; `authorized build/package through Developer/Implementer` also produces the `.app` package
 4. Run existing tests to verify no regressions
 
 ### Step 5: Post-Migration

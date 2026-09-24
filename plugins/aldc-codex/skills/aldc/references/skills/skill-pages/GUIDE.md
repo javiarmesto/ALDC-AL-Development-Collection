@@ -411,8 +411,8 @@ actions
 
 ### Step 5: Build and Test
 
-1. Build: `al_build`
-2. Publish: `al_publish` (incremental)
+1. Build: `authorized build/package through Developer/Implementer`
+2. Publish: `a verified deployment runner with separate human authorization` (incremental)
 3. Verify layout, navigation, and field behavior
 4. Test dynamic visibility and styling with different record states
 
