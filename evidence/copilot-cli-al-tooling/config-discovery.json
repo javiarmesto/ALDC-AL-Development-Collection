@@ -1,0 +1,43 @@
+{
+  "scope": "Disposable configuration only. Example wrapper path is deliberately not provisioned; no LSP provider or AL operation started. No authenticated agent invocation.",
+  "commands": [
+    {
+      "args": [
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "GitHub Copilot CLI 1.0.86.\nRun 'copilot update' to check for updates.\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "plugin",
+        "install",
+        "/workspace/scratch/dbe6caace3f9/aldc-cli-tooling/copilot-cli-plugin"
+      ],
+      "exit_code": 0,
+      "stdout": "Plugin \"aldc-cli\" installed successfully. Installed 16 skills.\n",
+      "stderr": "\nWarning: Direct plugin installs (repos, URLs, local paths) are deprecated. Only plugin@marketplace installs will be supported in a future release.\n"
+    },
+    {
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "[\n  {\n    \"name\": \"aldc-cli\",\n    \"marketplace\": \"\",\n    \"version\": \"5.0.1\",\n    \"enabled\": true,\n    \"source\": \"installed\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "lsp",
+        "list",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "[\n  {\n    \"id\": \"al\",\n    \"fileExtensions\": [\n      \".al\",\n      \".dal\"\n    ]\n  }\n]\n",
+      "stderr": ""
+    }
+  ]
+}
