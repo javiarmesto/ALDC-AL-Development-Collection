@@ -9,6 +9,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const yaml = require('js-yaml');
 const { project } = require('./native-profile');
+const { project: chatProject } = require('./chat-profile');
 const root = path.resolve(__dirname, '..');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-native-profile-'));
 let checks = 0;
@@ -40,11 +41,15 @@ try {
   fs.writeFileSync(path.join(fixture, 'Test/app.json'), sentinel);
   fs.mkdirSync(path.join(fixture, '.vscode'));
   fs.writeFileSync(path.join(fixture, '.vscode/settings.json'), '{"custom":true}\n');
+  const mcp = '// user-owned JSONC\n{"servers":{"existing":{"command":"keep-me"}},"inputs":[]}\n';
+  fs.writeFileSync(path.join(fixture, '.vscode/mcp.json'), mcp);
   let run = installer(fixture);
   check(run.status === 0, `Default install: ${run.stderr}`);
   for (const tree of ['agents', 'prompts']) {
     for (const name of fs.readdirSync(path.join(root, tree))) {
-      check(read(path.join(fixture, '.github', tree, name)) === read(path.join(root, tree, name)), `BC28 preserves ${tree}/${name}`);
+      const installed = read(path.join(fixture, '.github', tree, name));
+      check(installed === chatProject(`${tree}/${name}`, fs.readFileSync(path.join(root, tree, name)), 'bc28').toString(), `BC28 Chat projection: ${tree}/${name}`);
+      if (/\.(agent|prompt)\.md$/.test(name)) check(!fm(installed).tools.some(t => t.startsWith('ms-dynamics-smb.al/')), `BC28 does not assume native catalog: ${name}`);
     }
   }
   const before = digestFiles(fixture);
@@ -67,10 +72,10 @@ try {
       const original = fm(read(path.join(root, tree, name)));
       check(metadata.model === original.model, `Model preserved: ${name}`);
       assert.deepEqual(metadata.handoffs, original.handoffs); checks++;
-      check(!metadata.tools.some(t => /al-symbols-mcp|sshadowsdk|atlas/i.test(t)), `No legacy provider grant: ${name}`);
+      check(!metadata.tools.some(t => /al-symbols-mcp|atlas/i.test(t)), `No obsolete provider grant: ${name}`);
       check(metadata.tools.filter(t => t.startsWith('ms-dynamics-smb.al/')).every(t => allowed.has(t.split('/')[1])), `Catalog names: ${name}`);
-      check(!/bclsp_|al_symbolrelations|al_get_diagnostics|al_search_objects|al_download_symbols|al_generate_manifest|al_download_source|al_clear_credentials_cache|al_generate_cpu_profile|al_get_package_dependencies|al_generatepermissionset|al_new_project|\bal_go\b/.test(text), `No stale tool instructions: ${name}`);
-      const link = text.match(/\[the native tool contract\]\(([^)]+)\)/);
+      check(!/al_symbolrelations|al_get_diagnostics|al_search_objects|al_download_symbols|al_generate_manifest|al_download_source|al_clear_credentials_cache|al_generate_cpu_profile|al_get_package_dependencies|al_generatepermissionset|al_new_project|\bal_go\b/.test(text), `No stale tool instructions: ${name}`);
+      const link = text.match(/\[the Chat tool contract\]\(([^)]+)\)/);
       check(link && fs.existsSync(path.resolve(path.dirname(installed), link[1])), `Contract readable after install: ${name}`);
     }
   }
@@ -104,12 +109,16 @@ try {
   fs.writeFileSync(memoryPath, 'USER MEMORY\n');
   run = installer(fixture, ['--profile', 'bc28', '--force']);
   check(run.status === 0, `BC28 rollback: ${run.stderr}`);
-  check(agent('al-conductor') === conductor, 'Rollback restores canonical Conductor bytes');
+  check(agent('al-conductor') === chatProject('agents/al-conductor.agent.md', Buffer.from(conductor), 'bc28').toString(), 'Profile switch restores BC28 Chat projection');
   check(read(memoryPath) === 'USER MEMORY\n', 'Rollback preserves project memory');
   check(read(path.join(fixture, 'app.json')) === sentinel, 'Rollback preserves user app.json');
   check(read(path.join(fixture, 'App/Sentinel.Table.al')) === '// existing AL source\n', 'Profile changes preserve AL sources');
   check(read(path.join(fixture, 'Test/app.json')) === sentinel, 'Profile changes preserve Test manifest');
   check(read(path.join(fixture, '.vscode/settings.json')) === '{"custom":true}\n', 'Profile changes preserve VS Code settings');
+  check(read(path.join(fixture, '.vscode/mcp.json')) === mcp, 'Install/update/force/profile changes preserve MCP bytes');
+  run = spawnSync(process.execPath, [path.join(root, 'scripts/install.js'), 'rollback', '--yes'], {cwd: fixture, encoding:'utf8'});
+  check(run.status === 0, `Receipt rollback: ${run.stderr}`);
+  check(read(path.join(fixture, '.vscode/mcp.json')) === mcp, 'Receipt rollback preserves MCP bytes');
   assert.throws(() => project('agents/new-role.agent.md', Buffer.from('---\ntools: [read]\n---\n')), /assignment missing/); checks++;
   const custom = path.join(tmp, 'custom'); fs.mkdirSync(custom);
   run = installer(custom, ['--profile', 'bc29-native', '--target-dir', '.copilot']);
@@ -125,6 +134,7 @@ try {
       const crlf = lf.replace(/\n/g, '\r\n');
       fs.writeFileSync(path.join(crlfPackage, rel), crlf);
       check(project(rel, Buffer.from(crlf)).toString().replace(/\r\n/g, '\n') === project(rel, Buffer.from(lf)).toString(), `CRLF projection: ${rel}`);
+      check(chatProject(rel, Buffer.from(crlf), 'bc28').toString().replace(/\r\n/g, '\n') === chatProject(rel, Buffer.from(lf), 'bc28').toString(), `Chat CRLF projection: ${rel}`);
     }
   }
   const crlfFixture = path.join(tmp, 'crlf-project'); fs.mkdirSync(crlfFixture);
@@ -133,6 +143,7 @@ try {
   const crlfConductor = read(path.join(crlfPackage, 'agents/al-conductor.agent.md'));
   check(read(path.join(crlfFixture, '.github/agents/al-conductor.agent.md')).endsWith(crlfConductor.slice(crlfConductor.indexOf('\r\n---', 3) + 5)), 'CRLF Conductor body retained byte for byte');
   console.log(`PASS: ${checks} checks; real default/native/switch/rollback/custom-target installs. No AL/BC runtime operations executed.`);
+  require('./test-chat-profile');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

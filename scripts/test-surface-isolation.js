@@ -65,6 +65,8 @@ for (const target of SURFACES) {
     }
     if (target.command !== 'sync:claude') append(dir, 'scripts/claude-al-tooling.md', '\nUnrelated Claude guide change.\n');
     if (target.command !== 'sync:codex') append(dir, 'scripts/codex-mcp-setup.md', '\nUnrelated Codex guide change.\n');
+    fs.writeFileSync(path.join(dir, 'scripts/chat-profile.js'), "throw Error('Terminal generators must not load the Chat projector');\n");
+    append(dir, 'docs/framework/copilot-chat-al-tooling.md', '\nChat-only contract change.\n');
     append(dir, '.claude/agents/al-developer.md', '\nWorkspace-only change.\n');
     fs.rmSync(path.join(dir, target.output), { recursive: true });
     const before = snapshot(dir);

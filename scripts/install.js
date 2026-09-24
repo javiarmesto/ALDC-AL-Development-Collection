@@ -271,16 +271,17 @@ async function install(opts) {
   }
   // Preflight every projection before writing any installation files.
   let transform = null;
-  if (profile === 'bc29-native') {
-    const { project } = require('./native-profile');
+  {
+    const { project } = require('./chat-profile');
     const projected = new Map();
     for (const dir of ['agents', 'prompts']) {
       for (const name of fs.readdirSync(path.join(packageDir, dir))) {
         const src = path.join(packageDir, dir, name);
-        projected.set(src, project(`${dir}/${name}`, fs.readFileSync(src)));
+        projected.set(src, project(`${dir}/${name}`, fs.readFileSync(src), profile));
       }
     }
     if (!fs.existsSync(path.join(packageDir, 'docs/framework/native-al-tools.md'))) throw new Error('Native contract missing from package');
+    if (!fs.existsSync(path.join(packageDir, 'docs/framework/copilot-chat-al-tooling.md'))) throw new Error('Chat contract missing from package');
     transform = (src, data) => projected.get(src) || data;
   }
 
