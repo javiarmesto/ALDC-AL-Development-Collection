@@ -1,4 +1,4 @@
-<!-- ALDC Core Template. Copy to the assigned .github/plans/{req_name}/{req_name}.spec.md.
+<!-- ALDC Core Template. Copy to the assigned {plans.root}/{req_name}/{req_name}.spec.md.
      Maintainers evolve this source with the canonical Spec Agent; consumers fill a copy. -->
 
 # {req_name} — Technical Specification

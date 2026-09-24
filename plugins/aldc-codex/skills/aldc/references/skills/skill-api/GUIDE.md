@@ -341,7 +341,7 @@ Document in `.agents/plans/{req_name}.architecture.md` or a dedicated API design
 3. Add bound actions for entity operations (Pattern 3)
 4. Add unbound actions if needed (Pattern 4)
 5. Add error handling triggers (Pattern 7)
-6. Build: `al_build`
+6. Build: `authorized build/package through Developer/Implementer`
 
 ### Step 3: Optimize for Performance
 

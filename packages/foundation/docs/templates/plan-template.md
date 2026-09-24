@@ -1,6 +1,6 @@
 # Template — Plan Document
 
-Use this template verbatim when writing `.github/plans/<plan-name>/<plan-name>-plan.md` after the Phase 1 (Planning) handoff in the AL Conductor workflow. Replace placeholders, remove sections that do not apply, do not invent additional structure.
+Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-plan.md` after the Phase 1 (Planning) handoff in the AL Conductor workflow. Replace placeholders, remove sections that do not apply, do not invent additional structure.
 
 ---
 

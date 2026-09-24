@@ -211,9 +211,9 @@ codeunit 50102 "Customer Validation Handler"
 
 ### Step 4: Verify
 
-1. Build: `al_build` — check for compilation errors (signature mismatches)
+1. Build: `authorized build/package through Developer/Implementer` — check for compilation errors (signature mismatches)
 2. Set breakpoint inside subscriber
-3. Debug: `al_debug`
+3. Debug: `human/editor debugging or supplied runtime evidence`
 4. Execute the business process — confirm subscriber fires
 5. If subscriber does NOT fire, check:
    - Signature mismatch (most common cause)

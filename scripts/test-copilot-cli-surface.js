@@ -88,3 +88,96 @@ test('candidate does not broaden reviewer or Spec execution grants', () => {
     assert.equal(split(read(pluginRoot, `agents/${id}.agent.md`)).data['user-invocable'], false);
   }
 });
+
+
+test('official AL MCP grants are explicit and compilation belongs to implementation', () => {
+  const { toolsForRole } = require('./copilot-cli-adapter');
+  const roles = fs.readdirSync(path.join(pluginRoot, 'agents')).map(n => n.replace('.agent.md', ''));
+  for (const id of roles) {
+    const expected = id === 'al-conductor' ? [] : ['al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies'];
+    if (['al-developer', 'al-implement-subagent'].includes(id)) expected.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
+    assert.deepEqual(toolsForRole(id).filter(t => t.startsWith('al/')).sort(), expected.sort(), id);
+  }
+  const manifest = JSON.parse(read(pluginRoot, 'plugin.json'));
+  assert.equal(manifest.lspServers, undefined, 'no duplicate AL LSP registration');
+  for (const server of ['al', 'bc-profiling', 'bc-snapshot']) assert.equal(manifest.mcpServers[server], undefined, 'optional providers do not autostart');
+});
+
+test('capture grants stay in Triage and Dredd cannot write, execute or delegate', () => {
+  const { toolsForRole } = require('./copilot-cli-adapter');
+  for (const file of fs.readdirSync(path.join(pluginRoot, 'agents'))) {
+    const id = file.replace('.agent.md', '');
+    for (const proxy of ['bc-profiling/*', 'bc-snapshot/*']) assert.equal(toolsForRole(id).includes(proxy), id === 'al-triage', id);
+  }
+  const dredd = toolsForRole('dredd');
+  for (const tool of ['edit', 'execute', 'task', 'list_agents', 'read_agent', '*']) assert.ok(!dredd.includes(tool), tool);
+  const body = read(pluginRoot, 'agents/dredd.agent.md');
+  assert.ok(body.includes('persistence pending'));
+  assert.ok(!body.includes('Otherwise **persist**'));
+  assert.ok(body.includes('${PLUGIN_ROOT}/scripts/save-audit.js'));
+  assert.throws(() => require('./copilot-cli-adapter').adaptDreddPersistence('Changed contract'), /anchor changed/);
+});
+
+test('Dredd saver preserves bytes, never overwrites, and writes only reports', t => {
+  const { saveAudit } = require('../copilot-cli-plugin/scripts/save-audit');
+  const project = temp(t);
+  write(project, 'src/Example.al', 'original AL');
+  const report = '{\n "audit":{"gate":"advisory","verdict":"INCOMPLETE"}, "summary":{}, "findings":[], "note":"Do not execute $(touch escape) or ../src/Example.al"\n}\n';
+  const first = saveAudit({ project, report }), second = saveAudit({ project, report });
+  assert.notEqual(first.path, second.path);
+  for (const receipt of [first, second]) {
+    assert.equal(path.dirname(receipt.path), path.join(project, '.github/audits'));
+    assert.equal(fs.readFileSync(receipt.path, 'utf8'), report);
+    assert.equal(receipt.sha256, require('node:crypto').createHash('sha256').update(report).digest('hex'));
+  }
+  assert.equal(read(project, 'src/Example.al'), 'original AL');
+  assert.equal(fs.existsSync(path.join(project, 'escape')), false);
+});
+
+test('Dredd saver rejects invalid reports and symlinked audit destinations', t => {
+  const { saveAudit } = require('../copilot-cli-plugin/scripts/save-audit');
+  const project = temp(t);
+  for (const report of ['not JSON', '[]', '{}', '{"audit":{"gate":"blocking","verdict":"PASS"},"summary":{},"findings":[]}']) {
+    assert.throws(() => saveAudit({ project, report }));
+    assert.equal(fs.existsSync(path.join(project, '.github')), false);
+  }
+  const report = '{"audit":{"gate":"advisory","verdict":"PASS"},"summary":{},"findings":[]}';
+  const outside = temp(t);
+  fs.symlinkSync(outside, path.join(project, '.github'), 'junction');
+  assert.throws(() => saveAudit({ project, report }), /real directory/);
+  assert.deepEqual(fs.readdirSync(outside), []);
+  fs.unlinkSync(path.join(project, '.github'));
+  fs.mkdirSync(path.join(project, '.github'));
+  fs.symlinkSync(outside, path.join(project, '.github/audits'), 'junction');
+  assert.throws(() => saveAudit({ project, report }), /real directory/);
+  assert.deepEqual(fs.readdirSync(outside), []);
+});
+
+test('CLI audit writer accepts stdin verbatim and rejects invalid UTF-8', t => {
+  const { spawnSync } = require('node:child_process');
+  const project = temp(t);
+  const script = path.join(pluginRoot, 'scripts/save-audit.js');
+  const args = [script, '--project', project, '--input', '-'];
+  const report = '{"audit":{"gate":"advisory","verdict":"PASS"},"findings":[],"summary":{"note":"á"}}\r\n';
+  const saved = spawnSync(process.execPath, args, { input: report, encoding: 'utf8' });
+  assert.equal(saved.status, 0, saved.stderr);
+  assert.equal(fs.readFileSync(JSON.parse(saved.stdout).path, 'utf8'), report);
+  const invalid = spawnSync(process.execPath, args, { input: Buffer.from([0xff]), encoding: 'utf8' });
+  assert.equal(invalid.status, 1);
+  assert.equal(fs.readdirSync(path.join(project, '.github/audits')).length, 1);
+});
+
+test('CLI bootstrap leaves existing provider configuration unchanged through update and rollback', t => {
+  const project = temp(t);
+  const settings = {
+    '.mcp.json': '{"mcpServers":{"my-official-al":{"command":"existing-altool"}}}\n',
+    '.github/mcp.json': '{"mcpServers":{"custom":{"command":"existing"}}}\n',
+    '.github/lsp.json': '{"lspServers":{"existing-al":{"command":"existing-wrapper","fileExtensions":{".al":"al"}}}}\n',
+    '.claude/settings.json': '{"enabledPlugins":{"existing-lsp@marketplace":true}}\n',
+  };
+  for (const [file, content] of Object.entries(settings)) write(project, file, content);
+  for (const operation of [{}, { apply: true }, { apply: true }, { check: true }, { rollback: true }]) {
+    initialize({ project, pluginRoot, ...operation });
+    for (const [file, content] of Object.entries(settings)) assert.equal(read(project, file), content, file);
+  }
+});

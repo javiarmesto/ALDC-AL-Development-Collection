@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-20",
+  "base": "e21fbf6185ebbcdeed590a2e52022541c11c5cbf",
+  "version": "5.0.1 (unchanged; no release)",
+  "surface": "Copilot CLI",
+  "acceptance": "draft; authenticated runtime evidence pending",
+  "checks": {
+    "npm test": "passed; final suite 59 passed, 2 existing PowerShell skips",
+    "CLI surface tests": "11 passed after final helper/documentation edits",
+    "CLI packaging": "362 static checks passed",
+    "surface isolation": "5 passed",
+    "conformance": "60 checks passed",
+    "foundation": "87 identical entries",
+    "Claude workspace mirror": "72 identical entries",
+    "git diff --check": "passed"
+  },
+  "protected_trees": {
+    "claude-plugin": "e703cf836bee0c3b853a0691d75cf5103291699c",
+    ".claude": "999eafbb48e62f463a2992a8ae88c2daabe1ed47",
+    "plugins/aldc-codex": "e88aa1107d4006d09802bf2e5b6f0c20e105c312",
+    "packages/foundation": "2147af1a64c493db5cb0e23609ea65089a628eb6",
+    "agents": "7da2c915552af15915283f732edc23cc7983b6f1",
+    "prompts": "d4586d5b0c44291d96d5fe4224822bf4185e4ebc",
+    "instructions": "c4e2e0d894fd4ea8829d8841e3afdb34b8b7a9a7",
+    "skills": "f95f2e9af10415116928bcd630523521b10f6470",
+    "plugin.json": "64538d1c05c436384346600120726d5bdf45f3a0",
+    "package.json": "8a9db8a988ba014e7c35f1b1211b6fe3d56f585d"
+  },
+  "host_observation": {
+    "version": "GitHub Copilot CLI 1.0.86",
+    "evidence": "config-discovery.json",
+    "observed": [
+      "isolated local plugin installation",
+      "plugin listing enabled at 5.0.1",
+      "native LSP configuration discovery for .al and .dal"
+    ],
+    "not_observed": [
+      "AL LSP process startup or semantic queries",
+      "effective native LSP operations available to a restricted custom agent or subagent",
+      "official AL MCP connection, discovery or compilation",
+      "profiling/snapshot capture",
+      "authenticated role invocation"
+    ]
+  },
+  "limits": [
+    "No undocumented LSP tool alias is granted. Query-only LSP routing must be established in the actual CLI host before acceptance.",
+    "Official AL MCP uses explicit per-role selectors; absent optional servers are not auto-configured.",
+    "Dedicated profiling/snapshot server catalogs are granted only to Triage; operation-level target/window limits remain instructions.",
+    "Dredd has no edit, execute or task grants. Its caller/human explicitly saves the verbatim report through the bounded helper; no persistence is claimed without a receipt.",
+    "The audit helper is not a sandbox against concurrent hostile filesystem mutation.",
+    "Owner acceptance of PR #109 is retained but does not validate these new capabilities."
+  ]
+}

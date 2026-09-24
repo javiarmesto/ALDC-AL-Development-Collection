@@ -1,6 +1,6 @@
 # Template — Plan Completion Report
 
-Use this template verbatim when writing `.github/plans/<plan-name>/<plan-name>-complete.md`. Consolidate data from all phase-complete files. Replace placeholders, remove sections that do not apply, do not invent additional structure.
+Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-complete.md`. Consolidate data from all phase-complete files. Replace placeholders, remove sections that do not apply, do not invent additional structure.
 
 ---
 

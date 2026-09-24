@@ -26,6 +26,21 @@
   payload` precisely where the installer's own commands run. `.in_use` is now
   treated as derived, like `__pycache__`.
 
+- **Templates named a plans root that two surfaces do not use.** Templates are
+  copied byte for byte to every surface, by design: path rewriting belongs in the
+  agent bodies that reference them. Nine of them still wrote `.github/plans/…`,
+  which is right for Copilot and the VS Code extension and wrong for Claude Code
+  (`.claude/plans`) and Codex (`.agents/plans`). The sharpest case was the BCQuality
+  design guidance: the Architect was told to write `bcq-constraints.md` under its
+  own root and, in the same step, `bcq-selection.json` under `.github/plans` — so
+  the Spec Agent, reading `plans.root`, would not find the selection. Templates now
+  name the root by its key, `plans.root`, and `check-conformance.js` rejects a
+  template that fixes one again.
+
+- **`external.bcquality.consumedBy` omitted the Developer Reviewer**, which runs the
+  review path like the three agents listed. The list is informational; nothing
+  reads it to decide behaviour.
+
 ### Added
 
 - **A packaging test that asks the registry whether declared packages exist.**

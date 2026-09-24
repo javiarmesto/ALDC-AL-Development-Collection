@@ -54,7 +54,9 @@ layers are the same rule; keep the highest layer and record the displaced path.
 
 ## What to write
 
-`.github/plans/<req>/<req>.bcq-selection.json`, by the role itself:
+`<plans.root>/<req>/<req>.bcq-selection.json`, by the role itself. `<plans.root>` is
+the folder `aldc.yaml → plans.root` declares for this installation — the same one the
+role writes `bcq-constraints.md` into:
 
     {
       "stage": "design" | "spec",

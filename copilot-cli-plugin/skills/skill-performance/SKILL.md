@@ -285,7 +285,7 @@ Clear profile codelenses in VS Code  ← VS Code command (not an agent tool), on
 
 Apply fixes in priority order (critical first). For each fix:
 1. Apply targeted change (Pattern 1–5 above)
-2. Rebuild: `verified project build/package command (if available)`
+2. Rebuild: `official AL MCP build when granted, or verified project build/package command`
 3. Re-profile to verify improvement
 
 Performance targets:
