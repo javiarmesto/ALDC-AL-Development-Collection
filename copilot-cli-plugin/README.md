@@ -15,15 +15,19 @@ Reinstall the local path after updates (the CLI caches plugins). Use a separate
 test project; existing project/personal agents or skills can shadow the plugin.
 Do not install both aldc and aldc-cli into the same CLI test session.
 
-Read skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
+Read [CLI AL tooling](docs/copilot-cli-al-tooling.md) for native LSP reuse,
+optional official AL MCP and Triage. Then read the shared
+skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
 scope, evidence and graph ownership. No VS Code language-model tools are bundled.
 The existing community/documentation MCP servers retain their configuration.
 No Claude hooks are imported; the agents retain their optional BCQuality backstop.
 
 Role write scopes are behavioral contracts, not filesystem sandboxes. The CLI
 edit capability translates Claude Write/Edit, both of which can overwrite files;
-execute/Bash is also broader than a report directory. Dredd and Triage must write
-only their reports as specified. Host tool/path approvals remain necessary;
+execute/Bash is also broader than a report directory. Dredd has no edit, shell or
+delegation grant: it returns its complete JSON for explicit caller/human saving
+with scripts/save-audit.js, which writes only a new report under .github/audits/.
+Triage retains behavioral report-write limits. Host approvals remain necessary;
 this package does not claim an enforced per-role filesystem boundary.
 
 Install, update, precedence, bootstrap and validation: [Copilot CLI guide](docs/copilot-cli-plugin.md).

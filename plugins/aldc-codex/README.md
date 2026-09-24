@@ -29,4 +29,7 @@ ALDC for Codex declares no MCP servers and does not copy the repository's
 `.mcp.json` or another host's plugin manifest. Existing Codex providers are inherited.
 See [MCP setup](skills/aldc/references/mcp-setup.md) for the corrected AL symbols
 package from PR #108, official documentation endpoints and a bounded smoke check.
-Doctor does not inspect Codex MCP configuration or establish connectivity.
+See [AL tooling](skills/aldc/references/al-tooling.md) for official AL MCP, optional
+Triage proxies and the unresolved AL LSP route. The role scopes are behavioral;
+verify effective MCP filters separately. Doctor does not inspect Codex MCP
+configuration or establish connectivity.

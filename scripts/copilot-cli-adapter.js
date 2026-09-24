@@ -22,12 +22,23 @@ const HOST_PREFACE = `
 > read the complete bundled SKILL.md. A read is not a native skill invocation.
 > Resolve PLUGIN_ROOT to this installed agent's plugin directory (not the project
 > or original checkout). It is a path placeholder here, not a promised global
-> shell variable. Read skills/skill-migrate/references/cli-al-tools.md there.
+> shell variable. Read docs/copilot-cli-al-tooling.md there for LSP/MCP bindings;
+> it supersedes older availability examples in the shared terminal contract at
+> skills/skill-migrate/references/cli-al-tools.md, never role duties or human gates.
 > Project instructions and matching .github/instructions rules remain binding;
 > pass the relevant excerpts to delegated roles. Canonical artifacts remain in
 > .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
 > AL execution requires a verified terminal command/runner or an actually exposed
-> MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> MCP capability. Reuse the configured AL LSP for Agents wrapper through native
+> CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
+> tool aliases or broaden read-only grants to enable rename/write operations.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter. Triage alone
+> receives the optional dedicated bc-profiling and bc-snapshot proxies; discover
+> their schemas and confirm an authorized target/window before capture. Other
+> roles consume evidence. Capture does not prove autonomous snapshot debugging.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -41,13 +52,13 @@ const HOST_PREFACE = `
 function translateHost(text) {
   text = text
     .replace(/\*\*CAN:\*\* create\/edit AL objects[^\n]+/,
-      '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through verified project commands when authorized; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; editor debugging and AL LSP navigation are unavailable here.')
+      '**CAN:** create/edit AL extension objects; compile, download symbols and run tests through authorized official AL MCP or verified project commands; inspect loaded symbol MCP tools and actual diagnostics; refactor, fix bugs and implement API/integration code. Interpret supplied debugger/profiler evidence; use configured native AL LSP navigation when exposed, keeping editor debugger controls separate.')
     .replace(/4\. \*\*Build & validate\*\*[^\n]+/,
-      '4. **Build & validate** — use the verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; request a human debugger capture when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
-    .replace(/; navigate via AL LSP/g, '; inspect available symbols or text references');
+      '4. **Build & validate** — use the discovered official AL MCP or verified terminal build command and its actual diagnostics. Fix and rebuild until clean. Run tests when available and approved; fix failures and retest. Stuck after 3 build attempts → pause. For runtime bugs load `skill-debug` and interpret supplied evidence; hand an authorized capture request to Triage or the human when needed. For slow code apply `al-performance.instructions.md` and load `skill-performance`. Missing compiler/test/debug runners stay unverified.')
+    .replace(/; navigate via AL LSP/g, '; use native LSP references when available, otherwise identify text/symbol evidence as a fallback');
   // This section is exclusively a host tool declaration, not a role workflow.
   text = text.replace(/## Tool surface \(authoritative[^\n]*\)[\s\S]*?(?=## CAN \/ CANNOT)/,
-    `## Tool surface (Copilot CLI)\n\nUse the granted file/search/shell tools and the actually loaded al-symbols-mcp,\ncontext7 and microsoft-docs tools. Inspect their current schemas before calling.\nCompile, symbol download, tests and publishing require a verified terminal command\nfor this project and the canonical authorization. No editor debugging or semantic\nAL LSP tool is bundled. Missing runners or tools are unavailable, never inferred.\n\n`);
+    `## Tool surface (Copilot CLI)\n\nUse the granted file/search/shell tools and the configured native LSP and actually loaded MCP tools. Read\ndocs/copilot-cli-al-tooling.md for role-specific capabilities. Inspect their current schemas before calling.\nCompile and symbol restore use authorized official AL MCP or a verified runner.\nTests need a real test runner; publishing retains its separate human/CI gate. The AL LSP provider is external; verify its configuration and the effective\nsemantic tools for this role. Editor debugger controls are not bundled. Missing runners or tools are unavailable, never inferred.\n\n`);
   return text
     .replace(/@(?:al-[a-z-]+|dredd)\b/g, s => s.slice(1))
     .replace(/@AL Architecture & Design Specialist/g, 'al-architect')
@@ -58,26 +69,28 @@ function translateHost(text) {
     .replace(/`(?:Task|Agent|agent)`/g, '`task`')
     .replace(/#(?:todos|todo)\b/g, 'plan progress tracking')
     .replace(/#?(?:vscode\/)?askQuestions\b|\bAskUserQuestion\b/g, 'ask_user (or return questions to the caller)')
-    .replace(/#(?:search|codebase|usages)\b/g, 'glob/grep text search (not semantic AL navigation)')
+    .replace(/#usages\b/g, 'native LSP references when exposed (otherwise label text-search evidence)')
+    .replace(/#(?:search|codebase)\b/g, 'glob/grep source search')
     .replace(/#(?:problems|testFailure)\b|\bread\/problems\b/g, 'actual compiler/test output (unverified until run)')
     .replace(/#changes\b|\bsearch\/changes\b/g, 'git diff through an available shell (or a supplied diff)')
     .replace(/#githubRepo\b/g, 'repository files/history through available read tools')
-    .replace(/#?ms-dynamics-smb\.al\/al_get_package_dependencies\b/g, 'verified manifest/symbol dependency inspection')
-    .replace(/@?al_get_package_dependencies\b/g, 'verified manifest/symbol dependency inspection')
+    .replace(/#?ms-dynamics-smb\.al\/al_get_package_dependencies\b/g, 'official AL MCP dependency query when granted, or manifest/symbol inspection')
+    .replace(/@?al_get_package_dependencies\b/g, 'official AL MCP dependency query when granted, or manifest/symbol inspection')
     .replace(/#?ms-dynamics-smb\.al\/al_download_source\b/g, 'available source or loaded symbol MCP inspection')
-    .replace(/\bal_get_diagnostics\b|\bbclsp_codeQualityDiagnostics\b/g, 'actual compiler diagnostics (only after execution)')
-    .replace(/\bal_downloadsymbols\b/g, 'verified terminal symbol-download command (if available)')
+    .replace(/\bal_get_diagnostics\b|\bbclsp_codeQualityDiagnostics\b/g, 'official AL MCP diagnostics when granted, or recorded compiler diagnostics; not proof of fresh compilation')
+    .replace(/\bal_downloadsymbols\b/g, 'official AL MCP symbol restore when granted, or verified terminal restore')
     .replace(/\bal_download_symbols\b|\bal_download_source\b/g, 'verified terminal symbol/source-download command (if available)')
-    .replace(/\bal_build\b|\bal_package\b|\bal_full_package\b/g, 'verified project build/package command (if available)')
+    .replace(/\bal_build\b|\bal_package\b|\bal_full_package\b/g, 'official AL MCP build when granted, or verified project build/package command')
     .replace(/\bal_publish\b|\bal_incremental_publish\b|\bal_publish_existing_extension\b/g, 'verified deployment command (requires authorization and an available runner)')
     .replace(/\bal_new_project\b|\bal_go\b|\bal_generate_manifest\b/g, 'reviewed project scaffolding through file tools')
     .replace(/\bal_clear_credentials_cache\b/g, 'the documented credential recovery procedure for the actual runner (human action)')
     .replace(/\bal_generatepermissionset\b/g, 'reviewed permission-set authoring through file tools')
-    .replace(/\bal_symbolsearch\b|\bal_symbolrelations\b/g, 'loaded symbol MCP query (if available)')
-    .replace(/\bal_debug\b|\bal_setbreakpoint\b|\bal_snapshotdebugging\b|\bbclsp_\w+\b/g, 'editor-only capability (unavailable in CLI)')
+    .replace(/\bal_symbolsearch\b|\bal_symbolrelations\b/g, 'discovered official/community symbol query when granted')
+    .replace(/\bal_snapshotdebugging\b/g, 'optional snapshot capture through Triage with authorization')
+    .replace(/\bal_debug\b|\bal_setbreakpoint\b|\bbclsp_\w+\b/g, 'editor-only capability (unavailable in CLI)')
     .replace(/\brunInTerminal\b/g, 'bash/powershell')
     .replace(/`execute`/g, '`bash/powershell`')
-    .replace(/`usages` tool/g, 'available text search (not semantic references)')
+    .replace(/`usages` tool/g, 'native LSP references when exposed (otherwise label text-search evidence)')
     .replace(/\bupstash\/context7\//g, 'context7/')
     .replace(/\bmicrosoft-learn\//g, 'microsoft-docs/')
     .replace(/\bweb\/githubTextSearch\b/g, 'available repository search')
@@ -88,8 +101,8 @@ function translateHost(text) {
 
 module.exports = { HOST_PREFACE, translateHost };
 
-// CLI-owned grants. Planning is narrowed to its canonical research-only scope;
-// other roles preserve the accepted 5.0.1 grants.
+// CLI-owned grants. Planning and Dredd stay read-only; optional AL providers
+// are selected below by role without auto-configuring or starting servers.
 const ROLE_TOOLS = {
   "al-agent-builder": [
     "read",
@@ -212,12 +225,37 @@ const ROLE_TOOLS = {
     "search",
     "al-symbols-mcp/*",
     "context7/*",
-    "microsoft-docs/*",
-    "edit"
+    "microsoft-docs/*"
   ]
 };
 function toolsForRole(name) {
   if (!Object.hasOwn(ROLE_TOOLS, name)) throw new Error(`Unmapped Copilot CLI role: ${name}`);
-  return [...ROLE_TOOLS[name]];
+  const tools = [...ROLE_TOOLS[name]];
+  if (name !== 'al-conductor') tools.push('al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies');
+  if (['al-developer', 'al-implement-subagent'].includes(name)) tools.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
+  if (name === 'al-triage') tools.push('bc-profiling/*', 'bc-snapshot/*');
+  return tools;
 }
 module.exports.toolsForRole = toolsForRole;
+
+
+// CLI cannot restrict its edit alias to an audit-report directory. Preserve the
+// report contract while moving persistence to an explicit caller/human operation.
+function adaptDreddPersistence(body) {
+  const replacements = [
+    [/Your `edit` tool is used for \*\*one thing only\*\*:[^\n]+/,
+      'On Copilot CLI you have no edit, shell or delegation tool. Return your complete Audit-Report JSON; persistence is an explicit caller/human operation using the bundled save-audit.js helper. Do not write files or claim persistence without a save receipt.'],
+    [/^1\. If the user forbids writes,[^\n]+/m,
+      '1. Return the complete Audit-Report JSON verbatim. If the user forbids writes, state persistence skipped; chat delivery completes reporting. Otherwise state persistence pending and hand the JSON to the caller/human for explicit saving with `${PLUGIN_ROOT}/scripts/save-audit.js` (see `${PLUGIN_ROOT}/docs/copilot-cli-al-tooling.md`). The helper creates a new report under `.github/audits/`; Dredd does not run it. A save receipt establishes persistence, not correctness of findings or provider execution.'],
+    [/The path of the persisted report, and the full `### Audit-Report \(JSON\)` block\./,
+      'The actual saved path/hash only if a receipt is supplied, otherwise the pending/skipped persistence status, and the full `### Audit-Report (JSON)` block.'],
+    [/3\. Close the reporting task once the report is delivered \(persisted when allowed\)\./,
+      '3. Close reporting after chat delivery when writes are forbidden, or after the caller confirms saving when persistence is allowed. Until then, keep persistence pending.']
+  ];
+  for (const [pattern, replacement] of replacements) {
+    if (!pattern.test(body)) throw Error(`Dredd persistence anchor changed: ${pattern}`);
+    body = body.replace(pattern, () => replacement);
+  }
+  return body;
+}
+module.exports.adaptDreddPersistence = adaptDreddPersistence;

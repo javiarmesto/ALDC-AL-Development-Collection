@@ -31,10 +31,10 @@ Select the right tool before starting:
 
 | Issue Type | Strategy | Tool |
 |---|---|---|
-| Consistent runtime error | Standard debugger | `al_debug` |
-| Already deployed code | Debug without publish | `al_debug` |
-| Rapid dev cycle | Incremental publish | `al_publish` (incremental) |
-| Intermittent / hard-to-reproduce | Snapshot debugging | `al_snapshotdebugging` |
+| Consistent runtime error | Standard debugger | `human/editor debugging or supplied runtime evidence` |
+| Already deployed code | Debug without publish | `human/editor debugging or supplied runtime evidence` |
+| Rapid dev cycle | Incremental publish | `a verified deployment runner with separate human authorization` (incremental) |
+| Intermittent / hard-to-reproduce | Snapshot debugging | `optional snapshot capture through Triage/the human` |
 | Slow performance | CPU profiling | VS Code command (not an agent tool) |
 | Auth / symbols / build | Configuration troubleshoot | See Workflow Step 2b |
 | Copilot AI feature | Agent session debug | `launch.json` with `clientType: Agent` |
@@ -46,7 +46,7 @@ Scenario: "Value is wrong after posting"
 
 1. Set breakpoint at final location (where value is wrong)
 2. Work backwards to find where value is set
-3. Use `usages` tool to find all assignments
+3. Use available reference evidence (identify symbol/source fallback) to find all assignments
 4. Set breakpoints at each assignment point
 5. Step through to find which execution path is taken
 6. Inspect conditions and variable states at each point
@@ -98,11 +98,11 @@ Before initializing:
 2. Security review for sensitive information
 3. Obtain explicit user approval
 
-Commands (one tool — `al_snapshotdebugging` — covers initialize / finish / view):
-  al_snapshotdebugging (initialize)   ← start capture session
+Commands (one tool — `optional snapshot capture through Triage/the human` — covers initialize / finish / view):
+  optional snapshot capture through Triage/the human (initialize)   ← start capture session
   [reproduce scenario 10-20 times]
-  al_snapshotdebugging (finish)       ← end capture
-  al_snapshotdebugging (view)         ← view and compare
+  optional snapshot capture through Triage/the human (finish)       ← end capture
+  optional snapshot capture through Triage/the human (view)         ← view and compare
 
 Compare snapshots between success and failure cases:
 - Variable values at failure point
@@ -132,7 +132,7 @@ Gather issue information:
 
 ### Step 2a: Isolate the Problem (Runtime / Logic)
 
-1. Narrow down scope with `search` and `usages` tools
+1. Narrow down scope with `search` and available reference evidence (identify symbol/source fallback)s
 2. Identify suspect objects (tables, pages, codeunits, event subscribers)
 3. Attach debugger with selected strategy (Pattern 1)
 4. Set strategic breakpoints:
@@ -154,9 +154,9 @@ Then re-authenticate and verify launch.json authentication method.
 
 **Missing symbols** (unresolved references, red squiggles):
 ```
-al_downloadsymbols                      ← first attempt
-al_downloadsymbols (globalSourcesOnly)  ← if no BC server connection is available
-al_build                                ← verify compilation
+authorized symbol restore through Developer/Implementer                      ← first attempt
+authorized symbol restore through Developer/Implementer (globalSourcesOnly)  ← if no BC server connection is available
+authorized build/package through Developer/Implementer                                ← verify compilation
 ```
 Check `app.json` dependencies version alignment.
 

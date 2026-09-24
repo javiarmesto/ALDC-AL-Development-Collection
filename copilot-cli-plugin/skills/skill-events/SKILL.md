@@ -211,7 +211,7 @@ codeunit 50102 "Customer Validation Handler"
 
 ### Step 4: Verify
 
-1. Build: `verified project build/package command (if available)` — check for compilation errors (signature mismatches)
+1. Build: `official AL MCP build when granted, or verified project build/package command` — check for compilation errors (signature mismatches)
 2. Set breakpoint inside subscriber
 3. Debug: `editor-only capability (unavailable in CLI)`
 4. Execute the business process — confirm subscriber fires

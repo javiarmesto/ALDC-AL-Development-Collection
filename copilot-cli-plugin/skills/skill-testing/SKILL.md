@@ -371,7 +371,7 @@ Create `.github/plans/{req_name}.test-plan.md` using `${PLUGIN_ROOT}/docs/templa
 ```
 RED phase:
   1. Write failing test(s) for the current requirement
-  2. Run: verified project build/package command (if available) → verify compilation
+  2. Run: official AL MCP build when granted, or verified project build/package command → verify compilation
   3. Run test → confirm it FAILS (no implementation yet)
 
 GREEN phase:
@@ -388,7 +388,7 @@ REFACTOR phase:
 2. Create library codeunit per domain: `"Library - Feature Name"`
 3. Implement tests following GWT pattern (Pattern 1)
 4. Add handlers (Pattern 4) for any dialogs
-5. Run: `verified project build/package command (if available)` + test execution
+5. Run: `official AL MCP build when granted, or verified project build/package command` + test execution
 
 ### Step 4: Test Isolation
 

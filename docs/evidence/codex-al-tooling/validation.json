@@ -1,0 +1,69 @@
+{
+  "date": "2026-09-20",
+  "base": "e21fbf6185ebbcdeed590a2e52022541c11c5cbf",
+  "surface": "Codex",
+  "version": "5.0.1 unchanged; no release",
+  "acceptance": "draft: owner verified native Architect setup and dependency query; LSP, effective role isolation and implementation runtime checks remain pending",
+  "checks": {
+    "npm test": "passed; final suite 59 passed and 2 existing PowerShell skips",
+    "surface isolation": "5 passed",
+    "Codex": "12 TOML profiles parsed; complete role bodies; one discoverable skill; operational vocabulary regression scan; three MCP TOML examples parsed; preservation through preview/apply/reapply/verify/rollback",
+    "conformance": "60 passed",
+    "foundation": "87 identical entries",
+    "Claude workspace mirror": "72 identical entries",
+    "skill validator": "passed",
+    "git diff --check": "passed"
+  },
+  "protected_trees": {
+    "claude-plugin": "e703cf836bee0c3b853a0691d75cf5103291699c",
+    "copilot-cli-plugin": "f4271f3d9b3354ca72ed3bd56f71d976deae6e71",
+    ".claude": "999eafbb48e62f463a2992a8ae88c2daabe1ed47",
+    "packages/foundation": "2147af1a64c493db5cb0e23609ea65089a628eb6",
+    "agents": "7da2c915552af15915283f732edc23cc7983b6f1",
+    "prompts": "d4586d5b0c44291d96d5fe4224822bf4185e4ebc",
+    "instructions": "c4e2e0d894fd4ea8829d8841e3afdb34b8b7a9a7",
+    "skills": "f95f2e9af10415116928bcd630523521b10f6470",
+    "plugin.json": "64538d1c05c436384346600120726d5bdf45f3a0",
+    "package.json": "8a9db8a988ba014e7c35f1b1211b6fe3d56f585d"
+  },
+  "host_evidence": {
+    "Codex CLI": "not installed in this execution environment",
+    "ALTool and dotnet": "not installed in this execution environment",
+    "AL semantic query": "not executed",
+    "official AL MCP connection/compilation": "not executed",
+    "effective custom-agent MCP catalogs": "not observed",
+    "BC profiling/snapshot": "not executed"
+  },
+  "decisions": {
+    "lsp": "Provider standalone documentation at 6535989729036dfbbe99086bec93cb36c216ec79 states no Codex CLI LSP integration. No native registration found in current Codex config reference. Keep selected provider; no guessed MCP declaration or unapproved bridge. Codex IDE agent exposure must be proved separately from editor installation.",
+    "mcp": "Role instructions describe query/implementation/capture scope, not enforced allowlists. Existing MCP config and role sandbox declarations remain unchanged. Guide contains reviewed opt-in query/implementation and Triage configuration examples. Actual inherited aliases and child filters require runtime validation.",
+    "planning": "Existing read-only declaration retained; no permission change.",
+    "scope": "Codex-only source adapter, guide, generator, tests and distribution; neutral cross-host references remain byte-identical.",
+    "preparation": "Explicitly authorized existing-project setup in the executing agent connection; no generated tool grants or config writes. Conductor delegates. One registration and one retry for no-projects-loaded, preserving denials and role execution limits."
+  },
+  "sources": [
+    "https://github.com/SShadowS/al-lsp-for-agents/blob/6535989729036dfbbe99086bec93cb36c216ec79/docs/standalone.md",
+    "https://developers.openai.com/codex/subagents/",
+    "https://developers.openai.com/codex/mcp/",
+    "https://developers.openai.com/codex/config-reference/",
+    "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-mcp-server"
+  ],
+  "host_evidence_scope": "Original 2026-09-20 execution environment only; see owner_host_followup for subsequent Windows host observations.",
+  "owner_host_followup": {
+    "observed": "2026-09-21",
+    "recorded": "2026-09-22",
+    "candidate": "f9d93d7be0e5799ed9f28507d28d9a332bb1074d",
+    "evidence": "host-smoke-2026-09-21.md",
+    "source": "Owner-supplied reports and literal responses; not independently replayed",
+    "result": "Native al-architect dependency query succeeded after explicitly authorized registration in its own live MCP connection. Parent preparation alone did not establish child readiness.",
+    "limits": "Diagnostic prompt tested; revised generated role behavior still requires a refreshed host session. No process topology or enforced per-role isolation established."
+  },
+  "followup_checks": {
+    "date": "2026-09-22",
+    "scope": "Per-connection preparation contract and owner evidence only; full npm suite above is historical",
+    "Codex validator": "passed: 12 TOML profiles, complete bodies, one skill, three MCP examples, config preservation through install/verify/rollback",
+    "surface isolation": "5 passed",
+    "sync-codex --check": "124 generated files; 0 differences",
+    "git diff --check": "passed"
+  }
+}

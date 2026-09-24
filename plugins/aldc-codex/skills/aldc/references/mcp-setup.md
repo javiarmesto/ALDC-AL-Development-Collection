@@ -66,7 +66,9 @@ the process environment, not in shared project files.
 ALDC Doctor currently does not inspect Codex MCP tables. Its success is not MCP
 connection evidence. Compilation, symbol downloads, publishing and deployment are
 outside this check. The native Microsoft AL MCP server (`almcp`) and BC Code Atlas
-are separate capabilities, not replacements installed by this fix. This guide does
+are separate capabilities. See [AL tooling](al-tooling.md) for official AL MCP,
+optional Triage capture and the unresolved native AL LSP route; none is installed
+automatically. This guide does
 not widen agent tool permissions; a filesystem sandbox is not an MCP tool allowlist.
 
 ## Sources

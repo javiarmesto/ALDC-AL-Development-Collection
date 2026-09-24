@@ -22,7 +22,7 @@ From a clone, register this directory as a local marketplace:
 /plugin install aldc@aldc-marketplace
 ```
 
-Verify with `/plugin`, `/agents` and `/`. You should see 12 agents,
+Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 12 agents,
 9 role entry skills, 11 workflow skills and
 16 knowledge skills, all prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local
@@ -59,11 +59,24 @@ claude-plugin/
 └── README.md                       # this file
 ```
 
+## AL language tooling
+
+Read [Claude AL tooling](docs/claude-al-tooling.md) to reuse the existing AL LSP
+for Agents companion and verify access from each agent mode. ALDC declares no
+second LSP server and does not change user or project provider configuration.
+
 ## MCP servers
 
 **al-symbols-mcp** (read-only AL symbol queries), **context7** (library docs) and
 **microsoft-docs** (Microsoft Learn). A declaration in the manifest is not proof
 of connection: a server that is not loaded is `unavailable`, never simulated.
+
+The Microsoft AL MCP is optional and separately configured under user/project
+alias `al`; see [setup and role grants](docs/claude-al-tooling.md). ALDC grants
+its query operations explicitly and compilation/build/restore only to Developer
+and Implementer. It does not start that server or grant publish/authentication.
+Optional BC29 profiling/snapshot proxies are granted only to Triage after explicit
+connection setup; see the same guide for capture scope and runtime acceptance.
 
 ## Requirements
 
