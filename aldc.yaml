@@ -43,7 +43,7 @@ external:
       skill: "al-code-review"          # BCQuality >= 0.2.0 (renamed upstream in #150)
       expectedVersion: "0.2.0"
       sourceRef: ""
-    consumedBy: ["agents/al-review-subagent.agent.md", "agents/dredd.agent.md", "agents/al-triage.agent.md"]
+    consumedBy: ["agents/al-review-subagent.agent.md", "agents/al-developer-reviewer.agent.md", "agents/dredd.agent.md", "agents/al-triage.agent.md"]
     # Missing/incompatible provider: native review, never an AL code defect.
     fallback:
       mode: "skills-mode"        # review natively via instructions + skills

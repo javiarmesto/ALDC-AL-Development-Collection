@@ -16,6 +16,7 @@
  *   6. Sincronía de árboles: raíz vs packages/foundation (si existe)
  *   7. Cobertura del plugin: cada agente raíz tiene contraparte en claude-plugin
  *   8. Frontmatter presente y bien formado en agentes y skills
+ *   9. Ninguna plantilla fija la raíz de planes (viajan idénticas a todas las superficies)
  *
  * Integración CI sugerida (.github/workflows/validate.yml):
  *   - run: node scripts/check-conformance.js
@@ -200,6 +201,24 @@ const checkFm = (files, required) => {
 };
 checkFm(listFiles('agents', '.agent.md'), ['description']);
 checkFm(listSkillDirs('skills').map((d) => `${d}/SKILL.md`).filter(exists), ['name', 'description']);
+
+// ── 9: plantillas sin raíz de planes fija ───────────────────────────────────
+// Las plantillas se copian byte a byte a todas las superficies (plugin-runtime.js,
+// sync-codex.js): la reescritura de rutas va en los cuerpos de los agentes, nunca en
+// ellas. Una plantilla que escribe `.github/plans/…` acierta en Copilot y en la
+// extensión y se equivoca en Claude Code (.claude/plans) y en Codex (.agents/plans):
+// el Architect recibía dos raíces distintas para dos ficheros del mismo paso. Por
+// eso nombran la raíz por su clave, `plans.root`, y esta regla lo mantiene.
+{
+  const fixed = /\.github\/plans\//;
+  const templates = listFiles('docs/templates', '.md');
+  const offenders = templates.filter((f) => read(f).split('\n').some((l) => fixed.test(l)));
+  for (const f of offenders) {
+    const lines = read(f).split('\n').map((l, i) => [i + 1, l]).filter(([, l]) => fixed.test(l)).map(([n]) => n);
+    errors.push(`${f}: fija .github/plans/ (líneas ${lines.join(', ')}); usa plans.root, la plantilla viaja idéntica a superficies con otra raíz`);
+  }
+  if (!offenders.length) ok.push(`docs/templates: ${templates.length} plantillas sin raíz de planes fija`);
+}
 
 // ── Informe ─────────────────────────────────────────────────────────────────
 console.log(`\nALDC check-conformance — ${new Date().toISOString().slice(0, 10)}`);
