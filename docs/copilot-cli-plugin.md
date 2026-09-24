@@ -35,8 +35,11 @@ delegation remains unverified until the host transcript demonstrates it.
 
 Frontmatter aliases select capabilities, while the body calls actual CLI tools.
 Reviewers keep read-only grants; Spec does not gain execution or delegation.
-AL compilation/tests require the project's real terminal toolchain. Editor-only
-debug/navigation tools are not renamed into fictional CLI capabilities.
+AL compilation can use the explicitly granted official AL MCP operations or a
+verified project command; tests require a real test runner. Native AL LSP is
+configured separately, and its availability inside restricted agents must be
+verified. See [AL tooling](copilot-cli-al-tooling.md) for setup, role grants,
+optional Triage captures and Dredd's separate report-persistence step.
 `${PLUGIN_ROOT}` in a Markdown contract denotes the installed package root;
 resolve it from the host source path, not the consumer's current directory.
 It is not a promise that the invoking shell has that environment variable.
@@ -90,7 +93,7 @@ Until this PR is merged, the unqualified repository route installs **main**,
 not this branch. Test the candidate in a separate profile:
 
 ```powershell
-copilot plugin marketplace add 'javiarmesto/ALDC-AL-Development-Collection#feat/copilot-cli-plugin'
+copilot plugin marketplace add 'javiarmesto/ALDC-AL-Development-Collection#feat/copilot-cli-al-tooling'
 copilot plugin install aldc-cli@aldc-marketplace
 ```
 
@@ -107,7 +110,7 @@ copilot plugin enable aldc-cli
 ```
 
 Inspect `plugin list --json` and restart after changes. For a local direct source,
-reinstall its directory. This PR leaves version 5.0.0 unchanged; record the
+reinstall its directory. This PR leaves the base version 5.0.1 unchanged; record the
 source SHA and hashes to distinguish the candidate from the published release.
 No release or tag is created by this work.
 

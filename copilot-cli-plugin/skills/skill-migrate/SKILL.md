@@ -128,10 +128,10 @@ end;
 ```
 
 **Migration steps:**
-1. Build with `verified project build/package command (if available)` — signature mismatches produce `AL0482` errors
+1. Build with `official AL MCP build when granted, or verified project build/package command` — signature mismatches produce `AL0482` errors
 2. Use `al_get_object_definition` to inspect the new publisher signature
 3. Update parameter list to match exactly (name, type, order)
-4. Re-verify with `verified project build/package command (if available)`
+4. Re-verify with `official AL MCP build when granted, or verified project build/package command`
 
 ### Pattern 4: Obsolete Object Handling
 
@@ -261,7 +261,7 @@ Document and prepare rollback before executing migration:
 ### Step 1: Pre-Migration Assessment
 
 1. **Backup**: Ensure source control is up to date (`git status` clean)
-2. **Download current symbols**: `verified terminal symbol-download command (if available)`
+2. **Download current symbols**: `official AL MCP symbol restore when granted, or verified terminal restore`
 3. **Document dependencies**: `al_packages` — list loaded packages with current versions
 4. **Review release notes**: Check BC target version breaking changes
 5. **Create migration plan** in `.github/plans/{project}-migration.md`
@@ -272,7 +272,7 @@ Document and prepare rollback before executing migration:
 
 1. Update `app.json` (Pattern 1) — platform, runtime, application, dependencies, features
 2. Download new symbols for target version
-3. Build: `verified project build/package command (if available)` — collect all errors
+3. Build: `official AL MCP build when granted, or verified project build/package command` — collect all errors
 
 ### Step 3: Fix Compilation Errors
 
@@ -287,7 +287,7 @@ For each fix, verify with incremental build.
 ### Step 4: Regenerate and Validate
 
 1. Update the manifest (`app.json`) — no agent tool; edit directly (or via the VS Code command)
-2. Full build: `verified project build/package command (if available)` — zero errors, zero new warnings; `verified project build/package command (if available)` also produces the `.app` package
+2. Full build: `official AL MCP build when granted, or verified project build/package command` — zero errors, zero new warnings; `official AL MCP build when granted, or verified project build/package command` also produces the `.app` package
 4. Run existing tests to verify no regressions
 
 ### Step 5: Post-Migration

@@ -411,7 +411,7 @@ actions
 
 ### Step 5: Build and Test
 
-1. Build: `verified project build/package command (if available)`
+1. Build: `official AL MCP build when granted, or verified project build/package command`
 2. Publish: `verified deployment command (requires authorization and an available runner)` (incremental)
 3. Verify layout, navigation, and field behavior
 4. Test dynamic visibility and styling with different record states

@@ -34,7 +34,7 @@ Select the right tool before starting:
 | Consistent runtime error | Standard debugger | `editor-only capability (unavailable in CLI)` |
 | Already deployed code | Debug without publish | `editor-only capability (unavailable in CLI)` |
 | Rapid dev cycle | Incremental publish | `verified deployment command (requires authorization and an available runner)` (incremental) |
-| Intermittent / hard-to-reproduce | Snapshot debugging | `editor-only capability (unavailable in CLI)` |
+| Intermittent / hard-to-reproduce | Snapshot debugging | `optional snapshot capture through Triage with authorization` |
 | Slow performance | CPU profiling | VS Code command (not an agent tool) |
 | Auth / symbols / build | Configuration troubleshoot | See Workflow Step 2b |
 | Copilot AI feature | Agent session debug | `launch.json` with `clientType: Agent` |
@@ -46,7 +46,7 @@ Scenario: "Value is wrong after posting"
 
 1. Set breakpoint at final location (where value is wrong)
 2. Work backwards to find where value is set
-3. Use available text search (not semantic references) to find all assignments
+3. Use native LSP references when exposed (otherwise label text-search evidence) to find all assignments
 4. Set breakpoints at each assignment point
 5. Step through to find which execution path is taken
 6. Inspect conditions and variable states at each point
@@ -98,11 +98,11 @@ Before initializing:
 2. Security review for sensitive information
 3. Obtain explicit user approval
 
-Commands (one tool — `editor-only capability (unavailable in CLI)` — covers initialize / finish / view):
-  editor-only capability (unavailable in CLI) (initialize)   ← start capture session
+Commands (one tool — `optional snapshot capture through Triage with authorization` — covers initialize / finish / view):
+  optional snapshot capture through Triage with authorization (initialize)   ← start capture session
   [reproduce scenario 10-20 times]
-  editor-only capability (unavailable in CLI) (finish)       ← end capture
-  editor-only capability (unavailable in CLI) (view)         ← view and compare
+  optional snapshot capture through Triage with authorization (finish)       ← end capture
+  optional snapshot capture through Triage with authorization (view)         ← view and compare
 
 Compare snapshots between success and failure cases:
 - Variable values at failure point
@@ -132,7 +132,7 @@ Gather issue information:
 
 ### Step 2a: Isolate the Problem (Runtime / Logic)
 
-1. Narrow down scope with `search` and available text search (not semantic references)s
+1. Narrow down scope with `search` and native LSP references when exposed (otherwise label text-search evidence)s
 2. Identify suspect objects (tables, pages, codeunits, event subscribers)
 3. Attach debugger with selected strategy (Pattern 1)
 4. Set strategic breakpoints:
@@ -154,9 +154,9 @@ Then re-authenticate and verify launch.json authentication method.
 
 **Missing symbols** (unresolved references, red squiggles):
 ```
-verified terminal symbol-download command (if available)                      ← first attempt
-verified terminal symbol-download command (if available) (globalSourcesOnly)  ← if no BC server connection is available
-verified project build/package command (if available)                                ← verify compilation
+official AL MCP symbol restore when granted, or verified terminal restore                      ← first attempt
+official AL MCP symbol restore when granted, or verified terminal restore (globalSourcesOnly)  ← if no BC server connection is available
+official AL MCP build when granted, or verified project build/package command                                ← verify compilation
 ```
 Check `app.json` dependencies version alignment.
 

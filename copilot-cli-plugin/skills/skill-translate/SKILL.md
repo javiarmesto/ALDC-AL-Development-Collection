@@ -197,7 +197,7 @@ getTranslatedTextsMap
 
 ### Step 1: Setup
 
-1. Build the extension to generate the `.g.xlf` file: `verified project build/package command (if available)`
+1. Build the extension to generate the `.g.xlf` file: `official AL MCP build when granted, or verified project build/package command`
 2. Create language file for each target locale (Pattern 1)
 3. If language files already exist, refresh them (Pattern 2)
 
@@ -222,7 +222,7 @@ getTranslatedTextsMap
 
 1. Verify no untranslated texts remain: `getTextsToTranslate` with `limit: 0`
 2. Promote all `final` texts to `signed-off`
-3. Build the extension to verify XLF integration: `verified project build/package command (if available)`
+3. Build the extension to verify XLF integration: `official AL MCP build when granted, or verified project build/package command`
 4. Test the UI in the target language
 
 ## Common Language Codes

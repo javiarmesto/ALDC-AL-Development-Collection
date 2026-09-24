@@ -12,6 +12,12 @@ tools:
   - microsoft-docs/*
   - list_agents
   - read_agent
+  - al/al_symbolsearch
+  - al/al_getdiagnostics
+  - al/al_getpackagedependencies
+  - al/al_compile
+  - al/al_build
+  - al/al_downloadsymbols
 model: claude-sonnet-4.6
 user-invocable: false
 disable-model-invocation: true
@@ -35,12 +41,23 @@ disable-model-invocation: true
 > read the complete bundled SKILL.md. A read is not a native skill invocation.
 > Resolve PLUGIN_ROOT to this installed agent's plugin directory (not the project
 > or original checkout). It is a path placeholder here, not a promised global
-> shell variable. Read skills/skill-migrate/references/cli-al-tools.md there.
+> shell variable. Read docs/copilot-cli-al-tooling.md there for LSP/MCP bindings;
+> it supersedes older availability examples in the shared terminal contract at
+> skills/skill-migrate/references/cli-al-tools.md, never role duties or human gates.
 > Project instructions and matching .github/instructions rules remain binding;
 > pass the relevant excerpts to delegated roles. Canonical artifacts remain in
 > .github/plans/. Role write scopes are behavioral, not filesystem sandboxes.
 > AL execution requires a verified terminal command/runner or an actually exposed
-> MCP capability. Editor-only debugging/navigation is unavailable in this CLI.
+> MCP capability. Reuse the configured AL LSP for Agents wrapper through native
+> CLI semantic tools when exposed to this role. Inspect the catalog; do not invent
+> tool aliases or broaden read-only grants to enable rename/write operations.
+> Editor debugger controls remain separate from semantic navigation. Official AL
+> MCP selectors use al/<tool>; only Developer/Implementer receive compile/build/
+> restore. Discover the actual callable names and pass the correct App/Test path.
+> No official publish/authentication tool is granted by this adapter. Triage alone
+> receives the optional dedicated bc-profiling and bc-snapshot proxies; discover
+> their schemas and confirm an authorized target/window before capture. Other
+> roles consume evidence. Capture does not prove autonomous snapshot debugging.
 > Symbol MCP: before any tools/call, verify AL CLI prerequisites are already
 > provisioned; this provider may auto-install AL tools on first use. A read-only
 > role must return that prerequisite to the caller, never bootstrap software.
@@ -169,7 +186,7 @@ end;
 - You **MUST** follow the spec and architecture documents provided by the Conductor
 - You **MUST** report back: objects created, **event subscribers (exact base object + event name + signature)**, tests created, test results, build status, any issues
 - **Don't re-read a file already in context.** If you already read a spec/architecture excerpt, a source file, or a skill this invocation, reuse it — do not issue another `read_file` for the same path.
-- **Resolve base-app symbols from symbols — and if you can't, ask; don't hunt.** Resolve event signatures and base-object members via `loaded symbol MCP query (if available)` / `al-symbols-mcp/*` against `.alpackages/` (authoritative for symbol facts). If a symbol or event the spec names **cannot be resolved** (e.g. the event does not exist in this BC version), **stop and surface it as a blocker / end-of-phase open question** in your return to the Conductor — don't burn turns guessing it via web/mirror searches, and never invent a signature.
+- **Resolve base-app symbols from symbols — and if you can't, ask; don't hunt.** Resolve event signatures and base-object members via `discovered official/community symbol query when granted` / `al-symbols-mcp/*` against `.alpackages/` (authoritative for symbol facts). If a symbol or event the spec names **cannot be resolved** (e.g. the event does not exist in this BC version), **stop and surface it as a blocker / end-of-phase open question** in your return to the Conductor — don't burn turns guessing it via web/mirror searches, and never invent a signature.
 
 </boundary_rules>
 
