@@ -41,9 +41,16 @@ try {
     check(tools.includes('al/al_getpackagedependencies'), 'Initialize exposes verification query');
     check(!tools.includes('al/*'), 'Initialize does not grant an official AL wildcard');
   }
+  // Foundation is a repository/VSIX projection, not part of the npm archive.
+  // Keep checking it in a checkout, while validating the actual shipped paths
+  // when this test runs from the extracted npm package.
+  const foundationPrompt = 'packages/foundation/prompts/al-initialize.prompt.md';
+  const sourceCheckout = fs.existsSync(path.join(root, '.git'));
+  if (sourceCheckout) check(fs.existsSync(path.join(root, foundationPrompt)), 'Source checkout contains the Foundation projection');
+  else check(!require('../package.json').files.some(rel => rel.startsWith('packages/foundation')), 'npm package excludes the Foundation projection');
   for (const relative of [
     'prompts/al-initialize.prompt.md',
-    'packages/foundation/prompts/al-initialize.prompt.md',
+    ...(sourceCheckout ? [foundationPrompt] : []),
     'claude-plugin/skills/al-initialize/SKILL.md',
     'copilot-cli-plugin/commands/al-initialize.md',
     'plugins/aldc-codex/skills/aldc/references/commands/al-initialize.md',
