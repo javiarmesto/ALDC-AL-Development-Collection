@@ -90,7 +90,7 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 ---
 
-## Updating to 5.0.0
+## Updating ALDC
 
 The VS Code extension and each host plugin are separate distribution channels.
 Updating the VSIX does not refresh installed Claude Code, Copilot CLI or Codex plugins.
@@ -617,7 +617,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 5.0.0
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 5.0.1
 
 </div>
 
