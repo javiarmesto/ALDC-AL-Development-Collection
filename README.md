@@ -26,6 +26,16 @@ support Business Central extension development from requirements to review.
 GitHub releases and VS Code Marketplace publication are separate deliveries;
 check the Marketplace listing for its currently published version.
 
+**Checkout baseline:** `package.json` declares **5.0.2**. That is distinct from the published release above; it does not establish a Marketplace, npm or plugin publication at that version.
+
+## Start here
+
+Choose the [installation guide](https://javiarmesto.github.io/ALDC-AL-Development-Collection/start/) for your host, then follow the [Quick Start](#quick-start). Use your own AL project and BC sandbox; check its `app.json`, symbols and permissions before any build or publication. ALDC supplies development context and workflows, not a Business Central environment.
+
+The expected first result is a validated toolkit installation and reviewed requirement artifacts in your project. Host/tool discovery does not prove an MCP invocation, successful AL compilation or a deployment. This documentation audit on **6 October 2026** did not execute those operations.
+
+[Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
+
 ## What changed in 5.0.1
 
 - **Copilot Chat models:** the Chat installer selects `Claude Sonnet 5.5 (copilot)`
@@ -90,7 +100,7 @@ ALDC (AL Development Collection) transforms how you develop Business Central ext
 
 ---
 
-## Updating to 5.0.0
+## Updating ALDC
 
 The VS Code extension and each host plugin are separate distribution channels.
 Updating the VSIX does not refresh installed Claude Code, Copilot CLI or Codex plugins.
@@ -184,7 +194,7 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 
 ## Key Features
 
-### 🤖 5 Public Agents — one specialist per development phase
+### 🤖 5 Core Agents — one specialist per development phase
 
 | Agent | Role |
 | --- | --- |
@@ -200,24 +210,25 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 - **AL Implementation Subagent** — TDD-only (tests FIRST, code SECOND)
 - **AL Code Review Subagent** — review against spec + architecture
 
-### 🩺 2 On-demand Specialists — user-invocable, read-only on code
+### 🩺 3 On-demand Specialists — user-invocable, read-only on code
 
 - `@AL Triage` — reactive diagnosis: reproduce → root-cause → minimal-fix recommendation
 - `@Dredd` — independent auditor: BCQuality-cited static audit with an advisory verdict
+- `@AL Developer Reviewer` — independent review of direct Developer increments
 
-### 🧠 11 Composable Skills — domain knowledge loaded on demand
+### 🧠 Core domain skills — knowledge loaded on demand
 
 - **Required:** api · copilot · debug · performance · events · permissions · testing
 - **Recommended:** migrate · pages · translate · estimation
-- Plus `skill-contribution-assistant` — guided workflow for contributing back to ALDC
+- The complete source has 16 skill directories, including contribution assistance, BC Agent modules and the shared AL review pipeline. See [skills/](skills/). Host distributions also package role entries and workflows; their folder counts measure a different scope.
 
 ### ⚙️ 6 Workflows — automated processes
 
 `al-spec.create` · `al-build` · `al-pr-prepare` · `al-context.create` · `al-memory.create` · `al-initialize`
 
-### 📐 9 Instructions — auto-applied coding standards (always active)
+### 📐 Scoped instructions and the Copilot entrypoint
 
-al-guidelines · al-code-style · al-naming-conventions · al-performance · al-error-handling · al-events · al-testing · copilot-instructions · index
+Eight `*.instructions.md` files apply by their declared globs, including the optional BC Agent toolkit rule. `copilot-instructions.md` is the always-on entrypoint and `index.md` is documentation; neither is an additional scoped rule. See [instructions/](instructions/).
 
 ### 📚 BCQuality (recommended) — external, citable BC knowledge layer
 
@@ -385,8 +396,8 @@ ALDC is available as a native **Claude Code** integration in two forms:
 
 | Primitive | Direct (`.claude/`) | Plugin (`aldc:`) | Count |
 | --------- | ------------------- | ---------------- | ----- |
-| Agents | `.claude/agents/` | `agents/` | 8 public + 3 internal |
-| Skills | `.claude/skills/` | `skills/` | 16 composable knowledge modules |
+| Agents | `.claude/agents/` | `agents/` | 9 public + 3 internal |
+| Skills | `.claude/skills/` | `skills/` | 16 knowledge modules + 9 role entries + 11 workflows |
 | Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 8 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
 | Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
@@ -485,9 +496,9 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
 ├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
-├── skills/                               # 11 composable skills
+├── skills/                               # 16 composable skill directories
 ├── prompts/                              # 6 retained workflows
-├── instructions/                         # 9 auto-applied coding standards
+├── instructions/                         # 8 scoped rules + entrypoint and documentation
 │
 │── Claude Code (Direct) ───────────────────────────────
 ├── CLAUDE.md                             # Master instructions
@@ -571,7 +582,7 @@ plans and audits roots; see the [5.0.0 changelog](CHANGELOG.md).
 
 The framework now enforces its own spec in CI.
 
-- **Core Spec v1.2 (original 4.2.0 release)** — originally normalized the tier model to 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. The subsequent canonical Spec Agent increment adds a fifth core role (11 total); Developer Reviewer adds a direct review role (12 total, with 17 skills).
+- **Core Spec v1.2 (original 4.2.0 release)** — originally normalized the tier model to 4 core agents + 2 on-demand (`al-triage`, `dredd`) + 3 subagents + 1 extension (`al-agent-builder`); 16 skills; 11 workflows. The subsequent canonical Spec Agent increment adds a fifth core role (11 total); Developer Reviewer adds a direct review role (12 total, with a shared review pipeline).
 - **Conformance tooling** — `scripts/check-conformance.js` (counters, cross-references, links, frontmatter) and `scripts/sync-foundation.js --check` (zero drift between the canonical trees and `packages/foundation/`) run on every push and PR.
 - **`ARCHITECTURE.md`** — one-page map of what is source, what is generated, and which distribution channel consumes each tree.
 - Fixed: truncated `skill-manifest` in `packages/foundation/`, broken README links, undeclared primitives in `aldc.yaml`, contradictory counters.
@@ -617,7 +628,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Package version:** 5.0.0
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Checkout package version:** 5.0.2
 
 </div>
 
