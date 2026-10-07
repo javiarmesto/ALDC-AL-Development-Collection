@@ -8,6 +8,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
+const { normalized } = require('./package-provenance');
 const { execFileSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const SURFACES = [
@@ -31,7 +32,7 @@ function snapshot(dir) {
       if (ignore.has(item.name)) continue;
       const name = rel ? `${rel}/${item.name}` : item.name;
       if (item.isDirectory()) walk(name);
-      else files[name] = `${fs.statSync(path.join(dir, name)).mode & 0o777}:` + crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, name))).digest('hex');
+      else files[name] = `${fs.statSync(path.join(dir, name)).mode & 0o777}:` + crypto.createHash('sha256').update(normalized(fs.readFileSync(path.join(dir, name)))).digest('hex');
     }
   }
   walk('');
@@ -41,7 +42,11 @@ function changed(before, after) {
   return [...new Set([...Object.keys(before), ...Object.keys(after)])].filter(p => before[p] !== after[p]).sort();
 }
 function run(dir, command, check = false) {
-  return execFileSync('npm', ['run', command, ...(check ? ['--', '--check'] : [])], {
+  const args = ['run', command, ...(check ? ['--', '--check'] : [])];
+  // npm's Windows launcher is a .cmd file, not a spawnable executable. Running
+  // its JS entrypoint also keeps command arguments out of a shell.
+  const npmCli = process.env.npm_execpath;
+  return execFileSync(npmCli ? process.execPath : 'npm', npmCli ? [npmCli, ...args] : args, {
     cwd: dir, encoding: 'utf8', stdio: 'pipe',
     env: { ...process.env, NODE_PATH: path.join(ROOT, 'node_modules') },
   });

@@ -9,7 +9,7 @@ const SEARCH = ['al_symbolsearch', 'al_getdiagnostics'];
 const BUILD = [...SEARCH, 'al_downloadsymbols', 'al_build'];
 const DEBUG = ['al_debug', 'al_setbreakpoint', 'al_snapshotdebugging'];
 const roles = {
-  'al-spec-agent': [SEARCH, 'Own specification contracts and ordinary technical research. Preserve approved architecture and human approval; write only the assigned spec. No builds, tests, dependency changes or code review.'],
+  'al-spec-agent': [SEARCH, 'Own specification contracts and ordinary technical research. Preserve approved architecture and human approval; write only the assigned spec and its declared BCQuality selection/criteria sidecars. Knowledge consultation follows the design guidance. No builds, tests, dependency changes or code review.'],
   'al-architect': [SEARCH, 'Resolve architectural viability and dependencies; consume graph evidence. Delegate exact implementation declarations.'],
   'al-planning-subagent': [SEARCH, 'Resolve material planning gaps and reuse approved evidence; do not reopen settled design decisions.'],
   'al-developer': [[...BUILD, ...DEBUG], 'Own scoped implementation, dependency setup, builds, tests and optional graph operations through your existing terminal.'],

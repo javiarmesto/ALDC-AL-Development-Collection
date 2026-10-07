@@ -6,18 +6,24 @@ const path = require('node:path');
 const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
+const { runPython, shellScript } = require('./test-runtime');
 const { readConfig } = require('../tools/bcquality/config');
 const root = path.resolve(__dirname, '..');
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
 const write = (p, s) => fs.writeFileSync(path.join(temp, p), typeof s === 'string' ? s : JSON.stringify(s));
 let checks = 0;
 function run(cmd, args, ok = true) {
-  const result = spawnSync(cmd, args, { cwd: temp, encoding: 'utf8', env: {...process.env, PYTHONDONTWRITEBYTECODE:'1'} });
+  const options = { cwd: temp, encoding: 'utf8', env: {...process.env, PYTHONDONTWRITEBYTECODE:'1'} };
+  const result = cmd === 'python3' ? runPython(args, options) : spawnSync(cmd, args, options);
   if (result.error) throw result.error;
   if (ok) assert.equal(result.status, 0, result.stderr + result.stdout);
   else assert.notEqual(result.status, 0, result.stdout);
   checks++;
   return result.stdout;
+}
+function runScript(name) {
+  const { command, args } = shellScript(path.join(root, 'tools/bcquality', name));
+  return run(command, args);
 }
 function doctor(obs, ok = true, snapshot = true) {
   if (snapshot) write('config.json', readConfig(temp));
@@ -76,9 +82,9 @@ try {
   for (const mode of ['plugin','external-multiroot']) for (const enabled of [false,'auto']) {
     config(mode,enabled);
     if (mode==='external-multiroot' && enabled==='auto') continue; // No real clone operations.
-    const notice = JSON.parse(run('bash',[path.join(root,'tools/bcquality/precondition_hook.sh')]));
+    const notice = JSON.parse(runScript('precondition_hook'));
     assert.match(notice.hookSpecificOutput.additionalContext,/has not probed/);
-    const out=run('bash',[path.join(root,'tools/bcquality/install.sh')]);
+    const out=runScript('install');
     assert.match(out,/no clone|No clone|no Git|no clone/i);
   }
   config('bad-mode'); assert.throws(()=>readConfig(temp),/mode/);
@@ -178,15 +184,18 @@ try {
   spawnSync('git', ['init', '--bare', '--initial-branch=main', bare], { encoding: 'utf8' });
   fs.writeFileSync(path.join(seed, 'skills', 'entry.md'), 'v1\n');
   git(seed, 'init', '--quiet', '--initial-branch=main');
+  // Fixture bytes must not depend on the machine's global core.autocrlf.
+  fs.writeFileSync(path.join(seed, '.gitattributes'), '* -text\n');
   git(seed, 'config', 'user.email', 'fixture@example.invalid');
   git(seed, 'config', 'user.name', 'fixture');
   git(seed, 'remote', 'add', 'origin', bare);
   git(seed, 'add', '-A'); git(seed, 'commit', '--quiet', '-m', 'v1'); git(seed, 'push', '--quiet', 'origin', 'main');
 
-  const yamlFor = url => `external:\n  bcquality:\n    mode: "external-multiroot"\n    enabled: "auto"\n    url: "${url}"\n    ref: "main"\n    pinnedCommit: ""\n    home: "../corpus-clone"\n`;
+  const yamlFor = url => `external:\n  bcquality:\n    mode: "external-multiroot"\n    enabled: "auto"\n    url: ${JSON.stringify(url)}\n    ref: "main"\n    pinnedCommit: ""\n    home: "../corpus-clone"\n`;
   fs.writeFileSync(path.join(proj, 'aldc.yaml'), yamlFor(bare));
   const runInstall = () => {
-    const r = spawnSync('bash', [path.join(root, 'tools/bcquality/install.sh')],
+    const { command, args } = shellScript(path.join(root, 'tools/bcquality/install'));
+    const r = spawnSync(command, args,
       { cwd: proj, encoding: 'utf8', env: { ...process.env, BCQUALITY_HOME: clone } });
     if (r.status !== 0) throw new Error('installer failed: ' + r.stdout + r.stderr);
     checks++;
@@ -265,7 +274,7 @@ try {
     fs.writeFileSync(path.join(relocated, '.agents/audits/dredd-audit-2026-01-01-0000.json'),
       JSON.stringify({ skill: { id: 'dredd', version: 1 }, outcome: 'completed', findings: [] }));
     spawnSync('git', ['init', '--quiet'], { cwd: relocated });
-    const out = spawnSync('python3', [path.join(root, 'tools/bcquality/validate_evidence.py')],
+    const out = runPython([path.join(root, 'tools/bcquality/validate_evidence.py')],
       { cwd: relocated, encoding: 'utf8' });
     assert.equal(out.status, 0, out.stderr);
     assert.match(out.stdout, /across 1 file\(s\)/, 'the audit report at the declared root is found');

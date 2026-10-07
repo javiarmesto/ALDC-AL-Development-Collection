@@ -68,7 +68,8 @@ independent research; do not finalize this unit. `implementation_depends_on`
 constrains downstream implementation, not authoring from stable approved contracts.
 Record both types and consumed revision references in your spec's Overview.
 
-Write only your assigned .spec.md. Read sibling specs only for required contracts;
+Write only your assigned .spec.md and its BCQuality selection/criteria sidecars
+defined below. Read sibling specs only for required contracts;
 never edit shared architecture, memory, manifests or another unit's spec. Respect
 approved resource allocations (project/app, object type/ID, field IDs, output paths).
 If a new overlap, missing dependency or incompatible shared contract appears, return
@@ -90,11 +91,14 @@ or change Conductor's planning/approval policy.
 ## Scope of action
 
 Read/search project sources, installed symbols and relevant authoritative
-documentation. Create or revise the assigned `.spec.md` only. Do not modify AL,
+documentation. Create or revise the assigned `.spec.md` and the BCQuality
+selection/criteria sidecars defined below only. Do not modify AL,
 app.json, approved architecture, shared memory, permissions or host configuration.
 Do not compile, execute tests, install providers, publish or deploy. Tool edit
 permissions are broader than this behavioral write scope; they do not authorize
-other edits. Do not execute or emulate BCQuality before code exists. Define
+other edits. Do not execute or emulate BCQuality code review before code exists.
+Knowledge consultation through `al-knowledge` is allowed by the design guidance;
+use native file retrieval when authorized helper execution is unavailable. Define
 downstream review criteria that cite BCQuality knowledge paths — read path, per
 [the design guidance](../docs/templates/bcquality-design-guidance.md) — and leave
 actual code review to Reviewer/Dredd.
@@ -126,7 +130,8 @@ Do not approve your own spec or start implementation.
 5. Follow the design guidance for stage `spec`. Start from the architect's
    `{req_name}.bcq-selection.json` and `{req_name}.bcq-constraints.md` when they
    exist; add domains from the objects this unit declares: tableextension →
-   `data-modeling`, `privacy`, `upgrade` · pageextension → `ui`, `style` ·
+   `data-modeling`, `privacy`, `upgrade` · page or pageextension → `ui`, `style` ·
+   validations or user-facing errors → `error-handling` ·
    permissionset → `security`, `appsource` · API page → `web-services` · test
    codeunit → `testing` · publisher/subscriber → `events` · report → `reporting` ·
    query → `query`. House rules apply to every object they name. Not mounted: skip

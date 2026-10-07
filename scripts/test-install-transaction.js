@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs'), path = require('path'), os = require('os');
 const { spawnSync } = require('child_process');
+const { runPython } = require('./test-runtime');
 const tx = require('./install-transaction');
 const { initialize } = require('./init-plugin');
 const { verify } = require('./package-provenance');
@@ -40,7 +41,7 @@ test('corrupt backup, live lock and symlink refuse mutation',t=>{
  const result=tx.apply({...opts,force:true});const journal=JSON.parse(read(r,`.aldc-install/backups/${result.transaction}/journal.json`));
  write(r,journal.actions.find(a=>a.backup).backup,'broken');assert.throws(()=>tx.rollback(r,'fixture'),/Backup integrity/);assert.equal(read(r,'a.md'),'v1');
  write(r,'.aldc-install/operation.lock','live');assert.throws(()=>tx.apply(opts),/holds the lock/);
- const other=temp(t);fs.symlinkSync(other,path.join(r,'escape'),'dir');assert.throws(()=>tx.plan({...opts,files:new Map([['escape/a',{content:'x'}]])}),/symlinks/);assert.deepEqual(fs.readdirSync(other),[]);
+ const other=temp(t);fs.symlinkSync(other,path.join(r,'escape'),process.platform==='win32'?'junction':'dir');assert.throws(()=>tx.plan({...opts,files:new Map([['escape/a',{content:'x'}]])}),/symlinks/);assert.deepEqual(fs.readdirSync(other),[]);
  for(const p of ['../escape','/absolute','.git/config','AUX.txt'])assert.throws(()=>tx.checked(r,p));
 });
 test('retired paths remove only recognized files and rollback restores them',t=>{
@@ -75,7 +76,7 @@ for(const [surface,dir] of [['claude','claude-plugin'],['cli','copilot-cli-plugi
 });
 test('tampered plugin fails before creating project files; CRLF locked checkout is accepted',t=>{
  const r=temp(t),pluginRoot=path.join(r,'plugin'),project=path.join(r,'project');fs.cpSync(path.join(root,'claude-plugin'),pluginRoot,{recursive:true});
- const p='rules/al-guidelines.md',text=read(pluginRoot,p);write(pluginRoot,p,text.replace(/\n/g,'\r\n'));verify(pluginRoot);
+ const p='rules/al-guidelines.md',text=read(pluginRoot,p);write(pluginRoot,p,text.replace(/\r\n/g,'\n').replace(/\n/g,'\r\n'));verify(pluginRoot);
  write(pluginRoot,p,'tampered');assert.throws(()=>initialize({project,pluginRoot,apply:true}),/integrity/);assert.equal(fs.existsSync(project),false);
 });
 test('Claude session hook is silent outside AL and read-only in an AL project',t=>{
@@ -235,7 +236,7 @@ test('an AL-Go solution named after its app is read the same way by the installe
  // Doctor walks the same solution. A layout the installer declares and Doctor cannot see is the bug.
  const doctorScript=JSON.parse(run(['status','--json']).stdout).doctorScript;
  assert.ok(doctorScript,'the installed toolkit ships Doctor');
- const observed=spawnSync('python3',['-B',path.join(r,doctorScript),'--workspace',r,'--json','--toolkit',path.join(r,'.github')],{encoding:'utf8'});
+ const observed=runPython(['-B',path.join(r,doctorScript),'--workspace',r,'--json','--toolkit',path.join(r,'.github')],{encoding:'utf8'});
  assert.equal(observed.status,0,observed.stderr);
  assert.deepEqual(JSON.parse(observed.stdout).projects.map(p=>[p.role,p.manifest]).sort(),
   [['app','MiExtension/app.json'],['test','MiExtension.Test/app.json']]);

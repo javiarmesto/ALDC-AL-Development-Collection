@@ -11,6 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { readPlansRoot, plansRootOf, DEFAULT_PLANS_ROOT } = require('./plans-root');
+const { surfaceAldcYaml, plansRootFor, auditsRootFor } = require('./plugin-runtime');
+const yaml = require('js-yaml');
 
 const root = path.resolve(__dirname, '..');
 const temp = (t) => {
@@ -116,4 +118,23 @@ test('the Codex package declares its plans root in both places it is read', () =
   const surface = JSON.parse(fs.readFileSync(path.join(codex, 'surface.json'), 'utf8'));
   assert.equal(surface.plansRoot, '.agents/plans', 'surface.json drives where init.js writes');
   assert.equal(plansRootOf(codex), surface.plansRoot, 'aldc.yaml and surface.json must not disagree');
+});
+
+test('surface configuration rewrites plans and audit roots from LF and CRLF sources', t => {
+  const dir = temp(t);
+  const generated = new Map();
+  for (const newline of ['\n', '\r\n']) {
+    fs.writeFileSync(path.join(dir, 'aldc.yaml'),
+      ['toolkitRoot: ".github"', 'plans:', '  root: ".github/plans"',
+        'audits:', '  root: ".github/audits"', ''].join(newline));
+    for (const surface of ['claude', 'codex', 'copilot-cli']) {
+      const plans = plansRootFor(dir, surface), audits = auditsRootFor(dir, surface);
+      const text = surfaceAldcYaml(dir, surface, plans, audits);
+      const config = yaml.load(text);
+      assert.equal(config.plans.root, plans, `${surface}: declared plans match runtime`);
+      assert.equal(config.audits.root, audits, `${surface}: declared audits match runtime`);
+      if (generated.has(surface)) assert.equal(text, generated.get(surface), `${surface}: identical output and source hash across line endings`);
+      generated.set(surface, text);
+    }
+  }
 });

@@ -21,12 +21,26 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release status:** ALDC **5.0.1** is available in the
-[GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.1).
+**Release 5.0.3:** shared BCQuality knowledge consultation for Architect and Spec
+Agent across Copilot Chat, Copilot CLI, Claude Code and Codex. See the
+[release notes](CHANGELOG.md) and
+[GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3).
 GitHub releases and VS Code Marketplace publication are separate deliveries;
 check the Marketplace listing for its currently published version.
 
-**Checkout baseline:** `package.json` declares **5.0.2**. That is distinct from the published release above; it does not establish a Marketplace, npm or plugin publication at that version.
+**Checkout baseline:** `package.json` and the host plugin catalogs declare **5.0.3**.
+This does not establish a VS Code Marketplace or npm registry publication at that version.
+
+For an installed Claude Code plugin, refresh the official source and plugin:
+
+```text
+claude plugin marketplace update aldc-marketplace
+claude plugin update aldc@aldc-marketplace
+```
+
+Open a new Claude Code session and confirm version 5.0.3. This refreshes the
+plugin's contracts; project-local toolkit copies need their own reviewed update.
+See [installation and recovery](docs/plugin-packaging.md) for each surface.
 
 ## Start here
 

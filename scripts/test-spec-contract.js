@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { split } = require('./generation-utils');
 const { project } = require('./native-profile');
+const { project: chatProject } = require('./chat-profile');
 const root = path.resolve(__dirname, '..');
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 let checks = 0;
@@ -71,6 +72,29 @@ for (const [role, template] of architectureRoles) {
   const links = [...read(role).matchAll(/\]\(([^)\s]+architecture-template\.md)\)/g)].map(m => resolveRef(role, m[1]));
   check(links.includes(template), `${role}: decomposition template resolves in this host`);
   check(read(template) === read('docs/templates/architecture-template.md'), `${role}: complete current decomposition template is bundled`);
+  const guide = template.replace('architecture-template.md', 'bcquality-design-guidance.md');
+  const guidanceLinks = [...read(role).matchAll(/\]\(([^)\s]+bcquality-design-guidance\.md)\)/g)].map(m => resolveRef(role, m[1]));
+  check(guidanceLinks.includes(guide), `${role}: design knowledge guide resolves in this host`);
+  const guidance = read(guide).replace(/\r\n/g, '\n');
+  check(guidance === read('docs/templates/bcquality-design-guidance.md').replace(/\r\n/g, '\n'), `${role}: current knowledge procedure travels unchanged`);
+  check(!/never invokes Entry|Every step below is a directory listing/.test(guidance), `${role}: no legacy manual-only policy`);
+  const body = read(role).replace(/\s+/g, ' ');
+  if (role.includes('al-architect')) {
+    check(/plus `ui` when it adds pages.*`error-handling` when it defines validations or user-facing errors/.test(body), `${role}: design maps UI and errors`);
+  } else {
+    check(body.includes('page or pageextension → `ui`, `style`'), `${role}: spec maps new pages`);
+    check(body.includes('validations or user-facing errors → `error-handling`'), `${role}: spec maps errors`);
+    check(!body.includes('Do not execute or emulate BCQuality before code exists'), `${role}: knowledge consultation does not conflict with review boundary`);
+  }
+}
+
+// Both installed Chat projections must retain the knowledge path without gaining
+// execution tools. The helper route is conditional on actual authorized capability.
+for (const profile of ['bc28', 'bc29-native']) {
+  const doc = split(chatProject('agents/al-spec-agent.agent.md', Buffer.from(read('agents/al-spec-agent.agent.md')), profile).toString());
+  check(doc.body.includes('Knowledge consultation through `al-knowledge`'), `${profile}: knowledge consultation is allowed`);
+  check(doc.body.includes('selection/criteria sidecars'), `${profile}: evidence writes do not conflict with role scope`);
+  check(!doc.data.tools.some(t => /execute|runCommand|al_build|al_download|al_debug/.test(t)), `${profile}: knowledge path does not widen execution grants`);
 }
 
 for (const rel of ['claude-plugin/agents/al-spec-agent.md', 'copilot-cli-plugin/agents/al-spec-agent.agent.md']) {

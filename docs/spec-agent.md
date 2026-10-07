@@ -21,7 +21,11 @@ is not proof of execution order, persistence or runtime behavior.
 
 ## Review and implementation
 
-Spec Agent writes its assigned `.spec.md`; it does not change AL, manifests,
+Spec Agent writes its assigned `.spec.md` and the declared BCQuality selection/
+criteria sidecars. It consults `al-knowledge` through the
+[design guidance](templates/bcquality-design-guidance.md), with manual fallback
+when the knowledge path is unavailable; it never runs BCQuality code review.
+It does not change AL, manifests,
 approved architecture or shared memory. It does not compile, deploy or approve
 its own work. A specification stays pending until the user approves its revision.
 Conductor receives the approved specification and its remaining verification needs.
@@ -57,7 +61,8 @@ groups. Parallel authoring is eligible only when required contracts are availabl
 and ownership does not conflict. Eligibility does not prove concurrent execution
 or authorize parallel implementation; actual host capabilities govern execution.
 
-Each Spec Agent writes only its assigned file and returns conflicts to Architect.
+Each Spec Agent writes only its assigned spec and declared BCQuality sidecars,
+and returns conflicts to Architect.
 Architect reviews the actual returned revisions together before the user approves
 specific specifications. A changed shared contract reopens affected consumers and
 review status, while unrelated approved work is preserved. Conductor's planning

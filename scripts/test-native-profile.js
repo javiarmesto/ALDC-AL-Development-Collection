@@ -72,7 +72,7 @@ try {
     check(scope >= 0 && scope < content.indexOf('## Phase 1:'), `${relative}: scope precedes full setup`);
     check(phase0 < 0 || scope < phase0, `${relative}: narrow mode precedes plugin bootstrap`);
     check(content.includes('At most one registration and one post-registration retry'), `${relative}: bounded recovery retained`);
-    check(content.includes('Preparing\n   the parent again is not proof that a child is prepared'), `${relative}: connection boundary retained`);
+    check(/Preparing\r?\n   the parent again is not proof that a child is prepared/.test(content), `${relative}: connection boundary retained`);
     check(content.includes('In preparation-only mode, stop here'), `${relative}: no fallthrough to full setup`);
   }
   for (const role of ['al-architect', 'al-spec-agent', 'al-review-subagent', 'al-conductor']) {

@@ -11,7 +11,7 @@ const { toolsForRole } = require('./copilot-cli-adapter');
 const stripAdapterPreamble = body => body.replace(/^\n*(?:>[^\n]*\n)+\n?/, '');
 const { build: buildPlugin, rewritePaths, plansRootFor, AGENTS, WORKFLOWS, workflowSkillName } = require('./sync-plugin-support');
 const ROOT = path.resolve(__dirname, '..');
-const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
+const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
 let checks = 0;
 function check(value, message) { assert.ok(value, message); checks++; }
 const generated = expected();
