@@ -29,6 +29,40 @@ Receipts retain unresolved collisions; a repeated run cannot certify them as cle
 Existing memory is always preserved. App/Test manifests, AL sources, editor
 settings and external host configuration are outside the installation plan.
 
+### Applying unreleased changes to an existing project
+
+A checkout's `package.json` version is not evidence that its local changes are in
+the published npm package, VSIX or plugin cache. Changes listed as Unreleased
+need a new published version for normal versioned updates. Until then, use the
+updated checkout's installer/initializer commands above, previewing the exact
+existing project before applying. Use the project's current target directory and
+Chat profile; do not switch profiles merely to refresh contracts.
+
+Plugin updates refresh the installed plugin payload, not arbitrary project copies:
+
+- Claude Code: plugin agents and its bundled design guide follow the refreshed
+  plugin. Project `.claude/agents` mirrors need their own update and can shadow
+  plugin roles; do not add a second mirror to a plugin-based project. Re-run the
+  updated plugin's `scripts/init.js` for its managed project rules/guidance when
+  those change. That initializer does not install project agent mirrors.
+- Codex plugin discovery: refresh the source/cache and restart the host, then
+  verify the loaded ALDC skill. A marketplace entry can point at the updated local
+  plugin directory. This does not rewrite project `.codex/agents` profiles.
+- Codex local bootstrap: preview and apply the updated checkout's
+  `plugins/aldc-codex/scripts/init.js --project <project>`, then use `--verify` and
+  restart Codex. This updates tracked `.agents/skills/aldc` and `.codex/agents`
+  copies. Use either plugin discovery or local bootstrap in a project.
+- Copilot Chat: run the updated checkout's `scripts/install.js install --yes
+  --dry-run` from the existing project root, then repeat without `--dry-run` and
+  run `verify-install`. Updating another host's plugin does not refresh `.github`.
+
+Review collisions before using `--force`; it replaces customized content with a
+recoverable backup. Keep the receipts and verify the actual sources loaded by a
+new host session. For Claude cache/version behavior see the
+[manifest reference](https://code.claude.com/docs/en/plugins-reference#version);
+for Codex local cache refresh see the
+[plugin packaging guide](https://developers.openai.com/plugins/build/plugins).
+
 Terminal guidance uses an ALDC managed block. Surrounding user text is preserved.
 Codex/CLI choose an existing AGENTS.override.md over AGENTS.md. If an override is
 introduced later, the old AGENTS.md remains intact. A locally changed managed

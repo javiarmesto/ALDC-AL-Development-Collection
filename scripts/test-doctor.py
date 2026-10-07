@@ -226,7 +226,12 @@ class DoctorTest(unittest.TestCase):
         self.put("node_modules/unrelated/app.json", "broken")
         with tempfile.TemporaryDirectory() as outside:
             Path(outside, "app.json").write_text('{"application":"29.0.0.0"}')
-            (self.root / "external").symlink_to(outside, target_is_directory=True)
+            try:
+                (self.root / "external").symlink_to(outside, target_is_directory=True)
+            except OSError as error:
+                if os.name == 'nt' and getattr(error, 'winerror', None) == 1314:
+                    self.skipTest('Windows denies genuine symlinks without developer mode/privilege; Linux CI exercises this check')
+                raise
             self.assertEqual(len(self.report()["projects"]), 1)
             self.put(".AL-Go/settings.json", {"appFolders": ["external"]})
             self.assertEqual(self.cli().returncode, 2)
@@ -275,11 +280,11 @@ class DoctorTest(unittest.TestCase):
         args = ('--toolkit', str(self.root / '.copilot'))
         report = json.loads(self.cli(*args, script=script).stdout)
         self.assertEqual(report['profile'], 'bc29-native')
-        self.assertIn('.copilot/aldc-profile.json', report['configuration'])
+        self.assertIn(str(Path('.copilot/aldc-profile.json')), report['configuration'])
         self.put('.copilot/aldc-profile.json', {'profile': []})
         r = self.cli(*args, script=script)
         self.assertEqual(r.returncode, 2)
-        self.assertEqual(json.loads(r.stdout)['configuration_errors'][0]['path'], '.copilot/aldc-profile.json')
+        self.assertEqual(json.loads(r.stdout)['configuration_errors'][0]['path'], str(Path('.copilot/aldc-profile.json')))
 
     def test_bcquality_snapshot_binds_by_resolved_path_not_text(self):
         self.app()
@@ -287,9 +292,14 @@ class DoctorTest(unittest.TestCase):
         export = subprocess.run(['node', str(ROOT / 'tools/bcquality/config.js'), str(self.root)], capture_output=True, text=True, check=True)
         snapshot = json.loads(export.stdout)
         # An exporter may spell the same workspace differently (short names, case, symlinks).
-        alias = Path(self.temp.name).parent / ("alias-" + Path(self.temp.name).name)
-        alias.symlink_to(self.root, target_is_directory=True)
-        self.addCleanup(alias.unlink)
+        if os.name == 'nt':
+            # Windows has a real case-insensitive alias without requiring the
+            # symlink privilege. Unix exercises the symlink spelling in CI.
+            alias = Path(str(self.root).swapcase())
+        else:
+            alias = Path(self.temp.name).parent / ("alias-" + Path(self.temp.name).name)
+            alias.symlink_to(self.root, target_is_directory=True)
+            self.addCleanup(alias.unlink)
         snapshot["workspace"] = str(alias)
         snapshot["configPath"] = str(alias / "aldc.yaml")
         path = self.put("snapshot.json", snapshot)

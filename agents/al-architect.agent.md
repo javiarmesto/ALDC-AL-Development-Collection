@@ -192,7 +192,9 @@ Load relevant domain skills based on requirements:
 
 Read [the BCQuality design guidance](../docs/templates/bcquality-design-guidance.md)
 and follow its selection procedure for stage `design`: house rules first, then
-these domains by Step 2 area — Object Model → `data-modeling`, `interfaces` ·
+these domains by Step 2 area — Object Model → `data-modeling`, `interfaces`
+(plus `ui` when it adds pages — wizard, role center, cues — and `error-handling`
+when it defines validations or user-facing errors) ·
 Integration → `events`, `web-services` · Data → `data-modeling`, `upgrade`,
 `breaking-changes` · Security → `security`, `privacy` · Performance →
 `performance` (keys, FlowFields, batch — not loop-level rules).

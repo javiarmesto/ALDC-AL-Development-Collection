@@ -1,5 +1,35 @@
 # ALDC Changelog
 
+## [5.0.3] - 2026-10-07
+
+### Fixed
+
+- Advance the package, canonical plugin, generated distributions and root
+  marketplace catalogs to 5.0.3 so installed plugins can detect this update.
+- Architect and Spec Agent consult BCQuality through `al-knowledge`, including
+  inline instruction execution on hosts without a skill-invocation tool. Manual
+  fallback records the affected domain, reason and actual corpus.
+- Design guidance requires complete article bodies, retrieval continuations and
+  actual consultation evidence; skipped domains cannot count as consulted.
+- Architect maps pages, wizards and cues to UI knowledge and validations to error
+  handling; Spec Agent covers both pages and page extensions. Knowledge selection
+  and criteria sidecars are explicit in its documentation-only write scope.
+- Regenerate the VS Code Foundation, Copilot CLI, Claude Code/plugin workspace
+  and Codex distributions from the shared contracts without widening tool grants.
+- Normalize Windows line endings before rewriting generated surface configuration,
+  so Codex keeps its declared plans/audit roots when regenerated on Windows.
+- Make global test fixtures portable on Windows: discover a working Python,
+  exercise the PowerShell installer, escape YAML paths, use directory junctions
+  for link-protection checks and normalize CRLF before creating CRLF fixtures.
+  Codex tests read UTF-8 explicitly; surface-isolation tests use npm's JS entrypoint.
+  Doctor fixtures use platform paths and a Windows case alias; the genuine
+  symlink traversal check runs in Linux CI when Windows lacks symlink privileges.
+
+The GitHub release includes the toolkit npm archive for local installation.
+Publication to the npm registry and VS Code Marketplace is separate. Existing
+project copies still require a reviewed toolkit update. The Hogargas host cookbook
+remains a live acceptance test, not a result claimed by the packaging checks.
+
 ## [5.0.2] - 2026-10-06
 
 ### Fixed

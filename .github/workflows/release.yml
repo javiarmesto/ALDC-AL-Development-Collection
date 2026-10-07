@@ -44,6 +44,13 @@ jobs:
         VERSION=${{ steps.get_version.outputs.VERSION }}
         # Extract changelog section for this version
         sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d' > release-notes.md
+
+    - name: Package toolkit archive
+      env:
+        ALDC_RELEASE_VERSION: ${{ steps.get_version.outputs.VERSION }}
+      run: |
+        node -e 'if (require("./package.json").version !== process.env.ALDC_RELEASE_VERSION) throw Error("Release tag and package version differ")'
+        npm pack --ignore-scripts
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
@@ -54,6 +61,7 @@ jobs:
         prerelease: false
         generate_release_notes: true
         files: |
+          al-development-collection-*.tgz
           collections/al-development.collection.yml
           scripts/validate-al-collection.js
           package.json

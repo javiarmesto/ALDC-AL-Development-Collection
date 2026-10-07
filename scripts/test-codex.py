@@ -30,7 +30,7 @@ def canonical_tools(name):
 
 names = set()
 for path in roles:
-    data = tomllib.loads(path.read_text())
+    data = tomllib.loads(path.read_text(encoding='utf-8'))
     assert set(data) == {'name', 'description', 'sandbox_mode', 'developer_instructions'}, path
     assert data['sandbox_mode'] in SANDBOX_MODES, path
     tools = canonical_tools(path.stem)
@@ -40,15 +40,15 @@ for path in roles:
     assert data['sandbox_mode'] == expected, f'{path}: {data["sandbox_mode"]} but canonical tools imply {expected}'
     assert data['name'] not in names
     names.add(data['name'])
-    body = (root / f"skills/aldc/references/agents/{path.stem}.md").read_text()
+    body = (root / f"skills/aldc/references/agents/{path.stem}.md").read_text(encoding='utf-8')
     assert data['developer_instructions'].endswith(body), path
     # Every surface points at the terminal-host contract it ships, at its own path;
     # the relative form this used to assert was retired when paths became rooted.
     assert '.agents/skills/aldc/references/skills/skill-migrate/references/cli-al-tools.md' in body, path
-contribution = (root / 'skills/aldc/references/skills/skill-contribution-assistant/GUIDE.md').read_text()
+contribution = (root / 'skills/aldc/references/skills/skill-contribution-assistant/GUIDE.md').read_text(encoding='utf-8')
 assert 'skills/<skill-name>/SKILL.md' in contribution
 assert 'Step 3: Author SKILL.md' in contribution
-spec = (root / 'skills/aldc/references/commands/al-spec-create.md').read_text()
+spec = (root / 'skills/aldc/references/commands/al-spec-create.md').read_text(encoding='utf-8')
 assert '.agents/skills/aldc/references/agents/al-spec-agent.md' in spec
 assert (root / 'skills/aldc/references/agents/al-spec-agent.md').is_file()
 for file in ['agent-simple-instructions.txt', 'agent-advanced-instructions.txt']:
@@ -56,10 +56,10 @@ for file in ['agent-simple-instructions.txt', 'agent-advanced-instructions.txt']
 
 # Parse the runnable configuration, not just the prose surrounding it. Codex must
 # not silently start inheriting another host's broken declarations on regeneration.
-manifest = json.loads((root / '.codex-plugin/plugin.json').read_text())
+manifest = json.loads((root / '.codex-plugin/plugin.json').read_text(encoding='utf-8'))
 assert 'mcpServers' not in manifest
 assert not (root / '.mcp.json').exists()
-guide = (root / 'skills/aldc/references/mcp-setup.md').read_text()
+guide = (root / 'skills/aldc/references/mcp-setup.md').read_text(encoding='utf-8')
 example = re.search(r'```toml\n(.*?)\n```', guide, re.DOTALL)
 assert example is not None, 'Codex MCP setup guide must include a fenced TOML configuration example'
 config = tomllib.loads(example.group(1))
@@ -68,7 +68,7 @@ assert servers['al-symbols-mcp']['command'] == 'npx'
 assert servers['al-symbols-mcp']['args'] == ['-y', 'al-mcp-server@2.5.0']
 assert servers['microsoft-docs']['url'] == 'https://learn.microsoft.com/api/mcp'
 assert servers['context7']['url'] == 'https://mcp.context7.com/mcp'
-presales = (root / 'skills/aldc/references/agents/al-presales.md').read_text()
+presales = (root / 'skills/aldc/references/agents/al-presales.md').read_text(encoding='utf-8')
 assert 'references/mcp-setup.md' in presales
 assert '@anthropic-ai/context7-mcp' not in presales
 assert 'Instala Microsoft Learn MCP desde VS Code extensions' not in presales
@@ -81,12 +81,12 @@ for directory in ['agents', 'commands', 'skills']:
     for path in (root / 'skills/aldc/references' / directory).rglob('*.md'):
         if path.name in ('cli-al-tools.md', 'al18-capabilities.md'):
             continue
-        match = legacy.search(path.read_text())
+        match = legacy.search(path.read_text(encoding='utf-8'))
         assert not match, f'{path}: foreign operational identifier {match.group()}'
 for name in ['cli-al-tools.md', 'al18-capabilities.md']:
     assert (root / 'skills/aldc/references/skills/skill-migrate/references' / name).read_bytes() == (repo / 'skills/skill-migrate/references' / name).read_bytes()
 
-tooling = (root / 'skills/aldc/references/al-tooling.md').read_text()
+tooling = (root / 'skills/aldc/references/al-tooling.md').read_text(encoding='utf-8')
 examples = [tomllib.loads(block) for block in re.findall(r'```toml\n(.*?)\n```', tooling, re.DOTALL)]
 assert len(examples) == 3
 queries = {'al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependencies'}
@@ -103,7 +103,7 @@ for server, command in [('bc-profiling', 'launchprofilingmcpproxy'), ('bc-snapsh
 
 # Check generated role scopes, while explicitly not claiming runtime enforcement.
 for path in roles:
-    body = tomllib.loads(path.read_text())['developer_instructions']
+    body = tomllib.loads(path.read_text(encoding='utf-8'))['developer_instructions']
     permitted = path.stem in ('al-developer', 'al-implement-subagent')
     assert ('With an authorized project: al_compile, al_build, al_downloadsymbols.' in body) == permitted
     assert ('Triage may use the dedicated optional profiling/snapshot proxies' in body) == (path.stem == 'al-triage')
@@ -138,8 +138,8 @@ with tempfile.TemporaryDirectory(prefix='aldc-codex-mcp-') as fixture:
         assert not (project / '.claude').exists()
         installed = project / '.agents/skills/aldc/references/mcp-setup.md'
         if flags in (['--apply'], ['--verify']):
-            assert installed.read_text() == guide
-            assert (project / '.agents/skills/aldc/references/al-tooling.md').read_text() == tooling
+            assert installed.read_text(encoding='utf-8') == guide
+            assert (project / '.agents/skills/aldc/references/al-tooling.md').read_text(encoding='utf-8') == tooling
         else:
             assert not installed.exists()
 print('Codex: 12 valid TOML profiles, full role bodies, one discoverable skill; MCP examples parsed; existing MCP config preserved through install/verify/rollback. Host loading unverified.')

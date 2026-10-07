@@ -73,7 +73,7 @@ Note: `toolkitRoot` **MAY** be `.` in framework repositories and `.github` in co
 ### Tier 1 — Core Public Agents (`user-invocable: true`) — MUST
 
 - **al-architect**: design, architecture, and strategic decisions. Loads skills by domain, such as API, Copilot, and performance.
-- **al-spec-agent**: specification owner behind al-spec.create. Preserves approved architecture, investigates technical contracts and loads applicable instructions/skills; writes only the assigned .spec.md. No AL implementation, pre-code BCQuality or self-approval.
+- **al-spec-agent**: specification owner behind al-spec.create. Preserves approved architecture, investigates technical contracts and loads applicable instructions/skills; writes only the assigned .spec.md and its declared BCQuality selection/criteria sidecars. Knowledge consultation follows the design guidance. No AL implementation, pre-code BCQuality code review or self-approval.
 - **al-conductor**: primary TDD orchestrator. Coordinates subagents via `runSubagent`. Cycle: Plan → Implement → Review → Commit.
 - **al-developer**: tactical implementation and debugging. Loads skills based on the task. Directly invocable by the user.
 - **al-presales**: project estimation and planning. Lives outside the delivery cycle.
