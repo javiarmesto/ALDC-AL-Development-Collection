@@ -4,6 +4,16 @@ Cuenta: [javiarmesto](https://github.com/javiarmesto). Revisión: **6 de octubre
 
 Se volvieron a enumerar **107 repositorios públicos** y se mantuvo la selección de **35: 22 propios y 13 forks**. Ninguno de los seleccionados está archivado. «Histórico» describe la edición docente, no una decisión de archivar ni una prueba de abandono. El sitio del evento de 2027 es ficticio.
 
+## Colección editorial y web pública · actualización 10 de octubre de 2026
+
+**[Web pública de Javier Armesto](https://javier-armesto-bc-ai-hub.iamironman.chatgpt.site)** · [Colección y código web](https://github.com/javiarmesto/bc-ai-collection) · [Portada de GitHub](https://github.com/javiarmesto)
+
+ALDC ocupa el espacio principal de la colección. BCQuality se presenta con su [fuente original](https://github.com/microsoft/BCQuality) y el [fork de Javier](https://github.com/javiarmesto/BCQuality), que incorpora la consulta de conocimiento `al-knowledge`. No se atribuye esa ampliación al upstream. La [guía BC-Bench EN/ES](https://github.com/javiarmesto/BC-Bench-Guide) se ha actualizado documentalmente contra la revisión `c84b793a8a9b7422af9512dfe67baeb2bc666d95` de Microsoft (0.15.0): plugins, categorías, requisitos y evidencias; no se han ejecutado benchmarks en esta actualización.
+
+La colección añade materiales y temas de Bizz Summit (3 octubre), Companial (edición 1 octubre), SevillaERP (22 septiembre) y el workshop de París (19 septiembre). Huelva Summit (14 octubre) y Directions EMEA se identifican como próximas sesiones o preparación, no como participaciones completadas.
+
+El inventario de auditoría que sigue conserva su fecha y alcance original. La colección es una selección editorial, no una certificación de ejecución ni un recuento actualizado de todos los repositorios públicos.
+
 ## Cómo elegir
 
 - Desarrollo AL con agentes: [ALDC](https://github.com/javiarmesto/ALDC-AL-Development-Collection). Su release publicada es 5.0.1; el checkout inspeccionado declara 5.0.2. APM-ALDC conserva su baseline 4.2.0 y no representa una migración a 5.x.
