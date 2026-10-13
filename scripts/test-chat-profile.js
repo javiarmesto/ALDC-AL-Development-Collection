@@ -24,15 +24,34 @@ for (const profile of ['bc28', 'bc29-native']) {
       assert.equal(tools.includes('SShadowSdk.al-lsp-for-agents/bclsp_goToDefinition'), !none, rel);
       assert.equal(tools.includes('SShadowSdk.al-lsp-for-agents/bclsp_findReferences'), !none, rel);
       const impl = ['al-developer', 'al-implement-subagent', 'al-build'].includes(role);
+      const creator = ['al-developer', 'al-implement-subagent'].includes(role);
+      assert.equal(tools.includes('ms-dynamics-smb.al/al_getnextobjectid'), profile === 'bc29-native' && creator, `${rel}: object allocation stays with native implementation`);
+      assert.ok(!tools.includes('al/al_getnextobjectid'), `${rel}: no implicit MCP allocation grant`);
       assert.equal(tools.includes('al/al_compile'), impl, rel);
       assert.equal(tools.includes('al/al_build'), impl, rel);
       assert.equal(tools.includes('al/al_downloadsymbols'), impl || role === 'al-initialize', rel);
       assert.equal(tools.includes('bc-profiling/*'), role === 'al-triage', rel);
-      assert.equal(tools.includes('bc-snapshot/*'), role === 'al-triage', rel);
+      assert.ok(!tools.includes('bc-snapshot/*'), `${rel}: new proxy operations must not widen Triage`);
+      assert.deepEqual(tools.filter(t => t.startsWith('bc-snapshot/')), role === 'al-triage' ? [
+        'bc-snapshot/initialize_snapshot_debugging', 'bc-snapshot/get_snapshot_status', 'bc-snapshot/stop_snapshot_debugging',
+      ] : [], `${rel}: capture only`);
+      assert.ok(!tools.some(t => /run_tests|runtests/.test(t)), `${rel}: no implicit snapshot test grant`);
       if (none) assert.ok(!tools.some(t => /^(al\/|bc-|SShadowSdk|ms-dynamics-smb)/.test(t)), rel);
       assert.ok(text.includes(`Profile: **${profile}**`), rel);
       assert.ok(text.includes('../docs/framework/copilot-chat-al-tooling.md'), rel);
       if (role === 'al-build') assert.ok(text.includes('Stop after build/package') && text.includes('human gate'));
+      if (profile === 'bc29-native') {
+        if (creator) assert.ok(text.includes('IDs are not reserved') && text.includes('never use nextOutOfRangeId') && text.includes('rangeStart=rangeEnd=approved ID'), `${rel}: safe allocation preserves approved IDs`);
+        if (impl) assert.ok(text.includes('tests created, Test compiled and tests executed separate') && text.includes('a compiler error is not a failing runtime test'), `${rel}: real test evidence`);
+        if (['al-architect', 'al-spec-agent', 'al-spec.create'].includes(role)) assert.ok(text.includes('appId/appName/appPublisher/appVersion') && text.includes('Preserve approved architecture'), `${rel}: bounded environment research`);
+        if (role === 'al-conductor') assert.ok(text.includes('keep the affected phase pending') && text.includes('without calling AL tools yourself'), `${rel}: coordination gate`);
+        if (['al-review-subagent', 'al-developer-reviewer'].includes(role)) assert.ok(text.includes('stale, missing or unexecuted checks as pending'), `${rel}: reviewer evidence limits`);
+        if (role === 'al-implement-subagent') {
+          assert.ok(!text.includes('(RED State)') && !text.includes('(GREEN State)'), `${rel}: creation does not prove runtime state`);
+          assert.ok(!text.includes('use the LAST portion of the main range'), `${rel}: Test allocation stays scoped`);
+          assert.ok(text.includes('never borrow App IDs') && text.includes('do not add unused test libraries'), `${rel}: approved dependencies and IDs`);
+        }
+      } else assert.ok(!text.includes('## Native AL evidence for this role'), `${rel}: native behavior is opt-in`);
       count++;
     }
   }

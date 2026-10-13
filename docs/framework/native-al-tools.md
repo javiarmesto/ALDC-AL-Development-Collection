@@ -20,6 +20,7 @@ Frontmatter uses `ms-dynamics-smb.al/` followed by the exact identifier:
 | Identifier | Use and boundary |
 | --- | --- |
 | `al_symbolsearch` | Discover target objects/members and relevant dependencies. |
+| `al_getnextobjectid` | Find project-scoped object IDs before authorized scaffolding (AL18+). No reservation. |
 | `al_getdiagnostics` | Read current diagnostics; not a fresh build. |
 | `al_build` | Compile the selected project(s); not a runtime test. |
 | `al_downloadsymbols` | Provision approved dependencies for the selected project. |
@@ -36,13 +37,14 @@ authorize deployment. Do not invent `al_graph`, `al_get_diagnostics` or
 | Owner | Calls | Graph responsibility |
 | --- | --- | --- |
 | Architect | Search, diagnostics | Frame a design question; consume results. |
-| `al-spec.create` workflow | Search, diagnostics | Specify decisions; consume results. No separate Spec Agent. |
+| Spec Agent / `al-spec.create` | Search, diagnostics | Independent specification and technical research; consume results. Documentation only. |
 | Planning Subagent | Search, diagnostics | Fill a concrete plan gap; reuse evidence. |
-| Developer | Search, diagnostics, download, build, debugging | Own bounded extraction/query/export via existing terminal. |
-| Implementation Subagent | Search, diagnostics, download, build | Own bounded extraction/query/export via existing terminal. |
+| Developer | Search, diagnostics, object IDs, download, build, debugging | Own bounded extraction/query/export via existing terminal. |
+| Implementation Subagent | Search, diagnostics, object IDs, download, build | Own bounded extraction/query/export via existing terminal. |
+| Developer Reviewer | Search, diagnostics | Independent direct-increment evidence review; no implementation operations. |
 | Review Subagent | Search, diagnostics | Check source and actual results; no builds/debugging. |
 | Dredd | Search, diagnostics | Independent questions and raw evidence review; request execution from an owner. |
-| Triage | Search, diagnostics, download, debugging | Consume paths to localize symptoms; delegate graph execution. |
+| Triage (installed Chat) | Search, diagnostics, debugging | Request restore/build from implementation; delegate graph execution. |
 | Presales | Search | Resolve material feasibility questions; consume findings. |
 | Agent Builder | Search, diagnostics | Resolve SDK questions; delegate build/graph work. |
 | Conductor | No native grants | Coordinate owners and preserve references in existing handoffs. |
@@ -53,7 +55,9 @@ editor tools retained for compatibility do not authorize another role's duties.
 ## Local and environment search
 
 Use the [VS Code search shape](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-tool-symbol-search)
-without the standalone MCP `parameters` wrapper:
+without the standalone MCP `parameters` wrapper. Read App/Test `app.json` and
+resolved package identities first; reuse relevant current findings. Search objects
+with `query`/`kinds`; `objectName` filters members inside an object, not objects:
 
 ```json
 {"query":"Customer","filters":{"kinds":["Table"],"limit":10}}
@@ -63,8 +67,9 @@ When local search is insufficient:
 
 1. Check the intended environment is connected and the installed schema supports
    `filters.source = "environment"`. Otherwise record the missing capability.
-2. Search the environment for the bounded object; keep the returned owner app ID,
-   name, publisher and version, preserving raw field names. Do not fill missing metadata.
+2. Search the environment for the bounded object; keep the returned `appId`,
+   `appName`, `appPublisher`, `appVersion`, declaration and raw-output reference.
+   Do not fill missing metadata. Inspect `truncated`; narrow incomplete results.
 3. Architect/spec proposes the necessary dependency, not all installed apps.
 4. Only the authorized setup/implementation owner changes `app.json`, downloads
    symbols and records the chosen target/cache/result.
@@ -79,17 +84,52 @@ Conditional example (inspect the installed filter schema first):
 
 An environment match identifies an owner; it proves neither a usable dependency
 nor successful compilation. An absent result may reflect scope or truncation.
-The published search reference consulted on 2026-09-11 does not yet list `source`;
-BC29 preview notes describe environment discovery, but the installed schema must
-confirm its actual input shape.
+Microsoft Learn now documents `source` (AL18+), and installed AL Language
+18.1.2842859 declares it. VS Code resolves the environment from the active
+`launch.json`; local `scope` is ignored for an environment search. Installed
+schema support does not prove a reachable tenant or a successful invocation.
+
+## Safe object IDs
+
+The [object ID tool](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-tool-get-next-object-id)
+is granted only to Developer and Implementation Subagent. In installed AL Language
+18.1.2842859, `name` and `toolReferenceName` are both `al_getnextobjectid`:
+
+```json
+{"objectType":"Codeunit","count":1,"projectPath":"C:/src/Solution/Test"}
+```
+
+`objectType` is required; `count` is 1–50. Optional `rangeStart` and `rangeEnd`
+must be paired and intersect the project's `idRanges`. `projectPath` selects the
+project when App/Test is ambiguous. Inspect the actual result status, returned
+`ids`, count, `ranges`, `outOfRange` and `warnings`. Partial allocation is not
+success; never scaffold with `nextOutOfRangeId` or widen a manifest automatically.
+Learn calls the status field `succeeded`; the installed description says
+`success=false`. Preserve the returned field name and check the actual result.
+
+The scan sees project syntax only, excluding installed dependencies and other
+extensions on the sandbox. Retain that warning and check known allocations where
+relevant. It covers object IDs, not field IDs. IDs are not reserved: save the
+object before requesting another ID, or request a batch for the same type.
+Concurrent writers need distinct approved allocations or owner coordination.
+Revalidate a fixed approved spec ID against current sources and known allocations;
+for a new object, constrain `rangeStart` and `rangeEnd` to that same approved ID.
+If occupied, return the conflict to its owner; do not replace it with a different
+returned ID or reopen approved architecture. Editing an existing intended object
+does not allocate a new ID.
+If unavailable, use the approved manifest ranges and source scan, record that
+fallback and its limits, then compile. Unknown/exhausted ranges remain unresolved.
 
 ## Build, dependencies and proportional gates
 
 For [VS Code build](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-tool-build),
 use `{"scope":"current"}` after selecting the intended project; use
-`{"scope":"all"}` only when the entire workspace is authorized. Do not import
-MCP-only `projectPath` or analysis flags. Verify returned App/Test identities and
-artifacts. If unavailable, use the existing approved build task or ALTool after
+`{"scope":"all"}` only when the entire workspace is authorized. Installed
+18.1.2842859 also declares native `enableCodeAnalysis` and `codeAnalyzers`; use
+approved analyzer configuration and retain which analyzers actually ran.
+Do not import MCP `projectPath` into this native build schema. Save sources and
+verify each returned App/Test identity, revision and artifact, including the Test
+dependency on the current App. If unavailable, use the existing approved build task or ALTool after
 checking its installed help, and record which method actually ran.
 
 Test-library versions need not numerically equal the extension's version.
@@ -100,22 +140,62 @@ It does not automatically prevent writing architecture or a specification.
 Do not mark affected compilation/tests as passed, nor bypass existing delivery gates.
 Architecture resolves viability; it does not exhaustively transcribe declarations.
 
-Use the approved test runner and actual results. Tests written, tests compiled and
-tests executed are separate states. `TestHandlers` is optional instrumentation,
-not a runner. No environment upgrade or publication is authorized by this profile.
+`al_getdiagnostics` reads Problems, without compiling. After edits, project switches,
+symbol changes or reconnects, correlate diagnostics with a completed build of the
+same saved inputs. The installed schema supports `projectPath`, severity/source
+filters and a limit; an empty, filtered or truncated list does not prove freshness
+or analyzer execution. Preserve the build result as the compilation evidence.
+
+Use the approved test runner and actual results. Tests written, App compiled,
+Test compiled and tests executed are separate states. Runtime RED requires a
+real failing assertion; missing objects or dependencies can instead prevent
+compilation. GREEN and post-refactor results require execution against matching
+deployed packages. Keep per-test pass/fail/skip counts, environment, package/revision
+and raw output in existing phase artifacts. Missing execution stays pending and
+cannot satisfy a required delivery gate. Conductor requests this evidence from
+the implementation owner; Reviewer checks it without gaining execution permissions.
+`TestHandlers` is optional instrumentation, not a runner. No environment upgrade
+or publication is authorized by this profile.
+
+## Optional ALTool, LSP and capture surfaces
+
+These are distinct from VS Code LM tools. Check installed version/help and actual
+host connection before choosing them; never add hypothetical native selectors.
+
+| Surface | Available capability | Boundary |
+| --- | --- | --- |
+| VS Code LM | Search, IDs, build, diagnostics, restore, debug/snapshot | Explicit role grants; no publish. |
+| Official AL MCP | Queries, build; `al_compile`, `al_getpackagedependencies` are MCP-only | Discover its own schema and loaded projects. |
+| ALTool `launchlspserver` | Semantic LSP over JSON-RPC/stdio, including multi-project resolution | Not an MCP executable or automatically a Chat tool. Existing optional LSP bridge may expose navigation. |
+| ALTool `runtests` | Real server tests; structured JSON by default in installed 18.1; optional `--testgroups` | Implementation owner, approved runner/target and matching deployed App/Test. Never publish as an implicit prerequisite. |
+| `TestHandlers` | BC29/runtime18 lifecycle instrumentation | Inspect actual target declarations; existing testing/migration skill checks still apply. |
+| Profiling / snapshot MCP proxies | Optional capture on a compatible BC29 server | Triage's discovered capture scope, target permissions, bounded window and owned cleanup. |
+
+Installed ALTool `18.1.43.24897` confirms `launchlspserver`, `runtests`, `graph` and
+both proxy commands in help. The standalone `al` alias is absent on this machine;
+the extension-bundled `bin/altool.exe` works. Availability in help is not execution
+evidence. A compatible SDK/runtime requirement must come from that installation,
+not an assumed .NET version.
+
+AL18's snapshot proxy adds `run_tests`. This is separate from native
+`al_snapshotdebugging` (`initialize`/`finish`/`view`). Chat Triage uses explicit
+initialize/status/stop selectors, avoiding a wildcard that would admit test
+execution. Snapshot test runs and `snapshotVerbosity=Full` are optional, require
+separately scoped authorization and live schema/target checks, and are not granted
+by default. Learn's snapshot article still labels the MCP server capability preview.
 
 ## Optional static AL graph
 
 `al graph` provides optional static analysis of AL source relationships. Use it only
 when it helps answer a concrete engineering question.
 
-Developer/Implementer checks `al version`, `al graph --help`, then the installed
+Developer/Implementer checks `al --version`, `al graph --help`, then the installed
 help for `extract-whole`, `query` and `export` before executing a material question.
 If a command is unavailable, note that once and proceed with unaffected work.
 The following examples require confirmation against the installed help before use.
 
 ```powershell
-al version
+al --version
 al graph --help
 al graph extract-whole --help
 al graph query --help
@@ -137,6 +217,10 @@ guarantee complete procedure bodies. Record missing dependencies, bodies, event
 and dynamic-dispatch coverage. Static reachability proves neither runtime
 execution, data leakage nor a vulnerability. No path does not establish isolation
 when coverage is incomplete. `al workspace map` is not a source call graph.
+`extract-all` compiles apps separately and misses cross-app direct calls;
+`extract-whole` resolves them together. `--paths` is capped: no emitted path
+does not prove unreachability; an unfiltered reachability query is a different
+check. Record excluded nodes and coverage along with results.
 
 ## Evidence in existing artifacts
 
@@ -161,7 +245,12 @@ and use available source or a bounded human check, without claiming semantic par
 
 ## Source and status
 
-Checked 2026-09-11. Microsoft's
+Checked 2026-10-13 against the [official Marketplace changelog](https://marketplace.visualstudio.com/items/ms-dynamics-smb.al/changelog),
+the official changelog shipped in AL Language 18.1.2842859, its contributed
+tool schemas, installed ALTool help and the linked Microsoft Learn references.
+VS Code Insiders is `1.142.0-insider`. These are documentation/installation checks,
+not live Copilot or BC execution. See [the reproducible smoke test](native-bc29-smoke.md).
+Microsoft's
 [BC29 preview overview](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/whatsnew/whatsnew-update-29-0)
 announces static graph analysis, environment discovery, test lifecycle extensions,
 isolation controls, namespace translations and AL0926. Announcement does not verify

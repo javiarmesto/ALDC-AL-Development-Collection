@@ -5,9 +5,16 @@ contract and shared skills. It preserves ALDC roles, artifacts, independent revi
 and human gates. The installer projects agents AND prompts: prompt tool lists can
 override an agent's list. Canonical primitives and terminal plugins are unchanged.
 
+For `bc29-native`, read [the native AL contract](native-al-tools.md) before the
+first tool/dependency/evidence decision and reuse it within that invocation.
+Prefer a sufficient granted native capability. LSP bridges, standalone AL MCP,
+graph and capture proxies are optional; their absence does not require installation
+or prevent unaffected design/specification work. Record the actual provider used.
+See [the BC29 App/Test smoke test](native-bc29-smoke.md) for host acceptance.
+
 ## AL LSP for Agents
 
-Reuse the installed `sshadowsdk.al-lsp-for-agents` extension. It wraps Microsoft's
+When available, reuse `sshadowsdk.al-lsp-for-agents`. It wraps Microsoft's
 AL language server and exposes additional Chat tools. Do not register its LSP
 executable as MCP or install a second language server. Every specialist receives
 explicit navigation/diagnostic selectors; Conductor only coordinates. Symbol
@@ -40,7 +47,7 @@ credentials and existing aliases. Example only, not installed configuration:
 }
 ```
 
-Use the actual executable path and supported ALTool/.NET 8 installation. Do not
+Use the actual executable path and that ALTool installation's required .NET runtime. Do not
 start another server when an equivalent one is already configured. The generated
 `al/<operation>` selectors assume alias `al`; resolve the tool picker IDs for the
 installed version/alias and change only this consumer's Chat bindings as needed.
@@ -60,6 +67,14 @@ Operation names above have the `al_` prefix. Native VS Code tools are separate:
 source evidence without assuming BC29 native availability. Both profiles reuse
 the existing normalization of obsolete tool names and the build/publication gate.
 This changes installed Chat output, not the shared canonical agent files.
+
+Only `bc29-native` Developer and Implementation Subagent gain native
+`al_getnextobjectid`; build/setup/specification prompts do not gain allocation.
+Its schema supports `projectPath`, unlike the installed native `al_build` schema.
+Keep approved fixed IDs, manifest ranges and App/Test ownership authoritative;
+the syntax-only tool does not reserve IDs or scan other installed apps.
+Native research, build freshness and runtime evidence instructions are projected
+by role; Conductor transfers evidence without acquiring AL execution tools.
 
 ### Server workspace and live schemas
 
@@ -123,9 +138,14 @@ BC29/runtime 18 preview capture is optional. BC28 can use existing logs, supplie
 profiles and debugger evidence. The AL extension can discover proxies through
 `launch.json`: inspect those before adding manual servers. Reuse the discovered
 proxy IDs in Triage's tool list; do not duplicate discovery with manual startup.
-The example selectors `bc-profiling/*` and `bc-snapshot/*` refer only to dedicated
-capture servers, never to a general Business Central data or administration API.
-Verify the actual catalog before any capture. No guessed operation names ship.
+The example profiling selector `bc-profiling/*` refers only to its dedicated
+capture server. Snapshot selectors are explicit:
+`bc-snapshot/initialize_snapshot_debugging`, `bc-snapshot/get_snapshot_status`,
+`bc-snapshot/stop_snapshot_debugging`. Resolve their actual picker IDs/alias before
+capture; never bind a wildcard to a general BC data or administration API.
+AL18 adds snapshot `run_tests`; it is outside Triage's default capture scope and
+is not granted by either Chat profile. A new proxy tool must not silently widen
+permissions. Native `al_snapshotdebugging` remains a separate VS Code operation.
 
 Only if a required proxy is absent, an explicitly reviewed `.vscode/mcp.json`
 registration can use `altool` with these argument arrays:
@@ -157,6 +177,11 @@ the next reproduction. Do not profile and snapshot the same session together.
 Record status, artifact location and cleanup failures. Stop only owned captures;
 do not widen targets after failure. Snapshot playback/variable inspection remains
 a handoff to a compatible debugger, not a presumed agent capability.
+
+Optional snapshot test execution requires a separately authorized implementation
+owner and a discovered compatible runner/target; a capture is not a test result.
+Default `SnapPoint` recording and any optional `Full` verbosity must be checked in
+the live initialization schema. Do not enable broad recording as a default.
 
 ## Isolated acceptance and future release
 
