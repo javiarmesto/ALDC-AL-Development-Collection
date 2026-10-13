@@ -12,6 +12,11 @@ graph and capture proxies are optional; their absence does not require installat
 or prevent unaffected design/specification work. Record the actual provider used.
 See [the BC29 App/Test smoke test](native-bc29-smoke.md) for host acceptance.
 
+Selectors use the installed tool's `toolReferenceName`. In AL18.1 native diagnostics
+is `ms-dynamics-smb.al/al_get_diagnostics`, although the registration name is
+`al_getdiagnostics`. The separate MCP selector stays `al/al_getdiagnostics`.
+The native projector maps that difference without widening any role's AL scope.
+
 ## AL LSP for Agents
 
 When available, reuse `sshadowsdk.al-lsp-for-agents`. It wraps Microsoft's

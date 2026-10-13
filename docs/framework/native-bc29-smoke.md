@@ -41,7 +41,7 @@ Shared role/skill sources and their terminal permissions/models are preserved.
 
 Repository checks actually executed for this candidate:
 
-- `npm run validate`: passed, including 411 native-profile installation/contract
+- `npm run validate`: passed, including 434 native-profile installation/contract
   checks, both Chat profiles (46 projections), Spec/Reviewer/BCQuality contracts,
   plugin checks and installer regressions. Its final Node suite passed 58 tests;
   two alternative no-PowerShell cases were skipped because PowerShell 7 exists.
@@ -62,6 +62,30 @@ session. No target App/Test solution, live Copilot session or authorized BC29
 connection was verified. Scenarios below remain pending; Node installer/contract
 tests are not substitutes. The Insiders CLI emitted sandbox log/chdir errors but
 returned the version and extension inventory; no interactive acceptance is claimed.
+
+### Subsequent operator-assisted local host checks
+
+An isolated consumer using BC28/runtime16.1 was then provided. It exercises the
+AL18 native tooling profile without upgrading the application or proving BC29
+server compatibility. App/Test compiled via ALTool against the current App package.
+Copilot Chat's operator supplied tool input/output and screenshots for successful
+Spec workspace symbol search and Developer ID lookup, with no persisted AL or
+manifest changes. Developer's native App build also returned success; the resulting
+package's identity/existence was checked independently. Runtime tests, environment
+search, new-object scaffolding and complete role acceptance remain pending.
+
+The initial native search was empty because the editor language server failed to
+start against an incomplete .NET acquisition folder, despite existing symbols and
+successful CLI compilations. Reusing the verified installed .NET runtime in this
+consumer through the .NET Install Tool's extension-scoped `existingDotnetPath`
+setting resolved that search after reload. This is optional host setup, not an
+automatic installer setting or a reason to require a new SDK globally.
+
+The host build exposed a selector regression: native diagnostics was ungranted
+under its registration name. AL18.1 contributes `toolReferenceName:
+al_get_diagnostics`; the projector now grants that exact Chat reference and keeps
+MCP's `al_getdiagnostics` spelling. Its successful invocation remains a separate
+operator check after updating/reloading the consumer; static tests are not a PASS.
 
 ## Official evidence and optional capabilities
 
@@ -132,7 +156,7 @@ a known sandbox object whose owner is not already in App's dependencies.
 | 1. Architect | “Inspect this App/Test solution and its resolved dependencies for the calculator requirement. Identify the reusable target contracts and any material missing dependency; propose architecture.” | Manifest/package identities and bounded local symbol results. If relevant, environment result with owner metadata. No manifest edits, restore or build. Present architecture for human approval. |
 | 2. Spec Agent | After architecture approval: “Create the assigned calculator specification. Verify target symbols and the missing dependency using environment search if available; preserve the approved architecture.” | Raw symbol results, exact definition/version and pending facts in the assigned spec/BCQuality sidecars only. No AL edits, build, ID allocation or restore. Human spec approval remains required. |
 | 3. Developer / Implementer | “Implement the approved increment, tests first. Obtain the approved Test/App codeunit IDs using the native tool constrained to each fixed ID, and save each object before another allocation.” | Actual `al_getnextobjectid` input/result, explicit project, ranges and warnings. Fixed approved IDs stay fixed; a collision returns to its owner. Saved files use valid IDs; no out-of-range scaffold, manifest widening or unsaved reservation. |
-| 4. Developer build | “Save and build authorized App and Test; inspect their current diagnostics. Resolve only approved dependencies.” | Actual `al_build` results, project identities and `.app` paths, plus scoped `al_getdiagnostics`. Native build has `scope`, optional analyzers, no `projectPath`; ID/diagnostics tools do support project selection. Record both compilations separately. |
+| 4. Developer build | “Save and build authorized App and Test; inspect their current diagnostics. Resolve only approved dependencies.” | Actual `al_build` results, project identities and `.app` paths, plus scoped native `al_get_diagnostics`. Native build has `scope`, optional analyzers, no `projectPath`; ID/diagnostics tools do support project selection. Record both compilations separately. If the tool returns only generic success, inspect output/package identity separately. |
 | 5. Conductor | “Coordinate RED → GREEN → REFACTOR for this approved phase, retaining the implementation owner's actual execution evidence.” | Tests written first. A missing SUT initially may cause a compiler error: do not call that runtime RED. Build the approved minimal stub (`Add` returns `0`) and Test; after separate deployment approval, execute and retain the failing assertion. Change to `Left + Right`, rebuild both and obtain matching deployed-package GREEN and post-refactor results. Conductor never invokes AL tools. |
 | 6. Reviewer | In a separate reviewer context: “Review this increment, current App/Test builds and actual RED/GREEN results. Report any stale or pending evidence.” | Current sources and raw build/test outputs checked against revision, target and deployed package. No implementation, allocation, builds, runtime tests or captures. Independent Review-Report, then existing human gate. |
 | 7. Publication boundary | Inspect all effective agent/prompt/child catalogs. In build workflow request packaging and confirm its handoff. Inspect optional snapshot Triage tools. | No default `al_publish`, publish alias or terminal workaround; no automatic deployment after build. Triage exposes initialize/status/stop, not `run_tests` or snapshot wildcard. Explicit publication authorization remains separate. |

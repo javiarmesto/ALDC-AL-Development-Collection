@@ -135,7 +135,7 @@ try {
     check(smokeLink && fs.existsSync(path.resolve(path.dirname(installedContract), smokeLink[1])), `Smoke is reachable from installed ${contract}`);
   }
 
-  const allowed = new Set(['al_symbolsearch', 'al_getdiagnostics', 'al_getnextobjectid', 'al_build', 'al_downloadsymbols', 'al_debug', 'al_setbreakpoint', 'al_snapshotdebugging']);
+  const allowed = new Set(['al_symbolsearch', 'al_get_diagnostics', 'al_getnextobjectid', 'al_build', 'al_downloadsymbols', 'al_debug', 'al_setbreakpoint', 'al_snapshotdebugging']);
   for (const tree of ['agents', 'prompts']) {
     for (const name of fs.readdirSync(path.join(root, tree)).filter(n => /\.(agent|prompt)\.md$/.test(n))) {
       const installed = path.join(fixture, '.github', tree, name);
@@ -145,7 +145,8 @@ try {
       assert.deepEqual(metadata.handoffs, original.handoffs); checks++;
       check(!metadata.tools.some(t => /al-symbols-mcp|atlas/i.test(t)), `No obsolete provider grant: ${name}`);
       check(metadata.tools.filter(t => t.startsWith('ms-dynamics-smb.al/')).every(t => allowed.has(t.split('/')[1])), `Catalog names: ${name}`);
-      check(!/al_symbolrelations|al_get_diagnostics|al_search_objects|al_download_symbols|al_generate_manifest|al_download_source|al_clear_credentials_cache|al_generate_cpu_profile|al_get_package_dependencies|al_generatepermissionset|al_new_project|\bal_go\b/.test(text), `No stale tool instructions: ${name}`);
+      check(!metadata.tools.includes('ms-dynamics-smb.al/al_getdiagnostics'), `Diagnostics uses the actual picker reference: ${name}`);
+      check(!/al_symbolrelations|al_search_objects|al_download_symbols|al_generate_manifest|al_download_source|al_clear_credentials_cache|al_generate_cpu_profile|al_get_package_dependencies|al_generatepermissionset|al_new_project|\bal_go\b/.test(text), `No stale tool instructions: ${name}`);
       const link = text.match(/\[the Chat tool contract\]\(([^)]+)\)/);
       check(link && fs.existsSync(path.resolve(path.dirname(installed), link[1])), `Contract readable after install: ${name}`);
     }

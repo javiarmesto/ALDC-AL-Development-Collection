@@ -15,22 +15,30 @@ Do not probe tools just to complete a checklist or repeatedly guess failed input
 
 The [official VS Code catalog](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-language-model-tools-vscode)
 documents LM tools since AL17. Native build/search/debug tools are not all AL18 novelties.
-Frontmatter uses `ms-dynamics-smb.al/` followed by the exact identifier:
+Frontmatter uses `ms-dynamics-smb.al/` followed by the installed
+`toolReferenceName`. This can differ from the registration/operation name:
 
-| Identifier | Use and boundary |
-| --- | --- |
-| `al_symbolsearch` | Discover target objects/members and relevant dependencies. |
-| `al_getnextobjectid` | Find project-scoped object IDs before authorized scaffolding (AL18+). No reservation. |
-| `al_getdiagnostics` | Read current diagnostics; not a fresh build. |
-| `al_build` | Compile the selected project(s); not a runtime test. |
-| `al_downloadsymbols` | Provision approved dependencies for the selected project. |
-| `al_debug` | Authorized runtime diagnosis without implying publication. |
-| `al_setbreakpoint` | Scoped breakpoints for diagnosis. |
-| `al_snapshotdebugging` | Authorized snapshot investigation. |
+| Operation | Chat reference | Use and boundary |
+| --- | --- | --- |
+| `al_symbolsearch` | `al_symbolsearch` | Discover target objects/members and relevant dependencies. |
+| `al_getnextobjectid` | `al_getnextobjectid` | Find project-scoped object IDs before authorized scaffolding (AL18+). No reservation. |
+| `al_getdiagnostics` | `al_get_diagnostics` | Read current diagnostics; not a fresh build. |
+| `al_build` | `al_build` | Compile the selected project(s); not a runtime test. |
+| `al_downloadsymbols` | `al_downloadsymbols` | Provision approved dependencies for the selected project. |
+| `al_debug` | `al_debug` | Authorized runtime diagnosis without implying publication. |
+| `al_setbreakpoint` | `al_setbreakpoint` | Scoped breakpoints for diagnosis. |
+| `al_snapshotdebugging` | `al_snapshotdebugging` | Authorized snapshot investigation. |
 
 No default `al_publish` grant is added. A tool's suggested next action does not
-authorize deployment. Do not invent `al_graph`, `al_get_diagnostics` or
+authorize deployment. Do not invent `al_graph` or
 `al_symbolrelations`. MCP-only operations and argument wrappers are outside this profile.
+
+Installed AL18.1 registers `al_getdiagnostics` but contributes
+`toolReferenceName: al_get_diagnostics`. Copilot grants therefore use
+`ms-dynamics-smb.al/al_get_diagnostics`; the former registration name is not the
+picker reference. Official AL MCP keeps `al/al_getdiagnostics` and its own schema.
+This distinction follows the [VS Code tool contract](https://code.visualstudio.com/api/extension-guides/ai/tools)
+and was exposed by the manual host smoke; changing it adds no permissions.
 
 ## Ownership
 
@@ -84,6 +92,11 @@ Conditional example (inspect the installed filter schema first):
 
 An environment match identifies an owner; it proves neither a usable dependency
 nor successful compilation. An absent result may reflect scope or truncation.
+If a bounded native query returns nothing, distinguish that result from a failed
+language-server startup. Check available AL output/host evidence before inferring
+missing objects or packages; existing `.alpackages` and CLI compilation do not
+prove that the editor's language server started. Request a scoped setup check
+when unavailable instead of repeatedly broadening wildcard searches.
 Microsoft Learn now documents `source` (AL18+), and installed AL Language
 18.1.2842859 declares it. VS Code resolves the environment from the active
 `launch.json`; local `scope` is ignored for an environment search. Installed
@@ -131,6 +144,9 @@ Do not import MCP `projectPath` into this native build schema. Save sources and
 verify each returned App/Test identity, revision and artifact, including the Test
 dependency on the current App. If unavailable, use the existing approved build task or ALTool after
 checking its installed help, and record which method actually ran.
+Some native versions return only a generic success message and an output-panel
+reference. Inspect AL output and the generated package manifest/path/hash separately
+to establish project identity and artifact existence. Do not fill absent result fields.
 
 Test-library versions need not numerically equal the extension's version.
 Check app identity, declared minimum dependency version, available package version,

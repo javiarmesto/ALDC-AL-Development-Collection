@@ -91,6 +91,9 @@ function project(relative, input, profile) {
     if (reviewer) guidance.push('Check source revision, App/Test build identities, deployed package and actual per-test results in the supplied evidence. Report stale, missing or unexecuted checks as pending; request fresh evidence from the implementation owner without obtaining build, allocation, test or capture permissions.');
     if (triage) body = body.replace('analyze, debug, search, navigate, build/run to reproduce', 'analyze, debug, search, navigate, consume owner build/test evidence to reproduce');
     if (guidance.length) body = '\n\n## Native AL evidence for this role\n\n' + guidance.join('\n\n') + body;
+    // Keep the native invocation spelling consistent with its picker selector.
+    // The separate MCP alias al/al_getdiagnostics retains its own operation name.
+    body = body.replace(/(?<!al\/)\bal_getdiagnostics\b/g, 'al_get_diagnostics');
   }
   return Buffer.from((front + '\n---' + body).replace(/\n/g, eol));
 }

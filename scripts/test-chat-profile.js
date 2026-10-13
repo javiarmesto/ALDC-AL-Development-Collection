@@ -19,6 +19,10 @@ for (const profile of ['bc28', 'bc29-native']) {
       const role = name.replace(/\.(agent|prompt)\.md$/, '');
       const none = ['al-conductor', 'al-memory.create'].includes(role);
       const tools = meta.tools;
+      // Installed AL18.1: registration name differs from toolReferenceName.
+      // Granting the former made native diagnostics unavailable in the host smoke.
+      assert.ok(!tools.includes('ms-dynamics-smb.al/al_getdiagnostics'), `${rel}: registration ID is not a Chat selector`);
+      assert.equal(tools.includes('ms-dynamics-smb.al/al_get_diagnostics'), profile === 'bc29-native' && !none && role !== 'al-presales', `${rel}: native diagnostics picker reference`);
       assert.ok(!tools.some(t => /renameSymbol|^al\/\*|al_publish|al_login|al_logout/.test(t)), rel);
       assert.deepEqual(tools.filter(t => queries.includes(t)), none ? [] : queries, rel);
       assert.equal(tools.includes('SShadowSdk.al-lsp-for-agents/bclsp_goToDefinition'), !none, rel);
