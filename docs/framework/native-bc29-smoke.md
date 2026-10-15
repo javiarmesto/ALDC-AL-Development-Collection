@@ -57,35 +57,62 @@ Repository checks actually executed for this candidate:
 Installer tests were rerun outside the Windows sandbox after it blocked atomic
 renames in temporary fixtures. These are real installer tests, not BC execution.
 
-**Runtime status: NOT RUN.** Native Chat tools cannot be invoked from this Codex
-session. No target App/Test solution, live Copilot session or authorized BC29
-connection was verified. Scenarios below remain pending; Node installer/contract
-tests are not substitutes. The Insiders CLI emitted sandbox log/chdir errors but
-returned the version and extension inventory; no interactive acceptance is claimed.
+**BC runtime status: NOT RUN.** At the initial inspection no consumer App/Test
+solution or live Copilot session had been supplied. The subsequent operator checks
+below establish local tooling behavior, not BC29 server or runtime acceptance.
+Node installer/contract tests are not substitutes for those host/runtime checks.
 
-### Subsequent operator-assisted local host checks
+### Operator-assisted local host checks, 2026-10-13 to 2026-10-15
 
 An isolated consumer using BC28/runtime16.1 was then provided. It exercises the
 AL18 native tooling profile without upgrading the application or proving BC29
-server compatibility. App/Test compiled via ALTool against the current App package.
-Copilot Chat's operator supplied tool input/output and screenshots for successful
-Spec workspace symbol search and Developer ID lookup, with no persisted AL or
-manifest changes. Developer's native App build also returned success; the resulting
-package's identity/existence was checked independently. Runtime tests, environment
-search, new-object scaffolding and complete role acceptance remain pending.
+server compatibility. Retained operator tool responses/screenshots, compiler logs
+and package manifests/hashes establish the following separate results:
+
+| Check | Actual result | Limit |
+| --- | --- | --- |
+| Spec native workspace symbol search | One matching codeunit with project path/signature | No connected-environment search or full architecture/spec acceptance |
+| Developer native object-ID query | Codeunit 50305 within Test's 50300..50349 range; project-only warning retained | Query does not reserve or create an object |
+| Native App build and scoped diagnostics | Build success and zero diagnostics; App output/package identity independently verified | Not AL runtime execution |
+| Native Test build and scoped diagnostics | Test build success, five source files and matching Test package; operator reports zero errors | Cropped screenshot does not establish the effective custom role or reproduce the full diagnostic payload |
+| Controlled compiler error | Native build failed; diagnostic identified the temporary Test file/line and Text-to-Integer error; compiler output independently supplies AL0122 | Screenshot used built-in Agent; validates native behavior, not ALDC role grants. PACKAGE_CREATION_FAILED is the build code, not the compiler diagnostic code |
+| Cleanup and recovery | Temporary fixture removed; all 38 original AL/manifests unchanged. CLI Test recovery passed with zero diagnostics. A later VS Code packaging action rebuilt App (31 files) and Test (five files), with new packages verified | Final recovery was a VS Code action, not a new successful Copilot invocation; scoped native diagnostics were not rerun after it |
+
+The temporary codeunit was validated with ALTool before introducing its deliberate
+type error. This proves a locally created valid object, not Developer scaffolding
+through Copilot. The previous Test `.app` remained on disk after the failing build;
+its existence did not certify the failed source state. A separate custom Developer
+attempt without an open AL editor reported failure despite zero diagnostics, which
+correctly left recovery pending until the later VS Code action.
+
+Architect/Conductor/Reviewer functional sessions, Developer scaffolding in Chat,
+environment research and real RED/GREEN execution remain unexecuted. Their static
+contracts/permissions were checked; that is not full seven-scenario host acceptance.
 
 The initial native search was empty because the editor language server failed to
 start against an incomplete .NET acquisition folder, despite existing symbols and
-successful CLI compilations. Reusing the verified installed .NET runtime in this
-consumer through the .NET Install Tool's extension-scoped `existingDotnetPath`
-setting resolved that search after reload. This is optional host setup, not an
+successful CLI compilations. An extension-scoped `existingDotnetPath` setting and
+reload were prepared as local recovery. Later successful sessions acquired a
+working runtime in the regular Insiders profile; the evidence does not establish
+that the override was used in every session. This is optional host setup, not an
 automatic installer setting or a reason to require a new SDK globally.
 
 The host build exposed a selector regression: native diagnostics was ungranted
 under its registration name. AL18.1 contributes `toolReferenceName:
 al_get_diagnostics`; the projector now grants that exact Chat reference and keeps
-MCP's `al_getdiagnostics` spelling. Its successful invocation remains a separate
-operator check after updating/reloading the consumer; static tests are not a PASS.
+MCP's `al_getdiagnostics` spelling. The operator subsequently invoked native
+diagnostics successfully after updating/reloading the consumer.
+
+### Minimal local regression without repeated agent conversations
+
+After repository validation, reuse the successful symbol/ID/App evidence rather
+than replaying it. For this tooling change, the remaining focused checks were a
+native Test build, a deliberate compiler error with native diagnostics, and cleanup
+followed by a successful rebuild. Prepare/remove the fixture locally, keep Chat
+answers short, and inspect output/packages outside Copilot. A direct VS Code
+packaging action can diagnose editor context without model calls, provided its
+result remains distinct from Chat acceptance. This focused check does not replace
+the seven scenarios when claiming complete role or BC29 runtime acceptance.
 
 ## Official evidence and optional capabilities
 
@@ -130,7 +157,14 @@ Do not configure a second provider merely to run this smoke.
    Review collisions instead of adding `--force`. Reload the isolated window.
    Record the candidate commit and actual loaded `.github/agents`/prompts.
 4. Open a multi-root workspace containing both App and Test. Verify active
-   project selection, target `launch.json`, symbols and existing provider aliases.
+   project selection, symbols and existing provider aliases. Open the intended
+   project's AL file with Ctrl+P **in Insiders**, then keep its text editor visible
+   alongside Chat in the sidebar; a Chat attachment alone does not select it.
+   Record the effective agent/model picker as well as the tool identity. Missing
+   AL editor context can make native `scope: "current"` fail before the compiler,
+   even when scoped diagnostics return zero. Verify project identity in AL output.
+   A valid target `launch.json` is needed for connected operations, not for the
+   observed local packaging with symbols already cached.
    Hash an existing `.vscode/mcp.json` before/after installation; bytes must match.
    Inspect each tool's actual picker ID and schema, including overriding prompts
    and child definitions. The exact native grant uses `ms-dynamics-smb.al/<name>`.
@@ -161,11 +195,15 @@ a known sandbox object whose owner is not already in App's dependencies.
 | 6. Reviewer | In a separate reviewer context: “Review this increment, current App/Test builds and actual RED/GREEN results. Report any stale or pending evidence.” | Current sources and raw build/test outputs checked against revision, target and deployed package. No implementation, allocation, builds, runtime tests or captures. Independent Review-Report, then existing human gate. |
 | 7. Publication boundary | Inspect all effective agent/prompt/child catalogs. In build workflow request packaging and confirm its handoff. Inspect optional snapshot Triage tools. | No default `al_publish`, publish alias or terminal workaround; no automatic deployment after build. Triage exposes initialize/status/stop, not `run_tests` or snapshot wildcard. Explicit publication authorization remains separate. |
 
-For a deliberate freshness check, add a temporary syntax error in the disposable
-App under Developer's approved smoke scope, save, build and retain the real error.
-Fix it, save and rebuild. Compare scoped diagnostics with this completed build,
-then switch to Test and verify project identity. Never use the earlier empty list
-to certify the changed sources. Do not leave the deliberate error in the consumer.
+For a deliberate freshness check, add a temporary syntax/type error in the approved
+disposable App or Test scope, save, build and retain the real error. Query scoped
+diagnostics even after the expected build failure. Fix/remove the fixture, open an
+existing AL file from that same project, save and rebuild. Compare fresh scoped
+diagnostics with the completed build, then verify App/Test project identities.
+Preserve the actual tool/command used for recovery; CLI or direct VS Code success
+cannot be relabeled as a Copilot invocation. Never use an earlier empty list or an
+old package left after failure to certify changed sources. Remove the deliberate
+error and verify existing sources/manifests are unchanged before closing the check.
 
 If ALTool is the approved runner, inspect its installed help first. One supported
 shape in the inspected bundle is:

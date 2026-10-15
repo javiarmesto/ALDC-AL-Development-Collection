@@ -144,6 +144,16 @@ Do not import MCP `projectPath` into this native build schema. Save sources and
 verify each returned App/Test identity, revision and artifact, including the Test
 dependency on the current App. If unavailable, use the existing approved build task or ALTool after
 checking its installed help, and record which method actually ran.
+In the inspected Insiders/AL18.1 multi-root host, keep an AL text editor from the
+intended project visible alongside Chat in the sidebar. Open that file in Insiders
+with Ctrl+P; attaching it to Chat or asking a tool to read it does not select the
+editor's project. With no AL editor, `scope: "current"` can fail before compilation;
+diagnostics scoped to Test cannot prove that the build selected Test. Verify the
+project in AL output before retrying. With cached symbols, local packaging worked
+without `launch.json`; connected symbol download, publication and debugging need
+their own valid target configuration. To diagnose selection without another model
+call, use the inspected `AL: Package` command and record it as a VS Code action,
+not as a successful Copilot invocation.
 Some native versions return only a generic success message and an output-panel
 reference. Inspect AL output and the generated package manifest/path/hash separately
 to establish project identity and artifact existence. Do not fill absent result fields.
