@@ -49,7 +49,7 @@ for (const profile of ['bc28', 'bc29-native']) {
         if (impl) assert.ok(text.includes('tests created, Test compiled and tests executed separate') && text.includes('a compiler error is not a failing runtime test'), `${rel}: real test evidence`);
         if (['al-architect', 'al-spec-agent', 'al-spec.create'].includes(role)) assert.ok(text.includes('appId/appName/appPublisher/appVersion') && text.includes('Preserve approved architecture'), `${rel}: bounded environment research`);
         if (role === 'al-conductor') assert.ok(text.includes('keep the affected phase pending') && text.includes('without calling AL tools yourself'), `${rel}: coordination gate`);
-        if (['al-review-subagent', 'al-developer-reviewer'].includes(role)) assert.ok(text.includes('stale, missing or unexecuted checks as pending'), `${rel}: reviewer evidence limits`);
+        if (['al-review-subagent', 'al-developer-reviewer', 'dredd'].includes(role)) assert.ok(text.includes('stale, missing or unexecuted checks as pending'), `${rel}: reviewer evidence limits`);
         if (role === 'al-implement-subagent') {
           assert.ok(!text.includes('(RED State)') && !text.includes('(GREEN State)'), `${rel}: creation does not prove runtime state`);
           assert.ok(!text.includes('use the LAST portion of the main range'), `${rel}: Test allocation stays scoped`);
