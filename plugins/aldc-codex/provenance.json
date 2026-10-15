@@ -41,7 +41,7 @@
     "instructions/al-naming-conventions.instructions.md": "4b3158860dc68c414ea69304e4f30fe1f950981c63726a37c611aea1039212ba",
     "instructions/al-performance.instructions.md": "1db9c2e08bfec26a63990e1c05229f7ed15fb2fa92e6b65ab2b8eb40c1fdf1df",
     "instructions/al-testing.instructions.md": "ab88c39c39d2bd0bbdd00e4224b050004e8d587d7e381a1e5b0d075b985be0c3",
-    "package.json": "b021178025e864aaab084d1e18cbe467046eacc2f70d6c825cc01b7f83153e29",
+    "package.json": "6fcc200d6eec50cd7fd5fac5e42bfb7212b87d5bbabb8ba2d340f8d9cf5b681f",
     "prompts/al-agent.build-instructions.prompt.md": "1080481dc7f897b6a67f06ab8da8260d8bd67dddfdf34e3091a351711be64044",
     "prompts/al-agent.create.prompt.md": "c5220663504e12fbfc07c2b24fa71f0b5922acdf7a7eef0ef0c794c1aa3f93c3",
     "prompts/al-agent.instructions.prompt.md": "1080481dc7f897b6a67f06ab8da8260d8bd67dddfdf34e3091a351711be64044",
@@ -108,7 +108,7 @@
     "tools/context-doctor/aldc_context_doctor.py": "8792be3dd86d3716c5fe08afc6477e21bed90f4855828046f1b11e5915660d5a"
   },
   "outputs": {
-    ".codex-plugin/plugin.json": "f513218030ca741af09fb5c23c4a555751b752ab50547db031245856b3e84a5b",
+    ".codex-plugin/plugin.json": "888a9c19dc5bceb06fa4fbc3272b0e7f22092718923c27545352f78916c31ef4",
     "README.md": "6aa72d8b8f1a7d46aefdb1bd47e101fe5a7ea50630d446f6592ac10d7d25757a",
     "agents/al-agent-builder.toml": "6ff0f67ecbdad3b2c900cabe5fe51ddc2d057aa27571f3e319c1594416a9ae69",
     "agents/al-architect.toml": "c2a5bf0428cd711095ebc4f6a2ee7c24d38cbf0cf4f5e7a5c996404b4fb85a34",
