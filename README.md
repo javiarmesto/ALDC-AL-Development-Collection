@@ -21,14 +21,13 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release 5.0.3:** shared BCQuality knowledge consultation for Architect and Spec
-Agent across Copilot Chat, Copilot CLI, Claude Code and Codex. See the
-[release notes](CHANGELOG.md) and
-[GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3).
+**Version 5.0.4:** scoped native object IDs, the AL18.1 diagnostics selector and
+verified App/Test build evidence for Copilot Chat's `bc29-native` profile. See the
+[release notes](CHANGELOG.md) and [host smoke results](docs/framework/native-bc29-smoke.md).
 GitHub releases and VS Code Marketplace publication are separate deliveries;
 check the Marketplace listing for its currently published version.
 
-**Checkout baseline:** `package.json` and the host plugin catalogs declare **5.0.3**.
+**Checkout baseline:** `package.json` and the host plugin catalogs declare **5.0.4**.
 This does not establish a VS Code Marketplace or npm registry publication at that version.
 
 For an installed Claude Code plugin, refresh the official source and plugin:
@@ -38,7 +37,7 @@ claude plugin marketplace update aldc-marketplace
 claude plugin update aldc@aldc-marketplace
 ```
 
-Open a new Claude Code session and confirm version 5.0.3. This refreshes the
+After updating to the 5.0.4 source, open a new Claude Code session and confirm its version. This refreshes the
 plugin's contracts; project-local toolkit copies need their own reviewed update.
 See [installation and recovery](docs/plugin-packaging.md) for each surface.
 
@@ -49,6 +48,15 @@ Choose the [installation guide](https://javiarmesto.github.io/ALDC-AL-Developmen
 The expected first result is a validated toolkit installation and reviewed requirement artifacts in your project. Host/tool discovery does not prove an MCP invocation, successful AL compilation or a deployment. This documentation audit on **6 October 2026** did not execute those operations.
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
+
+## What changed in 5.0.4
+
+- **Copilot Chat native tools:** object-ID lookup stays with implementation;
+  Architect/Spec research is bounded to relevant symbols and dependencies.
+- **Verified build evidence:** App compiled, Test compiled and tests executed are
+  distinct results. Empty diagnostics or an old package cannot certify a build.
+- **Compatibility:** terminal tools/models and existing approval gates are
+  preserved. The local AL18 smoke does not establish BC29 runtime acceptance.
 
 ## What changed in 5.0.1
 
@@ -642,7 +650,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Checkout package version:** 5.0.2
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Checkout package version:** 5.0.4
 
 </div>
 
