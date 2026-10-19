@@ -1,5 +1,45 @@
 # ALDC Changelog
 
+## [5.1.0] - 2026-10-19
+
+### Changed — Claude Code surface
+
+- `claude-plugin/` is now the **maintained aldc-claude edition** (marked by
+  `claude-plugin/SURFACE.md`) instead of being regenerated from the Copilot
+  contracts. `sync:claude` leaves it untouched; `--check` verifies its payload
+  lock (`scripts/relock-claude-surface.js`), so an edit without relock still fails.
+  Copilot CLI, Codex and the VS Code foundation are unchanged and still generated.
+- Autonomy modes: `aldc.yaml → autonomy.gates: human | pre-approved` (or
+  `ALDC_GATES`). Human gates become decisions recorded in `decisions.md`; hard
+  stops still stop (`blocked.md`); commits only with `autonomy.commit: true`.
+- Real delegation: `/aldc:conduct` must delegate research, implementation and
+  review to foreground subagents; `/aldc:review` and `/aldc:audit` run as
+  read-only subagents. The Conductor inherits the session model and writes a
+  Mini-design instead of requiring the Architect for every task.
+- New hooks: `agent-brief` (foreground subagents, full AL rules, autonomy mode,
+  BCQuality article selection), `flow-scout` (inspect a standard publisher before
+  subscribing), `send-guard` (no asynchronous `SendMessage` while a plan is open),
+  `artifact-gate` (complete review reports, commented event subscribers) and
+  `stop-guard` (no stop with an unfinished plan in pre-approved mode).
+- New rule `al-security` and mandatory `review.security` (5 checks); BCQuality
+  "apply or justify" (`review.bcquality.articles`, `selection-completed`);
+  agent SDK completeness checklist (`review.agent-sdk`); *Standard Flow* in
+  planning; honest final report (Verification, Not verified, Decisions taken
+  without a human, Open risks).
+- Optional test execution on a real Business Central sandbox:
+  `aldc.yaml → testing.runner` (or `ALDC_TEST_RUNNER`); a failing test is a failed
+  phase.
+- BCQuality plugin mode is the default for the Claude surface.
+- MCP servers and LSP bindings are unchanged.
+
+### Verified
+
+- Hook tests: `node --test scripts/test-claude-surface.js` (15 tests).
+- Process checks (16 yes/no checks over the session trace and plan artifacts) on
+  real runs: small tasks 16/16 twice, human mode stops at the plan, a run with tests
+  executed on a BC sandbox (20/20 passed) and a 6-phase, 2-hour run with no process
+  cuts.
+
 ## [5.0.3] - 2026-10-07
 
 ### Fixed

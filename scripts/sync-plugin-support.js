@@ -33,7 +33,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const yaml = require('js-yaml');
-const { walk, provenance, normalized } = require('./package-provenance');
+const { walk, provenance, normalized, verify } = require('./package-provenance');
 const root = path.resolve(__dirname, '..');
 const { split, WORKFLOWS, workflowSkillName } = require('./generation-utils');
 const { support, projectGuidance, plansRootFor, auditsRootFor } = require('./plugin-runtime');
@@ -614,7 +614,29 @@ MIT · [javiarmesto](https://github.com/javiarmesto)
 
 // Build the Claude distribution only.
 /** Build every derived plugin file in memory. Returns { files, sources }. */
+/**
+ * Since 5.1.0 the Claude Code surface is maintained directly (the aldc-claude edition) and
+ * marked by `claude-plugin/SURFACE.md`. Its own files are then the build output, so `sync`
+ * and `--check` never overwrite it; its hooks have their own tests
+ * (scripts/test-claude-surface.js) and its payload hashes their own relock
+ * (scripts/relock-claude-surface.js).
+ */
+function maintainedSurface(rootDir) {
+  const dest = path.join(rootDir, DEST);
+  if (!fs.existsSync(path.join(dest, 'SURFACE.md'))) return null;
+  const files = new Map();
+  const modes = new Map();
+  for (const rel of walk(dest)) {
+    const p = path.join(dest, rel);
+    files.set(rel, fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n'));
+    modes.set(rel, (fs.statSync(p).mode & 0o111) ? 0o755 : 0o644);
+  }
+  return { files, sources: new Set(), modes };
+}
+
 function build(rootDir = root) {
+  const maintained = maintainedSurface(rootDir);
+  if (maintained) return maintained;
   const files = new Map();
   const sources = new Set();
   const modes = new Map();
@@ -659,6 +681,16 @@ function build(rootDir = root) {
 
 function sync(check = false, rootDir = root) {
   const dest = path.join(rootDir, DEST);
+  if (maintainedSurface(rootDir)) {
+    // Maintained surface: nothing to generate. Its integrity gate is its own payload lock,
+    // so an edit without `node scripts/relock-claude-surface.js` still fails the check.
+    try { verify(dest); } catch (error) {
+      console.error(`drift: ${DEST} (${error.message}; run node scripts/relock-claude-surface.js)`);
+      return check ? 1 : 0;
+    }
+    console.log(`Claude Code plugin: maintained surface (${DEST}/SURFACE.md); payload lock verified, 0 differences`);
+    return 0;
+  }
   const { files, modes } = build(rootDir);
   let drift = 0;
   for (const [rel, content] of files) {

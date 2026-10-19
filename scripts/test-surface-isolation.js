@@ -54,7 +54,28 @@ function run(dir, command, check = false) {
 function append(dir, file, content = '\n// unrelated surface mutation\n') {
   fs.appendFileSync(path.join(dir, file), content);
 }
-for (const target of SURFACES) {
+// Since 5.1.0 the Claude surface is maintained directly (claude-plugin/SURFACE.md): it is its own
+// source, sync:claude writes nothing, and --check verifies its payload lock instead of regenerating.
+const maintainedClaude = fs.existsSync(path.join(ROOT, 'claude-plugin', 'SURFACE.md'));
+if (maintainedClaude) {
+  test('sync:claude: a maintained surface is never rewritten and its payload lock gates drift', t => {
+    const dir = fixture(t);
+    for (const other of SURFACES.filter(s => s.command !== 'sync:claude')) {
+      fs.rmSync(path.join(dir, other.output), { recursive: true });
+      fs.writeFileSync(path.join(dir, 'scripts', other.script), "throw Error('Sibling generator must not execute or be imported');\n");
+    }
+    append(dir, 'agents/al-developer.agent.md', '\nCanonical change that must not reach a maintained surface.\n');
+    const before = snapshot(dir);
+    run(dir, 'sync:claude');
+    run(dir, 'sync:claude', true);
+    assert.deepEqual(changed(before, snapshot(dir)), [], 'sync and --check write nothing');
+    append(dir, 'claude-plugin/README.md', '\nEdit without relock.\n');
+    const drifted = snapshot(dir);
+    assert.throws(() => run(dir, 'sync:claude', true), /drift/, 'An edit without relock fails the check');
+    assert.deepEqual(changed(drifted, snapshot(dir)), [], 'Failed checks do not repair files');
+  });
+}
+for (const target of SURFACES.filter(s => !(maintainedClaude && s.command === 'sync:claude'))) {
   test(`${target.command}: owns its output, ignores sibling outputs and generators, is idempotent`, t => {
     const dir = fixture(t);
     const baseline = snapshot(path.join(ROOT, target.output));
@@ -98,13 +119,16 @@ test('shared canonical changes reach every distribution without touching the wor
   run(dir, 'sync:plugins');
   const after = snapshot(dir);
   const diffs = changed(before, after);
-  for (const surface of SURFACES) assert.ok(diffs.some(p => p.startsWith(`${surface.output}/`)), surface.command);
-  assert.deepEqual(diffs.filter(p => !SURFACES.some(s => p.startsWith(`${s.output}/`))), []);
-  for (const p of ['claude-plugin/agents/al-developer.md', 'copilot-cli-plugin/agents/al-developer.agent.md', 'plugins/aldc-codex/agents/al-developer.toml']) {
+  const generated = SURFACES.filter(s => !(maintainedClaude && s.command === 'sync:claude'));
+  for (const surface of generated) assert.ok(diffs.some(p => p.startsWith(`${surface.output}/`)), surface.command);
+  if (maintainedClaude) assert.ok(!diffs.some(p => p.startsWith('claude-plugin/')), 'a maintained Claude surface is not regenerated');
+  assert.deepEqual(diffs.filter(p => !generated.some(s => p.startsWith(`${s.output}/`))), []);
+  for (const p of [...(maintainedClaude ? [] : ['claude-plugin/agents/al-developer.md']), 'copilot-cli-plugin/agents/al-developer.agent.md', 'plugins/aldc-codex/agents/al-developer.toml']) {
     assert.ok(fs.readFileSync(path.join(dir, p), 'utf8').includes('Canonical isolation probe.'), p);
   }
   // Explicit opt-in updates only the development mirror; its drift gate survives.
-  assert.throws(() => run(dir, 'sync:claude-workspace', true), error => error.status === 1 && /drift/.test(error.stdout));
+  // The mirror follows claude-plugin/, which a maintained surface does not regenerate from canonical changes.
+  if (!maintainedClaude) assert.throws(() => run(dir, 'sync:claude-workspace', true), error => error.status === 1 && /drift/.test(error.stdout));
   run(dir, 'sync:claude-workspace');
   assert.deepEqual(changed(after, snapshot(dir)).filter(p => !p.startsWith('.claude/')), []);
   run(dir, 'sync:claude-workspace', true);

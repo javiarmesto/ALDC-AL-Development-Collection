@@ -26,11 +26,35 @@ solution:
     application: ""
     test: ""
 
+# aldc-claude: autonomy of the human gates (plan approval, phase checkpoints, handoffs).
+#   human        - default. Agents stop at every gate and wait for explicit approval.
+#   pre-approved - the requester approved in advance (headless runs, CI, evals). Gates
+#                  become recorded checkpoints in <plans.root>/<req>/decisions.md and
+#                  the work continues. Hard stops (⛔) still stop.
+# Override per run with the environment variable ALDC_GATES=human|pre-approved.
+# commit: false keeps git commits as a human step even in pre-approved mode.
+autonomy:
+  gates: "human"
+  record: true
+  commit: false
+
+# aldc-claude: how this project runs its AL tests on a real Business Central.
+# runner: a shell command run from the project root after each phase compiles; it must
+#   print PASS/FAIL per test and exit non-zero on failure (for example the L4 runner of
+#   aldc-claude evals against a sandbox). Empty = tests are compiled but not executed,
+#   and the final report says so. Override per run with ALDC_TEST_RUNNER.
+#   Never point it at a production environment.
+testing:
+  runner: ""
+
 # External citable knowledge base, consumed by al-review-subagent (Step 0) as an
 # audit/citation layer. Does NOT replace instructions or skills.
 external:
   bcquality:
-    mode: "external-multiroot"            # consumed from OUTSIDE the AL project (see aldc.code-workspace)
+    # aldc-claude: plugin by default. In Claude Code BCQuality is normally installed as the
+    # bcquality plugin; external-multiroot needs a ../bcquality clone that is rarely there.
+    # A missing plugin falls back to native review (fallback below), never blocks.
+    mode: "plugin"
     # Select once per host/configuration; execute and evidence each review separately.
     # auto / true: discover the selected mode; true additionally expects availability.
     # false: no probe, load, execution or refresh; full native A-G.
@@ -49,7 +73,7 @@ external:
     plugin:
       id: "bcquality"
       skill: "al-code-review"          # BCQuality >= 0.2.0 (renamed upstream in #150)
-      expectedVersion: "0.2.0"
+      expectedVersion: ""             # unset: any installed version is accepted and recorded as observed
       sourceRef: ""
     consumedBy: ["agents/al-review-subagent.agent.md", "agents/al-developer-reviewer.agent.md", "agents/dredd.agent.md", "agents/al-triage.agent.md"]
     # Missing/incompatible provider: native review, never an AL code defect.

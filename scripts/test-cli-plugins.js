@@ -66,6 +66,9 @@ for (const [file, content] of generated) {
 // canonical sources produce, and the Conductor contract survives the adapter
 // intact rather than merely matching one recorded digest.
 const pluginFiles = buildPlugin().files;
+// Since 5.1.0 the Claude surface is maintained directly (claude-plugin/SURFACE.md): the generator returns it as is,
+// so the hand-edit check below holds trivially and the canonical-body checks give way to maintained-surface ones.
+const maintainedClaude = fs.existsSync(path.join(ROOT, 'claude-plugin', 'SURFACE.md'));
 const handEdited = [...pluginFiles].filter(([rel, content]) => read('claude-plugin/' + rel) !== content).map(([rel]) => rel);
 check(handEdited.length === 0, `claude-plugin is generated, not hand-edited: ${handEdited.join(', ')}`);
 // Claude preambles remain separable from the canonical body for this check.
@@ -84,9 +87,13 @@ for (const rel of [...AGENTS.map(a => `agents/${a.id}.md`), ...WORKFLOWS.map(w =
 }
 const conductor = split(read('claude-plugin/agents/al-conductor.md'));
 const canonicalConductor = rewritePaths(split(read('agents/al-conductor.agent.md')).body, plansRootFor(ROOT));
-check(conductor.body.endsWith(canonicalConductor), 'Claude Conductor workflow, including the explicit BCQuality provider contract, carried from the canonical contract without edits');
+if (maintainedClaude) {
+  check(conductor.body.includes('## Claude Code runtime rules (aldc-claude)'), 'Maintained Claude Conductor states its runtime rules');
+  check(conductor.body.includes('bcquality-provider-contract.md'), 'Maintained Claude Conductor keeps the explicit BCQuality provider contract');
+} else check(conductor.body.endsWith(canonicalConductor), 'Claude Conductor workflow, including the explicit BCQuality provider contract, carried from the canonical contract without edits');
 check(crypto.createHash('sha256').update(canonicalConductor).digest('hex').length === 64, 'Conductor body is hashable evidence, not a transcription');
-check(conductor.data.model === 'haiku', 'Claude Conductor model unchanged');
+check(maintainedClaude ? conductor.data.model === undefined : conductor.data.model === 'haiku',
+  maintainedClaude ? 'Maintained Claude Conductor inherits the session model' : 'Claude Conductor model unchanged');
 check(!conductor.data.tools.includes('mcp__'), 'Conductor does not acquire AL MCP execution');
 for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {
   const agent = split(read('claude-plugin/agents/' + file));

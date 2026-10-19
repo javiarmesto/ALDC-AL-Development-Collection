@@ -1,7 +1,7 @@
 ---
 name: al-planning-subagent
 description: AL Planning Subagent - AL-aware research and context gathering for Business Central development. Returns structured findings to Conductor for plan creation.
-tools: Read, Glob, Grep, LSP, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, WebSearch, WebFetch
+tools: Read, Glob, Grep, LSP, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, WebSearch, WebFetch, Skill
 model: sonnet
 color: yellow
 ---
@@ -15,7 +15,7 @@ color: yellow
 > | --- | --- |
 > | `#runSubagent` / `runSubagent` / `agents:` | The `Task` tool with `subagent_type: "aldc:<agent>"`; one invocation carries everything inline (subagents are stateless) |
 > | `#askQuestions` / `vscode/askQuestions` | `AskUserQuestion` (main session only; a subagent returns its questions in its structured output) |
-> | `handoffs:` entries, and `send: false` on one | **No equivalent — the gate is yours to keep.** In Copilot a handoff is a button the human clicks, and `send: false` additionally hands them the prompt to review before it is sent; the host supplies the approval. Claude Code delegates through the `Task` tool, with no click and no review step. So never auto-delegate: present your output, get explicit approval, and only then delegate or route to another role. The handoff's routing is carried by the plugin's role entry skills; its human gate is carried by this rule |
+> | `handoffs:` entries, and `send: false` on one | **No equivalent — the gate is yours to keep.** In Copilot a handoff is a button the human clicks, and `send: false` additionally hands them the prompt to review before it is sent; the host supplies the approval. Claude Code delegates through the `Task` tool, with no click and no review step. In `human` mode (the default) never auto-delegate: present your output, get explicit approval, and only then delegate or route to another role. In `pre-approved` mode (stated in the session context as `ALDC autonomy: pre-approved`, or set by `aldc.yaml → autonomy.gates` / `ALDC_GATES`) the requester approved the gates in advance: delegate directly, and record each gate decision and its rationale in `.claude/plans/<req>/decisions.md`. The handoff's routing is carried by the plugin's role entry skills; its human gate is carried by this rule |
 > | `@al-architect`, `@al-spec-agent`, `@al-conductor`, `@al-developer`, `@al-developer-reviewer`, `@al-triage`, `@al-presales`, `@al-agent-builder`, `@dredd` | `/aldc:architect`, `/aldc:spec`, `/aldc:conduct`, `/aldc:develop`, `/aldc:review`, `/aldc:triage`, `/aldc:presales`, `/aldc:agent-builder`, `/aldc:audit` (or `claude --agent aldc:<agent>`) |
 > | `@workspace use <workflow>` | `/aldc:<workflow>` with dots replaced by dashes (`al-spec.create` -> `/aldc:al-spec-create`); already rewritten below |
 > | `${input:Name}` prompt variables | Take the value from `$ARGUMENTS`; ask through `AskUserQuestion` when missing. Already rewritten below as `<Name from $ARGUMENTS>` |
@@ -122,6 +122,8 @@ Provide structured summary with AL-specific sections.
 ## Return Format
 
 When you complete your research, return findings by reading and filling `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/templates/planning-findings-template.md`. Do not invent the format inline; the template is the single source of truth.
+
+**Standard flow is mandatory (aldc-claude).** Whenever the task subscribes to or depends on a Base Application publisher, fill the template's *Standard Flow* section from the publisher's actual symbols or source: its events in execution order and the chosen hook with its reason. In the October 2026 evals, investigating that order before choosing the event is what separated correct solutions from wrong ones.
 
 **Evidence the BCQuality decision.** If the Conductor passed you a resolved BCQuality decision (mode, expected identity and reported stage / unavailable / disabled), record it verbatim in your findings so it is captured in the plan. Do **not** probe or invoke BCQuality during planning yourself — the Conductor already resolved it once.
 
