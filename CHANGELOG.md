@@ -27,7 +27,7 @@
 
 The GitHub release includes the toolkit npm archive for local installation.
 Publication to the npm registry and VS Code Marketplace is separate. Existing
-project copies still require a reviewed toolkit update. The Hogargas host cookbook
+project copies still require a reviewed toolkit update. The customer host cookbook
 remains a live acceptance test, not a result claimed by the packaging checks.
 
 ## [5.0.2] - 2026-10-06
