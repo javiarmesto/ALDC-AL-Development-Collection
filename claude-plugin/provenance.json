@@ -148,7 +148,7 @@
     "docs/templates/technical-spec-template.md": "5b9dbd9ea80e9a060965638d8be9e2594869d0fec4f2ab280307166f9e271916",
     "docs/templates/test-plan-template.md": "d14b5a209b2b5d0f0e6d1302239ca038c83b098bcf297333771cf120d36c0cb2",
     "hooks/agent-brief.js": "c5c6c5e7011c0a5273094e7da27289ee6084fd76862335317e583d03f03aaf18",
-    "hooks/aldc-runtime.js": "e839f52dcc3a646c8caac280bea9e70fcdfefde4082979e6dfbcdc26345e8ac9",
+    "hooks/aldc-runtime.js": "9af0ff437b01ea725c6a850ef658ab0337c0fdd74a9b7bf9964d03c24fb528c7",
     "hooks/artifact-gate.js": "c10f76da4721951463ed40a9789e47d9a2268e2a832c63af51141a40980974a6",
     "hooks/flow-scout.js": "9184bd38f69fe2d835dc7a02aba4e8e30f453d1f875bcd99a21dcbaf3ab968ff",
     "hooks/hooks.json": "32742b77b1811ebd01238a8a25dbcf61c73420b3b55bb798974e9d4bbdba6afc",

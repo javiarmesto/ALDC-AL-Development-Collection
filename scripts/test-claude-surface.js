@@ -82,6 +82,20 @@ test('agent-brief: Architect, Spec and planning receive BCQuality articles to co
   assert.doesNotMatch(dev, /## BCQuality knowledge/);
 });
 
+test('agent-brief: external.bcquality.enabled false means no BCQuality articles for any role', () => {
+  const cwd = project();
+  fs.writeFileSync(path.join(cwd, 'aldc.yaml'), 'external:\n  bcquality:\n    mode: "plugin"\n    enabled: false   # opt-out\n');
+  const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
+  fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
+  fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify, lead-score]\n---\n# Avoid redundant Modify\n');
+  const env = { BCQUALITY_HOME: bcq };
+  for (const role of ['aldc:al-architect', 'aldc:al-spec-agent', 'aldc:al-planning-subagent', 'aldc:al-review-subagent']) {
+    const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: 'Lead Score on Contact' } }, env).hookSpecificOutput.updatedInput.prompt;
+    assert.doesNotMatch(p, /## BCQuality (knowledge|selection)/, role);
+    assert.doesNotMatch(p, /modify\.md/, role);
+  }
+});
+
 test('stop-guard: in pre-approved blocks an unfinished plan at most 3 times and honours blocked.md', () => {
   const cwd = project(); const s = sid();
   run('session-context.js', { cwd, session_id: s });

@@ -161,9 +161,30 @@ function briefFiles(cwd, brief) {
   return [...found];
 }
 
+/** Whether the project opts out of BCQuality: external.bcquality.enabled false in its aldc.yaml.
+ *  Disabled means no probe and no load, so callers check it before any provider discovery. */
+function bcqualityDisabled(cwd) {
+  const text = read(path.join(cwd || '.', 'aldc.yaml'));
+  if (!text) return false;
+  let inExternal = false, bcqIndent = -1;
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim() || /^\s*#/.test(line)) continue;
+    const indent = line.match(/^\s*/)[0].length;
+    if (indent === 0) { inExternal = /^external:\s*(#.*)?$/.test(line); bcqIndent = -1; continue; }
+    if (!inExternal) continue;
+    if (bcqIndent >= 0 && indent <= bcqIndent) bcqIndent = -1;
+    if (bcqIndent < 0) { if (/^\s+bcquality:\s*(#.*)?$/.test(line)) bcqIndent = indent; continue; }
+    const m = line.match(/^\s+enabled:\s*["']?([^"'#\s]+)/);
+    if (m) return m[1] === 'false';
+  }
+  return false;
+}
+
 /** Up to max BCQuality articles whose keywords occur in the phase's AL files (or the whole project) and the brief.
- *  Scoped to the files the brief names, so a small phase gets a short, relevant list (aldc-claude M11). */
+ *  Scoped to the files the brief names, so a small phase gets a short, relevant list (aldc-claude M11).
+ *  Null when the project disabled BCQuality: nothing is discovered or scanned. */
 function bcqualitySelection(cwd, brief, max = 15) {
+  if (bcqualityDisabled(cwd)) return null;
   const root = bcqualityRoot();
   if (!root) return null;
   const files = briefFiles(cwd, brief);
@@ -183,4 +204,4 @@ function pluginInstalled(prefix) {
   return Object.keys(data.plugins || data).some((k) => k.startsWith(prefix + '@'));
 }
 
-module.exports = { testRunner, readState, writeState, bcqualityRoot, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
+module.exports = { testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };

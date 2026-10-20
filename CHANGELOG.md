@@ -11,6 +11,9 @@
   "BCQuality references". No gate: design roles record no disposition per
   article. Before, only reviewers received the selection, and design subagents
   read articles by hand.
+- The BCQuality selection (reviewers and design roles) honours the project opt-out:
+  with `external.bcquality.enabled: false` in `aldc.yaml` nothing is discovered,
+  scanned or added to the brief.
 
 ## [5.1.0] - 2026-10-19
 
