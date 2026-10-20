@@ -286,3 +286,13 @@ existing migration, performance, testing, translation and debugging skills.
 BCQuality provider selection, exact skill identity, execution evidence and index
 limits follow [the shared contract](../templates/bcquality-provider-contract.md).
 A configured plugin does not grant execution tools or reduce native coverage.
+
+
+## Snapshot diagnosis evidence
+
+Triage follows [the shared snapshot evidence contract](../../skills/skill-debug/references/snapshot-evidence.md)
+inside the existing diagnosis report: capture, inspection, diagnosis and fix validation
+remain distinct. Cite actual readable observations for supported claims; missing state
+requires insufficiency and the next observation. A structural validator is available
+explicitly; it proves neither causality nor tool execution. Optional host acceptance
+uses an authorized sandbox and does not grant publishing or test execution to Triage.

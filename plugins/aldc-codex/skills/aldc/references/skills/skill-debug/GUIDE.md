@@ -222,6 +222,8 @@ Create `.agents/plans/<issue-kebab-case>-diagnosis.md` before proposing any fix:
 
 File naming: `sales-posting-error-diagnosis.md`, `slow-customer-list-diagnosis.md`.
 
+For a snapshot investigation, also follow [the snapshot evidence contract](references/snapshot-evidence.md). Keep capture, inspection, diagnosis and fix validation separate; append its machine-readable section to this same report and run the explicit structural validator. Insufficient evidence is a legitimate diagnosis outcome, with the next observation named.
+
 ### Step 5: Propose Fix & Handoff (MANDATORY HITL gate)
 
 1. Design fix addressing **root cause** (never symptoms only)

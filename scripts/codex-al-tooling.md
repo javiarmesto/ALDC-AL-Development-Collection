@@ -150,8 +150,10 @@ cannot constrain remote MCP effects; Dredd/Triage's report-only write limits
 remain behavioral. Reading a role reference through the skill does not load its
 TOML custom-agent profile. Parent runtime overrides also affect the final policy.
 
-Codex supports MCP settings in custom-agent TOML. For an authorized implementation
-context, a reviewed server binding can use the same transport and this allowlist:
+Current Codex documentation says custom agents inherit MCP, sandbox and approval
+configuration from the parent; a custom-agent TOML cannot override those settings.
+Configure a reviewed, separately bounded parent session instead. For authorized
+implementation, that session can use the same transport and this allowlist:
 
 ```toml
 [mcp_servers.al]
@@ -190,12 +192,12 @@ env_vars = ["BC_ACCESS_TOKEN"]
 command = "altool"
 args = ["launchsnapshotmcpproxy", "--environmenttype", "Sandbox", "--environmentname", "YOUR_SANDBOX", "--tenant", "YOUR_TENANT"]
 env_vars = ["BC_ACCESS_TOKEN"]
+enabled_tools = ["initialize_snapshot_debugging", "get_snapshot_status", "stop_snapshot_debugging"]
 ```
 
 Use a provisioned environment token or the provider's separately authorized
-sign-in flow. Never embed token values in shared TOML or evidence. The examples
-expose the dedicated proxy catalogs; inspect actual tool names before choosing
-an `enabled_tools` subset. No invented tool list or general BC data API is implied.
+sign-in flow. Never embed token values in shared TOML or evidence. The snapshot example limits operations to capture; confirm those IDs in the
+actual proxy catalog. It does not grant the AL18 `run_tests` operation. No invented tool list or general BC data API is implied.
 Other roles must not inherit capture tools: verify their effective catalogs or
 use a separately configured Triage session. Reading the Triage role alone does
 not establish that separation.
@@ -239,3 +241,22 @@ of installation validation. Host/runtime gaps keep this candidate in draft.
 - [Official AL MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-mcp-server)
 - [Profiling MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/scheduled-performance-profiler-overview#profiling-with-an-ai-agent-mcp-server)
 - [Snapshot MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-snapshot-debugging#snapshot-debugging-with-an-ai-agent-mcp-server)
+
+
+## Snapshot diagnosis evidence
+
+Use skill-debug/references/snapshot-evidence.md for the shared four-milestone
+report, cited observations, explicit insufficiency and optional structural validation.
+Capturing an archive does not establish inspection or fix validation. The operator
+confirms scenario relevance; Developer validates the approved correction and Reviewer
+consumes the evidence. Keep missing/unsupported inspection capabilities explicit.
+
+Current host policy references (checked 2026-10-20):
+- https://learn.chatgpt.com/docs/agent-configuration/subagents
+- https://learn.chatgpt.com/docs/config-file/config-reference
+A legacy sandbox_mode in generated profiles is a compatibility hint; current
+hosts take permissions from the parent. Verify the effective policy and catalogs.
+
+After local bootstrap, validate a snapshot diagnosis explicitly:
+`node .agents/skills/aldc/scripts/aldc-validate/index.js --diagnosis <report-path>`.
+In the plugin, resolve its root and use skills/aldc/scripts/aldc-validate/index.js.

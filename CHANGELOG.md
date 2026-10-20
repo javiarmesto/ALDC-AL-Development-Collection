@@ -1,5 +1,18 @@
 # ALDC Changelog
 
+## Unreleased — snapshot evidence across Copilot Chat, CLI and Codex
+
+- Extend the existing Triage/skill-debug report with separate capture, inspection,
+  diagnosis and fix-validation milestones, per-claim observations and explicit uncertainty.
+- Add an explicit structural diagnosis validator; insufficient evidence is valid,
+  uncited supported claims are not. This is not proof of runtime execution or causality.
+- Restrict CLI snapshot grants to initialize/status/stop; retain Chat capture limits
+  and correct Codex parent-session MCP configuration guidance.
+- Resolve only used, approved test libraries in Chat implementation guidance.
+- Keep the maintained Claude surface unchanged. No version bump or release is created.
+- Live capture/inspection and host acceptance remain pending separate authorization.
+
+
 ## [5.1.0] - 2026-10-19
 
 ### Changed — Claude Code surface

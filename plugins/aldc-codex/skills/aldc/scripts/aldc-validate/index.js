@@ -18,9 +18,20 @@
 
 const fs = require("fs");
 const path = require("path");
-const yaml = require("js-yaml"); // npm i js-yaml
 
 const args = process.argv.slice(2);
+// Explicit snapshot-report mode leaves legacy diagnoses and core validation unchanged.
+if (args.includes('--diagnosis')) {
+  try {
+    const file = args[args.indexOf('--diagnosis') + 1];
+    if (!file || file.startsWith('--')) throw new Error('--diagnosis requires a report path');
+    const { errors, data } = require('./diagnosis').validateDiagnosis(fs.readFileSync(file, 'utf8'));
+    if (errors.length) throw new Error(errors.join('; '));
+    console.log(`Diagnosis structure valid: diagnosis=${data.milestones.diagnosis.status}; validation=${data.milestones.validation.status}. Runtime evidence and causality are not verified.`);
+    process.exit(0);
+  } catch (e) { console.error(`Diagnosis invalid: ${e.message}`); process.exit(1); }
+}
+const yaml = require("js-yaml"); // Core validation requires this; diagnosis mode does not.
 let configPath = "aldc.yaml";
 const idx = args.indexOf("--config");
 if (idx !== -1 && args[idx + 1]) configPath = args[idx + 1];

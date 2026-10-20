@@ -206,7 +206,7 @@ need host evidence; installation and catalogs alone do not certify them.
   put('docs/copilot-cli-al-tooling.md', read('scripts/copilot-cli-al-tooling.md'));
   put('scripts/save-audit.js', read('scripts/copilot-cli-save-audit.js'));
   const { walk: paths, provenance } = require('./package-provenance');
-  sources.push(...paths(root, 'tools/bcquality'), 'tools/aldc-validate/package.json', 'tools/aldc-validate/index.js', ...paths(root, 'tools/context-doctor'),
+  sources.push(...paths(root, 'tools/bcquality'), 'tools/aldc-validate/package.json', 'tools/aldc-validate/index.js', 'tools/aldc-validate/diagnosis.js', ...paths(root, 'tools/context-doctor'),
     'aldc.yaml', 'scripts/plugin-runtime.js', 'scripts/generation-utils.js', 'scripts/copilot-cli-adapter.js', 'scripts/copilot-cli-bootstrap.js',
     'scripts/install-transaction.js', 'scripts/init-plugin.js', ...paths(root, 'docs/templates'));
   put('provenance.json', provenance(root, sources,
