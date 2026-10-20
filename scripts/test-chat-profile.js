@@ -43,6 +43,11 @@ for (const profile of ['bc28', 'bc29-native']) {
       if (none) assert.ok(!tools.some(t => /^(al\/|bc-|SShadowSdk|ms-dynamics-smb)/.test(t)), rel);
       assert.ok(text.includes(`Profile: **${profile}**`), rel);
       assert.ok(text.includes('../docs/framework/copilot-chat-al-tooling.md'), rel);
+      if (role === 'al-implement-subagent') {
+        assert.ok(!text.includes('24.0.0.0'), `${rel}: no fixed test dependency version`);
+        assert.ok(!text.includes('if missing, **ADD them**'), `${rel}: dependency changes require approval and actual use`);
+        assert.ok(!/^\s*Any: Codeunit Any;/m.test(text), `${rel}: template does not require an unused Any library`);
+      }
       if (role === 'al-build') assert.ok(text.includes('Stop after build/package') && text.includes('human gate'));
       if (profile === 'bc29-native') {
         if (creator) assert.ok(text.includes('IDs are not reserved') && text.includes('never use nextOutOfRangeId') && text.includes('rangeStart=rangeEnd=approved ID'), `${rel}: safe allocation preserves approved IDs`);

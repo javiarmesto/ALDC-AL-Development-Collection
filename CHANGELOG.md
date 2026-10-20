@@ -14,6 +14,8 @@
   Preserve independent Spec, BCQuality consultation, approved contracts and gates.
 - Limit Chat Triage's snapshot proxy to initialize/status/stop; the new `run_tests`
   operation does not gain an implicit grant. Conductor gains no AL execution.
+- Resolve only used, approved test-library dependencies in both Chat profiles;
+  remove fixed example versions and mandatory Any declarations from implementation guidance.
 - Document observed Insiders project selection, the need for a visible AL editor,
   stale/empty diagnostic limits and reproducible local error/recovery checks.
 
