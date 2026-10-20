@@ -1,5 +1,35 @@
 # ALDC Changelog
 
+## [5.0.4] - 2026-10-15
+
+### Fixed
+
+- Grant AL18 native object-ID lookup only to Copilot Chat's `bc29-native`
+  Developer and Implementation Subagent. Keep approved IDs/ranges, project scope,
+  collision handling and the tool's no-reservation limitation explicit.
+- Select native diagnostics through AL18.1's `al_get_diagnostics` Chat reference;
+  retain MCP's distinct `al_getdiagnostics` operation and schema.
+- Bound Architect/Spec symbol and dependency research, and separate App builds,
+  Test builds and executed runtime results throughout implementation and review.
+  Preserve independent Spec, BCQuality consultation, approved contracts and gates.
+- Limit Chat Triage's snapshot proxy to initialize/status/stop; the new `run_tests`
+  operation does not gain an implicit grant. Conductor gains no AL execution.
+- Resolve only used, approved test-library dependencies in both Chat profiles;
+  remove fixed example versions and mandatory Any declarations from implementation guidance.
+- Document observed Insiders project selection, the need for a visible AL editor,
+  stale/empty diagnostic limits and reproducible local error/recovery checks.
+
+### Validation and delivery
+
+Native symbol search, ID lookup, App/Test builds and a controlled compiler error
+were exercised with operator evidence on AL18 and a BC28/runtime16.1 consumer.
+Recovery was verified separately through ALTool and a VS Code packaging action;
+this does not establish BC29 runtime execution or full per-role acceptance.
+Claude Code, Copilot CLI and Codex retain their tools, models and permissions;
+their generated version/provenance metadata advances with this release.
+Graph, LSP, TestHandlers, profiling and snapshot execution remain optional.
+GitHub release, VSIX distribution and Marketplace publication are separate steps.
+
 ## [5.0.3] - 2026-10-07
 
 ### Fixed
