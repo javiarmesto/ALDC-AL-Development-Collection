@@ -6,12 +6,15 @@
 // 2. Guarantees the AL rules reach the subagent: auto-apply of .claude/rules does not fire
 //    in subagents, and the conductor often did not pass them inline (13 of 13 runs).
 // 3. Passes the autonomy mode, so a subagent never waits for an approval nobody will give.
+// 4. Hands BCQuality articles to reviewers (apply or justify) and to design roles (consult and cite):
+//    subagents cannot rely on the bcquality skills, so in the demo Architect and Spec read articles by hand.
 // Other subagent types are left untouched.
 const runtime = require('./aldc-runtime');
 
 const MARKER = '<!-- aldc-rules -->';
 const CODE_ROLES = /^aldc:(al-implement-subagent|al-review-subagent|al-developer-reviewer|al-developer|al-planning-subagent|al-triage|dredd|al-agent-builder)$/;
 const REVIEWERS = /^aldc:(al-review-subagent|al-developer-reviewer|dredd)$/;
+const DESIGNERS = /^aldc:(al-architect|al-spec-agent|al-planning-subagent)$/;
 const FLOW_ROLES = /^aldc:(al-planning-subagent|al-implement-subagent|al-developer)$/;
 const AGENT_SDK = /agent\s*sdk|IAgent(Factory|Metadata|TaskExecution)|agent\s*toolkit|al-agent-builder/i;
 
@@ -37,6 +40,15 @@ function brief(payload) {
       '(technical reason citing file:line). "Not requested by the requirement" is not a valid reason: an applicable article ' +
       'the code does not follow is a finding. Also fill review.security (rules/al-security.md).');
     else if (sel) extra.push('## BCQuality selection\n\nNo BCQuality article matched this app. Review natively and still fill review.security (rules/al-security.md).');
+  }
+  // Design roles consult the same knowledge before deciding; no disposition per article, so artifact-gate does not apply.
+  if (DESIGNERS.test(input.subagent_type) && !prompt.includes('## BCQuality knowledge')) {
+    const sel = runtime.bcqualitySelection(payload.cwd, prompt, 10);
+    if (sel && sel.articles.length) extra.push('## BCQuality knowledge (from the plugin: articles whose keywords match ' + sel.scope + ' and the brief)\n\n' +
+      sel.articles.map((a) => '- ' + sel.root + '/' + a.path + ' (' + a.domain + '): ' + a.title).join('\n') +
+      '\n\nRead the articles that bear on your decisions (data model, events, permissions, performance, API, upgrade) before making them. ' +
+      'Where an article shapes a decision, cite its path next to that decision, and end your output with a "BCQuality references" list: ' +
+      'article path and the decision it informed. Do not claim BCQuality coverage for articles you did not open.');
   }
   // M9: investigate the standard flow before hooking into it.
   if (FLOW_ROLES.test(input.subagent_type) && !prompt.includes('Standard Flow'))

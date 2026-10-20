@@ -1,5 +1,17 @@
 # ALDC Changelog
 
+## [5.1.1] - 2026-10-20
+
+### Changed — Claude Code surface
+
+- `agent-brief` now also hands BCQuality articles to the design roles
+  (`al-architect`, `al-spec-agent`, `al-planning-subagent`) when they run as
+  subagents: up to 10 articles matched against the project and the brief, to
+  consult before deciding, cite next to each decision they shape and list under
+  "BCQuality references". No gate: design roles record no disposition per
+  article. Before, only reviewers received the selection, and design subagents
+  read articles by hand.
+
 ## [5.1.0] - 2026-10-19
 
 ### Changed — Claude Code surface

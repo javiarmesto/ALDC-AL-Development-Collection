@@ -64,6 +64,24 @@ test('agent-brief: adds the agent SDK rule when the project extends Agent Metada
   assert.match(p, /Completeness checklist/);
 });
 
+test('agent-brief: Architect, Spec and planning receive BCQuality articles to consult and cite', () => {
+  const cwd = project();
+  const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
+  fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
+  fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify, lead-score]\n---\n# Avoid redundant Modify\n');
+  const env = { BCQUALITY_HOME: bcq };
+  for (const role of ['aldc:al-architect', 'aldc:al-spec-agent', 'aldc:al-planning-subagent']) {
+    const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: 'Lead Score on Contact' } }, env).hookSpecificOutput.updatedInput.prompt;
+    assert.match(p, /## BCQuality knowledge/, role);
+    assert.match(p, /community\/knowledge\/perf\/modify\.md/, role);
+    assert.match(p, /BCQuality references/, role);
+    const again = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: p } }, env).hookSpecificOutput.updatedInput.prompt;
+    assert.strictEqual((again.match(/## BCQuality knowledge/g) || []).length, 1, role);
+  }
+  const dev = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-implement-subagent', prompt: 'Lead Score' } }, env).hookSpecificOutput.updatedInput.prompt;
+  assert.doesNotMatch(dev, /## BCQuality knowledge/);
+});
+
 test('stop-guard: in pre-approved blocks an unfinished plan at most 3 times and honours blocked.md', () => {
   const cwd = project(); const s = sid();
   run('session-context.js', { cwd, session_id: s });
