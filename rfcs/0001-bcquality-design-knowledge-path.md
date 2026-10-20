@@ -40,5 +40,5 @@ Static packaging checks cannot establish live agent behavior.
 - All five handoff corrections reach every distribution; templates remain identical.
 - Spec retains its existing non-execution grants and documentation-only scope.
 - Generation drift and applicable contract/packaging checks pass.
-- The supplied Hogargas cookbook's plugin, Spec and manual-fallback host tests
+- The supplied customer cookbook's plugin, Spec and manual-fallback host tests
   remain live acceptance work; no result is claimed without an actual session.
