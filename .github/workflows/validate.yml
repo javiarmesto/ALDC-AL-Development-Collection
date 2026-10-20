@@ -2,9 +2,9 @@ name: Validate Collection
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'release/5.0.x' ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'release/5.0.x' ]
   workflow_dispatch:
 
 permissions:
