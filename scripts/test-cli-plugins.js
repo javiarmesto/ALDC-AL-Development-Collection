@@ -43,7 +43,7 @@ for (const [file, content] of generated) {
     const agent = split(content);
     check(Array.isArray(agent.data.tools) && agent.data.tools.length > 0, `${file}: explicit tools`);
     check(!agent.data.tools.includes('*'), `${file}: no unrestricted grant`);
-    check(agent.data.tools.every(t => /^(read|search|edit|execute|task|list_agents|read_agent|web)$/.test(t) || /^(al-symbols-mcp|context7|microsoft-docs|bc-profiling|bc-snapshot)\/\*$/.test(t) || /^al\/(al_symbolsearch|al_getdiagnostics|al_getpackagedependencies|al_compile|al_build|al_downloadsymbols)$/.test(t)), `${file}: host tool vocabulary`);
+    check(agent.data.tools.every(t => /^(read|search|edit|execute|task|list_agents|read_agent|web)$/.test(t) || /^(al-symbols-mcp|context7|microsoft-docs|bc-profiling)\/\*$/.test(t) || /^bc-snapshot\/(initialize_snapshot_debugging|get_snapshot_status|stop_snapshot_debugging)$/.test(t) || /^al\/(al_symbolsearch|al_getdiagnostics|al_getpackagedependencies|al_compile|al_build|al_downloadsymbols)$/.test(t)), `${file}: host tool vocabulary`);
     check(agent.data.model === 'claude-sonnet-4.6', `${file}: retains independently validated CLI model`);
     const source = split(read(`agents/${agent.data.name}.agent.md`));
     const contractPath = `copilot-cli-plugin/references/agent-contracts/${agent.data.name}.md`;

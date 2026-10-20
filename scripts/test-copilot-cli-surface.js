@@ -107,7 +107,11 @@ test('capture grants stay in Triage and Dredd cannot write, execute or delegate'
   const { toolsForRole } = require('./copilot-cli-adapter');
   for (const file of fs.readdirSync(path.join(pluginRoot, 'agents'))) {
     const id = file.replace('.agent.md', '');
-    for (const proxy of ['bc-profiling/*', 'bc-snapshot/*']) assert.equal(toolsForRole(id).includes(proxy), id === 'al-triage', id);
+    const tools = toolsForRole(id);
+    assert.equal(tools.includes('bc-profiling/*'), id === 'al-triage', id);
+    assert.deepEqual(tools.filter(tool => tool.startsWith('bc-snapshot/')), id === 'al-triage' ? [
+      'bc-snapshot/initialize_snapshot_debugging', 'bc-snapshot/get_snapshot_status', 'bc-snapshot/stop_snapshot_debugging',
+    ] : [], id);
   }
   const dredd = toolsForRole('dredd');
   for (const tool of ['edit', 'execute', 'task', 'list_agents', 'read_agent', '*']) assert.ok(!dredd.includes(tool), tool);

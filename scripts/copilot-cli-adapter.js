@@ -233,7 +233,9 @@ function toolsForRole(name) {
   const tools = [...ROLE_TOOLS[name]];
   if (name !== 'al-conductor') tools.push('al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies');
   if (['al-developer', 'al-implement-subagent'].includes(name)) tools.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
-  if (name === 'al-triage') tools.push('bc-profiling/*', 'bc-snapshot/*');
+  if (name === 'al-triage') tools.push('bc-profiling/*', ...[
+    'initialize_snapshot_debugging', 'get_snapshot_status', 'stop_snapshot_debugging',
+  ].map(tool => `bc-snapshot/${tool}`));
   return tools;
 }
 module.exports.toolsForRole = toolsForRole;

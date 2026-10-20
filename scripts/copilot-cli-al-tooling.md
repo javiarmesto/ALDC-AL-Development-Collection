@@ -113,12 +113,14 @@ under `mcpServers`, with the approved environment in place of the example:
 ```json
 {
   "bc-profiling": {"type":"local","command":"altool","args":["launchprofilingmcpproxy","--environmenttype","Sandbox","--environmentname","sandbox","--tenant","contoso.onmicrosoft.com"],"tools":["*"]},
-  "bc-snapshot": {"type":"local","command":"altool","args":["launchsnapshotmcpproxy","--environmenttype","Sandbox","--environmentname","sandbox","--tenant","contoso.onmicrosoft.com"],"tools":["*"]}
+  "bc-snapshot": {"type":"local","command":"altool","args":["launchsnapshotmcpproxy","--environmenttype","Sandbox","--environmentname","sandbox","--tenant","contoso.onmicrosoft.com"],"tools":["initialize_snapshot_debugging","get_snapshot_status","stop_snapshot_debugging"]}
 }
 ```
 
-Only Triage receives `bc-profiling/*` and `bc-snapshot/*`. These are whole-proxy
-grants, not per-operation boundaries. Do not assign those names to the general BC
+Only Triage receives `bc-profiling/*` and the three explicit snapshot selectors:
+`bc-snapshot/initialize_snapshot_debugging`, `bc-snapshot/get_snapshot_status` and
+`bc-snapshot/stop_snapshot_debugging`. AL18 `run_tests` is excluded; the profiling
+selector remains a whole-proxy grant. Do not assign those names to the general BC
 API server. Inspect the live catalog and argument schemas before capture; do not
 invent tool IDs from documentation labels. Reuse cached authentication; never put
 secrets in args or tracked configuration. No proxy is autostarted by ALDC.
@@ -193,3 +195,15 @@ not configure MCP/LSP, invoke builds or captures, or publish anything.
 - [Official AL MCP](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/al-agent-tools/al-mcp-server)
 - [Profiling](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/scheduled-performance-profiler-overview#profiling-with-an-ai-agent-mcp-server)
 - [Snapshot](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-snapshot-debugging#snapshot-debugging-with-an-ai-agent-mcp-server)
+
+
+## Snapshot diagnosis evidence
+
+Use skill-debug/references/snapshot-evidence.md for the shared four-milestone
+report, cited observations, explicit insufficiency and optional structural validation.
+Capturing an archive does not establish inspection or fix validation. The operator
+confirms scenario relevance; Developer validates the approved correction and Reviewer
+consumes the evidence. Keep missing/unsupported inspection capabilities explicit.
+
+Validate a snapshot diagnosis explicitly:
+`node ${PLUGIN_ROOT}/tools/aldc-validate/index.js --diagnosis <report-path>`.

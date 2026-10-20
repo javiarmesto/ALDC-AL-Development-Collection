@@ -68,6 +68,20 @@ function project(relative, input, profile) {
     triage ? 'Query AL; request builds/restores from implementation. Optional profiling/snapshot capture belongs here only, after confirming target, permissions and capture window. Stop and collect owned captures.' :
     'Query AL only. Do not compile, build, restore dependencies, rename symbols or start captures. Request implementation/Triage evidence when needed.';
   body = '\n\n' + scope + '\n\nThe Chat contract governs tool availability even when older skills describe broader tools.\nPreserve existing artifact write limits, independent review and human handoff gates.\nAL MCP aliases here are examples: inspect the actual catalog and adapt exact selectors; never broaden them to a whole AL server.\n' + body;
+  if (role === 'al-implement-subagent') {
+    body = body.replace('- If **Library Assert** dependency is missing → add it and run `AL: Download Symbols`', '- Resolve the actual assertion codeunit owner/version/API; change only approved dependencies and restore with the granted tool')
+      .replace('- If **Any** dependency is missing → add it and run `AL: Download Symbols`', '- Resolve Any only when the test uses it; do not add unused test libraries')
+      .replace(/3\. Verify these dependencies exist;[\s\S]*?(?=### Test Object ID Management)/, `3. Identify only the libraries actually referenced by the planned tests. Resolve their owning app ID, publisher, compatible version and codeunit API from the target project's manifests and available symbols.
+4. Propose missing dependencies to the approved implementation owner; restore only approved changes with the available provider. Never copy example IDs or versions into app.json.
+
+### Test Library References
+
+Use the assertion codeunit name and API resolved from this project's symbols. Names can differ between dependency versions; neither Assert nor Library Assert is universally correct. Add Any only when its API is used by the test, and omit unused library variables.
+
+`)
+      .replace(/Assert: Codeunit "Library Assert";/g, 'Assert: Codeunit "<resolved assertion codeunit>";')
+      .replace(/^\s*Any: Codeunit Any;\r?\n/gm, '\n        // Add other library variables only when the test uses their resolved API.\n');
+  }
   if (profile === 'bc29-native') {
     const research = ['al-architect', 'al-spec-agent', 'al-spec.create'].includes(role);
     const creator = ['al-developer', 'al-implement-subagent'].includes(role);
