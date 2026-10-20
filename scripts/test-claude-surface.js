@@ -37,6 +37,22 @@ test('session-context: warns when rules are missing and stays silent outside AL 
   assert.strictEqual(run('session-context.js', { cwd: fs.mkdtempSync(path.join(os.tmpdir(), 'no-al-')) }), null);
 });
 
+test('session-context: without the BCQuality plugin it warns with both install commands and has Claude offer the install', () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-home-'));
+  fs.mkdirSync(path.join(home, '.claude', 'plugins'), { recursive: true });
+  const installed = path.join(home, '.claude', 'plugins', 'installed_plugins.json');
+  const env = { HOME: home, USERPROFILE: home, BCQUALITY_HOME: '' };
+  fs.writeFileSync(installed, JSON.stringify({ plugins: { 'aldc@aldc-marketplace': [{}] } }));
+  const out = run('session-context.js', { cwd: project(), session_id: sid() }, env);
+  assert.match(out.systemMessage, /BCQuality plugin is not installed/);
+  assert.match(out.systemMessage, /claude plugin marketplace add https:\/\/github\.com\/microsoft\/BCQuality\.git, then claude plugin install bcquality@bcquality/);
+  assert.match(out.hookSpecificOutput.additionalContext, /offer to install it/);
+  assert.match(out.hookSpecificOutput.additionalContext, /Run them only if the user agrees/);
+  fs.writeFileSync(installed, JSON.stringify({ plugins: { 'bcquality@bcquality': [{}] } }));
+  const ok = run('session-context.js', { cwd: project(), session_id: sid() }, env);
+  assert.doesNotMatch(ok.hookSpecificOutput.additionalContext, /BCQuality (plugin )?is not installed/);
+});
+
 test('agent-brief: ALDC subagent in the foreground, with every rule and the autonomy mode', () => {
   const out = run('agent-brief.js', { cwd: project(), tool_input: { subagent_type: 'aldc:al-implement-subagent', prompt: 'Phase 2', run_in_background: true } }, { ALDC_GATES: 'pre-approved' });
   const u = out.hookSpecificOutput.updatedInput;

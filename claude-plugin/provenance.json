@@ -153,7 +153,7 @@
     "hooks/flow-scout.js": "9184bd38f69fe2d835dc7a02aba4e8e30f453d1f875bcd99a21dcbaf3ab968ff",
     "hooks/hooks.json": "32742b77b1811ebd01238a8a25dbcf61c73420b3b55bb798974e9d4bbdba6afc",
     "hooks/send-guard.js": "a43d432af7f555ac868948253823184d8c2a57466c0b257ba85216eb2bd3f6a1",
-    "hooks/session-context.js": "736672332164574822785294b64098ea0d340c31793a4bc2db027ccd9321895c",
+    "hooks/session-context.js": "739860fab720de1a7e5791ff626bf286699b056a9b6642fab6bd4a20e77f00e1",
     "hooks/stop-guard.js": "b94900acc67d210a64165c001f4707a61c6c96f862c78c18d96558844138e046",
     "project-guidance.md": "5b6ed9833e3dfd89bc3fe33c990ec1dd7b3ef55ec71bc19651e62f308e318252",
     "rules/al-agent-toolkit.md": "bab488a019bf71a74f1cdd3837279eb8962eb8769b10cd919df8e67ea8f8bed3",

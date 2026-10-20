@@ -20,12 +20,20 @@ function hasApp(root, depth = 0) {
   return entries.some(e =>
     e.isDirectory() && !e.name.startsWith('.') && !['node_modules','bin','obj'].includes(e.name) && hasApp(path.join(root,e.name),depth+1));
 }
+const BCQ_INSTALL = ['claude plugin marketplace add https://github.com/microsoft/BCQuality.git', 'claude plugin install bcquality@bcquality'];
+// Without BCQuality the run degrades silently, so Claude offers the install; the user decides.
+function offerText() {
+  if (runtime.bcqualityInstalled() !== false) return '';
+  return 'ALDC: BCQuality is not installed. In your first reply of this session, tell the user and offer to install it with: ' +
+    BCQ_INSTALL.map((c) => `\`${c}\``).join(' and ') + '. Run them only if the user agrees, then ask them to restart Claude Code. ' +
+    'Until then, review with ALDC native checks and record BCQuality as not consulted (not installed).\n';
+}
 function warnings(cwd) {
   const out = [];
   if (!fs.existsSync(path.join(cwd, '.claude', 'rules', 'al-guidelines.md')))
     out.push('ALDC rules are not in .claude/rules/: the main session will not auto-apply them. Run /aldc:al-initialize to install them (ALDC subagents still receive them inline from the plugin).');
   if (runtime.bcqualityInstalled() === false)
-    out.push('BCQuality plugin is not installed: reviews run with ALDC native checks only. Install it (claude plugin install bcquality@bcquality) for citable BCQuality findings.');
+    out.push(`BCQuality plugin is not installed: reviews run with ALDC native checks only and design roles get no articles. To install it: ${BCQ_INSTALL.join(', then ')}, and restart Claude Code.`);
   if (runtime.pluginInstalled('aldc-verify') === false)
     out.push('aldc-verify is not installed: ALDC has no compile/analyzer evidence for its phases (it relies on aldc-verify instead of duplicating it). Install it for verified builds.');
   return out;
@@ -48,7 +56,7 @@ function context(payload, pluginRoot = path.resolve(__dirname, '..')) {
   runtime.writeState(runtime.sessionFile(payload.session_id), { cwd, start: Date.now() });
   const warn = warnings(cwd).map((w) => `⚠️ ALDC: ${w}\n`).join('');
   return { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext:
-    fs.readFileSync(path.join(pluginRoot,'project-guidance.md'),'utf8') + gateText(runtime.autonomy(cwd)) + testText(runtime.testRunner(cwd)) + warn +
+    fs.readFileSync(path.join(pluginRoot,'project-guidance.md'),'utf8') + gateText(runtime.autonomy(cwd)) + testText(runtime.testRunner(cwd)) + warn + offerText() +
     `Read the terminal tool contract at ${path.join(pluginRoot,'skills/skill-migrate/references/cli-al-tools.md')}. Plugin root: ${pluginRoot}. Initialization is an explicit user action.\n` },
     ...(warn ? { systemMessage: warn.trim() } : {}) };
 }

@@ -14,6 +14,10 @@
 - The BCQuality selection (reviewers and design roles) honours the project opt-out:
   with `external.bcquality.enabled: false` in `aldc.yaml` nothing is discovered,
   scanned or added to the brief.
+- When the BCQuality plugin is not installed, the session-start warning gives both
+  install commands (`claude plugin marketplace add https://github.com/microsoft/BCQuality.git`,
+  then `claude plugin install bcquality@bcquality`) and Claude offers to run them in
+  its first reply; it installs only if the user agrees.
 
 ## [5.1.0] - 2026-10-19
 
