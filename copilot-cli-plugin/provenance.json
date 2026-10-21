@@ -5,7 +5,7 @@
   "sources": {
     "agents/al-agent-builder.agent.md": "ca5de4c7ccece8e85a08460c77fff850ed9ceab84af3a0934ea0e9f74b38517f",
     "agents/al-architect.agent.md": "1527a97fa75bbf7b861b8a35981cc2fea0a28c0e8ed33411ee21961973445fc2",
-    "agents/al-conductor.agent.md": "c63d7cc3c80126be1bcc14ea207053e478c68749bda4dd40163e83bab2361f29",
+    "agents/al-conductor.agent.md": "6a9935073b78cdb558cde47a8ab68837eac7c40ce11eb8d67e202bd6a6f41ac6",
     "agents/al-developer-reviewer.agent.md": "8f84af7b2a30965b9892cad399c5b966602f2fe752ad83db91a644fa33113365",
     "agents/al-developer.agent.md": "c2a70fbf37d8660d8505e0435c36891b9dfd0247d706715c8d727337800ac12c",
     "agents/al-implement-subagent.agent.md": "523bb8d7af9276599ccb5bfaa0cd46ad0bd72228d5a1bfef711132c281ee366a",
@@ -156,7 +156,7 @@
     "docs/templates/test-plan-template.md": "d14b5a209b2b5d0f0e6d1302239ca038c83b098bcf297333771cf120d36c0cb2",
     "plugin.json": "afae9ddd09bb5201b0192853f6542b12b80f4e178f36aebc76fb8148d0a6174d",
     "project-guidance.md": "6f0fed567c9fc912bcd8ce00676ea8cde14ccfca0458a4b1f63bdcd4305a4d88",
-    "references/agent-contracts/al-conductor.md": "f9ce5ee64a20621ab5232ac2b65505d0b713370505f0851a8c0f274fdc8a8218",
+    "references/agent-contracts/al-conductor.md": "2e99bf6c78b6378d025751990c49c968f516b7775f173e1538569066c3834367",
     "rules-templates/al-agent-toolkit.instructions.md": "4efce818a4682221ae2b6b34fd70b671094bcab8e2c7ed557489c8b95d9d1a65",
     "rules-templates/al-code-style.instructions.md": "9e846fbd8873efd2bec25ddffd374932dd7dbbff9b7f4ce51527cd18c32718eb",
     "rules-templates/al-error-handling.instructions.md": "f3884b89b775e07c1e1fc5817982050bd860b821e7e9f45d646bb752e13b05d0",

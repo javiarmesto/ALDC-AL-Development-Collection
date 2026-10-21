@@ -198,7 +198,7 @@ Invoke **AL Implementation Subagent** (💻) via `the available native subagent 
 - Test requirements following AL-Go structure (`test/` project)
 - AL-specific patterns (SetLoadFields, error handling, naming ≤26 chars)
 - Explicit TDD instruction: tests first (failing), minimal code, tests pass, lint/format
-- **The 7 always-on instruction micro-rules inline** + **domain skill hints** for this phase (per §"Passing Context to Subagents" — the subagent loads the `SKILL.md` on demand, not you)
+- **The 8 always-on instruction micro-rules inline** (including `al-security`) + **domain skill hints** for this phase (per §"Passing Context to Subagents" — the subagent loads the `SKILL.md` on demand, not you)
 - Instruction: work autonomously, only ask user on critical implementation decisions
 - **NOT** to proceed to next phase or write completion files (you handle this)
 - **RETURN** structured summary: objects created, **event subscribers (exact base object + event name + signature)**, tests created, build status, issues, and the **symbolic skills line** (`📐 instr ✓ · 🧠 skill-x·tag`)
@@ -726,7 +726,7 @@ Instead, **pass phase-relevant excerpts inline** in the `the available native su
 - **Architecture decisions** — only the decisions/constraints this phase must honor (e.g. "use CalcSums, not a FlowField"; "publish IntegrationEvent X"), not the full document.
 - **Test-plan excerpt** — only the tests scoped to this phase.
 - **Memory** — only the cross-session decisions that bear on this phase.
-- **The 7 always-on instruction micro-rules** (`.agents/skills/aldc/references/rules/al-*.md`) — read them **once** at run start and pass them inline to **every** code-touching subagent (implement, review). They are tiny (~1.3K tokens total) hard-rule baselines, and the `applyTo` auto-apply does **not** fire in subagent runtime (no attached files) — so injecting them is the only way they take effect. **Not optional, not per-domain**: pass all seven on every code phase. They are the floor; the depth lives in the skills they point to.
+- **The 8 always-on instruction micro-rules** (`.agents/skills/aldc/references/rules/al-*.md`, including `al-security`; `al-agent-toolkit` only for agent code) — read them **once** at run start and pass them inline to **every** code-touching subagent (implement, review). They are tiny (~1.3K tokens total) hard-rule baselines, and the `applyTo` auto-apply does **not** fire in subagent runtime (no attached files) — so injecting them is the only way they take effect. **Not optional, not per-domain**: pass all eight on every code phase. They are the floor; the depth lives in the skills they point to.
 - **Domain skill *hints*** — name the skills likely relevant to this phase's domain (e.g. `skill-events` for an event phase). These are **hints, not mandates**: the subagent loads the `SKILL.md` on demand when it enters the domain, and may load a skill you didn't hint if it finds it needs one.
 
 Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.agents/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `read_file` round-trips per subagent invocation.
