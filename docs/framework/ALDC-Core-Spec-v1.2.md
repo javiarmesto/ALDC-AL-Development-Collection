@@ -90,6 +90,7 @@ Introduced in product 4.1.0; this revision makes them normative.
 
 - **al-triage**: reactive diagnosis. Reproduce → localize → root-cause → minimal-fix recommendation. **MUST NOT** modify product code; its only write surface is the diagnosis artifact.
 - **dredd**: independent static auditor. On-demand audit against the BCQuality layer plus native checks; returns an advisory verdict. **MUST NOT** modify product code; its only write surface is the audit artifact.
+- **al-developer-reviewer**: direct developer review through the shared review pipeline; separate from the conductor's internal review subagent.
 
 On-demand agents are not part of the delivery cycle and **MUST NOT** be invoked by the conductor as subagents.
 
@@ -132,7 +133,7 @@ A **skill** is a composable knowledge module that lives in `skills/skill-{domain
 - The `SKILL.md` body **SHOULD** stay under 500 lines; deeper material belongs in `references/` files loaded on demand.
 - Skill directories **MUST** follow the naming convention `skill-{domain}/`.
 
-### Required Core Skills — MUST (7)
+### Required Core Skills — MUST (8)
 
 | Skill | Content | Loaded by |
 |-------|---------|-----------|
@@ -143,6 +144,7 @@ A **skill** is a composable knowledge module that lives in `skills/skill-{domain
 | `skill-events` | Event discovery, subscriber/publisher patterns, event recorder | developer, architect |
 | `skill-permissions` | Permission set generation, security patterns, least privilege | developer |
 | `skill-testing` | Test strategy design, Given/When/Then, AI Test Toolkit | conductor (strategy), developer (implementation) |
+| `skill-al-review-pipeline` | Shared review pipeline | developer-reviewer, review subagent |
 
 ### Recommended Skills — SHOULD (4)
 
@@ -157,7 +159,7 @@ A **skill** is a composable knowledge module that lives in `skills/skill-{domain
 
 `skill-agent-toolkit`, `skill-agent-instructions`, `skill-agent-task-patterns`
 
-### Utility Skills — MAY (2) (NEW in v1.2)
+### Utility Skills — MAY (1) (NEW in v1.2)
 
 | Skill | Content |
 |-------|---------|
@@ -171,9 +173,9 @@ Skills are referenced by agents and loaded on demand by **reading the skill's `S
 
 Skills follow the `docs/templates/skill-template.md` template. Any contributor **MAY** propose new skills through a pull request. Skills that alter Core behavior **MUST** follow the RFC process.
 
-## Instructions — MUST (9, unchanged)
+## Instructions — MUST (9 required; 10 shipped contracts)
 
-Passive rules auto-applied through `applyTo` patterns: `al-guidelines`, `al-code-style`, `al-naming-conventions`, `al-performance`, `al-error-handling`, `al-events`, `al-testing` (7 auto-applied `.instructions.md` files), plus `copilot-instructions.md` (repo-wide master coordination) and `al-agent-toolkit.instructions.md` (extension pack). `index.md` is a catalog, not an instruction.
+Passive rules auto-applied through `applyTo` patterns: `al-guidelines`, `al-code-style`, `al-naming-conventions`, `al-performance`, `al-error-handling`, `al-events`, `al-testing`, `al-security` (8 general AL rules). The optional `al-agent-toolkit.instructions.md` adds a ninth scoped rule for the extension pack. With `copilot-instructions.md` (repo-wide master coordination), the shipped inventory is 10 instruction contracts. `index.md` and `README.md` are documentation, excluded from this count. Required and optional paths are declared in `aldc.yaml`.
 
 The Copilot entrypoint at `.github/copilot-instructions.md` is an intentionally **trimmed** subset of `instructions/copilot-instructions.md` (`copilotEntrypointMode: trimmed` in `aldc.yaml`); the validator checks it is non-empty and smaller than the source.
 
@@ -225,10 +227,10 @@ A repository is **ALDC Core v1.2 compliant** if:
 2. `.github/plans/memory.md` exists.
 3. Every active requirement has its own folder `.github/plans/{req_name}/` with the full set: `{req_name}.spec.md` (or the assigned unit specs when decomposed), `.architecture.md`, `.test-plan.md`.
 4. The 7 required immutable templates exist under `docs/templates/` without alteration.
-5. The 5 Core public agents + 3 internal subagents + 2 on-demand agents exist under `toolkitRoot`.
+5. The 5 Core public agents + 3 internal subagents + 3 on-demand agents exist under `toolkitRoot`.
 6. The 6 Core workflows exist under `toolkitRoot`.
-7. The 7 required Core skills exist as `skills/skill-{domain}/SKILL.md` inside `toolkitRoot`.
-8. All 9 instructions exist.
+7. The 8 required Core skills declared in `aldc.yaml` exist as `skills/skill-{domain}/SKILL.md` inside `toolkitRoot`.
+8. The required instructions declared in `aldc.yaml` exist; the current shipped inventory includes 10 contracts with the optional agent-toolkit rule.
 9. The `.github/copilot-instructions.md` entrypoint is coherent with `copilotEntrypointMode`.
 10. For MEDIUM/HIGH, the flow approved architecture → Spec Agent → human-approved spec → conductor(subagents) → review → delivery runs with HITL gates.
 11. The conformance tooling (check-conformance + sync-foundation --check) passes in CI.
@@ -250,11 +252,11 @@ Extension packs **MUST NOT** override Core agents or workflows, modify the Core 
 |------|-------|------|---------|
 | Public agents | 5 | Core | architect, spec-agent, conductor, developer, presales |
 | Internal subagents | 3 | Core | planning, implement, review |
-| On-demand agents | 2 | On-Demand | triage, dredd |
+| On-demand agents | 3 | On-Demand | triage, dredd, developer-reviewer |
 | Extension agents | 1 | Extension | agent-builder |
 | Workflows | 6 + 5 | Core + Extension | 6 core; 5 BC Agents pack |
-| Skills | 7 + 4 + 3 + 2 | Core/Recommended/Extension/Utility | **16 skills** total |
-| Instructions | 9 | Core (8) + Extension (1) | 7 auto-applied + copilot entrypoint source + agent-toolkit |
+| Skills | 8 + 4 + 3 + 1 | Core/Recommended/Extension/Utility | **16 skills** total |
+| Instructions | 10 | Core (9) + Extension (1) | 8 general AL scoped rules + copilot entrypoint source + optional agent-toolkit |
 | Templates | 7 + 7 | Core + Auxiliary | 7 immutable required, 7 auxiliary |
 
-Totals as shipped: **11 agents · 16 skills · 11 workflows · 9 instructions**.
+Totals as shipped: **12 agents · 16 skills · 11 workflows · 10 instruction contracts** (9 scoped rules plus the entrypoint; documentation excluded).

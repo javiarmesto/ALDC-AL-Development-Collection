@@ -22,16 +22,18 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**VS Code Marketplace 5.0.4** builds on 5.0.3's BCQuality consultation with
-role-scoped native AL tools for project research, compilation and diagnostics
-in Copilot Chat.
-See [what changed](#what-changed-in-503-and-504) and the [changelog](CHANGELOG.md).
+**ALDC 5.2.0** brings improvements to Copilot Chat, Copilot CLI and Codex. It adds
+explicit security review, BCQuality article dispositions, stronger planning and
+delegation contracts, and configurable Conductor autonomy and test execution.
+The Marketplace badge reports the currently published extension version.
+See [what changed](#what-changed-in-520) and the [changelog](CHANGELOG.md).
 
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
-| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | 5.0.4, published 20 October 2026 | Copilot Chat extension and packaged toolkit, from [`release/5.0.x`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/release/5.0.x). |
+| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
 | [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3) | v5.0.3 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
-| [`main`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/main) | Root package 5.1.1; Claude Code edition 5.1.1 | Development source, including Claude Code's own surface evolution. Check each host's manifest for its version. |
+| 5.2.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
+| [Claude Code edition](claude-plugin/) | 5.1.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
 maintained agents, hooks, contracts and release evolution. Its surface changes are
@@ -58,7 +60,48 @@ Start with the toolkit installed in your project and a bounded requirement. Arch
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
 
-## What changed in 5.0.3 and 5.0.4
+## What changed in 5.2.0
+
+Reviews now include five mandatory security checks and a disposition for every
+selected BCQuality article: apply it or explain why it does not apply. Agent SDK
+reviews check completeness when the app extends `Agent Metadata Provider`.
+Architect, Spec Agent and Planning Subagent cite the knowledge informing their
+decisions. Planning records the standard publisher flow and the chosen event;
+subscribers explain the choice above their attribute.
+
+Conductor delegates research, each implementation phase and review to their
+owners. It records a Mini-design for eligible LOW work without an architecture
+document; the Core v1.2 architecture gate for MEDIUM/HIGH remains. Final reports
+distinguish verification performed, checks pending, decisions and open risks.
+
+`aldc.yaml` adds `autonomy.gates: human | pre-approved` and `testing.runner`.
+Human is the default. With the requester's prior approval, gates become recorded
+checkpoints in `decisions.md`; hard stops still produce `blocked.md`.
+`autonomy.commit` remains `false` by default. A configured test runner supplies
+actual per-test results after compilation; without one, execution is `not-run`.
+`ALDC_GATES` and `ALDC_TEST_RUNNER` can override the corresponding settings where
+the host exposes environment variables. These contracts add no host hooks.
+
+The companion VS Code Project Manager offers an explicit
+BCQuality mode selector for existing projects and native VS Code installation
+help. Fresh extension installations select BCQuality plugin mode.
+The canonical `aldc.yaml` keeps its `external-multiroot` default. Project Manager's
+Human/default and Automatic options map to `autonomy.gates: human` and
+`pre-approved`; Automatic requires prior approval and grants no additional commit
+or publication permission.
+
+Fresh installations in both Chat profiles select BCQuality plugin mode with
+automatic discovery and no fixed plugin version pin. Updates preserve the
+project's selected mode, availability preference and provider identity; customized
+configuration follows the existing collision policy. A newly seeded workspace
+includes an external knowledge folder only for an enabled external mode and uses
+its configured path. Existing workspace files remain owned by the project.
+
+Both Chat profiles retain 5.0.4's dependency guidance: resolve only libraries used
+by the planned tests from approved dependencies, declared versions and symbols.
+Claude Code stays on its independently maintained 5.1.1 edition.
+
+### Earlier Copilot Chat improvements
 
 **5.0.3 — knowledge before implementation.** Architect and the independent Spec
 Agent consult BCQuality through `al-knowledge`, read complete articles and record
@@ -525,8 +568,8 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           └── {req_name}.test-plan.md
 ├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
 ├── skills/                               # 16 composable skill directories
-├── prompts/                              # 6 retained workflows
-├── instructions/                         # 8 scoped rules + entrypoint and documentation
+├── prompts/                              # 11 workflows (6 core + 5 BC Agents pack)
+├── instructions/                         # 9 scoped rules + entrypoint (10 contracts); documentation excluded
 │
 │── Claude Code (Direct) ───────────────────────────────
 ├── CLAUDE.md                             # Master instructions
@@ -538,7 +581,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │   └── settings.json                     # Hooks + permissions
 │
 │── Claude Code Plugin ─────────────────────────────────
-├── claude-plugin/                        # generado: scripts/sync-plugin-support.js
+├── claude-plugin/                        # independently maintained Claude Code edition
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
 │   ├── agents/                           # 12 agents (auto-discovered)
 │   ├── skills/                           # 9 role entries + 11 workflows + 16 knowledge
@@ -656,7 +699,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.1.1 · **VS Code Marketplace:** 5.0.4
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.0 · **Claude Code:** 5.1.1 · **VS Code Marketplace:** see badge
 
 </div>
 
