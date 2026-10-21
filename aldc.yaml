@@ -18,6 +18,17 @@ solution:
     application: ""
     test: ""
 
+# Autonomy of the Conductor's human gates (plan approval, phase checkpoints, commits).
+#   human        - default. The Conductor stops at every gate and waits for explicit approval.
+#   pre-approved - the requester approved in advance (headless runs, CI, evals). Gates
+#                  become recorded checkpoints in <plans.root>/<req>/decisions.md and
+#                  the work continues. Hard stops (⛔) still stop and write blocked.md.
+# Override per run with ALDC_GATES=human|pre-approved where the host exposes it.
+# commit: false keeps git commits as a human step even in pre-approved mode.
+autonomy:
+  gates: "human"
+  commit: false
+
 # How this project runs its AL tests on a real Business Central.
 # runner: a shell command run from the project root after each phase compiles; it must
 #   print PASS/FAIL per test and exit non-zero on failure (for example a runner that
