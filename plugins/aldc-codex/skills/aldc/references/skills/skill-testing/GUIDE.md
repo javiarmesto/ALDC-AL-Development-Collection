@@ -28,6 +28,11 @@ replace the approved runner. Test-library versions need not equal the app versio
 check dependency identity, minimum version, runtime and APIs. Unknown compatibility
 limits the affected validation; it does not automatically block drafting the spec.
 
+**Executed or only compiled.** A project declares how its tests run in
+`aldc.yaml → testing.runner` (`ALDC_TEST_RUNNER` overrides it). With a runner, its
+output is the runtime-test evidence; a failing test fails the phase. Without one,
+tests are compiled, not executed: report them as `not-run`, never as passing.
+
 ### Pattern 1: Given/When/Then Test Structure
 
 Every test follows GWT with explicit comments and a descriptive name:
