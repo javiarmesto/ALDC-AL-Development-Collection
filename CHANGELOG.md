@@ -4,9 +4,9 @@
 
 ## [5.2.0] - 2026-10-21
 
-**Release candidate.** Canonical sources and the Copilot Chat, Copilot CLI and
-Codex distributions are prepared for 5.2.0. Publication to VS Code Marketplace,
-GitHub releases and npm is separate; the Marketplace release remains 5.0.4.
+Canonical sources and the Copilot Chat, Copilot CLI and Codex distributions use
+5.2.0. Publication to VS Code Marketplace, GitHub releases and npm is separate;
+the Marketplace badge reports current extension availability.
 Claude Code continues on its independently maintained 5.1.1 edition.
 
 ### Added — explicit review coverage
@@ -57,7 +57,7 @@ Claude Code continues on its independently maintained 5.1.1 edition.
   external-multiroot default.
 - Human/default and Automatic map to autonomy.gates human and pre-approved.
   Automatic requires prior approval and adds no commit or publication permission.
-  These controls belong to the companion extension candidate.
+  These controls belong to the companion VS Code extension.
 
 ### Compatibility and packaging
 

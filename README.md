@@ -22,17 +22,17 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**5.2.0 is a release candidate** for Copilot Chat, Copilot CLI and Codex. It adds
+**ALDC 5.2.0** brings improvements to Copilot Chat, Copilot CLI and Codex. It adds
 explicit security review, BCQuality article dispositions, stronger planning and
 delegation contracts, and configurable Conductor autonomy and test execution.
-The published VS Code Marketplace version remains **5.0.4**.
-See [what changed](#what-changed-in-the-520-candidate) and the [changelog](CHANGELOG.md).
+The Marketplace badge reports the currently published extension version.
+See [what changed](#what-changed-in-520) and the [changelog](CHANGELOG.md).
 
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
-| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | 5.0.4, published 20 October 2026 | Copilot Chat extension and packaged toolkit, from [`release/5.0.x`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/release/5.0.x). |
+| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
 | [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3) | v5.0.3 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
-| 5.2.0 candidate | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
+| 5.2.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
 | [Claude Code edition](claude-plugin/) | 5.1.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
@@ -60,7 +60,7 @@ Start with the toolkit installed in your project and a bounded requirement. Arch
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
 
-## What changed in the 5.2.0 candidate
+## What changed in 5.2.0
 
 Reviews now include five mandatory security checks and a disposition for every
 selected BCQuality article: apply it or explain why it does not apply. Agent SDK
@@ -82,9 +82,9 @@ actual per-test results after compilation; without one, execution is `not-run`.
 `ALDC_GATES` and `ALDC_TEST_RUNNER` can override the corresponding settings where
 the host exposes environment variables. These contracts add no host hooks.
 
-The companion VS Code Project Manager candidate is planned to offer an explicit
+The companion VS Code Project Manager offers an explicit
 BCQuality mode selector for existing projects and native VS Code installation
-help. Fresh extension installations are planned to select BCQuality plugin mode.
+help. Fresh extension installations select BCQuality plugin mode.
 The canonical `aldc.yaml` keeps its `external-multiroot` default. Project Manager's
 Human/default and Automatic options map to `autonomy.gates: human` and
 `pre-approved`; Automatic requires prior approval and grants no additional commit
@@ -699,7 +699,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.0 candidate · **Claude Code:** 5.1.1 · **VS Code Marketplace:** 5.0.4
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.0 · **Claude Code:** 5.1.1 · **VS Code Marketplace:** see badge
 
 </div>
 
