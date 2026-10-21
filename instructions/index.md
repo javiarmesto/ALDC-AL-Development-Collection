@@ -12,7 +12,13 @@ Instructions are auto-applied coding guidelines that load when the file you're e
 
 **Naming is infrastructure.** Files must follow the pattern `<ObjectName>.<ObjectType>.al`. A misnamed file silently misses its type-specific instructions. `aldc-validate` enforces the convention.
 
-## Instructions in this framework (8 files)
+## Instructions in this framework (10 contracts)
+
+The inventory is **9 scoped `.instructions.md` files plus the Copilot entrypoint**.
+The eight general AL rules are listed below. The optional BC Agents pack adds
+[`al-agent-toolkit.instructions.md`](al-agent-toolkit.instructions.md), scoped to
+Factory, Metadata, TaskExecution and Setup codeunits. `index.md` and `README.md`
+are documentation and do not count as instruction contracts.
 
 | File | `applyTo` | Purpose |
 |------|-----------|---------|

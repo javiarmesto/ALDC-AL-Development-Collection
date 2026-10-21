@@ -19,6 +19,53 @@ const prompts = new Set(['al-agent.build-instructions', 'al-agent.create',
   'al-agent.instructions', 'al-agent.task', 'al-agent.test', 'al-build',
   'al-context.create', 'al-initialize', 'al-memory.create', 'al-pr-prepare', 'al-spec.create']);
 
+// Chat consumer configuration only. Keep the canonical/terminal template independent.
+// Update bounded scalar lines rather than reserializing the template and its comments.
+function projectConfiguration(sourceText, previousText) {
+  const yaml = require('js-yaml');
+  const object = (value, field) => {
+    if (value == null) return {};
+    if (typeof value !== 'object' || Array.isArray(value)) throw Error(`${field}: expected a mapping`);
+    return value;
+  };
+  const previous = previousText == null ? {} : object(yaml.load(previousText.toString()), 'aldc.yaml');
+  const selected = object(object(previous.external, 'external').bcquality, 'external.bcquality');
+  const plugin = object(selected.plugin, 'external.bcquality.plugin');
+  // An existing file without this key already used the shared external default.
+  const mode = selected.mode ?? (previousText == null ? 'plugin' : 'external-multiroot');
+  const enabled = selected.enabled ?? 'auto';
+  if (!['plugin', 'external-multiroot'].includes(mode)) throw Error('external.bcquality.mode: expected plugin or external-multiroot');
+  if (![true, false, 'auto'].includes(enabled)) throw Error('external.bcquality.enabled: expected boolean or auto');
+  const source = sourceText.toString(), eol = source.includes('\r\n') ? '\r\n' : '\n';
+  const lines = source.replace(/\r\n/g, '\n').split('\n');
+  const external = lines.findIndex(line => /^external:\s*(#.*)?$/.test(line));
+  const start = lines.findIndex((line, i) => i > external && /^  bcquality:\s*(#.*)?$/.test(line));
+  if (external < 0 || start < 0) throw Error('Chat configuration template: external.bcquality block missing');
+  let end = start + 1;
+  while (end < lines.length && (!lines[end].trim() || /^\s*#/.test(lines[end]) || /^ {3}/.test(lines[end]))) end++;
+  const replace = (key, indent, value) => {
+    const index = lines.findIndex((line, i) => i > start && i < end && line.startsWith(`${' '.repeat(indent)}${key}:`));
+    if (index < 0) throw Error(`Chat configuration template: ${key} missing`);
+    const parts = lines[index].match(/^(\s*[\w-]+:[ \t]*)(?:"(?:\\.|[^"\\])*"|'(?:''|[^'])*'|[^#]*?)([ \t]*(?:#.*)?)$/);
+    if (!parts) throw Error(`Chat configuration template: unreadable ${key}`);
+    lines[index] = parts[1] + JSON.stringify(value) + parts[2];
+  };
+  replace('mode', 4, mode);
+  replace('enabled', 4, enabled);
+  for (const key of ['home', 'url', 'ref', 'pinnedCommit', 'entryPoint']) {
+    if (selected[key] === undefined) continue;
+    if (typeof selected[key] !== 'string' || (key !== 'pinnedCommit' && !selected[key].trim()) || /[\r\n\0]/.test(selected[key])) throw Error(`external.bcquality.${key}: expected a single-line string`);
+    replace(key, 4, selected[key]);
+  }
+  for (const key of ['id', 'skill', 'expectedVersion', 'sourceRef']) {
+    const value = plugin[key] ?? (key === 'expectedVersion' ? '' : undefined);
+    if (value === undefined) continue;
+    if (typeof value !== 'string' || /[\r\n\0]/.test(value)) throw Error(`external.bcquality.plugin.${key}: expected a single-line string`);
+    replace(key, 6, value);
+  }
+  return lines.join(eol);
+}
+
 function project(relative, input, profile) {
   const rel = relative.replace(/\\/g, '/');
   if (!/^(agents\/[^/]+\.agent|prompts\/[^/]+\.prompt)\.md$/.test(rel)) return input;
@@ -68,6 +115,20 @@ function project(relative, input, profile) {
     triage ? 'Query AL; request builds/restores from implementation. Optional profiling/snapshot capture belongs here only, after confirming target, permissions and capture window. Stop and collect owned captures.' :
     'Query AL only. Do not compile, build, restore dependencies, rename symbols or start captures. Request implementation/Triage evidence when needed.';
   body = '\n\n' + scope + '\n\nThe Chat contract governs tool availability even when older skills describe broader tools.\nPreserve existing artifact write limits, independent review and human handoff gates.\nAL MCP aliases here are examples: inspect the actual catalog and adapt exact selectors; never broaden them to a whole AL server.\n' + body;
+  if (role === 'al-implement-subagent') {
+    body = body.replace('- If **Library Assert** dependency is missing → add it and run `AL: Download Symbols`', '- Resolve the actual assertion codeunit owner/version/API; change only approved dependencies and restore with the granted tool')
+      .replace('- If **Any** dependency is missing → add it and run `AL: Download Symbols`', '- Resolve Any only when the test uses it; do not add unused test libraries')
+      .replace(/3\. Verify these dependencies exist;[\s\S]*?(?=### Test Object ID Management)/, `3. Identify only the libraries actually referenced by the planned tests. Resolve their owning app ID, publisher, compatible version and codeunit API from the target project's manifests and available symbols.
+4. Propose missing dependencies to the approved implementation owner; restore only approved changes with the available provider. Never copy example IDs or versions into app.json.
+
+### Test Library References
+
+Use the assertion codeunit name and API resolved from this project's symbols. Names can differ between dependency versions; neither Assert nor Library Assert is universally correct. Add Any only when its API is used by the test, and omit unused library variables.
+
+`)
+      .replace(/Assert: Codeunit "Library Assert";/g, 'Assert: Codeunit "<resolved assertion codeunit>";')
+      .replace(/^\s*Any: Codeunit Any;\r?\n/gm, '\n        // Add other library variables only when the test uses their resolved API.\n');
+  }
   if (profile === 'bc29-native') {
     const research = ['al-architect', 'al-spec-agent', 'al-spec.create'].includes(role);
     const creator = ['al-developer', 'al-implement-subagent'].includes(role);
@@ -98,4 +159,4 @@ function project(relative, input, profile) {
   return Buffer.from((front + '\n---' + body).replace(/\n/g, eol));
 }
 
-module.exports = { project, chatModel, lspQueries, queries, writes };
+module.exports = { project, projectConfiguration, chatModel, lspQueries, queries, writes };

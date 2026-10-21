@@ -178,9 +178,9 @@ function ask(question, defaultYes = true) {
 // ─── ALDC Core v1.2 component map ──────────────────────────────────────────
 const COMPONENTS = [
   { name: 'Agents',      src: 'agents',             count: '12 agents (5 public + 3 on-demand + 3 subagents + 1 optional)' },
-  { name: 'Skills',      src: 'skills',             count: '17 skills (8 required + 4 recommended + 5 optional)' },
+  { name: 'Skills',      src: 'skills',             count: '16 skills (8 required + 4 recommended + 4 optional)' },
   { name: 'Prompts',     src: 'prompts',            count: '11 workflows (6 core + 5 agent-builder)' },
-  { name: 'Instructions',src: 'instructions',       count: '9 instruction files (8 auto-applied + copilot entrypoint)' },
+  { name: 'Instructions',src: 'instructions',       count: '10 instruction contracts (9 scoped rules + copilot entrypoint; documentation excluded)' },
   { name: 'Templates',   src: 'docs/templates',     count: '7 contract templates' },
   { name: 'Framework',   src: 'docs/framework',     count: 'spec + docs' },
   { name: 'Doctor',      src: 'tools/context-doctor', count: 'read-only Python environment diagnostics' },
@@ -243,12 +243,17 @@ function plannedFiles({ packageDir, projectDir, targetDir, profile, transform = 
     }
     const relTarget = relative(targetDir) || '.';
     const solution = detectSolution(projectDir);
-    files.set('aldc.yaml', { prior: prior('aldc.yaml'), content: fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8')
+    const previousPath = path.join(projectDir, 'aldc.yaml');
+    const previousConfiguration = fs.existsSync(previousPath) ? fs.readFileSync(previousPath, 'utf8') : undefined;
+    const configuration = require('./chat-profile').projectConfiguration(fs.readFileSync(path.join(packageDir, 'aldc.yaml'), 'utf8'), previousConfiguration);
+    files.set('aldc.yaml', { prior: prior('aldc.yaml'), content: configuration
       .replace(/^toolkitRoot:\s*"\."/m, `toolkitRoot: ${JSON.stringify(relTarget)}`)
       .replace(/^(\s{4}application:)\s*""/m, `$1 ${JSON.stringify(solution.application)}`)
       .replace(/^(\s{4}test:)\s*""/m, `$1 ${JSON.stringify(solution.test)}`) });
     // The developer's multi-root definition: written when absent, never replaced.
-    files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, '../bcquality'), seed: true, prior: prior('aldc.code-workspace') });
+    const bcquality = require('js-yaml').load(configuration).external.bcquality;
+    const bcqualityHome = bcquality.mode === 'external-multiroot' && bcquality.enabled !== false ? bcquality.home : null;
+    files.set('aldc.code-workspace', { content: workspaceSeed(projectDir, solution, bcqualityHome), seed: true, prior: prior('aldc.code-workspace') });
     files.set(relative(markerPath), { prior: prior(relative(markerPath)), content: JSON.stringify({ profile, surface: 'copilot-chat-vscode', version: packageVersion(packageDir) }, null, 2) + '\n' });
   return files;
 }
@@ -564,9 +569,9 @@ function workspaceSeed(projectDir, solution, bcqualityHome) {
     '  // existed at installation. ALDC never rewrites this file: adjust it freely.',
     '  // The declared layout lives in aldc.yaml under `solution.roots`.',
     '  //',
-    '  // The BCQuality root has no app.json, so the AL compiler never builds it and its',
+    ...(bcqualityHome ? ['  // The BCQuality root has no app.json, so the AL compiler never builds it and its',
     '  // example objects cannot reach your extension. Run tools/bcquality/install.sh',
-    '  // (install.ps1 on Windows) if that root shows as missing.',
+    '  // (install.ps1 on Windows) if that root shows as missing.'] : []),
     '  "folders": ' + JSON.stringify(folders, null, 2).split('\n').join('\n  ') + ',',
     '  "settings": {',
     '    "git.detectSubmodules": false',

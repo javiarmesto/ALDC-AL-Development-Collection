@@ -19,7 +19,11 @@ Instructions work **automatically** - no activation needed. When you:
 - Type code → Copilot applies these guidelines in real-time
 - Ask for help → Context from relevant instructions is available
 
-## 📦 Available Instructions (9 files)
+## 📦 Available Instructions (10 contracts)
+
+The current source inventory contains nine scoped `.instructions.md` files
+(eight general AL rules and the optional agent SDK rule), plus the Copilot
+entrypoint. Documentation indexes and README files are excluded.
 
 ### Always Active (apply to `**/*.al`)
 
@@ -28,22 +32,23 @@ Instructions work **automatically** - no activation needed. When you:
 | **al-guidelines.instructions.md** | Master hub and integration guide | References all other instructions, AL development philosophy |
 | **al-code-style.instructions.md** | Code formatting & organization | Feature-based structure, PascalCase, 120 char lines |
 | **al-naming-conventions.instructions.md** | Naming standards | PascalCase for all, 26-char table limits, Codeunit suffixes |
-| **al-performance.instructions.md** | Performance optimization | SetLoadFields, early filtering, temporary tables |
+| **al-security.instructions.md** | Security review | Least privilege, SecretText, secure events and outbound calls |
 
 ### Context-Triggered (specific patterns)
 
 | File | Apply Pattern | Purpose |
 |------|---------------|---------|
-| **al-error-handling.instructions.md** | `**/*.al` | TryFunctions, error labels, telemetry patterns |
-| **al-events.instructions.md** | `**/*.al` | Event publishers/subscribers, IntegrationEvent patterns |
-| **al-testing.instructions.md** | `**/*.al`, `**/test/**` | AL-Go test structure, test codeunits, scenarios |
+| **al-performance.instructions.md** | `**/*.Codeunit.al`, `**/*.Query.al` | SetLoadFields, early filtering, temporary tables |
+| **al-error-handling.instructions.md** | `**/*.Codeunit.al` | TryFunctions, error labels, telemetry only when requested |
+| **al-events.instructions.md** | `**/*.Codeunit.al` | Event publishers/subscribers, standard publisher flow |
+| **al-testing.instructions.md** | `**/test/**/*.al` | Tests when requested, test codeunits, scenarios |
+| **al-agent-toolkit.instructions.md** (optional) | Factory, Metadata, TaskExecution and Setup codeunits | Agent SDK completeness and contracts |
 
 ### Integration & Reference
 
 | File | Purpose |
 |------|---------|
 | **copilot-instructions.md** | Master integration guide for GitHub Copilot with all primitives |
-| **complete-development-flow.instructions.md** | Visual workflow guide with Mermaid diagrams |
 
 ## 🏗️ Architecture Patterns
 
@@ -119,5 +124,5 @@ Run `npm run validate` to verify:
 **Framework Compliance**: These instructions implement **AI Native-Instructions Architecture** - Layer 2 (Agent Primitives) using Layer 1 (Markdown Prompt Engineering) and Layer 3 (Context Engineering) principles.
 
 **Version**: 2.8.0
-**Total Instructions**: 9
+**Total Instruction Contracts**: 10 (9 scoped rules plus the Copilot entrypoint; documentation excluded)
 **Last Updated**: 2025-11-25

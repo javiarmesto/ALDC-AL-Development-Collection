@@ -8,6 +8,7 @@ const { runPython } = require('./test-runtime');
 const tx = require('./install-transaction');
 const { initialize } = require('./init-plugin');
 const { verify } = require('./package-provenance');
+const yaml = require('js-yaml');
 const root = path.resolve(__dirname,'..');
 const temp = t => { const p=fs.mkdtempSync(path.join(os.tmpdir(),'aldc update á ')); t.after(()=>fs.rmSync(p,{recursive:true,force:true}));return p; };
 const write=(r,p,b)=>{fs.mkdirSync(path.dirname(path.join(r,p)),{recursive:true});fs.writeFileSync(path.join(r,p),b);};
@@ -199,7 +200,7 @@ test('the solution anchor is detected, the workspace is seeded once and the mark
  write(r,'test/app.json','{"application":"28.0.0.0","runtime":"18.0"}');
  assert.equal(run(['install','--yes']).status,0);
  const strip=text=>text.replace(/^\s*\/\/.*$/gm,'');
- assert.deepEqual(JSON.parse(strip(read(r,'aldc.code-workspace'))).folders.map(f=>f.path),['.','src','test','../bcquality']);
+ assert.deepEqual(JSON.parse(strip(read(r,'aldc.code-workspace'))).folders.map(f=>f.path),['.','src','test']);
  assert.match(read(r,'aldc.yaml'),/application: "src"/);assert.match(read(r,'aldc.yaml'),/test: "test"/);
  assert.equal(JSON.parse(read(r,'.github/aldc-profile.json')).version,version);
  const status=JSON.parse(run(['status','--json']).stdout);
@@ -216,10 +217,68 @@ test('a solution without app or test folders seeds only the roots that exist',t=
  const r=temp(t);
  const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
  assert.equal(run(['install','--yes']).status,0);
- assert.deepEqual(JSON.parse(read(r,'aldc.code-workspace').replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),['.','../bcquality']);
+ assert.deepEqual(JSON.parse(read(r,'aldc.code-workspace').replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),['.']);
  assert.match(read(r,'aldc.yaml'),/application: ""/);
  assert.equal(fs.existsSync(path.join(r,'src')),false,'no folder is ever created');
 });
+for (const scenario of [
+ { name:'fresh packaged plugin mode', packaged:'plugin', folders:['.'] },
+ { name:'project plugin overrides packaged external mode', packaged:'external-multiroot', project:'  bcquality:\n    mode: "plugin"\n', folders:['.'] },
+ { name:'project external mode and home override packaged plugin mode', packaged:'plugin', project:'  bcquality:\n    mode: "external-multiroot"\n    home: "../project knowledge" # chosen corpus\n', folders:['.','../project knowledge'] },
+ { name:'disabled external mode omits the corpus', packaged:'external-multiroot', project:'  bcquality:\n    enabled: false\n', folders:['.'] },
+ { name:'project external mode uses the packaged home when not overridden', packaged:'external-multiroot', project:'  bcquality:\n    mode: "external-multiroot"\n', folders:['.','../packaged knowledge'] },
+ { name:'project without BCQuality keys keeps its effective external mode', packaged:'plugin', project:'', folders:['.','../packaged knowledge'] },
+]) for(const profile of ['bc28','bc29-native']) test(`BCQuality workspace seed: ${scenario.name} (${profile})`,t=>{
+ const r=temp(t),payload=path.join(r,'payload'),project=path.join(r,'project');
+ fs.mkdirSync(project);
+ // A small real package exercises the same configuration projection as the VSIX.
+ for(const rel of ['agents','prompts','instructions','package.json','.github/copilot-instructions.md',
+  'docs/templates/memory-template.md','docs/framework/native-al-tools.md','docs/framework/copilot-chat-al-tooling.md']){
+  fs.mkdirSync(path.dirname(path.join(payload,rel)),{recursive:true});
+  fs.cpSync(path.join(root,rel),path.join(payload,rel),{recursive:true});
+ }
+ const configuration=read(root,'aldc.yaml').replace('mode: "external-multiroot"',`mode: "${scenario.packaged}"`)
+  .replace('home: "../bcquality"','home: "../packaged knowledge"');
+ write(payload,'aldc.yaml',configuration);
+ if(scenario.project!==undefined)write(project,'aldc.yaml',`core:\n  version: "1.2.0"\nexternal:\n${scenario.project}`);
+ const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--profile',profile,...args],
+  {cwd:project,encoding:'utf8',env:{...process.env,ALDC_PACKAGE_DIR:payload}});
+ const installed=run(['--json']);assert.equal(installed.status,0,installed.stdout+installed.stderr);
+ const workspace=read(project,'aldc.code-workspace');
+ assert.deepEqual(JSON.parse(workspace.replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),scenario.folders);
+ if(scenario.project===undefined){
+  const provider=yaml.load(read(project,'aldc.yaml')).external.bcquality;
+  assert.equal(provider.mode,'plugin');assert.equal(provider.enabled,'auto');assert.equal(provider.plugin.expectedVersion,'');
+ }
+ if(scenario.folders.length===1)assert.ok(!workspace.includes('tools/bcquality/install'),'plugin/disabled mode gives no external-corpus installation advice');
+ write(project,'aldc.code-workspace','{"folders":[{"name":"owned","path":"."}]}');
+ assert.equal(run(['--force']).status,0);
+ assert.equal(read(project,'aldc.code-workspace'),'{"folders":[{"name":"owned","path":"."}]}');
+});
+
+for(const profile of ['bc28','bc29-native']) test(`Chat configuration upgrade preserves the tracked provider and updates contracts (${profile})`,t=>{
+ const project=temp(t);
+ const prior=read(root,'aldc.yaml').replace(/\r\n/g,'\n')
+  .replace(/^autonomy:\n(?: +[^\n]*\n)+/m,'').replace(/^testing:\n(?: +[^\n]*\n)+/m,'')
+  .replace('    - "instructions/al-security.instructions.md"\n','');
+ assert.equal(yaml.load(prior).autonomy,undefined);assert.equal(yaml.load(prior).testing,undefined);
+ tx.apply({root:project,surface:'chat',files:new Map([['aldc.yaml',{content:prior}]])});
+ const run=()=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json','--profile',profile],{cwd:project,encoding:'utf8'});
+ const installed=run();assert.equal(installed.status,0,installed.stdout+installed.stderr);
+ const report=JSON.parse(installed.stdout),updated=yaml.load(read(project,'aldc.yaml'));
+ assert.equal(report.files.find(f=>f.path==='aldc.yaml').action,'replace','an uncustomized tracked configuration receives the new contracts');
+ assert.equal(updated.external.bcquality.mode,'external-multiroot');
+ assert.equal(updated.external.bcquality.enabled,'auto');
+ assert.deepEqual(updated.external.bcquality,yaml.load(prior).external.bcquality);
+ assert.ok(updated.autonomy&&updated.testing&&updated.required.instructions.includes('instructions/al-security.instructions.md'));
+ assert.deepEqual(JSON.parse(read(project,'aldc.code-workspace').replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),['.','../bcquality']);
+ const custom=read(project,'aldc.yaml').replace('gates: "human"','gates: "pre-approved"')+'\n# project-owned preference\n';
+ write(project,'aldc.yaml',custom);
+ const again=run();assert.equal(again.status,0,again.stdout+again.stderr);
+ assert.equal(JSON.parse(again.stdout).files.find(f=>f.path==='aldc.yaml').action,'collision');
+ assert.equal(read(project,'aldc.yaml'),custom,'customized configuration remains protected by transaction policy');
+});
+
 test('an AL-Go solution named after its app is read the same way by the installer and by Doctor',t=>{
  const r=temp(t);
  const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
@@ -232,7 +291,7 @@ test('an AL-Go solution named after its app is read the same way by the installe
  assert.match(read(r,'aldc.yaml'),/application: "MiExtension"/);
  assert.match(read(r,'aldc.yaml'),/test: "MiExtension\.Test"/);
  assert.deepEqual(JSON.parse(read(r,'aldc.code-workspace').replace(/^\s*\/\/.*$/gm,'')).folders.map(f=>f.path),
-  ['.','MiExtension','MiExtension.Test','../bcquality']);
+  ['.','MiExtension','MiExtension.Test']);
  // Doctor walks the same solution. A layout the installer declares and Doctor cannot see is the bug.
  const doctorScript=JSON.parse(run(['status','--json']).stdout).doctorScript;
  assert.ok(doctorScript,'the installed toolkit ships Doctor');

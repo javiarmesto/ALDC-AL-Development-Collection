@@ -12,7 +12,9 @@ const npmCli = process.env.npm_execpath;
 if (!npmCli) throw new Error('Run through npm run test:package');
 function npm(args, cwd) {
   const result = spawnSync(process.execPath, [npmCli, ...args], {
-    cwd, encoding: 'utf8', timeout: 120000, maxBuffer: 10 * 1024 * 1024,
+    // Bound the full archive suite, including both-profile installation/migration
+    // fixtures, while allowing Windows transaction tests to finish and release files.
+    cwd, encoding: 'utf8', timeout: 300000, maxBuffer: 10 * 1024 * 1024,
     env: { ...process.env, npm_config_offline: 'true', npm_config_audit: 'false', npm_config_fund: 'false' },
   });
   if (result.status !== 0) throw new Error(`npm ${args.join(' ')} failed: ${result.error || ''}\n${result.stdout}\n${result.stderr}`);

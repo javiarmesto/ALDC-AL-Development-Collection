@@ -3,7 +3,7 @@ const assert = require('assert').strict;
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { project, chatModel } = require('./chat-profile');
+const { project, projectConfiguration, chatModel } = require('./chat-profile');
 const root = path.resolve(__dirname, '..');
 const queries = ['al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies'];
 let count = 0;
@@ -43,6 +43,17 @@ for (const profile of ['bc28', 'bc29-native']) {
       if (none) assert.ok(!tools.some(t => /^(al\/|bc-|SShadowSdk|ms-dynamics-smb)/.test(t)), rel);
       assert.ok(text.includes(`Profile: **${profile}**`), rel);
       assert.ok(text.includes('../docs/framework/copilot-chat-al-tooling.md'), rel);
+      if (role === 'al-implement-subagent') {
+        const context = `${profile}/${rel}`;
+        assert.ok(!text.includes('24.0.0.0'), `${context}: no fixed test dependency version`);
+        assert.ok(!text.includes('if missing, **ADD them**'), `${context}: no unconditional dependency changes`);
+        assert.ok(!/^\s*Any: Codeunit Any;/m.test(text), `${context}: no unused Any variable`);
+        assert.ok(!text.includes('Assert: Codeunit "Library Assert";'), `${context}: no assumed assertion codeunit`);
+        assert.ok(text.includes('owning app ID, publisher, compatible version and codeunit API from the target project\'s manifests and available symbols'), `${context}: resolve the actual dependency contract`);
+        assert.ok(text.includes('restore only approved changes') && text.includes('Never copy example IDs or versions into app.json'), `${context}: approval before changing dependencies`);
+        assert.ok(text.includes('Add Any only when its API is used by the test') && text.includes('Assert: Codeunit "<resolved assertion codeunit>";'), `${context}: templates use resolved libraries only`);
+        assert.ok(text.includes('### Test Object ID Management'), `${context}: preserve the following implementation guidance`);
+      }
       if (role === 'al-build') assert.ok(text.includes('Stop after build/package') && text.includes('human gate'));
       if (profile === 'bc29-native') {
         if (creator) assert.ok(text.includes('IDs are not reserved') && text.includes('never use nextOutOfRangeId') && text.includes('rangeStart=rangeEnd=approved ID'), `${rel}: safe allocation preserves approved IDs`);
@@ -61,6 +72,28 @@ for (const profile of ['bc28', 'bc29-native']) {
   }
 }
 assert.equal(chatModel, 'Claude Sonnet 5.5 (copilot)', 'Confirmed local model ID');
+assert.equal(typeof projectConfiguration, 'function', 'Chat configuration has an explicit projection');
+{
+  const canonical = fs.readFileSync(path.join(root, 'aldc.yaml'), 'utf8');
+  const fresh = projectConfiguration(canonical);
+  const config = yaml.load(fresh);
+  assert.equal(yaml.load(canonical).external.bcquality.mode, 'external-multiroot', 'raw canonical default stays independent');
+  assert.equal(config.external.bcquality.mode, 'plugin', 'fresh Chat uses plugin mode');
+  assert.equal(config.external.bcquality.enabled, 'auto');
+  assert.equal(config.external.bcquality.plugin.expectedVersion, '', 'fresh Chat has no fixed plugin version pin');
+  assert.ok(fresh.includes('# Select once per host/configuration;'), 'template comments survive projection');
+  for (const previous of ['', 'core:\n  version: "1.2.0"\n', 'external:\n  bcquality:\n    enabled: false\n']) {
+    const existing = yaml.load(projectConfiguration(canonical, previous)).external.bcquality;
+    assert.equal(existing.mode, 'external-multiroot', 'a prior configuration keeps the existing effective mode even without an explicit key');
+    assert.equal(existing.enabled, previous.includes('enabled: false') ? false : 'auto');
+  }
+  const previous = canonical.replace('enabled: "auto"', 'enabled: false').replace('home: "../bcquality"', 'home: "../chosen corpus"')
+    .replace('url: "https://github.com/microsoft/BCQuality.git"', 'url: "https://example.org/chosen-corpus.git"').replace('ref: "main"', 'ref: "approved-corpus"')
+    .replace('id: "bcquality"', 'id: "chosen-bcquality"').replace('skill: "al-code-review"', 'skill: "chosen-review"');
+  const upgraded = yaml.load(projectConfiguration(canonical, previous));
+  assert.deepEqual(upgraded.external.bcquality, yaml.load(previous).external.bcquality, 'existing provider selection and identity survive');
+  assert.ok(upgraded.autonomy && upgraded.testing && upgraded.required.instructions.includes('instructions/al-security.instructions.md'), 'updated contract configuration still ships');
+}
 for (const profile of ['bc28', 'bc29-native']) {
   for (const eol of ['\n', '\r\n']) {
     const source = fs.readFileSync(path.join(root, 'agents/al-architect.agent.md'), 'utf8').replace(/\r\n/g, '\n');

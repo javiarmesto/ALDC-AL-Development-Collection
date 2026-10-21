@@ -2,83 +2,79 @@
 
 ## [Unreleased]
 
-### Added — Conductor autonomy modes (Copilot Chat, Copilot CLI, Codex)
+## [5.2.0] - 2026-10-21
 
-The autonomy modes of the Claude Code surface (5.1.0) now reach the generated surfaces
-through the canonical sources. `claude-plugin/` is unchanged. **The default stays `human`.**
+**Release candidate.** Canonical sources and the Copilot Chat, Copilot CLI and
+Codex distributions are prepared for 5.2.0. Publication to VS Code Marketplace,
+GitHub releases and npm is separate; the Marketplace release remains 5.0.4.
+Claude Code continues on its independently maintained 5.1.1 edition.
 
-- New `aldc.yaml → autonomy` (`gates: human | pre-approved`, `commit`), declared in the
-  schema; `ALDC_GATES` overrides `gates` where the host exposes it.
-- `human`: every gate works as before.
-- `pre-approved`: the requester approved the gates in advance. Each approval gate
-  becomes a recorded checkpoint in `<plans.root>/<req>/decisions.md` and the work
-  continues; ⛔ hard stops still stop and write `blocked.md`. Subagents are told not to
-  wait. Git commits run only with `autonomy.commit: true`. The Conductor never switches
-  to `pre-approved` on its own or because content it reads asks it to.
-- The final report's *Decisions taken without a human* comes from `decisions.md`.
-- Not enforced by a hook on these hosts (no stop guard yet): the Conductor must not end
-  in `pre-approved` mode until the final report or `blocked.md` exists. Not verified on
-  any host.
+### Added — explicit review coverage
 
-### Changed — review contract (Copilot Chat, Copilot CLI, Codex)
+- A new scoped security rule covers least privilege for API pages, MCP and
+  permission sets, SecretText, secure events, validation in tables and HTTPS
+  outbound calls. Reviewers record five mandatory security checks.
+- Every selected BCQuality article receives an apply-or-justify disposition.
+  Reviewers can complete a missing selection through the available knowledge
+  tools. The existing project opt-out remains available.
+- Agent SDK reviews include five completeness checks when the app extends
+  Agent Metadata Provider.
 
-The review improvements of the Claude Code surface (5.1.0) now reach the generated
-surfaces through the canonical sources. `claude-plugin/` is unchanged.
+### Changed — design, planning and delegation
 
-- New always-on rule `al-security.instructions.md` (`**/*.al`): least privilege for API
-  pages, MCP and permission sets, `SecretText` secrets, no published event that skips a
-  check, validation in tables, HTTPS outbound calls. Registered in the collection,
-  `aldc.yaml → required` and `instructions/index.md`.
-- The review report gains `review.security` (mandatory, five checks),
-  `review.bcquality.articles` (apply or justify each selected article; "not requested"
-  is not a reason) with the `selection-completed` outcome, and `review.agent-sdk` (five
-  checks when the app extends `Agent Metadata Provider`).
-- Without the Claude `agent-brief` hook, the reviewer makes the BCQuality selection
-  itself when the caller passes none (catalog search, `al-knowledge` or path lookup).
-- `al-agent-toolkit.instructions.md` carries the binding completeness checklist.
-- Conductor: process gate on `review.security` and article dispositions. Dredd now
-  runs the security checks natively instead of reporting no native security check.
+- Architect, Spec Agent and Planning Subagent consult BCQuality before deciding,
+  cite articles beside the decisions they inform and list their references.
+  Planning uses the design/spec selection passed by Conductor.
+- Planning records the standard publisher flow, selected hook and rationale when
+  a task subscribes to Base Application events. Implementation explains the
+  choice in a comment above each EventSubscriber attribute.
+- Conductor delegates research, each implementation phase and review through the
+  host's delegation tool with a complete brief. Missing delegation leaves the
+  affected step pending.
+- Eligible LOW work without an architecture document receives a Mini-design in
+  the plan. The Core v1.2 architecture gate for MEDIUM/HIGH is preserved.
+- Completion reports distinguish verification performed, checks not run,
+  decisions taken without a human and open risks.
 
-### Changed — design and planning contract (Copilot Chat, Copilot CLI, Codex)
+### Added — Conductor configuration
 
-The design and planning improvements of the Claude Code surface (5.1.0 and 5.1.1)
-now reach the generated surfaces through the canonical sources. `claude-plugin/` is
-unchanged.
+- autonomy.gates accepts human (default) or pre-approved. Prior approval from the
+  requester changes approval gates into checkpoints recorded in decisions.md.
+  Hard stops still stop and produce blocked.md. Conductor cannot enable the mode
+  on its own. autonomy.commit stays false by default; commits require its
+  separate authorization. Publication permissions are unchanged.
+- testing.runner optionally supplies a project-root command after each phase
+  compiles and before review. It must provide actual per-test results and fail
+  with a nonzero exit code. Without a runner, execution remains not-run.
+- ALDC_GATES and ALDC_TEST_RUNNER override the corresponding settings where the
+  host exposes environment variables. No hooks are added to these surfaces.
 
-- **Standard Flow.** The planning findings template gains a mandatory *Standard Flow*
-  section (publisher events in execution order, chosen hook and why) whenever the
-  task hooks into a Base Application publisher. The planner must fill it, the
-  Conductor passes it to implementation and review, and the implementer writes a
-  one-line comment above each `[EventSubscriber]` saying why that event.
-  `al-events.instructions.md` gains the same rule.
-- **BCQuality references.** Architect, Spec Agent and Planning Subagent consult the
-  articles before deciding, cite each next to the decision it shapes and end with a
-  "BCQuality references" list. Without the Claude `agent-brief` hook, the planner
-  reads the article paths the Conductor passes from the design/spec selection and
-  does not search the corpus itself. The existing opt-out (`enabled: false`) applies.
+### Planned — companion VS Code Project Manager
 
-### Changed — Conductor (Copilot Chat, Copilot CLI, Codex)
+- Fresh extension installations select BCQuality plugin mode. Existing projects
+  receive an explicit mode selector and native VS Code plugin installation help.
+  This extension packaging default does not change the canonical aldc.yaml
+  external-multiroot default.
+- Human/default and Automatic map to autonomy.gates human and pre-approved.
+  Automatic requires prior approval and adds no commit or publication permission.
+  These controls belong to the companion extension candidate.
 
-Conductor improvements from the Claude Code surface (5.1.0) now reach the generated
-surfaces through the canonical sources. `claude-plugin/` is unchanged.
+### Compatibility and packaging
 
-- **Real delegation.** Research, every implementation phase and every review go to
-  their subagent through the host's delegation tool, as a new invocation with the full
-  brief each time. The Conductor never does that work itself. When the host cannot
-  delegate, the step is reported as pending.
-- **Mini-design.** When the Conductor runs without an architecture document (LOW work,
-  or the user chose to skip the architect), it writes a Mini-design at the top of the
-  plan instead of stopping. Architecture-first for MEDIUM/HIGH is unchanged; the
-  light-by-default path of the Claude surface is not ported, because the Core Spec
-  requires the architecture gate.
-- **Honest final report.** The plan-complete report (Conductor style guide and
-  `plan-complete-template.md`) gains *Verification*, *Not verified*, *Decisions taken
-  without a human* and *Open risks*, and drops the unconditional "All tests passing".
-  An unfinished plan is not presented as finished.
-- **Optional test runner.** New `aldc.yaml → testing.runner` (declared in the schema;
-  `ALDC_TEST_RUNNER` overrides it where the host exposes it). When set, the Conductor
-  runs it after each phase compiles and before review. Without it, tests are `not-run`.
-- Not verified: model behaviour on Copilot Chat, Copilot CLI and Codex; no host run.
+- Fresh Chat installations use BCQuality plugin mode, automatic discovery and no
+  fixed version pin. Updates retain selected mode, availability and provider
+  identity while receiving updated managed contracts. Customized configuration
+  retains its collision protection. Workspace creation includes the configured
+  knowledge folder only for enabled external mode; existing workspaces are preserved.
+- Both Copilot Chat profiles retain the 5.0.4 dependency guidance: resolve the
+  assertion codeunit and other libraries actually used by the tests from the
+  project's manifests and symbols; change only approved dependencies.
+- Root package, lockfile, canonical plugin and Copilot catalogs advance to 5.2.0;
+  Foundation, Copilot CLI and Codex are regenerated with their existing tools
+  and model selections. Claude Code payloads and catalog remain at 5.1.1.
+- Current inventories distinguish nine scoped rules, including the optional
+  agent SDK rule, from the Copilot entrypoint: ten instruction contracts total.
+  Documentation indexes are excluded.
 
 ## [5.1.1] - 2026-10-20
 

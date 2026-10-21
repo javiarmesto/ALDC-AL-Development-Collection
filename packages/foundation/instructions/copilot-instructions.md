@@ -4,7 +4,7 @@
 
 ## Overview
 
-This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.2** skills-based architecture. The installed distribution contains **12 agents (including 3 subagents), 16 skills, 11 prompts and 8 scoped instructions**; required and optional components are defined in `aldc.yaml`.
+This workspace contains AL (Application Language) code for Microsoft Dynamics 365 Business Central. It uses the **ALDC Core v1.2** skills-based architecture. The installed distribution contains **12 agents (including 3 subagents), 16 skills, 11 prompts and 9 scoped instructions**; with the entrypoint, there are **10 instruction contracts**. Required and optional components are defined in `aldc.yaml`; documentation indexes are excluded from the counts.
 
 ## Core Principles
 
@@ -93,7 +93,7 @@ This traceability chain ensures every skill application is auditable end-to-end.
 
 ## Auto-Applied Instructions
 
-Each instruction loads automatically when the file you're editing matches its `applyTo` glob. There is no semantic activation — only glob matching. The framework ships **8 scoped instructions**: the 7 core rules below plus the optional `al-agent-toolkit.instructions.md`. Narrow globs are deliberate: editing a Table or Page no longer drags codeunit-only rules into the prompt.
+Each instruction loads automatically when the file you're editing matches its `applyTo` glob. There is no semantic activation — only glob matching. The framework ships **9 scoped instructions**: the 8 general AL rules below plus the optional `al-agent-toolkit.instructions.md` for Factory, Metadata, TaskExecution and Setup codeunits. With the Copilot entrypoint, that is **10 instruction contracts**; `index.md` and `README.md` are documentation. Narrow globs are deliberate: editing a Table or Page no longer drags codeunit-only rules into the prompt.
 
 | File | `applyTo` | What it enforces |
 |------|-----------|------------------|
@@ -104,6 +104,7 @@ Each instruction loads automatically when the file you're editing matches its `a
 | `al-error-handling.instructions.md`     | `**/*.Codeunit.al`                     | TryFunctions, mandatory `Label`, telemetry only when explicitly requested |
 | `al-events.instructions.md`             | `**/*.Codeunit.al`                     | Never modify base objects, subscribers `local` with exact signature, no `Commit` in subscribers |
 | `al-testing.instructions.md`            | `**/test/**/*.al`                      | Tests only when asked, Given/When/Then, standard libraries |
+| `al-security.instructions.md`           | `**/*.al`                             | Least privilege, `SecretText`, validation in tables, secure events and outbound calls |
 
 > `copilot-instructions.md` and `instructions/index.md` are **not** instructions in this sense — they have no `applyTo`. `copilot-instructions.md` is the always-on entrypoint; `index.md` is documentation.
 
@@ -335,7 +336,7 @@ Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Dev
 **Version**: 1.2.0
 **Last Updated**: 2026-05-18
 **Workspace**: AL Development for Business Central
-**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 8 scoped instructions; 6 core workflows
+**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 9 scoped instructions + Copilot entrypoint; 6 core workflows
 
 ## Optional BCQuality provider
 
