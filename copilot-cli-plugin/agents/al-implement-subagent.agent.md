@@ -114,6 +114,7 @@ Before writing any test code:
 - Follow extension-only patterns (TableExtension, PageExtension, etc.)
 - Apply AL performance patterns (SetLoadFields, early filtering)
 - Use event-driven architecture (subscribers/publishers)
+- Above every `[EventSubscriber]` to a standard publisher, write a one-line comment saying why that event is the right point in the standard flow (use the plan's *Standard Flow* section; if it is missing, inspect the publisher's events first)
 
 ### Step 5: Verify Build Compiles
 - Check for 0 compilation errors

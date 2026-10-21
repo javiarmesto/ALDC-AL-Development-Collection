@@ -65,6 +65,9 @@ Resolve the objective, acceptance criteria and current files/diff yourself; read
 approved architecture/spec only where present and relevant. Do not demand a Conductor
 plan for a direct task. Obtain current build/test evidence from the implementation
 owner; static scope does not certify compilation or execution.
+Whatever the provider covered, fill `review.security` against `al-security.instructions.md`.
+No Conductor passes you a BCQuality selection: make it yourself as the pipeline says and
+give every selected article a disposition in `review.bcquality.articles`.
 
 Return [the Review-Report JSON](.agents/skills/aldc/references/templates/review-report-contract.md), with
 `skill.id: al-developer-reviewer` and `review.phase: {plan: "direct", number: 0}`.

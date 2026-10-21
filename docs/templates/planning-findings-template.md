@@ -19,6 +19,14 @@ Use this template verbatim when the AL Planning Subagent returns research findin
 - **Publishers to Call**: {integration events to fire, if any}
 - **Pattern**: {short rationale, e.g. "OnBefore for validation, OnAfter for integration"}
 
+### Standard Flow (mandatory when the task hooks into a standard publisher)
+
+For each Base Application publisher the feature will subscribe to or depend on:
+- **Publisher**: {object} — **events in execution order**: {OnBefore… → standard step → OnAfter…}, read from its symbols or source (`al-symbols-mcp` / `al_search_object_members`), not from memory.
+- **Chosen hook**: {event} — **why**: {what the standard flow has already computed or changed at that point (amounts, discounts, status, inserts, posting) and why an earlier or later event would be wrong}.
+- **Not verified**: {anything you could not read; the implementer must check it}.
+Write "Not applicable: no standard publisher involved" when that is the case.
+
 ### AL-Go Structure
 
 - **App Project**: {path and `app.json` dependencies}
@@ -76,6 +84,11 @@ Use this template verbatim when the AL Planning Subagent returns research findin
 ### Uncertainties (optional)
 
 - ❓ {Anything you could not confirm — flag clearly, do not invent}
+
+### BCQuality references (when articles were opened)
+
+- {exact article path} — {the finding or recommendation it informed}
+Write "None opened" when no BCQuality article was read; never list an article you did not open.
 ```
 
 ---

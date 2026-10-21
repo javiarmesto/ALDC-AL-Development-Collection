@@ -131,7 +131,11 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
    - Identify relevant AL objects (Tables, Pages, Codeunits, etc.)
    - Understand event architecture and extension patterns
    - Check AL-Go structure (`app/` vs `test/` projects)
+   - Fill the *Standard Flow* section for every Base Application publisher the task hooks into
+   - Read the BCQuality articles you pass (the paths in the architecture/spec `<req>.bcq-selection.json`, when it exists and BCQuality is enabled) and list them under *BCQuality references*
    - Return structured findings (NOT write plans)
+
+   > **Standard flow travels with the work.** Pass the findings' *Standard Flow* section to every implementation phase that touches those publishers, and to the reviewer. If the planner returned no Standard Flow and the plan hooks into a standard publisher, send the planner back for that section before implementing.
 
    > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
 
@@ -188,11 +192,11 @@ Invoke **AL Implementation Subagent** (💻) via `task` with:
 - Phase number and objective
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the spec section for this phase's objects, the architecture decisions it must honor, and the test-plan tests scoped to it — not bare file references. Include the file paths as the escape hatch.
 - AL objects to create/modify (TableExtension, Codeunit, Page, etc.)
-- Event subscribers/publishers needed
+- Event subscribers/publishers needed, with the planning findings' *Standard Flow* entries for those publishers
 - Test requirements following AL-Go structure (`test/` project)
 - AL-specific patterns (SetLoadFields, error handling, naming ≤26 chars)
 - Explicit TDD instruction: tests first (failing), minimal code, tests pass, lint/format
-- **The 7 always-on instruction micro-rules inline** + **domain skill hints** for this phase (per §"Passing Context to Subagents" — the subagent loads the `SKILL.md` on demand, not you)
+- **The 8 always-on instruction micro-rules inline** (including `al-security`) + **domain skill hints** for this phase (per §"Passing Context to Subagents" — the subagent loads the `SKILL.md` on demand, not you)
 - Instruction: work autonomously, only ask user on critical implementation decisions
 - **NOT** to proceed to next phase or write completion files (you handle this)
 - **RETURN** structured summary: objects created, **event subscribers (exact base object + event name + signature)**, tests created, build status, issues, and the **symbolic skills line** (`📐 instr ✓ · 🧠 skill-x·tag`)
@@ -217,6 +221,7 @@ Invoke **AL Code Review Subagent** (✅) via `task` with:
   - AL-Go structure compliance
   - Performance patterns (SetLoadFields, early filtering)
   - Error handling
+  - Security (`al-security.instructions.md`, reported in `review.security`)
   - Spec + architecture compliance
 
 Review validates: spec compliance, architecture compliance, naming conventions, test coverage, performance patterns, extension-only compliance.
@@ -232,6 +237,12 @@ become approval from zero findings. Route missing review work to the reviewer,
 missing build/test evidence to its authorized owner, and code findings to the
 implementer. Do not send an empty code-correction loop for a provider limitation.
 Keep the human gate pending when the required evidence cannot be obtained.
+
+**Process gate on the review.** A phase does not close while `review.security` is missing,
+while an article of the BCQuality selection has no entry in `review.bcquality.articles`, or
+while an article is `dismissed` with "not requested", "out of scope" or "future work" as its
+reason. Re-invoke the reviewer once for just the missing part. If it is still missing,
+record it in the phase-complete file as an open process gap; do not invent the result.
 
 **Gate on the JSON (defense in depth — Q4):**
 1. Parse the `### Review-Report (JSON)` block; read `findings[]`, `outcome` and `review.verdict`.
@@ -713,7 +724,7 @@ Instead, **pass phase-relevant excerpts inline** in the `task` instruction:
 - **Architecture decisions** — only the decisions/constraints this phase must honor (e.g. "use CalcSums, not a FlowField"; "publish IntegrationEvent X"), not the full document.
 - **Test-plan excerpt** — only the tests scoped to this phase.
 - **Memory** — only the cross-session decisions that bear on this phase.
-- **The 7 always-on instruction micro-rules** (`${PLUGIN_ROOT}/rules-templates/al-*.instructions.md`) — read them **once** at run start and pass them inline to **every** code-touching subagent (implement, review). They are tiny (~1.3K tokens total) hard-rule baselines, and the `applyTo` auto-apply does **not** fire in subagent runtime (no attached files) — so injecting them is the only way they take effect. **Not optional, not per-domain**: pass all seven on every code phase. They are the floor; the depth lives in the skills they point to.
+- **The 8 always-on instruction micro-rules** (`${PLUGIN_ROOT}/rules-templates/al-*.instructions.md`, including `al-security`; `al-agent-toolkit` only for agent code) — read them **once** at run start and pass them inline to **every** code-touching subagent (implement, review). They are tiny (~1.3K tokens total) hard-rule baselines, and the `applyTo` auto-apply does **not** fire in subagent runtime (no attached files) — so injecting them is the only way they take effect. **Not optional, not per-domain**: pass all eight on every code phase. They are the floor; the depth lives in the skills they point to.
 - **Domain skill *hints*** — name the skills likely relevant to this phase's domain (e.g. `skill-events` for an event phase). These are **hints, not mandates**: the subagent loads the `SKILL.md` on demand when it enters the domain, and may load a skill you didn't hint if it finds it needs one.
 
 Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.github/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `read_file` round-trips per subagent invocation.
