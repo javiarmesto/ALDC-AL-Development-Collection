@@ -210,6 +210,12 @@ Write the selection file the guidance defines (`{req_name}.bcq-selection.json`,
 stage `design`). Nothing here gates approval. When you deviate from a house rule,
 record the deviation and reason in the architecture document's decisions. Not
 mounted: skip, say so in the evidence line, continue.
+Read the articles that bear on a decision (data model, events, permissions,
+performance, API, upgrade) **before** making it. Where an article shapes a decision,
+cite its path next to that decision, and end the architecture document with a
+**BCQuality references** list: article path and the decision it informed. Do not claim
+BCQuality coverage for articles you did not open. No per-article disposition here;
+apply-or-justify belongs to code review.
 
 For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer` directly.
 </workflow>
