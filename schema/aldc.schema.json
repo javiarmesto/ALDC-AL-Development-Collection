@@ -101,6 +101,24 @@
     "toolkitRoot": {
       "type": "string"
     },
+    "autonomy": {
+      "type": "object",
+      "properties": {
+        "gates": {
+          "enum": [
+            "human",
+            "pre-approved"
+          ],
+          "default": "human",
+          "description": "human: the Conductor stops at every gate. pre-approved: gates become recorded checkpoints in <plans.root>/<req>/decisions.md; hard stops still stop. ALDC_GATES overrides it."
+        },
+        "commit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the Conductor may run git commit in pre-approved mode."
+        }
+      }
+    },
     "testing": {
       "type": "object",
       "properties": {
