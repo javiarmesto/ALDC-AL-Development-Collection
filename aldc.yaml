@@ -18,6 +18,15 @@ solution:
     application: ""
     test: ""
 
+# How this project runs its AL tests on a real Business Central.
+# runner: a shell command run from the project root after each phase compiles; it must
+#   print PASS/FAIL per test and exit non-zero on failure (for example a runner that
+#   publishes to a sandbox and runs the test codeunits). Empty = tests are compiled but
+#   not executed, and the final report says so. Override per run with ALDC_TEST_RUNNER
+#   where the host exposes environment variables. Never point it at production.
+testing:
+  runner: ""
+
 # External citable knowledge base, consumed by al-review-subagent (Step 0) as an
 # audit/citation layer. Does NOT replace instructions or skills.
 external:
