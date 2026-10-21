@@ -12,3 +12,4 @@ Hard event rules for codeunits. Patterns (integration events, handled, OnBefore/
 3. **OnBefore/OnAfter pair** around extensible operations (`OnBeforeCreateX`/`OnAfterCreateX`), with `IsHandled` when the subscriber must be able to abort the default flow.
 4. **`Commit` is forbidden inside an event subscriber**. It breaks the publisher's transaction and leaves inconsistent data.
 5. **Codeunits that only subscribe end in `Handler`** (`SalesPostingHandler`) and contain only subscribers — no own business logic.
+6. **Read the standard flow before you hook into it.** List the publisher's events in execution order from its symbols or source, choose the event that runs after everything your logic depends on (amounts, discounts, status changes, inserts, posting), and write a one-line comment above the `[EventSubscriber]` saying why that event.
