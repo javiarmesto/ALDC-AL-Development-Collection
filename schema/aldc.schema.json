@@ -101,6 +101,15 @@
     "toolkitRoot": {
       "type": "string"
     },
+    "testing": {
+      "type": "object",
+      "properties": {
+        "runner": {
+          "type": "string",
+          "description": "Shell command that runs the AL tests from the project root and exits non-zero on failure. Empty: tests are compiled, not executed (not-run). ALDC_TEST_RUNNER overrides it."
+        }
+      }
+    },
     "plans": {
       "type": "object",
       "required": [
