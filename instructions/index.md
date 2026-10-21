@@ -12,7 +12,7 @@ Instructions are auto-applied coding guidelines that load when the file you're e
 
 **Naming is infrastructure.** Files must follow the pattern `<ObjectName>.<ObjectType>.al`. A misnamed file silently misses its type-specific instructions. `aldc-validate` enforces the convention.
 
-## Instructions in this framework (7 files)
+## Instructions in this framework (8 files)
 
 | File | `applyTo` | Purpose |
 |------|-----------|---------|
@@ -23,6 +23,7 @@ Instructions are auto-applied coding guidelines that load when the file you're e
 | [al-error-handling.instructions.md](al-error-handling.instructions.md)       | `**/*.Codeunit.al`                     | TryFunctions, mandatory `Label`, telemetry only when asked |
 | [al-events.instructions.md](al-events.instructions.md)                       | `**/*.Codeunit.al`                     | Subscribers `local` with exact signature, no `Commit` in subscribers |
 | [al-testing.instructions.md](al-testing.instructions.md)                     | `**/test/**/*.al`                      | Tests only when explicitly requested, Given/When/Then, libraries |
+| [al-security.instructions.md](al-security.instructions.md)                   | `**/*.al`                              | Least-privilege writes and permission sets, `SecretText`, no event that skips a check, validation in tables |
 
 > [copilot-instructions.md](copilot-instructions.md) is the **always-on entrypoint** — it loads in every chat turn regardless of file context. It is not an instruction with `applyTo`. This `index.md` is documentation.
 

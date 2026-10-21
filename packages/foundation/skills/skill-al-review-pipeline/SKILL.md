@@ -82,6 +82,45 @@ compiler/runtime error. Cite the exact applicable rule and file location; retain
 resolve or retract it based on evidence, not because another provider found nothing.
 `contracts.namingConvention` in aldc.yaml names planning documents, not AL files.
 
+## Security and BCQuality disposition
+
+Always run the five security checks of `review.security` against
+`al-security.instructions.md`, whatever the provider covered. They exist because every
+agent-built app audited in October 2026 failed the same points (MCP with writes for
+everything, wide permission sets, unencrypted keys, `var` events that skip a check).
+
+Reading an article is not applying it. Open each article of the *BCQuality selection*
+and give it a disposition in `review.bcquality.articles` (`applied`, `not-applicable`
+with reason, or `dismissed` with a technical reason citing `file:line`). The requirement
+not asking for something is never a reason to dismiss an applicable article: report it
+as a finding instead.
+
+**Where the selection comes from.** Use the selection the caller supplied (Conductor
+passes it inline). When there is none and BCQuality is enabled, make it yourself before
+reviewing: from the configured BCQuality root, pick the knowledge articles that concern
+the domains and object types of the changed code, using the provider's catalog search
+(BCQuality: `tools/Search-Knowledge.ps1`), its knowledge skill (`al-knowledge`) or its
+documented path-based lookup. Record how you selected them in `provider.detail`. With
+`enabled: false` there is no selection and nothing is probed.
+
+**Two execution paths for BCQuality.** In the October 2026 Claude Code runs a provider
+skill loaded inside a subagent never completed Entry → dispatch → leaves; this host has
+not been measured. So:
+1. **Selection path (primary, always).** The selection comes from the same BCQuality
+   root the provider is loaded from. Reading every selected article and giving each a
+   disposition **is** an executed BCQuality check for those articles: set
+   `review.bcquality.outcome: "selection-completed"` and `provider.execution:
+   "aldc-selection"` with the number of articles. Do not mark the review `partial`
+   because Entry was not run.
+2. **Provider path (extra, when feasible).** You may also run the provider's Entry flow
+   (`al-code-review`) as described above. If it completes, keep its sub-results verbatim
+   and set `outcome: "completed"`. If it does not complete, record that in
+   `provider.detail` and keep the selection result; it is not a failure.
+A selected article without a disposition is the only BCQuality reason for `partial`.
+
+When the app extends `Agent Metadata Provider`, also fill `review.agent-sdk` from the
+*Completeness checklist* in `al-agent-toolkit.instructions.md`.
+
 ## Return an honest result
 
 Use [the shared review report](../../docs/templates/review-report-contract.md)
