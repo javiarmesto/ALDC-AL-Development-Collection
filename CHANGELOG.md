@@ -1,5 +1,26 @@
 # ALDC Changelog
 
+## [Unreleased]
+
+### Changed — design and planning contract (Copilot Chat, Copilot CLI, Codex)
+
+The design and planning improvements of the Claude Code surface (5.1.0 and 5.1.1)
+now reach the generated surfaces through the canonical sources. `claude-plugin/` is
+unchanged.
+
+- **Standard Flow.** The planning findings template gains a mandatory *Standard Flow*
+  section (publisher events in execution order, chosen hook and why) whenever the
+  task hooks into a Base Application publisher. The planner must fill it, the
+  Conductor passes it to implementation and review, and the implementer writes a
+  one-line comment above each `[EventSubscriber]` saying why that event.
+  `al-events.instructions.md` gains the same rule.
+- **BCQuality references.** Architect, Spec Agent and Planning Subagent consult the
+  articles before deciding, cite each next to the decision it shapes and end with a
+  "BCQuality references" list. Without the Claude `agent-brief` hook, the planner
+  reads the article paths the Conductor passes from the design/spec selection and
+  does not search the corpus itself. The existing opt-out (`enabled: false`) applies.
+- Not verified: model behaviour on Copilot Chat, Copilot CLI and Codex; no host run.
+
 ## [5.1.1] - 2026-10-20
 
 ### Changed — Claude Code surface
