@@ -46,11 +46,11 @@ hide:
 
     El perfil bc29-native de Copilot Chat acota la investigación de símbolos y dependencias. Developer e Implementation Subagent consultan IDs dentro de rangos aprobados; los IDs no quedan reservados y las extensiones instaladas quedan fuera de la búsqueda local.
 
--   **5.0.4 · Evidencias de compilación y pruebas**
+-   **5.0.4 · Compilación y diagnósticos**
 
     ---
 
-    Diagnósticos nativos compatibles con AL18.1 y selección explícita del proyecto App/Test. Compilar App, compilar Test y ejecutar pruebas son resultados distintos. Cero diagnósticos no demuestra una compilación correcta; las comprobaciones locales de AL18 no acreditan ejecución en BC29.
+    Selecciona el proyecto AL que quieres compilar y consulta sus diagnósticos con las herramientas nativas compatibles con AL18.1. Developer utiliza el contexto del proyecto y la información del compilador para orientar la implementación.
 
 -   **Permisos por rol y actualización del proyecto**
 
@@ -60,7 +60,7 @@ hide:
 
 </div>
 
-Graph, LSP, TestHandlers, profiling y las operaciones de snapshot siguen siendo
+Graph, LSP, profiling y las operaciones de snapshot siguen siendo
 opcionales y dependen de las herramientas disponibles en el host. BC28 sigue
 siendo el perfil por defecto. Consulta las [notas de 5.0.3/5.0.4](CHANGELOG.md)
 y la [guía de herramientas nativas](framework/native-al-tools.md).

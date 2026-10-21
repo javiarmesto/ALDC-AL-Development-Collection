@@ -23,7 +23,8 @@ ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
 **VS Code Marketplace 5.0.4** builds on 5.0.3's BCQuality consultation with
-role-scoped native AL tools and clearer App/Test evidence in Copilot Chat.
+role-scoped native AL tools for project research, compilation and diagnostics
+in Copilot Chat.
 See [what changed](#what-changed-in-503-and-504) and the [changelog](CHANGELOG.md).
 
 | Channel | Current delivery | Scope |
@@ -53,7 +54,7 @@ See [installation and recovery](docs/plugin-packaging.md) for each surface.
 
 Choose the [installation guide](https://javiarmesto.github.io/ALDC-AL-Development-Collection/start/) for your host, then follow the [Quick Start](#quick-start). Use your own AL project and BC sandbox; check its `app.json`, symbols and permissions before any build or publication. ALDC supplies development context and workflows, not a Business Central environment.
 
-The expected first result is a validated toolkit installation and reviewed requirement artifacts in your project. Host/tool discovery does not prove an MCP invocation, successful AL compilation or a deployment. This documentation audit on **6 October 2026** did not execute those operations.
+Start with the toolkit installed in your project and a bounded requirement. Architect and Spec prepare the design and technical specification for your review before implementation.
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
 
@@ -66,20 +67,20 @@ the instructions inline. BCQuality is installed separately; unavailable knowledg
 and manual fallbacks remain explicit. Windows validation and generated-path
 handling also improve.
 
-**5.0.4 — native AL tools with verifiable results.** Copilot Chat's `bc29-native`
+**5.0.4 — native AL tools for your project.** Copilot Chat's `bc29-native`
 Developer and Implementation Subagent can query object IDs within approved project
 ranges. IDs are not reserved, and the local scan excludes installed extensions.
 Architect/Spec research stays bounded to relevant symbols and dependencies;
-native diagnostics use the compatible AL18.1 selector. Implementation and review
-distinguish App compilation, Test compilation and actual test execution. Empty
-diagnostics alone do not establish a successful build.
+native diagnostics use the compatible AL18.1 selector. Developer can compile the
+selected AL project and consult its diagnostics as part of the implementation
+workflow.
 
 Conductor keeps coordination and Reviewer keeps query permissions. Publication
-requires explicit authorization. Graph, LSP, TestHandlers, profiling and snapshot
+requires explicit authorization. Graph, LSP, profiling and snapshot
 operations remain optional and depend on the installed host and tools. The
-[native tooling guide](docs/framework/native-al-tools.md) includes a reproducible
-Insiders smoke test; observed local AL18 checks do not establish BC29 runtime
-acceptance. Claude Code's later surface releases follow their own contracts.
+[native tooling guide](docs/framework/native-al-tools.md) explains the available
+capabilities, project selection and permissions. Claude Code's later surface
+releases follow their own contracts.
 
 To update an existing VS Code project, update the extension, run **AL Collection:
 Update Toolkit**, review the preview and managed-file collisions, then run
