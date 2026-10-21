@@ -146,6 +146,7 @@ required:
     - "instructions/al-performance.instructions.md"
     - "instructions/al-error-handling.instructions.md"
     - "instructions/al-events.instructions.md"
+    - "instructions/al-security.instructions.md"
     - "instructions/al-testing.instructions.md"
     - "instructions/copilot-instructions.md"
     - "instructions/index.md"

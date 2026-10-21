@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+### Changed — review contract (Copilot Chat, Copilot CLI, Codex)
+
+The review improvements of the Claude Code surface (5.1.0) now reach the generated
+surfaces through the canonical sources. `claude-plugin/` is unchanged.
+
+- New always-on rule `al-security.instructions.md` (`**/*.al`): least privilege for API
+  pages, MCP and permission sets, `SecretText` secrets, no published event that skips a
+  check, validation in tables, HTTPS outbound calls. Registered in the collection,
+  `aldc.yaml → required` and `instructions/index.md`.
+- The review report gains `review.security` (mandatory, five checks),
+  `review.bcquality.articles` (apply or justify each selected article; "not requested"
+  is not a reason) with the `selection-completed` outcome, and `review.agent-sdk` (five
+  checks when the app extends `Agent Metadata Provider`).
+- Without the Claude `agent-brief` hook, the reviewer makes the BCQuality selection
+  itself when the caller passes none (catalog search, `al-knowledge` or path lookup).
+- `al-agent-toolkit.instructions.md` carries the binding completeness checklist.
+- Conductor: process gate on `review.security` and article dispositions. Dredd now
+  runs the security checks natively instead of reporting no native security check.
+
 ### Changed — Conductor (Copilot Chat, Copilot CLI, Codex)
 
 Conductor improvements from the Claude Code surface (5.1.0) now reach the generated
