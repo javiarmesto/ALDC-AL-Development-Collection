@@ -86,6 +86,12 @@ BCQuality is optional and installed separately. Choose plugin or external-worksp
 
 [Configure BCQuality](bcquality/)
 
+## Build evidence with aldc-verify { #aldc-verify .section-title }
+
+In Claude Code, ALDC takes compile and analyzer evidence from aldc-verify, a separate plugin, instead of duplicating compilation. It compiles changed AL before a turn ends, validates each conductor phase and opens draft pull requests behind a guard. Without it, phases are recorded as `not-run`.
+
+[About aldc-verify](aldc-verify/)
+
 ## Your environment. Your starting point. { #install .section-title }
 
 <p class="section-lead">Choose where you work. Get the installation steps, checks and a first request for that surface.</p>

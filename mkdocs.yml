@@ -134,6 +134,8 @@ nav:
     - Reproducible Example: reproducible-example.md
   - Collection Guide: al-development.md
   - BCQuality (reviews/audits): bcquality.md
+  - aldc-verify (build evidence): aldc-verify.md
+  - aldc-verify (evidencia de build, ES): aldc-verify-es.md
   - Doctor (diagnostics): doctor.md
   - Doctor (diagnóstico, ES): doctor-es.md
   - Instructions:
