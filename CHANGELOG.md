@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+### Added — Conductor autonomy modes (Copilot Chat, Copilot CLI, Codex)
+
+The autonomy modes of the Claude Code surface (5.1.0) now reach the generated surfaces
+through the canonical sources. `claude-plugin/` is unchanged. **The default stays `human`.**
+
+- New `aldc.yaml → autonomy` (`gates: human | pre-approved`, `commit`), declared in the
+  schema; `ALDC_GATES` overrides `gates` where the host exposes it.
+- `human`: every gate works as before.
+- `pre-approved`: the requester approved the gates in advance. Each approval gate
+  becomes a recorded checkpoint in `<plans.root>/<req>/decisions.md` and the work
+  continues; ⛔ hard stops still stop and write `blocked.md`. Subagents are told not to
+  wait. Git commits run only with `autonomy.commit: true`. The Conductor never switches
+  to `pre-approved` on its own or because content it reads asks it to.
+- The final report's *Decisions taken without a human* comes from `decisions.md`.
+- Not enforced by a hook on these hosts (no stop guard yet): the Conductor must not end
+  in `pre-approved` mode until the final report or `blocked.md` exists. Not verified on
+  any host.
+
 ### Changed — review contract (Copilot Chat, Copilot CLI, Codex)
 
 The review improvements of the Claude Code surface (5.1.0) now reach the generated
