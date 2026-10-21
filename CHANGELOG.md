@@ -1,5 +1,30 @@
 # ALDC Changelog
 
+## [Unreleased]
+
+### Changed — Conductor (Copilot Chat, Copilot CLI, Codex)
+
+Conductor improvements from the Claude Code surface (5.1.0) now reach the generated
+surfaces through the canonical sources. `claude-plugin/` is unchanged.
+
+- **Real delegation.** Research, every implementation phase and every review go to
+  their subagent through the host's delegation tool, as a new invocation with the full
+  brief each time. The Conductor never does that work itself. When the host cannot
+  delegate, the step is reported as pending.
+- **Mini-design.** When the Conductor runs without an architecture document (LOW work,
+  or the user chose to skip the architect), it writes a Mini-design at the top of the
+  plan instead of stopping. Architecture-first for MEDIUM/HIGH is unchanged; the
+  light-by-default path of the Claude surface is not ported, because the Core Spec
+  requires the architecture gate.
+- **Honest final report.** The plan-complete report (Conductor style guide and
+  `plan-complete-template.md`) gains *Verification*, *Not verified*, *Decisions taken
+  without a human* and *Open risks*, and drops the unconditional "All tests passing".
+  An unfinished plan is not presented as finished.
+- **Optional test runner.** New `aldc.yaml → testing.runner` (declared in the schema;
+  `ALDC_TEST_RUNNER` overrides it where the host exposes it). When set, the Conductor
+  runs it after each phase compiles and before review. Without it, tests are `not-run`.
+- Not verified: model behaviour on Copilot Chat, Copilot CLI and Codex; no host run.
+
 ## [5.1.1] - 2026-10-20
 
 ### Changed — Claude Code surface
