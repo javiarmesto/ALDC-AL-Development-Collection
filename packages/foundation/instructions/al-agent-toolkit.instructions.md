@@ -76,3 +76,13 @@ app/
 ```
 
 Details on each folder and complete examples in `skill-agent-toolkit`.
+
+## Completeness checklist (binding)
+
+Every audited agent-built app in October 2026 stopped at `IAgentFactory` + `IAgentMetadata` and never refreshed instructions on upgrade. Before an agent is done, all of these hold, and the reviewer reports them in `review.agent-sdk`:
+
+- `interfaces`: the `Agent Metadata Provider` enum value implements and registers all three of `IAgentFactory`, `IAgentMetadata` and `IAgentTaskExecution`, each with real behaviour (no empty stubs left from a template).
+- `instructions-upgrade`: instructions come from a resource file (`NavApp.GetResourceAsText` → `SecretText`) and are applied on creation **and** refreshed for existing agent instances in the Upgrade codeunit (`OnUpgradePerDatabase` with an upgrade tag). Instructions written only at creation never reach agents created by an earlier version.
+- `access-controls`: `GetDefaultAccessControls` assigns the agent's own minimal permission set, not SUPER or a broad human role.
+- `input-analysis`: `AnalyzeAgentTaskMessage` validates incoming messages and adds a Warning annotation (human review) for untrusted or ambiguous input; outgoing messages are checked before they are sent.
+- `creation-policy`: `ShowCanCreateAgent` states who may create the agent (from 28.1 non-administrators can, unless the code restricts it).

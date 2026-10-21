@@ -187,6 +187,7 @@ Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
   - AL-Go structure compliance
   - Performance patterns (SetLoadFields, early filtering)
   - Error handling
+  - Security (`al-security.instructions.md`, reported in `review.security`)
   - Spec + architecture compliance
 
 Review validates: spec compliance, architecture compliance, naming conventions, test coverage, performance patterns, extension-only compliance.
@@ -202,6 +203,12 @@ become approval from zero findings. Route missing review work to the reviewer,
 missing build/test evidence to its authorized owner, and code findings to the
 implementer. Do not send an empty code-correction loop for a provider limitation.
 Keep the human gate pending when the required evidence cannot be obtained.
+
+**Process gate on the review.** A phase does not close while `review.security` is missing,
+while an article of the BCQuality selection has no entry in `review.bcquality.articles`, or
+while an article is `dismissed` with "not requested", "out of scope" or "future work" as its
+reason. Re-invoke the reviewer once for just the missing part. If it is still missing,
+record it in the phase-complete file as an open process gap; do not invent the result.
 
 **Gate on the JSON (defense in depth — Q4):**
 1. Parse the `### Review-Report (JSON)` block; read `findings[]`, `outcome` and `review.verdict`.
