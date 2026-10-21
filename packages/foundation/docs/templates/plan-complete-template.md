@@ -34,11 +34,26 @@ Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-co
 - {Function/procedure name}
 - {Event subscriber signature}
 
+**Verification (what was checked, and how):**
+| Check | Result | Evidence |
+|-------|--------|----------|
+| Compilation (App, Test) | {passed / failed / not-run} | {validator or compiler output, per project} |
+| Code analyzers | {n errors, n warnings / not-run} | {source} |
+| Tests executed | {n passed of n / not-run: reason} | {test runner output, environment} |
+| Review | {verdict per phase} | `<plan>-review-phase-N.json` |
+
+Write `not-run` with its reason for anything you did not execute. Never write "passing" for tests that did not run.
+
+**Not verified:** {everything the client should not assume: tests not executed, behaviour not exercised in a real company, integrations not called, assumptions that were not checked}
+
+**Decisions taken without a human:** {each decision taken without explicit user approval, with why; "None" when the user approved every gate}
+
+**Open risks:** {security checks with status `finding`, BCQuality articles `dismissed`, recommendations not applied, and any process gap recorded in a phase}
+
 **Test Coverage:**
 - Total test codeunits: {count}
 - Total test procedures: {count}
-- All tests passing: ✅
-- AL-Go structure: ✅
+- AL-Go structure: {✅ / ❌}
 
 (Omit the test coverage block if no tests were generated.)
 
