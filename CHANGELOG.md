@@ -59,6 +59,45 @@
   executed on a BC sandbox (20/20 passed) and a 6-phase, 2-hour run with no process
   cuts.
 
+## [5.0.4] - 2026-10-15
+
+### Fixed — Copilot Chat
+
+- Grant AL18 native object-ID lookup only to `bc29-native` Developer and
+  Implementation Subagent, within approved project ranges. Keep collision
+  handling and the tool's no-reservation and local-scan limitations explicit.
+- Select native diagnostics through AL18.1's `al_get_diagnostics` Chat reference;
+  retain MCP's distinct `al_getdiagnostics` operation and schema.
+- Bound Architect/Spec symbol and dependency research. Separate App builds,
+  Test builds and executed runtime results throughout implementation and review;
+  preserve independent Spec, BCQuality consultation, approved contracts and gates.
+- Limit Chat Triage's snapshot proxy to initialize/status/stop, excluding implicit
+  `run_tests` access. Conductor retains coordination without AL execution grants.
+- Resolve only used, approved test-library dependencies in both Chat profiles;
+  remove fixed example versions and mandatory Any declarations from the packaged
+  implementation guidance.
+- Document Insiders project selection with a visible AL editor, stale/empty
+  diagnostic limits and reproducible local error/recovery checks.
+
+### Validation and delivery
+
+The VS Code extension was published to
+[Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection)
+on **20 October 2026**, from the [`release/5.0.x`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/release/5.0.x)
+maintenance line. The downloaded VSIX matched the local package SHA-256 and all
+231 packaged extension files. Real Windows host checks and upgrades from the
+published 5.0.3 package passed for both profiles, including customization, memory,
+MCP configuration and rollback preservation.
+
+Native symbol search, ID lookup, App/Test builds and a controlled compiler error
+were exercised with operator evidence on AL18 and a BC28/runtime16.1 consumer.
+Recovery was verified separately through ALTool and a VS Code packaging action;
+this does not establish BC29 runtime execution or full per-role acceptance.
+Graph, LSP, TestHandlers, profiling and snapshot execution remain optional.
+Existing projects still require a reviewed toolkit update after the extension
+update. This Marketplace publication did not create a v5.0.4 GitHub tag/release or
+publish to npm. Claude Code's 5.1.x evolution is maintained separately above.
+
 ## [5.0.3] - 2026-10-07
 
 ### Fixed

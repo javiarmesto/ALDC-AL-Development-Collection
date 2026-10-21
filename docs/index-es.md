@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#novedades">
   <span class="hero-banner__badge">NUEVO</span>
-  <span class="hero-banner__text">ALDC 5.0.0 · ya disponible</span>
+  <span class="hero-banner__text">ALDC 5.0.4 · Copilot Chat</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="../">English</a></div>
@@ -21,56 +21,49 @@ hide:
   <a class="md-button" href="#novedades">Explora las novedades</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">La versión 5.0.0 está disponible para VS Code desde el Marketplace y para Copilot CLI, Claude Code y Codex desde el código etiquetado.</p>
+<p class="hero-subnote">VS Code Marketplace 5.0.4 añade mejoras de herramientas AL nativas a la consulta de BCQuality de 5.0.3. Claude Code sigue ligado a ALDC con evolutivos propios de su superficie; consulta las <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme">versiones por canal</a>.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>5.0.0</b> · MIT</span>
+  <span class="pill pill--version"><b>VS Code 5.0.4</b> · MIT</span>
 </div>
 </div>
 
-## Novedades de 5.0.0 { #novedades .section-title }
+## Novedades de 5.0.3 y 5.0.4 { #novedades .section-title }
 
 <div class="grid cards" markdown="1">
 
--   **Architect → Spec**
+-   **5.0.3 · Conocimiento antes de programar**
 
     ---
 
-    Architect define unidades, contratos compartidos y dependencias. Spec desarrolla cada contrato y devuelve las contradicciones para una revisión conjunta.
+    Architect y Spec consultan artículos completos de BCQuality y registran las evidencias utilizadas en diseño y especificación. BCQuality se instala por separado; las ausencias y alternativas manuales quedan explícitas. También mejora la validación en Windows.
 
--   **AL18 · Tools · MCP**
-
-    ---
-
-    Perfil BC29-native opcional para las herramientas AL disponibles en Copilot Chat. BC28 sigue por defecto; seleccionar perfil no instala herramientas ni cambia app.json.
-
--   **Doctor · BCQuality**
+-   **5.0.4 · Investigación e IDs nativos de AL**
 
     ---
 
-    Diagnóstico por operación y revisión opcional con BCQuality. Configuración, descubrimiento, carga y ejecución se registran como hechos diferentes.
+    El perfil bc29-native de Copilot Chat acota la investigación de símbolos y dependencias. Developer e Implementation Subagent consultan IDs dentro de rangos aprobados; los IDs no quedan reservados y las extensiones instaladas quedan fuera de la búsqueda local.
 
--   **Actualización recuperable**
-
-    ---
-
-    Revisa colisiones, verifica lo instalado y restaura la transacción anterior cuando las comprobaciones lo permitan. La recuperación protege cambios posteriores.
-
--   **Project Manager**
+-   **5.0.4 · Evidencias de compilación y pruebas**
 
     ---
 
-    Un panel en VS Code, también disponible en el Explorador, para instalar, actualizar, verificar, restaurar y ejecutar Doctor sobre el proyecto elegido. Cada cambio se previsualiza y se confirma; los resultados se quedan en el panel.
+    Diagnósticos nativos compatibles con AL18.1 y selección explícita del proyecto App/Test. Compilar App, compilar Test y ejecutar pruebas son resultados distintos. Cero diagnósticos no demuestra una compilación correcta; las comprobaciones locales de AL18 no acreditan ejecución en BC29.
 
--   **ALDC Visor**
+-   **Permisos por rol y actualización del proyecto**
 
     ---
 
-    Árbol en el Explorador con los artefactos de cada requisito: requisitos, arquitectura, especificación, plan de pruebas, informes de fase y evidencias de revisión, cada uno con su icono. Solo lectura y siempre al día.
+    Conductor coordina y Reviewer conserva permisos de consulta; publicar requiere autorización explícita. Actualiza la extensión, ejecuta AL Collection: Update Toolkit, revisa las colisiones y utiliza Verify Installed Toolkit antes de recargar. Los plugins de terminal tienen su propia actualización.
 
 </div>
+
+Graph, LSP, TestHandlers, profiling y las operaciones de snapshot siguen siendo
+opcionales y dependen de las herramientas disponibles en el host. BC28 sigue
+siendo el perfil por defecto. Consulta las [notas de 5.0.3/5.0.4](CHANGELOG.md)
+y la [guía de herramientas nativas](framework/native-al-tools.md).
 
 ## Del diseño a una implementación revisable { #que-es .section-title }
 

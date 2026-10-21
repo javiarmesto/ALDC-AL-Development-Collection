@@ -9,7 +9,8 @@
 _Engineering systems, visibly reasoned._
 
 [![ALDC Core](https://img.shields.io/badge/ALDC%20Core-v1.2%20Compliant-0891B2.svg?style=flat-square&labelColor=0F172A)](docs/framework/ALDC-Core-Spec-v1.2.md)
-[![Version](https://img.shields.io/github/v/release/javiarmesto/ALDC-AL-Development-Collection?style=flat-square&labelColor=0F172A&color=D946EF&label=version)](CHANGELOG.md)
+[![GitHub Release](https://img.shields.io/github/v/release/javiarmesto/ALDC-AL-Development-Collection?style=flat-square&labelColor=0F172A&color=D946EF&label=GitHub%20release)](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/javierarmestogonzalez.al-development-collection?style=flat-square&labelColor=0F172A&color=0891B2&label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin%20available-38BDF8.svg?style=flat-square&labelColor=0F172A)](claude-plugin/)
 [![Framework](https://img.shields.io/badge/framework-AI--Native--Instructions-0891B2?style=flat-square&labelColor=0F172A)](https://danielmeppiel.github.io/awesome-ai-native/)
 [![License](https://img.shields.io/badge/license-MIT-0891B2?style=flat-square&labelColor=0F172A)](./LICENSE)
@@ -21,15 +22,21 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**Release 5.0.3:** shared BCQuality knowledge consultation for Architect and Spec
-Agent across Copilot Chat, Copilot CLI, Claude Code and Codex. See the
-[release notes](CHANGELOG.md) and
-[GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3).
-GitHub releases and VS Code Marketplace publication are separate deliveries;
-check the Marketplace listing for its currently published version.
+**VS Code Marketplace 5.0.4** builds on 5.0.3's BCQuality consultation with
+role-scoped native AL tools and clearer App/Test evidence in Copilot Chat.
+See [what changed](#what-changed-in-503-and-504) and the [changelog](CHANGELOG.md).
 
-**Checkout baseline:** `package.json` and the host plugin catalogs declare **5.0.3**.
-This does not establish a VS Code Marketplace or npm registry publication at that version.
+| Channel | Current delivery | Scope |
+| --- | --- | --- |
+| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | 5.0.4, published 20 October 2026 | Copilot Chat extension and packaged toolkit, from [`release/5.0.x`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/release/5.0.x). |
+| [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3) | v5.0.3 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
+| [`main`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/tree/main) | Root package 5.1.1; Claude Code edition 5.1.1 | Development source, including Claude Code's own surface evolution. Check each host's manifest for its version. |
+
+Claude Code remains part of ALDC, with a shared engineering foundation and its own
+maintained agents, hooks, contracts and release evolution. Its surface changes are
+documented separately in the [changelog](CHANGELOG.md) and
+[`claude-plugin/SURFACE.md`](claude-plugin/SURFACE.md). A version in one channel
+does not establish an equivalent update in another, or publication to npm.
 
 For an installed Claude Code plugin, refresh the official source and plugin:
 
@@ -38,7 +45,7 @@ claude plugin marketplace update aldc-marketplace
 claude plugin update aldc@aldc-marketplace
 ```
 
-Open a new Claude Code session and confirm version 5.0.3. This refreshes the
+Open a new Claude Code session and check the version against its plugin catalog. This refreshes the
 plugin's contracts; project-local toolkit copies need their own reviewed update.
 See [installation and recovery](docs/plugin-packaging.md) for each surface.
 
@@ -50,29 +57,35 @@ The expected first result is a validated toolkit installation and reviewed requi
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
 
-## What changed in 5.0.1
+## What changed in 5.0.3 and 5.0.4
 
-- **Copilot Chat models:** the Chat installer selects `Claude Sonnet 5.5 (copilot)`
-  for all 12 agents and the five prompts with explicit model selections, in both
-  `bc28` and `bc29-native`. The other six prompts inherit the selected agent.
-  Claude Code, Copilot CLI and Codex keep their own model selections. Availability
-  still depends on your Copilot account and host.
-- **Chat AL tooling:** role-specific AL LSP and official AL MCP guidance, with
-  query-only roles separated from implementation and dependency setup. Tool
-  declarations do not install a provider or prove a successful invocation.
-- **Initialize for existing projects:** a preparation-only route verifies access
-  on the executing MCP connection, with bounded registration/retry when authorized;
-  it does not fall through to scaffolding, restoring dependencies or building.
-- **Installation and packaging:** Chat projection applies to both profiles;
-  install/update/profile changes and rollback preserve existing `.vscode/mcp.json`.
-  The VSIX carries the projector and its guide, with equal package versions and
-  provenance from clean pinned inputs.
-- **Shared fixes:** corrected the terminal symbol-server package, plugin verification
-  of derived locks, and templates that previously hard-coded a surface's plans root.
+**5.0.3 — knowledge before implementation.** Architect and the independent Spec
+Agent consult BCQuality through `al-knowledge`, read complete articles and record
+the evidence used in their decisions. Hosts without a skill invocation tool follow
+the instructions inline. BCQuality is installed separately; unavailable knowledge
+and manual fallbacks remain explicit. Windows validation and generated-path
+handling also improve.
 
-Update the extension and the toolkit files in each existing project separately.
-Review managed-file collisions so a preserved older agent does not silently keep
-its previous model. See the [5.0.1 changelog](CHANGELOG.md) for details.
+**5.0.4 — native AL tools with verifiable results.** Copilot Chat's `bc29-native`
+Developer and Implementation Subagent can query object IDs within approved project
+ranges. IDs are not reserved, and the local scan excludes installed extensions.
+Architect/Spec research stays bounded to relevant symbols and dependencies;
+native diagnostics use the compatible AL18.1 selector. Implementation and review
+distinguish App compilation, Test compilation and actual test execution. Empty
+diagnostics alone do not establish a successful build.
+
+Conductor keeps coordination and Reviewer keeps query permissions. Publication
+requires explicit authorization. Graph, LSP, TestHandlers, profiling and snapshot
+operations remain optional and depend on the installed host and tools. The
+[native tooling guide](docs/framework/native-al-tools.md) includes a reproducible
+Insiders smoke test; observed local AL18 checks do not establish BC29 runtime
+acceptance. Claude Code's later surface releases follow their own contracts.
+
+To update an existing VS Code project, update the extension, run **AL Collection:
+Update Toolkit**, review the preview and managed-file collisions, then run
+**AL Collection: Verify Installed Toolkit** and reload the window. Each terminal
+plugin has its own update route. Earlier improvements, including Copilot Chat's
+Sonnet 5.5 selection, remain documented under their original changelog versions.
 
 | Capability | What it provides |
 | --- | --- |
@@ -642,7 +655,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Checkout package version:** 5.0.2
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.1.1 · **VS Code Marketplace:** 5.0.4
 
 </div>
 

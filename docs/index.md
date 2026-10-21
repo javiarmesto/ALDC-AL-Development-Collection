@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#whats-new">
   <span class="hero-banner__badge">NEW</span>
-  <span class="hero-banner__text">ALDC 5.0.0 · now available</span>
+  <span class="hero-banner__text">ALDC 5.0.4 · Copilot Chat</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="index-es/">Español</a></div>
@@ -21,56 +21,49 @@ hide:
   <a class="md-button" href="#whats-new">Explore what is new</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">Version 5.0.0 is available for VS Code from the Marketplace, and for Copilot CLI, Claude Code and Codex from the tagged source.</p>
+<p class="hero-subnote">VS Code Marketplace 5.0.4 adds native AL tooling improvements to 5.0.3's BCQuality consultation. Claude Code remains part of ALDC with its own maintained surface evolution; see the <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme">versions by channel</a>.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>5.0.0</b> · MIT</span>
+  <span class="pill pill--version"><b>VS Code 5.0.4</b> · MIT</span>
 </div>
 </div>
 
-## What is new in 5.0.0 { #whats-new .section-title }
+## What is new in 5.0.3 and 5.0.4 { #whats-new .section-title }
 
 <div class="grid cards" markdown="1">
 
--   **Architect → Spec**
+-   **5.0.3 · Knowledge before coding**
 
     ---
 
-    Architect defines units, shared contracts and dependencies. Spec develops each contract and returns contradictions for joint review.
+    Architect and Spec consult complete BCQuality articles and record the evidence used in design and specification. BCQuality is installed separately; missing knowledge and manual fallbacks remain explicit. Windows validation also improves.
 
--   **AL18 · Tools · MCP**
-
-    ---
-
-    Optional BC29-native guidance for AL tools available in Copilot Chat. BC28 remains the default; selecting a profile does not install tools or change app.json.
-
--   **Doctor · BCQuality**
+-   **5.0.4 · Native AL research and IDs**
 
     ---
 
-    Operation-specific diagnostics and optional BCQuality reviews. Configuration, discovery, loading and execution are recorded as separate facts.
+    Copilot Chat's bc29-native profile bounds symbol and dependency research. Developer and Implementation Subagent query IDs in approved project ranges; IDs are not reserved and installed extensions are outside the local scan.
 
--   **Recoverable updates**
-
-    ---
-
-    Review collisions, verify installed content and restore the preceding transaction when integrity checks permit it. Restoration protects later edits.
-
--   **Project Manager**
+-   **5.0.4 · Build and test evidence**
 
     ---
 
-    One panel in VS Code, also available in the Explorer, to install, update, verify, restore and run Doctor for the selected project. Every change is previewed and confirmed; results stay in the panel.
+    AL18.1-compatible native diagnostics and explicit App/Test project selection. App compilation, Test compilation and runtime execution are separate results. Empty diagnostics alone do not prove a successful build; local AL18 checks do not establish BC29 runtime acceptance.
 
--   **ALDC Visor**
+-   **Role permissions and project updates**
 
     ---
 
-    Explorer tree of the plan artifacts per requirement: requisites, architecture, specification, test plan, phase reports and review evidence, each with its own icon. Read-only and always current.
+    Conductor coordinates and Reviewer retains query permissions; publication requires explicit authorization. Update the extension, run AL Collection: Update Toolkit, review collisions, then Verify Installed Toolkit and reload. Terminal plugins have separate update routes.
 
 </div>
+
+Graph, LSP, TestHandlers, profiling and snapshot operations remain optional and
+depend on the host's available tools. BC28 remains the default profile.
+See the [5.0.3/5.0.4 release notes](CHANGELOG.md) and the
+[native tooling guide](framework/native-al-tools.md).
 
 ## From design to reviewable implementation { #whats-aldc .section-title }
 
