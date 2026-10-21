@@ -101,6 +101,17 @@ Both Chat profiles retain 5.0.4's dependency guidance: resolve only libraries us
 by the planned tests from approved dependencies, declared versions and symbols.
 Claude Code stays on its independently maintained 5.1.1 edition.
 
+### Use Project Manager in VS Code
+
+1. Update the extension to **5.2.0** and run **AL Collection: Open Project Manager**.
+2. Select your solution, preview its toolkit installation or update, review customizations and confirm. Updating the extension does not replace the toolkit already installed in a project.
+3. In **BCQuality**, choose **Plugin — recommended**, **External knowledge folder** or **Disabled — native review**, then select **Change mode**. **Install BCQuality…** copies the official repository URL for the native source prompt; paste it there. Hosts without that command open the installation guide. **Manage plugins** opens the host's inventory.
+4. In **Workflow autonomy**, choose **Human — approve each checkpoint** or **Automatic — prior approval**, then select **Apply mode**. Start a new chat with **AL Development Conductor**.
+
+Human waits at approval checkpoints. Automatic records those decisions and continues within the approved task, retaining hard stops. Changes preserve commit and publication permissions and keep a recoverable configuration copy. A retained older Conductor must be updated before using the autonomy control. Plugin installation and loading are verified by the host.
+
+These Project Manager controls apply to VS Code/Copilot Chat. The other hosts keep their own configuration and permissions. Canvas remains a separate experimental companion.
+
 ### Earlier Copilot Chat improvements
 
 **5.0.3 — knowledge before implementation.** Architect and the independent Spec
