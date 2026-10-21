@@ -72,6 +72,9 @@ in this context. A selection passed by Conductor is configuration, not proof of
 this invocation's provider loading or execution. Validate supplied event signatures
 against actual referenced declarations or current compiler evidence; do not enumerate
 symbols again when the specific evidence already answers the question.
+Whatever the provider covered, fill `review.security` against `al-security.instructions.md`
+and give every article of the BCQuality selection a disposition in
+`review.bcquality.articles`; when Conductor passed no selection, make it as the pipeline says.
 
 Return [the Review-Report JSON](${PLUGIN_ROOT}/docs/templates/review-report-contract.md) with
 `skill.id: al-review-subagent` and the supplied phase. The Conductor renders and

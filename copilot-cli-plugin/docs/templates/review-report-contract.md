@@ -36,6 +36,33 @@ Return one fenced JSON block headed `### Review-Report (JSON)`:
   suggested-code-omission-reason?}]`.
 - `suppressed`: findings removed with a concrete evidence-based reason.
 - `sub-results`: provider results verbatim, not recreated from a summary.
+- `review.security` (**mandatory**): `{status: completed | partial, checks: [{check, status, evidence, reason}]}`
+  with exactly these checks, each `ok | finding | not-applicable` (a reason is required for
+  `not-applicable`): `write-scope` (API pages and MCP configuration expose writes only where
+  the scenario needs them), `permission-sets` (per role, no wildcard RIMD, own minimal set for
+  bot/agent users), `secrets` (`SecretText`, encrypted isolated storage, never in fields, text
+  or telemetry), `event-bypass` (no published `var` parameter can skip a permission, approval
+  or validation check), `table-validation` (rules enforced in table triggers, not only pages).
+  Each `finding` has a matching entry in `findings` with `domain: "Security"` and
+  `native-rule: "al-security.instructions.md"`. A missing `review.security` makes the review `partial`.
+- `review.bcquality.articles` (**mandatory when BCQuality articles were selected or read**):
+  `[{path, status, reason, evidence}]`, one entry per article in the *BCQuality selection*
+  (supplied by the caller, or made by the reviewer as the review pipeline describes) and per
+  other article you read. `status`: `applied` (the code follows it, or a finding cites it),
+  `not-applicable` (it does not concern the changed code; say why) or `dismissed` (it applies
+  and the code does not follow it, with a technical reason citing `file:line`). "Not requested
+  by the requirement", "out of scope" or "future work" are **not** valid reasons: an applicable
+  article the code does not follow is a finding. A selected article with no entry makes the
+  review `partial`.
+  `review.bcquality.outcome` is `selection-completed` when every selected article has a
+  disposition and the provider's Entry flow was not run, `completed` when the provider
+  flow completed, and `not-applicable` when BCQuality is not installed or is disabled. Neither
+  of the first two makes the review `partial` (see the review pipeline, *Two execution paths*).
+- `review.agent-sdk` (**mandatory when the app extends `Agent Metadata Provider`**):
+  `{status, checks: [{check, status, evidence, reason}]}` with the checks `interfaces`,
+  `instructions-upgrade`, `access-controls`, `input-analysis` and `creation-policy`
+  (see `al-agent-toolkit.instructions.md`, *Completeness checklist*). Each
+  `finding` has a matching entry in `findings` with `domain: "Agents"`.
 
 Preserve provider citation IDs and locations. For BCQuality-cited findings use the
 knowledge path as ID (`references[0].path`); distinguish occurrences by ID + location,
