@@ -1,5 +1,16 @@
 # ALDC Changelog
 
+## [Unreleased]
+
+### Docs
+
+- New page `docs/aldc-verify.md` (and `docs/aldc-verify-es.md` in Spanish): what
+  the aldc-verify companion plugin gives ALDC's Claude Code surface (L1 compile,
+  L2 analyzers, Stop/SubagentStop gate, `al-build-validator`, `last-report.json`
+  as review evidence, `/aldc-verify:al-go`, guard, SubagentStart overlay), how to
+  install and update it, what happens without it, and which hooks belong to each
+  plugin. Linked from the mkdocs nav, both home pages and `claude-plugin/README.md`.
+
 ## [5.1.1] - 2026-10-20
 
 ### Changed — Claude Code surface
