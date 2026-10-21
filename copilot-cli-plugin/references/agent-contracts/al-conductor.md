@@ -131,7 +131,11 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
    - Identify relevant AL objects (Tables, Pages, Codeunits, etc.)
    - Understand event architecture and extension patterns
    - Check AL-Go structure (`app/` vs `test/` projects)
+   - Fill the *Standard Flow* section for every Base Application publisher the task hooks into
+   - Read the BCQuality articles you pass (the paths in the architecture/spec `<req>.bcq-selection.json`, when it exists and BCQuality is enabled) and list them under *BCQuality references*
    - Return structured findings (NOT write plans)
+
+   > **Standard flow travels with the work.** Pass the findings' *Standard Flow* section to every implementation phase that touches those publishers, and to the reviewer. If the planner returned no Standard Flow and the plan hooks into a standard publisher, send the planner back for that section before implementing.
 
    > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
 
@@ -188,7 +192,7 @@ Invoke **AL Implementation Subagent** (💻) via `task` with:
 - Phase number and objective
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the spec section for this phase's objects, the architecture decisions it must honor, and the test-plan tests scoped to it — not bare file references. Include the file paths as the escape hatch.
 - AL objects to create/modify (TableExtension, Codeunit, Page, etc.)
-- Event subscribers/publishers needed
+- Event subscribers/publishers needed, with the planning findings' *Standard Flow* entries for those publishers
 - Test requirements following AL-Go structure (`test/` project)
 - AL-specific patterns (SetLoadFields, error handling, naming ≤26 chars)
 - Explicit TDD instruction: tests first (failing), minimal code, tests pass, lint/format
