@@ -84,7 +84,11 @@ Provide structured summary with AL-specific sections.
 
 When you complete your research, return findings by reading and filling `.github/docs/templates/planning-findings-template.md`. Do not invent the format inline; the template is the single source of truth.
 
+**Standard flow is mandatory.** Whenever the task subscribes to or depends on a Base Application publisher, fill the template's *Standard Flow* section from the publisher's actual symbols or source: its events in execution order and the chosen hook with its reason. In the October 2026 evals, investigating that order before choosing the event is what separated correct solutions from wrong ones.
+
 **Evidence the BCQuality decision.** If the Conductor passed you a resolved BCQuality decision (mode, expected identity and reported stage / unavailable / disabled), record it verbatim in your findings so it is captured in the plan. Do **not** probe or invoke BCQuality during planning yourself — the Conductor already resolved it once.
+
+**Consult the articles you were given.** When the Conductor passes BCQuality article paths (from the architecture or spec selection), read the ones that bear on your findings (data model, events, permissions, performance, API, upgrade) before recommending an option. Where an article shapes a finding or the recommendation, cite its exact path next to it, and fill the template's *BCQuality references* list. Do not search the corpus for more articles, and do not claim BCQuality coverage for articles you did not open. With BCQuality disabled or unavailable there are no articles: write "None opened".
 
 ## Research Guidelines
 

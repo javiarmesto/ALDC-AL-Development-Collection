@@ -228,7 +228,10 @@ spec-stage selection file the guidance defines. Every cited path must exist in t
 corpus (`<home>/<path>` readable); a path that resolves nowhere is the one defect
 this table can have, and it is fixed before approval. The table declares what will
 be reviewed; it does not judge the spec and never blocks it. Carry the
-`> **BCQuality**:` evidence line from the design guidance in the header.
+`> **BCQuality**:` evidence line from the design guidance in the header. Read the
+articles that bear on a contract decision before making it, cite each path next to the
+decision it shapes, and end the spec with a **BCQuality references** list: article path
+and the decision it informed. Do not claim coverage for articles you did not open.
 
 ## Review, approval and continuation
 
