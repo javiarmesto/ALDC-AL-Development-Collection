@@ -27,6 +27,6 @@ jobs:
       - name: Restore pinned AL tools
         run: dotnet tool restore
       - name: Observe actual tool availability
-        run: dotnet tool run al -- version
+        run: dotnet tool run al -- --version
       - name: Verify unchanged source fixtures
         run: python scripts/verify-fixtures.py
