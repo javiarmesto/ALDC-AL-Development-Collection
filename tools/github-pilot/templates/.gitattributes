@@ -1,0 +1,2 @@
+# Preserve exact upstream bytes and provenance across Windows/Linux checkouts.
+* -text

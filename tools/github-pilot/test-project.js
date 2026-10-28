@@ -55,12 +55,15 @@ test('canonical projection emits discoverable profiles with cloud grants and com
 });
 
 test('cloud translation maps executable editor calls and routes to root-relative resources', () => {
-  const translated = api().translate('#runSubagent vscode/askQuestions read/readFile ms-dynamics-smb.al/al_build ../docs/templates/plan-template.md ../agents/al-conductor.agent.md');
+  const translated = api().translate('#runSubagent vscode/askQuestions read/readFile ms-dynamics-smb.al/al_build ../docs/templates/plan-template.md ../agents/al-conductor.agent.md al_debug bclsp_findReferences edit/createFile');
   assert.ok(!translated.includes('#runSubagent'));
   assert.ok(!translated.includes('vscode/'));
   assert.ok(!translated.includes('ms-dynamics-smb.al/'));
   assert.ok(translated.includes('.github/docs/templates/plan-template.md'));
   assert.ok(translated.includes('.github/agents/al-conductor.agent.md'));
+  assert.ok(!translated.includes('al_debug'));
+  assert.ok(!translated.includes('bclsp_findReferences'));
+  assert.ok(!translated.includes('edit/createFile'));
 });
 
 test('generation is deterministic and provenance binds actual canonical inputs and output bytes', () => {

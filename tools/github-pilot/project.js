@@ -74,6 +74,8 @@ Do not grant edit/shell to a read-only role just to save a report.
 `;
 
 function translate(text) {
+  text = text.replace(/## Tool surface \(authoritative[^\n]*\)[\s\S]*?(?=## CAN \/ CANNOT)/,
+    '## Tool surface (GitHub cloud)\n\nUse the granted cloud file/search/shell tools and only actually configured AL providers.\nRead .github/ALDC-CLOUD.md for bindings, approval gates and evidence requirements.\nThe repo-local AL compiler needs compatible symbols; runtime tests need a real BC runner.\nEditor APIs and debugger controls have no cloud binding.\n\n');
   text = rewritePaths(text, {
     instructions: '.github/copilot-instructions.md', rules: '.github/instructions/',
     rule: name => `.github/instructions/${name}.instructions.md`,
@@ -93,7 +95,12 @@ function translate(text) {
     .replace(/\bread\/readFile\b|\bread\/skill\b/g, 'read')
     .replace(/\bvscode\/[\w/]+\b/g, 'the applicable repository artifact or human handoff')
     .replace(/#?(?:ms-dynamics-smb\.al|sshadowsdk\.al-lsp-for-agents)\/[\w]+/g, 'the corresponding verified AL command/provider (unavailable until configured)')
+    .replace(/\bal_(?:debug|setbreakpoint|snapshotdebugging)\b/g, 'editor debugger capability (unavailable in this cloud pilot)')
+    .replace(/\bbclsp_\w+\b/g, 'configured semantic-provider operation (otherwise unavailable)')
+    .replace(/\bal_(?:get_diagnostics|downloadsymbols|download_symbols|build|package|full_package|symbolsearch|symbolrelations)\b/g, 'the corresponding verified AL command/provider')
     .replace(/#(?:problems|testFailure)\b|\bread\/problems\b/g, 'actual recorded compiler/test output')
+    .replace(/\b(read|edit|search|execute)\/[a-zA-Z]+\b/g, '$1')
+    .replace(/vscode\.mermaid-chat-features\/renderMermaidDiagram/g, 'write a Mermaid diagram in the architecture document')
     .replace(/#(?:todos|todo)\b/g, 'persisted plan progress')
     .replace(/#(?:usages|search|codebase|changes|githubRepo)\b/g, 'available repository search/evidence')
     .replace(/\bweb\/githubTextSearch\b/g, 'available GitHub repository search')
