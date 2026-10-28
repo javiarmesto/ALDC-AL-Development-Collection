@@ -29,5 +29,8 @@ jobs:
           git show "$BASE_SHA:.github/aldc-cloud-lock.json" > "$RUNNER_TEMP/cloud-lock.json"
           python "$RUNNER_TEMP/verify-fixtures.py" --root "$GITHUB_WORKSPACE" --lock "$RUNNER_TEMP/pilot-lock.json" --cloud-lock "$RUNNER_TEMP/cloud-lock.json"
           python "$RUNNER_TEMP/check-phase.py" --base "$BASE_SHA" --root "$GITHUB_WORKSPACE"
+          if git diff --name-only "$BASE_SHA" HEAD -- App Test | grep -qi '\.al$'; then
+            python "$RUNNER_TEMP/verify-fixtures.py" --root "$GITHUB_WORKSPACE" --lock "$RUNNER_TEMP/pilot-lock.json" --cloud-lock "$RUNNER_TEMP/cloud-lock.json" --require-acceptance
+          fi
       - name: Record scope
         run: echo 'Integrity and phase checks only. AL build, BC runtime tests and manual A14 need their own evidence.' >> "$GITHUB_STEP_SUMMARY"

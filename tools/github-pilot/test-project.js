@@ -80,6 +80,14 @@ test('generation is deterministic and provenance binds actual canonical inputs a
   for (const p of ['.github/docs/templates/spec-template.md', '.github/skills/skill-api/SKILL.md', '.github/prompts/al-spec.create.prompt.md', '.github/tools/aldc-validate/index.js', 'aldc.yaml']) assert.ok(first.has(p), p);
 });
 
+test('all projected executable references drop editor-only and unconfigured concrete call identities', () => {
+  const forbidden = /\b(?:al_[a-z]\w*|bclsp_\w+|mcp_[\w-]+(?:\/[\w-]+)?|create_directory|create_file|websearch)\b|AL: Download Symbols|After user approval, COPY/;
+  for (const [name, bytes] of api().projectFiles(ROOT)) {
+    if (!name.endsWith('.md') || !['.github/agent-contracts/', '.github/skills/', '.github/prompts/'].some(prefix => name.startsWith(prefix))) continue;
+    assert.equal(bytes.toString('utf8').match(forbidden)?.[0], undefined, `${name}: incompatible call identity`);
+  }
+});
+
 test('preview writes nothing, apply is idempotent, and collision preflight prevents partial writes', t => {
   const destination = temp(t);
   const before = fs.readdirSync(destination);

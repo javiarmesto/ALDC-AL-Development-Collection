@@ -98,6 +98,14 @@ function translate(text) {
     .replace(/\bal_(?:debug|setbreakpoint|snapshotdebugging)\b/g, 'editor debugger capability (unavailable in this cloud pilot)')
     .replace(/\bbclsp_\w+\b/g, 'configured semantic-provider operation (otherwise unavailable)')
     .replace(/\bal_(?:get_diagnostics|downloadsymbols|download_symbols|build|package|full_package|symbolsearch|symbolrelations)\b/g, 'the corresponding verified AL command/provider')
+    .replace(/#?\bal_[a-z]\w*\b/g, 'the corresponding AL provider operation (return a prerequisite if unavailable)')
+    .replace(/\bmcp_[\w-]+(?:\/[\w-]+)?\b/g, 'the corresponding configured MCP capability (inspect its actual schema)')
+    .replace(/\b(?:create_directory|create_file)\b/g, 'the granted edit capability')
+    .replace(/\b(?:search_code|search_repositories)\b/g, 'the available GitHub repository read capability')
+    .replace(/\b(?:microsoft_docs_search|microsoft_docs_fetch)\b/g, 'the available Microsoft Learn capability')
+    .replace(/\b(?:resolve-library-id|get-library-docs)\b/g, 'a separately configured Context7 capability')
+    .replace(/\bwebsearch\b/g, 'available source-backed documentation search')
+    .replace(/AL: Download Symbols/g, 'restore symbols through the authorized project command (no editor command binding)')
     .replace(/#(?:problems|testFailure)\b|\bread\/problems\b/g, 'actual recorded compiler/test output')
     .replace(/\b(read|edit|search|execute)\/[a-zA-Z]+\b/g, '$1')
     .replace(/vscode\.mermaid-chat-features\/renderMermaidDiagram/g, 'write a Mermaid diagram in the architecture document')
@@ -119,6 +127,16 @@ function dreddPersistence(body) {
     .replace(/^1\. If the user forbids writes,[^\n]+/m, '1. Return the complete Audit-Report JSON verbatim. State persistence pending, or skipped when forbidden. The authorized caller may save it under .github/audits; Dredd never writes files.')
     .replace(/The path of the persisted report, and the full `### Audit-Report \(JSON\)` block\./, 'The pending/skipped persistence status, an actual path only when a save receipt is supplied, and the full `### Audit-Report (JSON)` block.')
     .replace(/3\. Close the reporting task once the report is delivered \(persisted when allowed\)\./, '3. Close reporting after returning the full JSON; keep audit coverage and persistence status separate.');
+}
+
+function architectureApproval(body) {
+  const anchor = /## 🚨 Critical: Automatic Architecture Document Creation[\s\S]*?(?=## Tool Boundaries)/;
+  if (!anchor.test(body)) throw Error('Architect approval anchor changed; review the cloud interaction');
+  return body
+    .replace(/- \*\*Documentation-Driven\*\*:[^\n]+/, '- **Documentation-Driven**: Copy the architecture template to a concrete Proposed artifact and open a draft PR for approval. Never edit templates or approve your own proposal.')
+    .replace(anchor, `## GitHub architecture proposal and human approval\n\nThe authorized architecture task permits a draft artifact before approval.\nDerive the requirement ID from the issue (customer-review for this pilot), copy\nthe architecture template, and persist a complete Proposed architecture in a\ndraft PR. Record assumptions, alternatives, sources and missing symbol evidence.\nPreserve existing work; propose an explicit revision when an artifact already exists.\nAppend actual observations to memory and request review of the exact artifact hash\nand commit. End the session at that gate. Only a subsequent explicit human approval\nof that revision allows specification work; the agent never changes Proposed to\nApproved on its own. Issue assignment does not approve the architecture.\n\n`)
+    .replace('1. Present design options, discuss trade-offs, get user approval.', '1. Persist the Proposed design and alternatives in a draft PR so the human can review a concrete artifact.')
+    .replace(/2\. \*\*AUTOMATIC after approval\*\*:[^\n]+/, '2. End the session for human approval of the proposed revision. Apply the GitHub architecture proposal and human approval procedure above; specification remains gated.');
 }
 
 function projectFiles(sourceRoot = ROOT) {
@@ -147,7 +165,8 @@ function projectFiles(sourceRoot = ROOT) {
     const id = entry.slice(0, -'.agent.md'.length);
     if (!Object.hasOwn(ROLE_TOOLS, id)) throw Error(`Unmapped GitHub cloud role: ${id}`);
     const { data, body } = split(read(`agents/${entry}`).toString('utf8'));
-    const contract = translate(id === 'dredd' ? dreddPersistence(body) : body);
+    const adapted = id === 'dredd' ? dreddPersistence(body) : id === 'al-architect' ? architectureApproval(body) : body;
+    const contract = translate(adapted);
     put(`.github/agent-contracts/${id}.md`, `> Generated GitHub cloud contract. Read .github/ALDC-CLOUD.md first.\n${contract}`);
     const fm = { name: data.name || id, description: data.description, target: 'github-copilot', tools: [...ROLE_TOOLS[id]],
       'mcp-servers': { 'microsoft-docs': { type: 'http', url: 'https://learn.microsoft.com/api/mcp', tools: ['*'] } } };
@@ -156,7 +175,10 @@ function projectFiles(sourceRoot = ROOT) {
     if (profile.length >= 30000) throw Error(`GitHub profile exceeds limit: ${id}`);
     put(`.github/agents/${entry}`, profile);
   }
-  copyTree('skills', '.github/skills', (bytes, rel) => Buffer.from(knowledgeContent(rel, bytes.toString('utf8').replace(/\r\n/g, '\n'), translate)));
+  copyTree('skills', '.github/skills', (bytes, rel) => {
+    const text = bytes.toString('utf8').replace(/\r\n/g, '\n');
+    return Buffer.from(['cli-al-tools.md', 'al18-capabilities.md'].includes(path.basename(rel)) ? translate(text) : knowledgeContent(rel, text, translate));
+  });
   copyTree('instructions', '.github/instructions', bytes => Buffer.from(translate(bytes.toString('utf8'))));
   copyTree('prompts', '.github/prompts', (bytes, rel) => {
     if (!rel.endsWith('.prompt.md')) return Buffer.from(translate(bytes.toString('utf8')));

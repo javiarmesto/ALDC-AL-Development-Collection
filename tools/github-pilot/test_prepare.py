@@ -93,6 +93,7 @@ class PreparationTests(unittest.TestCase):
             'Test/app.json': b'{"application":"28.0.0.0","runtime":"16.0"}\n',
             'Test/src/DRControlTest.Codeunit.al': b'[Test]\nprocedure Control()',
             'acceptance-tests/DRAcceptanceTests.Codeunit.al': b'\n'.join(f'[Test]\nprocedure A{n:02}()'.encode() for n in range(16)),
+            'acceptance-tests/DRReviewWorker.Codeunit.al': b'codeunit 71303 Worker {}',
             'LICENSE': b'License',
         }
 
@@ -112,6 +113,28 @@ class PreparationTests(unittest.TestCase):
         bad = subprocess.run(command, capture_output=True, text=True)
         self.assertNotEqual(bad.returncode, 0)
         self.assertIn('DRAcceptanceTests', bad.stdout + bad.stderr)
+
+    def test_activated_tests_and_helpers_must_match_originals_and_activation_is_complete(self):
+        destination = self.root / 'consumer'
+        upstream = self.fixture()
+        api().build_consumer(upstream, destination, ROOT, '1' * 64)
+        command = [sys.executable, str(destination / 'scripts/verify-fixtures.py'), '--root', str(destination)]
+        acceptance = destination / 'Test/src/DRAcceptanceTests.Codeunit.al'
+        helper = destination / 'Test/src/DRReviewWorker.Codeunit.al'
+        acceptance.write_bytes(upstream['acceptance-tests/DRAcceptanceTests.Codeunit.al'])
+        partial = subprocess.run(command, capture_output=True, text=True)
+        self.assertNotEqual(partial.returncode, 0, 'partial activation must fail')
+        helper.write_bytes(upstream['acceptance-tests/DRReviewWorker.Codeunit.al'])
+        self.assertEqual(subprocess.run(command, capture_output=True).returncode, 0)
+        acceptance.write_text('// bypass compiled tests')
+        modified = subprocess.run(command, capture_output=True, text=True)
+        self.assertNotEqual(modified.returncode, 0)
+        self.assertIn('Test/src/DRAcceptanceTests', modified.stdout + modified.stderr)
+        acceptance.write_bytes(upstream['acceptance-tests/DRAcceptanceTests.Codeunit.al'])
+        helper.unlink()
+        self.assertNotEqual(subprocess.run(command, capture_output=True).returncode, 0)
+        acceptance.unlink()
+        self.assertNotEqual(subprocess.run(command + ['--require-acceptance'], capture_output=True).returncode, 0, 'deleting every activated copy cannot bypass an implementation PR check')
 
     def test_phase_gate_rejects_implementation_without_base_specification(self):
         destination = self.root / 'consumer'

@@ -6,9 +6,14 @@ import json
 from pathlib import Path
 
 
-def verify(root, fixture_lock, cloud_lock):
+def verify(root, fixture_lock, cloud_lock, require_acceptance=False):
     errors = []
-    for category, paths in [('upstream fixture', fixture_lock['fixtures']), ('generated ALDC file', cloud_lock['outputs'])]:
+    activated = {f'Test/src/{Path(p).name}': h for p, h in fixture_lock['fixtures'].items() if p.startswith('acceptance-tests/') and p.endswith('.al')}
+    active = require_acceptance or any((root / p).exists() for p in activated)
+    groups = [('upstream fixture', fixture_lock['fixtures']), ('generated ALDC file', cloud_lock['outputs'])]
+    if active:
+        groups.append(('activated acceptance test/helper', activated))
+    for category, paths in groups:
         for relative, digest in paths.items():
             path = root / relative
             if (Path(relative).is_absolute() or '..' in Path(relative).parts
@@ -27,12 +32,13 @@ def main():
     parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument('--lock', type=Path)
     parser.add_argument('--cloud-lock', type=Path)
+    parser.add_argument('--require-acceptance', action='store_true', help='Require the complete activated Test/src suite, including when every copy was deleted')
     args = parser.parse_args()
     fixture = json.loads((args.lock or args.root / 'pilot-lock.json').read_text(encoding='utf-8'))
     cloud = json.loads((args.cloud_lock or args.root / '.github/aldc-cloud-lock.json').read_text(encoding='utf-8'))
     if fixture.get('schema') != 1 or cloud.get('schema') != 1:
         raise ValueError('Unsupported provenance schema')
-    verify(args.root, fixture, cloud)
+    verify(args.root, fixture, cloud, args.require_acceptance)
 
 
 if __name__ == '__main__':
