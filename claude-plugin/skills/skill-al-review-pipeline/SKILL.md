@@ -96,20 +96,25 @@ open each listed article and give it a disposition in `review.bcquality.articles
 `file:line`). The requirement not asking for something is never a reason to dismiss an
 applicable article: report it as a finding instead.
 
-**Two execution paths for BCQuality (aldc-claude).** In Claude Code a provider skill
-loaded inside a subagent rarely completes Entry → dispatch → leaves; in the October 2026
-runs it never did. So:
-1. **Selection path (primary, always).** The plugin's *BCQuality selection* comes from
-   the same BCQuality root the host loads the provider skill from. Reading every
-   selected article and giving each a disposition **is** an executed BCQuality check
-   for those articles: set `review.bcquality.outcome: "selection-completed"` and
-   `provider.execution: "aldc-selection"` with the number of articles. Do not mark
-   the review `partial` because Entry was not run.
-2. **Provider path (extra, when feasible).** You may also invoke the provider skill
-   (`bcquality:al-code-review`) and run Entry. If it completes, keep its sub-results
-   verbatim and set `outcome: "completed"`. If it does not complete, record that in
+**Two paths for BCQuality (aldc-claude).** In Claude Code the Skill tool can load
+`bcquality:al-code-review` inside a subagent, but no run so far has been observed
+completing Entry → dispatch → leaves there. So:
+1. **ALDC selection (always).** The plugin's *BCQuality selection* is an ALDC keyword
+   match over the installed BCQuality root, not a provider execution. Read every
+   selected article and give each a disposition, then set
+   `review.bcquality.outcome: "selection-completed"`, `provider.execution:
+   "aldc-selection"` with the number of articles, and `provider.executed: false`.
+   `selection-completed` means **ALDC selection dispositions completed; BCQuality
+   provider not executed**: it is not BCQuality provider coverage, never satisfies a
+   criterion that requires a provider-completed domain, and never replaces or reduces
+   the native checks. Do not mark the review `partial` only because Entry was not run.
+2. **Provider path (when feasible).** Also invoke `bcquality:al-code-review` and run
+   Entry. If it completes, keep its sub-results verbatim, set `outcome: "completed"`
+   and `provider.executed: true`. If it does not complete, record that in
    `provider.detail` and keep the selection result; it is not a failure.
-A selected article without a disposition is the only BCQuality reason for `partial`.
+A design-stage `knowledge-response` (`*.bcq-selection.json`) is design context, never
+review coverage. A selected article without a disposition is the only BCQuality
+reason for `partial`.
 
 When the app extends `Agent Metadata Provider`, also fill `review.agent-sdk` from the
 *Completeness checklist* in `${CLAUDE_PLUGIN_ROOT}/rules/al-agent-toolkit.md`.

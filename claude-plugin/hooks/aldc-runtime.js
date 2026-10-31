@@ -106,9 +106,37 @@ function bcqualityRoot() {
   return install && fs.existsSync(install) ? install : null;
 }
 
-/** BCQuality knowledge articles {path, domain, keywords, title}; cached per root. */
+/** What was observed about a BCQuality root: where it came from, the plugin version and the git HEAD
+ *  (read from .git, no git process). Recorded in briefs so a selection carries its provenance. */
+function bcqualityProvenance(root) {
+  if (!root) return { rootSource: 'none', version: null, head: null };
+  const norm = (p) => path.resolve(String(p || '')).toLowerCase();
+  let rootSource = 'cache';
+  if (process.env.BCQUALITY_HOME && norm(process.env.BCQUALITY_HOME) === norm(root)) rootSource = 'env';
+  else {
+    const markets = readJson(path.join(os.homedir(), '.claude', 'plugins', 'known_marketplaces.json')) || {};
+    if (Object.values(markets).some((m) => m?.source?.source === 'directory' && norm(m.installLocation || m.source.path) === norm(root))) rootSource = 'directory-marketplace';
+  }
+  const manifest = readJson(path.join(root, 'plugin.json')) || readJson(path.join(root, '.claude-plugin', 'plugin.json'));
+  let head = null;
+  const headFile = read(path.join(root, '.git', 'HEAD'));
+  if (headFile) {
+    const ref = headFile.match(/^ref:\s*(\S+)/);
+    head = ((ref ? read(path.join(root, '.git', ref[1])) : headFile) || '').trim().slice(0, 7) || null;
+  }
+  return { rootSource, version: manifest?.version || null, head };
+}
+
+/** Path of a skill of the installed BCQuality plugin (e.g. 'al-knowledge'), or null when absent. */
+function bcqualitySkill(name, root = bcqualityRoot()) {
+  const file = root && path.join(root, 'skills', name, 'SKILL.md');
+  return file && fs.existsSync(file) ? file : null;
+}
+
+/** BCQuality knowledge articles {path, domain, keywords, title}; cached per root and plugin version. */
 function bcqualityArticles(root) {
-  const cache = path.join(os.tmpdir(), 'aldc-claude-bcq-' + Buffer.from(root).toString('hex').slice(-24) + '.json');
+  const version = bcqualityProvenance(root);
+  const cache = path.join(os.tmpdir(), 'aldc-claude-bcq-' + Buffer.from(root + '|' + version.version + '|' + version.head).toString('hex').slice(-32) + '.json');
   const cached = readJson(cache);
   if (cached?.root === root) return cached.articles;
   const articles = [];
@@ -204,4 +232,4 @@ function pluginInstalled(prefix) {
   return Object.keys(data.plugins || data).some((k) => k.startsWith(prefix + '@'));
 }
 
-module.exports = { testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
+module.exports = { testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };

@@ -6,15 +6,17 @@
 // 2. Guarantees the AL rules reach the subagent: auto-apply of .claude/rules does not fire
 //    in subagents, and the conductor often did not pass them inline (13 of 13 runs).
 // 3. Passes the autonomy mode, so a subagent never waits for an approval nobody will give.
-// 4. Hands BCQuality articles to reviewers (apply or justify) and to design roles (consult and cite):
-//    subagents cannot rely on the bcquality skills, so in the demo Architect and Spec read articles by hand.
+// 4. Hands BCQuality candidate articles to reviewers (apply or justify) and to Architect/Spec. These are an
+//    ALDC keyword match, never a BCQuality provider execution: design roles consult bcquality:al-knowledge when
+//    it is installed and record the candidates only as a manual selection (review of 31 Oct 2026, H1-H3).
 // Other subagent types are left untouched.
 const runtime = require('./aldc-runtime');
 
 const MARKER = '<!-- aldc-rules -->';
 const CODE_ROLES = /^aldc:(al-implement-subagent|al-review-subagent|al-developer-reviewer|al-developer|al-planning-subagent|al-triage|dredd|al-agent-builder)$/;
 const REVIEWERS = /^aldc:(al-review-subagent|al-developer-reviewer|dredd)$/;
-const DESIGNERS = /^aldc:(al-architect|al-spec-agent|al-planning-subagent)$/;
+// The planner is left out: its contract forbids probing BCQuality during planning.
+const DESIGNERS = /^aldc:(al-architect|al-spec-agent)$/;
 const FLOW_ROLES = /^aldc:(al-planning-subagent|al-implement-subagent|al-developer)$/;
 const AGENT_SDK = /agent\s*sdk|IAgent(Factory|Metadata|TaskExecution)|agent\s*toolkit|al-agent-builder/i;
 
@@ -34,21 +36,28 @@ function brief(payload) {
   // M8: hand the reviewer the relevant BCQuality articles and the apply-or-justify rule.
   if (REVIEWERS.test(input.subagent_type) && !prompt.includes('## BCQuality selection')) {
     const sel = runtime.bcqualitySelection(payload.cwd, prompt);
-    if (sel && sel.articles.length) extra.push('## BCQuality selection (from the plugin: articles whose keywords match ' + sel.scope + ')\n\n' +
+    if (sel && sel.articles.length) extra.push('## BCQuality selection (ALDC keyword match on ' + sel.scope + '; not a BCQuality provider execution)\n\n' +
       sel.articles.map((a) => '- ' + sel.root + '/' + a.path + ' (' + a.domain + '): ' + a.title).join('\n') +
       '\n\nOpen each article and record it in review.bcquality.articles as applied, not-applicable (with reason) or dismissed ' +
       '(technical reason citing file:line). "Not requested by the requirement" is not a valid reason: an applicable article ' +
       'the code does not follow is a finding. Also fill review.security (rules/al-security.md).');
     else if (sel) extra.push('## BCQuality selection\n\nNo BCQuality article matched this app. Review natively and still fill review.security (rules/al-security.md).');
   }
-  // Design roles consult the same knowledge before deciding; no disposition per article, so artifact-gate does not apply.
-  if (DESIGNERS.test(input.subagent_type) && !prompt.includes('## BCQuality knowledge')) {
+  // Design roles: the real route is bcquality:al-knowledge; the keyword list is only a labelled manual fallback.
+  if (DESIGNERS.test(input.subagent_type) && !prompt.includes('## BCQuality candidates')) {
     const sel = runtime.bcqualitySelection(payload.cwd, prompt, 10);
-    if (sel && sel.articles.length) extra.push('## BCQuality knowledge (from the plugin: articles whose keywords match ' + sel.scope + ' and the brief)\n\n' +
-      sel.articles.map((a) => '- ' + sel.root + '/' + a.path + ' (' + a.domain + '): ' + a.title).join('\n') +
-      '\n\nRead the articles that bear on your decisions (data model, events, permissions, performance, API, upgrade) before making them. ' +
-      'Where an article shapes a decision, cite its path next to that decision, and end your output with a "BCQuality references" list: ' +
-      'article path and the decision it informed. Do not claim BCQuality coverage for articles you did not open.');
+    if (sel && sel.articles.length) {
+      const prov = runtime.bcqualityProvenance(sel.root);
+      const knowledge = runtime.bcqualitySkill('al-knowledge');
+      extra.push('## BCQuality candidates (ALDC hook keyword match on ' + sel.scope + ' and the brief; NOT a BCQuality consultation)\n\n' +
+        `Provenance: root ${sel.root} (${prov.rootSource}) · bcquality ${prov.version || 'version unknown'}${prov.head ? ' · ' + prov.head : ''}\n\n` +
+        sel.articles.map((a) => '- ' + sel.root + '/' + a.path + ' (' + a.domain + '): ' + a.title).join('\n') +
+        '\n\n' + (knowledge
+          ? 'For each knowledge domain your decisions need, consult `bcquality:al-knowledge` with the Skill tool: write the question first and pass it verbatim as the skill argument. The Skill tool only loads instructions and runs nothing: then execute them yourself (Entry, READ, the dispatched al-knowledge action) until you hold the knowledge-response JSON, and persist it unchanged in responses[] (docs/templates/bcquality-design-guidance.md). One invocation per domain. '
+          : 'The installed BCQuality has no al-knowledge skill, so no consultation is possible here. ') +
+        'You may also read the candidates above, but record any you use as `selection: manual` (or `mixed`) with `route: hook-candidates`: never place them in responses[] or label them al-knowledge. ' +
+        'Cite each article path next to the decision it shapes and end with a "BCQuality references" list stating, for each, its route (al-knowledge or hook-candidates). This is design context, never review coverage.');
+    }
   }
   // M9: investigate the standard flow before hooking into it.
   if (FLOW_ROLES.test(input.subagent_type) && !prompt.includes('Standard Flow'))

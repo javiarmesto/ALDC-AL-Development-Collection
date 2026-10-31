@@ -28,12 +28,25 @@ function offerText() {
     BCQ_INSTALL.map((c) => `\`${c}\``).join(' and ') + '. Run them only if the user agrees, then ask them to restart Claude Code. ' +
     'Until then, review with ALDC native checks and record BCQuality as not consulted (not installed).\n';
 }
-function warnings(cwd) {
+// Claude Code 2.1.302 moved foreground subagents to the background after ~2 min and an unattended parent
+// ended its turn "waiting" (eval kq5, 31 Oct 2026). CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 makes it wait.
+const backgroundAllowed = () => process.env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS !== '1';
+function waitText() {
+  if (!backgroundAllowed()) return '';
+  return 'ALDC subagents: the host may move a subagent to the background while it runs. When you need its result ' +
+    '(a phase, a review, a BCQuality consultation), do not end your turn or write "waiting": continue when its completion ' +
+    'notification arrives and only then use the result.\n';
+}
+function warnings(cwd, mode = runtime.autonomy(cwd)) {
   const out = [];
+  if (mode.gates === 'pre-approved' && backgroundAllowed())
+    out.push('Background subagents are enabled: in an unattended run the conductor can end its turn while a phase or consultation still runs. Set CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 (process environment or the "env" block of settings.json) so Claude waits for its subagents; it also turns off background shell commands.');
   if (!fs.existsSync(path.join(cwd, '.claude', 'rules', 'al-guidelines.md')))
     out.push('ALDC rules are not in .claude/rules/: the main session will not auto-apply them. Run /aldc:al-initialize to install them (ALDC subagents still receive them inline from the plugin).');
   if (runtime.bcqualityInstalled() === false)
     out.push(`BCQuality plugin is not installed: reviews run with ALDC native checks only and design roles get no articles. To install it: ${BCQ_INSTALL.join(', then ')}, and restart Claude Code.`);
+  else if (runtime.bcqualityRoot() && !runtime.bcqualitySkill('al-knowledge'))
+    out.push(`The installed BCQuality (${runtime.bcqualityProvenance(runtime.bcqualityRoot()).version || 'unknown version'}) has no al-knowledge skill: Architect and Spec can only use a manual article selection. Update to the official plugin (1.9.0 or later): ${BCQ_INSTALL.join(', then ')}.`);
   if (runtime.pluginInstalled('aldc-verify') === false)
     out.push('aldc-verify is not installed: ALDC has no compile/analyzer evidence for its phases (it relies on aldc-verify instead of duplicating it). Install it for verified builds.');
   return out;
@@ -56,7 +69,7 @@ function context(payload, pluginRoot = path.resolve(__dirname, '..')) {
   runtime.writeState(runtime.sessionFile(payload.session_id), { cwd, start: Date.now() });
   const warn = warnings(cwd).map((w) => `⚠️ ALDC: ${w}\n`).join('');
   return { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext:
-    fs.readFileSync(path.join(pluginRoot,'project-guidance.md'),'utf8') + gateText(runtime.autonomy(cwd)) + testText(runtime.testRunner(cwd)) + warn + offerText() +
+    fs.readFileSync(path.join(pluginRoot,'project-guidance.md'),'utf8') + gateText(runtime.autonomy(cwd)) + testText(runtime.testRunner(cwd)) + warn + offerText() + waitText() +
     `Read the terminal tool contract at ${path.join(pluginRoot,'skills/skill-migrate/references/cli-al-tools.md')}. Plugin root: ${pluginRoot}. Initialization is an explicit user action.\n` },
     ...(warn ? { systemMessage: warn.trim() } : {}) };
 }
