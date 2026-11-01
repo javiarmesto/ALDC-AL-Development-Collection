@@ -1,7 +1,7 @@
 ---
 name: al-spec-agent
 description: Turn an approved Business Central requirement and architecture into one implementable AL specification. Own technical contracts and acceptance criteria without writing AL implementation or changing architecture.
-tools: Read, Glob, Grep, LSP, Write, Edit, WebSearch, WebFetch, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, Skill, AskUserQuestion
+tools: Read, Glob, Grep, LSP, Write, Edit, WebSearch, WebFetch, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, Skill, AskUserQuestion, Agent
 model: sonnet
 color: cyan
 ---
@@ -130,6 +130,8 @@ use native file retrieval when authorized helper execution is unavailable. Defin
 downstream review criteria that cite BCQuality knowledge paths — read path, per
 [the design guidance](${CLAUDE_PLUGIN_ROOT}/docs/templates/bcquality-design-guidance.md) — and leave
 actual code review to Reviewer/Dredd.
+**Knowledge consultations (Claude Code).** When `bcquality:al-knowledge` is installed and you run in the main session, consult it per domain through the `aldc:al-knowledge-consultant` subagent (Agent tool, foreground; several domains may run in parallel): write each question into the selection record first, pass it verbatim, and copy the returned `response` object into `responses[].response` exactly as returned, with its `invocation`: do not drop, summarize or reshape it (an entry without `response` is invalid, and so is an `al-knowledge` selection built on it). Then validate as the consumer before selecting references and record `validation: {status, by: "consumer", checks}`: `response.question` byte-identical to your question, the schema keys present, and every reference path existing under the reported `pluginRoot` and listed in `articlesRead` (`validation.by: consumer`). When you run as a subagent you cannot launch it (subagents do not nest): invoke the skill yourself and finish the consultation, or record the domain as manual with that reason. Do not consult BCQuality any other way when the consultant is available.
+
 Do not approve your own spec or start implementation.
 
 ## Load the sources that govern this unit
@@ -224,9 +226,15 @@ and required downstream compiler/runtime/review checks in the same `.spec.md`.
 
 Under section 11, add the table **Review criteria (BCQuality)**: one row per
 object → cited `path` → what the reviewer will check → layer. Write the same rows to
-`{req_name}.bcq-criteria.json` (`[{object, path, layer, domain, check}]`), and the
-spec-stage selection file the guidance defines. Every cited path must exist in the
-corpus (`<home>/<path>` readable); a path that resolves nowhere is the one defect
+`{req_name}.bcq-criteria.json` (`[{object, path, layer, domain, check, applicability,
+unknown, source}]`), and the spec-stage selection file the guidance defines.
+`applicability` and `unknown` come from the reference that supports the row
+(`applicable` | `conditional` with the unknown dimensions, e.g. `["bc-version"]`); a
+conditional row keeps that condition visible in the table. `source` is
+`al-knowledge:<domain>` when a validated consultation response cites the path,
+`manual` or `hook-candidates` otherwise, or `house-rule`. Every cited path must exist
+in the corpus the downstream reviewer will use (the observed BCQuality root, e.g.
+the installed plugin root; `<home>` only in multiroot mode); a path that resolves nowhere is the one defect
 this table can have, and it is fixed before approval. The table declares what will
 be reviewed; it does not judge the spec and never blocks it. Carry the
 `> **BCQuality**:` evidence line from the design guidance in the header.

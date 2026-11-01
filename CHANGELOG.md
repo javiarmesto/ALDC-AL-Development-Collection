@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+### Changed — Claude Code surface 5.2.0
+
+- BCQuality is the official `microsoft/BCQuality` plugin (1.9.0 or later), with
+  `al-code-review`, `al-knowledge` and `al-plan-guidance`. The session warns when
+  the installed BCQuality has no `al-knowledge`.
+- New read-only subagent `al-knowledge-consultant`: runs exactly one
+  `bcquality:al-knowledge` consultation for a verbatim question and returns the
+  `knowledge-response` with how it ran. Architect and Spec delegate each knowledge
+  domain to it from the main session. Evals on a clean lab base: 8 + 3 real
+  consultations, question verbatim and response persisted in every case, no
+  nonexistent reference.
+- The design guidance records the question before invoking, the invocation
+  (route, executor, plugin version) and who validated (`consumer`/`self`), and
+  states that the Skill tool only loads instructions.
+- `agent-brief` labels its article list "BCQuality candidates (ALDC keyword match;
+  not a BCQuality consultation)", with provenance; used articles are
+  `route: hook-candidates` (manual). The planning subagent no longer receives it.
+- Review: `selection-completed` means ALDC selection dispositions completed with
+  the BCQuality provider not executed; it is not provider coverage.
+- Spec review criteria carry `applicability`, `unknown` and `source`.
+- The session asks Claude not to end its turn while a needed subagent runs and, in
+  `pre-approved` mode, recommends `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`
+  (Claude Code 2.1.302 moved subagents to the background after about two minutes).
+
 ## [5.2.0] - 2026-10-21
 
 Canonical sources and the Copilot Chat, Copilot CLI and Codex distributions use

@@ -76,7 +76,11 @@ for (const [role, template] of architectureRoles) {
   const guidanceLinks = [...read(role).matchAll(/\]\(([^)\s]+bcquality-design-guidance\.md)\)/g)].map(m => resolveRef(role, m[1]));
   check(guidanceLinks.includes(guide), `${role}: design knowledge guide resolves in this host`);
   const guidance = read(guide).replace(/\r\n/g, '\n');
-  check(guidance === read('docs/templates/bcquality-design-guidance.md').replace(/\r\n/g, '\n'), `${role}: current knowledge procedure travels unchanged`);
+  // The maintained Claude surface (claude-plugin/SURFACE.md) carries its own guide: it extends the canonical
+  // procedure (question recorded before invoking, invocation/validation, the knowledge consultant).
+  if (guide.startsWith('claude-plugin/') && fs.existsSync(path.join(root, 'claude-plugin', 'SURFACE.md'))) {
+    check(/Write the question into the\s+selection record before invoking/.test(guidance) && guidance.includes('al-knowledge-consultant'), `${role}: maintained Claude knowledge procedure`);
+  } else check(guidance === read('docs/templates/bcquality-design-guidance.md').replace(/\r\n/g, '\n'), `${role}: current knowledge procedure travels unchanged`);
   check(!/never invokes Entry|Every step below is a directory listing/.test(guidance), `${role}: no legacy manual-only policy`);
   const body = read(role).replace(/\s+/g, ' ');
   if (role.includes('al-architect')) {

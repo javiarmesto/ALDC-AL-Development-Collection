@@ -97,6 +97,11 @@ check(maintainedClaude ? conductor.data.model === undefined : conductor.data.mod
 check(!conductor.data.tools.includes('mcp__'), 'Conductor does not acquire AL MCP execution');
 for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {
   const agent = split(read('claude-plugin/agents/' + file));
+  // The knowledge consultant never touches AL: it only runs one BCQuality consultation (read-only, no MCP).
+  if (maintainedClaude && file === 'al-knowledge-consultant.md') {
+    check(agent.data.tools.split(',').map((t) => t.trim()).sort().join(',') === 'Glob,Grep,Read,Skill', `${file}: read-only consultant tools`);
+    continue;
+  }
   check(agent.body.includes('${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md'), `${file}: contract is directly reachable`);
   if (file === 'al-conductor.md') continue;
   for (const server of ['al-symbols-mcp', 'context7', 'microsoft-docs']) {

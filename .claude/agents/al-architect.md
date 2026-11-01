@@ -1,7 +1,7 @@
 ---
 name: al-architect
 description: AL Architecture and Design assistant for Business Central extensions. Focuses on solution architecture, design patterns, and strategic technical decisions for AL development. Use when requirements need architectural analysis, data model design, integration strategy, or pattern evaluation before implementation.
-tools: Read, Glob, Grep, LSP, Write, Edit, Bash, Task, WebSearch, WebFetch, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, Skill, AskUserQuestion
+tools: Read, Glob, Grep, LSP, Write, Edit, Bash, Task, Agent, WebSearch, WebFetch, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, Skill, AskUserQuestion
 model: sonnet
 color: blue
 ---
@@ -235,6 +235,8 @@ when it defines validations or user-facing errors) ·
 Integration → `events`, `web-services` · Data → `data-modeling`, `upgrade`,
 `breaking-changes` · Security → `security`, `privacy` · Performance →
 `performance` (keys, FlowFields, batch — not loop-level rules).
+
+**Knowledge consultations (Claude Code).** When `bcquality:al-knowledge` is installed and you run in the main session, consult it per domain through the `aldc:al-knowledge-consultant` subagent (Agent tool, foreground; several domains may run in parallel): write each question into the selection record first, pass it verbatim, and copy the returned `response` object into `responses[].response` exactly as returned, with its `invocation`: do not drop, summarize or reshape it (an entry without `response` is invalid, and so is an `al-knowledge` selection built on it). Then validate as the consumer before selecting references and record `validation: {status, by: "consumer", checks}`: `response.question` byte-identical to your question, the schema keys present, and every reference path existing under the reported `pluginRoot` and listed in `articlesRead` (`validation.by: consumer`). When you run as a subagent you cannot launch it (subagents do not nest): invoke the skill yourself and finish the consultation, or record the domain as manual with that reason. Do not consult BCQuality any other way when the consultant is available.
 
 Write `.claude/plans/{req_name}/{req_name}.bcq-constraints.md` with two blocks:
 

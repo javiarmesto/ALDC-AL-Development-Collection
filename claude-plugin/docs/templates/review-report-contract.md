@@ -56,7 +56,10 @@ Return one fenced JSON block headed `### Review-Report (JSON)`:
   `review.bcquality.outcome` is `selection-completed` when every selected article has a
   disposition and the provider's Entry flow was not run, `completed` when the provider
   flow completed, and `not-applicable` when BCQuality is not installed. Neither of the
-  first two makes the review `partial` (see the review pipeline, *Two execution paths*).
+  first two makes the review `partial` (see the review pipeline, *Two paths*).
+  `selection-completed` means ALDC selection dispositions completed with the BCQuality
+  provider **not executed** (`provider.executed: false`): it is not provider coverage
+  and does not reduce native checks.
 - `review.agent-sdk` (aldc-claude, **mandatory when the app extends `Agent Metadata Provider`**):
   `{status, checks: [{check, status, evidence, reason}]}` with the checks `interfaces`,
   `instructions-upgrade`, `access-controls`, `input-analysis` and `creation-policy`
