@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+### Added — knowledge consultant on Copilot Chat, Copilot CLI and Codex
+
+- New canonical read-only role `al-knowledge-consultant` (AL Knowledge Consultant):
+  runs one BCQuality `al-knowledge` consultation for a verbatim question and returns
+  the `knowledge-response` with how it ran. No AL tools on any surface; Codex profile
+  `sandbox_mode = "read-only"`.
+- Architect and Spec consult each knowledge domain through it when the host can
+  launch it, copy its `response` unchanged and validate it as the consumer
+  (`validation.by: consumer`). Copilot Chat: `agent` tool restricted by
+  `agents: ['AL Knowledge Consultant']`. Copilot CLI: Architect delegates through
+  `task`; Spec has no `task` grant and consults inline. Codex: native delegation when
+  available, otherwise inline (`executor: main-session`, unverified).
+- The canonical design guidance records the question before invoking, the
+  invocation and validation of each response, and labels candidate lists received
+  in a brief as `route: hook-candidates` (manual).
+- Spec review criteria carry `applicability`, `unknown` and `source` on every surface.
+- Process evidence comes from Claude Code evals; host runs on Chat, CLI and Codex
+  remain to be observed.
+
 ### Changed — Claude Code surface 5.2.0
 
 - BCQuality is the official `microsoft/BCQuality` plugin (1.9.0 or later), with

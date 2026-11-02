@@ -171,6 +171,10 @@ const ROLE_TOOLS = {
     "list_agents",
     "read_agent"
   ],
+  "al-knowledge-consultant": [
+    "read",
+    "search"
+  ],
   "al-planning-subagent": [
     "read",
     "search",
@@ -231,7 +235,8 @@ const ROLE_TOOLS = {
 function toolsForRole(name) {
   if (!Object.hasOwn(ROLE_TOOLS, name)) throw new Error(`Unmapped Copilot CLI role: ${name}`);
   const tools = [...ROLE_TOOLS[name]];
-  if (name !== 'al-conductor') tools.push('al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies');
+  // The knowledge consultant reads BCQuality only: no AL tools.
+  if (!['al-conductor', 'al-knowledge-consultant'].includes(name)) tools.push('al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies');
   if (['al-developer', 'al-implement-subagent'].includes(name)) tools.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
   if (name === 'al-triage') tools.push('bc-profiling/*', 'bc-snapshot/*');
   return tools;

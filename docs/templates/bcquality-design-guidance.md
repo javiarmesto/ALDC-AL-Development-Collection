@@ -50,9 +50,22 @@ layers are the same rule; keep the highest enabled layer.
 1. **House rules first.** List `<home>/custom/knowledge/` recursively when that layer
    is enabled. Read every article there in full; they are policy and are uncapped.
 2. **Knowledge questions by domain.** For each domain the role needs, ask one
-   question tied to the requirement and stage. Pass `bc-version`, `technologies`,
+   question tied to the requirement and stage. **Write the question into the
+   selection record before invoking**, then pass that exact string, byte for byte;
+   never rephrase it in the call. Pass `bc-version`, `technologies`,
    `countries` and `application-area` only when the project states them. Plugin:
-   invoke the skill with that question. Where the host has no skill-invocation
+   invoke the skill with that question. Loading a skill's instructions is not a
+   consultation: the consultation starts after the instructions load and is yours
+   to finish in the same turn, through Entry, READ and the dispatched
+   `microsoft/skills/knowledge/al-knowledge.md` action, until you hold its
+   `knowledge-response`. Invoke once per domain; do not repeat an invocation.
+   Where the host can launch the read-only **AL Knowledge Consultant** subagent
+   (`al-knowledge-consultant`) from this role, run each consultation through it: a
+   focused consultation completes where one mixed into design work often does not.
+   Record `executor: "subagent:al-knowledge-consultant"` and persist its `response`
+   and `invocation` unchanged. Where it cannot be launched (no delegation tool, or
+   this role already runs as a subagent), run the consultation yourself.
+   Where the host has no skill-invocation
    tool (a skill is an instruction file you read, as in VS Code Copilot), invoking
    it **is** reading its `SKILL.md` and executing its steps inline through the
    dispatched action skill; the `knowledge-response` that action skill produces
@@ -75,6 +88,11 @@ layers are the same rule; keep the highest enabled layer.
    filename and read them in full. Do not fabricate a skill response for manual
    selection. Missing terminal/PowerShell alone does not require manual selection:
    the knowledge action skill can use its documented path-based retrieval.
+   A candidate list received in the brief (a hook's keyword match, or a list passed
+   by a parent agent) is not a consultation: articles used from it are
+   `route: hook-candidates`, count as manual selection and never go into
+   `responses[]`. A selection passed between agents is not a new observation by the
+   receiver.
 5. Apply the matching card and precedence. Cap platform articles at what the
    document can use — around 30 for design, 40 for spec. Never cap house rules.
 
@@ -147,7 +165,8 @@ Illustrative shape (replace placeholders with actual observations):
   "displaced": [ { "path": "…", "supersededBy": "…" } ],
   "selection": "manual",
   "responses": [],
-  "domains": [ { "domain": "events", "status": "consulted", "route": "manual", "reason": "Knowledge skill unavailable; article bodies read" } ]
+  "domains": [ { "domain": "events", "status": "consulted", "route": "manual", "reason": "Knowledge skill unavailable; article bodies read" },
+               { "domain": "permissions", "status": "consulted", "route": "hook-candidates", "reason": "Read from a candidate list in the brief; not a consultation" } ]
 }
 ```
 
@@ -160,8 +179,22 @@ A domain the role maps but skipped is reported as `not consulted (<reason>)`, ne
 under "consulted, nothing selected". Record that distinction in `domains[]` and
 the document's consultation summary; an empty selection is not evidence of a query.
 
-Each `responses[]` entry is `{ "domain": "<asked domain>", "response": <actual
-unchanged result> }`. An `al-knowledge` selection with empty responses is invalid.
+Each `responses[]` entry is `{ "domain": "<asked domain>", "question": "<exact
+string written before invoking>", "invocation": {…}, "validation": {…}, "response":
+<actual unchanged result> }`. An `al-knowledge` selection with empty responses is
+invalid, and so is an entry without `response`.
+
+- `invocation`: `route` (`skill-tool` | `inline-read`), `executor` (`main-session`
+  | `subagent:<type>`), `pluginRoot` and `pluginVersion` as observed in this run,
+  `corpusSha` or `null`, and `index` (`used` | `path-discovery` |
+  `not-attempted (<reason>)`).
+- `validation`: `status` (`validated` | `unverified` | `failed`) and `by`
+  (`consumer` | `self`). The consumer checks `response.question` byte-identical to
+  `question`, the schema keys present, and every reference path existing under the
+  reported root. Validation written by the answering agent itself is `by: self` and
+  counts as `unverified`.
+- If `response.question` differs from `question`, keep the raw response, set
+  `validation.status: failed` and do not select its references.
 Check actual knowledge responses (not Entry dispatch records) against the answering provider's
 `schemas/knowledge-response.schema.json` when validation is available; otherwise
 record validation as unverified. Every selected platform path attributed to a

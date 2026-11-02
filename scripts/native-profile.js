@@ -15,6 +15,7 @@ const referenceNames = { al_getdiagnostics: 'al_get_diagnostics' };
 const roles = {
   'al-spec-agent': [SEARCH, 'Own specification contracts and ordinary technical research. Preserve approved architecture and human approval; write only the assigned spec and its declared BCQuality selection/criteria sidecars. Knowledge consultation follows the design guidance. No builds, tests, dependency changes or code review.'],
   'al-architect': [SEARCH, 'Resolve architectural viability and dependencies; consume graph evidence. Delegate exact implementation declarations.'],
+  'al-knowledge-consultant': [[], 'Run one BCQuality knowledge consultation by reading the installed provider files; use no AL tools.'],
   'al-planning-subagent': [SEARCH, 'Resolve material planning gaps and reuse approved evidence; do not reopen settled design decisions.'],
   'al-developer': [[...IMPLEMENT, ...DEBUG], 'Own scoped implementation, dependency setup, builds, tests and optional graph operations through your existing terminal.'],
   'al-implement-subagent': [IMPLEMENT, 'Own scoped TDD implementation, dependency setup, builds and optional graph operations through your existing terminal.'],

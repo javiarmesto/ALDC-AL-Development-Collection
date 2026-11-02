@@ -86,14 +86,17 @@ try {
   if (sourceCheckout) {
     const legacy = path.join(tmp, 'legacy'); fs.mkdirSync(path.join(legacy, '.github/agents'), { recursive: true });
     const { execFileSync } = require('child_process');
-    for (const name of fs.readdirSync(path.join(root, 'agents')).filter(n => n.endsWith('.agent.md'))) {
+    // Roles added after 5.0.0 (the knowledge consultant) have no legacy copy to upgrade.
+    const legacyAgents = execFileSync('git', ['ls-tree', '--name-only', 'v5.0.0', 'agents/'], { cwd: root }).toString()
+      .split('\n').map(p => path.basename(p.trim())).filter(n => n.endsWith('.agent.md'));
+    for (const name of legacyAgents) {
       const old = execFileSync('git', ['show', `v5.0.0:agents/${name}`], { cwd: root });
       fs.writeFileSync(path.join(legacy, '.github/agents', name), old);
     }
     const upgraded = installer(legacy, ['--json']);
     check(upgraded.status === 0, `Legacy upgrade: ${upgraded.stderr}`);
     const report = JSON.parse(upgraded.stdout);
-    for (const name of fs.readdirSync(path.join(root, 'agents')).filter(n => n.endsWith('.agent.md'))) {
+    for (const name of legacyAgents) {
       check(fm(read(path.join(legacy, '.github/agents', name))).model === chatModel, `5.0.0 copy updated: ${name}`);
       check(report.files.find(f => f.path === `.github/agents/${name}`).recognised, `5.0.0 copy recognised: ${name}`);
     }

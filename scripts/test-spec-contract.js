@@ -83,6 +83,9 @@ for (const [role, template] of architectureRoles) {
   } else check(guidance === read('docs/templates/bcquality-design-guidance.md').replace(/\r\n/g, '\n'), `${role}: current knowledge procedure travels unchanged`);
   check(!/never invokes Entry|Every step below is a directory listing/.test(guidance), `${role}: no legacy manual-only policy`);
   const body = read(role).replace(/\s+/g, ' ');
+  // Every surface consults per domain through the read-only knowledge consultant when it
+  // can launch it, copying its response unchanged and validating it as the consumer.
+  check(body.includes('al-knowledge-consultant') && body.includes('exactly as returned') && body.includes('by: "consumer"'), `${role}: knowledge consultations through the consultant`);
   if (role.includes('al-architect')) {
     check(/plus `ui` when it adds pages.*`error-handling` when it defines validations or user-facing errors/.test(body), `${role}: design maps UI and errors`);
   } else {
@@ -105,4 +108,11 @@ for (const rel of ['claude-plugin/agents/al-spec-agent.md', 'copilot-cli-plugin/
   const tools = split(read(rel)).data.tools;
   check(!/\b(?:Bash|Task|execute|agent)\b/.test(Array.isArray(tools) ? tools.join(',') : tools), `${rel}: no delegated execution grant`);
 }
+// Chat Spec and Architect may delegate, but only to the consultant; the consultant is read-only everywhere.
+for (const rel of ['agents/al-spec-agent.agent.md', 'agents/al-architect.agent.md']) {
+  check(JSON.stringify(split(read(rel)).data.agents) === JSON.stringify(['AL Knowledge Consultant']), `${rel}: delegation limited to the knowledge consultant`);
+}
+check(split(read('agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read/readFile,read/skill,search', 'Chat consultant is read-only');
+check(split(read('copilot-cli-plugin/agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read,search', 'CLI consultant is read-only');
+check(!split(read('copilot-cli-plugin/agents/al-spec-agent.agent.md')).data.tools.includes('task'), 'CLI Spec consults inline (no task grant)');
 console.log(`Spec integration: ${checks} routing/reference/permission checks; no model behavior or host loading claimed.`);

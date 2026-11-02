@@ -73,7 +73,7 @@ for(const [surface,dir] of [['claude','claude-plugin'],['cli','copilot-cli-plugi
  assert.deepEqual(initialize({project:r,pluginRoot,check:true}).drift,[rule]);
  initialize({project:r,pluginRoot,apply:true,force:true});initialize({project:r,pluginRoot,rollback:true});assert.equal(read(r,rule),'custom rule');
  assert.equal(read(r,'App/Main.al'),'// project source');assert.equal(read(r,'Test/app.json'),'{"runtime":"18.0"}');
- if(surface==='codex') {assert.equal(fs.readdirSync(path.join(r,'.codex/agents')).length,12);assert.equal(read(r,'AGENTS.md'),'Shadowed instructions preserved');}
+ if(surface==='codex') {assert.equal(fs.readdirSync(path.join(r,'.codex/agents')).length,13);assert.equal(read(r,'AGENTS.md'),'Shadowed instructions preserved');}
 });
 test('tampered plugin fails before creating project files; CRLF locked checkout is accepted',t=>{
  const r=temp(t),pluginRoot=path.join(r,'plugin'),project=path.join(r,'project');fs.cpSync(path.join(root,'claude-plugin'),pluginRoot,{recursive:true});
