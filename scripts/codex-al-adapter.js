@@ -5,12 +5,14 @@ const QUERIES = ['al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependenc
 const IMPLEMENTATION = ['al_compile', 'al_build', 'al_downloadsymbols'];
 function alPolicyFor(role) {
   return {
-    queries: role !== 'al-conductor' ? QUERIES : [],
+    queries: !['al-conductor', 'al-knowledge-consultant'].includes(role) ? QUERIES : [],
     implementation: ['al-developer', 'al-implement-subagent'].includes(role) ? IMPLEMENTATION : [],
     capture: role === 'al-triage',
   };
 }
 function roleTooling(role) {
+  // The knowledge consultant reads BCQuality files only; it gets no AL operations.
+  if (role === 'al-knowledge-consultant') return '\n## Codex AL tooling scope\n\nNo AL MCP operations, project preparation, builds or captures: read only the\ninstalled BCQuality provider files. No role gains publication, authentication or\ncredential-reset authority from this package.\n\n';
   const policy = alPolicyFor(role);
   const preparation = policy.queries.length
     ? 'Project preparation is separate from queries: only with explicit user authorization (including authorization carried by the delegation), an already exposed al_addproject tool and a confirmed existing App/Test folder containing app.json, register that exact folder in this agent\'s own live MCP connection. Inspect the actual schema. On a no-projects-loaded response, allow one authorized registration and one query retry in the same connection; otherwise report the blocker. Do not infer prepared state from the parent or another alias. Do not change filters, credentials or files, scaffold, download symbols, compile or publish as a preparation fallback.'

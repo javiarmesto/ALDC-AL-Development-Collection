@@ -94,7 +94,7 @@ test('official AL MCP grants are explicit and compilation belongs to implementat
   const { toolsForRole } = require('./copilot-cli-adapter');
   const roles = fs.readdirSync(path.join(pluginRoot, 'agents')).map(n => n.replace('.agent.md', ''));
   for (const id of roles) {
-    const expected = id === 'al-conductor' ? [] : ['al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies'];
+    const expected = ['al-conductor', 'al-knowledge-consultant'].includes(id) ? [] : ['al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies'];
     if (['al-developer', 'al-implement-subagent'].includes(id)) expected.push('al/al_compile', 'al/al_build', 'al/al_downloadsymbols');
     assert.deepEqual(toolsForRole(id).filter(t => t.startsWith('al/')).sort(), expected.sort(), id);
   }

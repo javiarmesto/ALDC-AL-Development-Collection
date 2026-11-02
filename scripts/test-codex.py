@@ -11,7 +11,7 @@ import tomllib
 repo = pathlib.Path(__file__).resolve().parents[1]
 root = repo / 'plugins/aldc-codex'
 roles = list((root / 'agents').glob('*.toml'))
-assert len(roles) == 12
+assert len(roles) == 13
 assert list((root / 'skills').rglob('SKILL.md')) == [root / 'skills/aldc/SKILL.md']
 # Codex's own legal set (codex-rs/protocol/src/config_types.rs). danger-full-access is
 # legal but no ALDC role needs it, so a value outside this pair is a permission bug.
@@ -107,6 +107,11 @@ for path in roles:
     permitted = path.stem in ('al-developer', 'al-implement-subagent')
     assert ('With an authorized project: al_compile, al_build, al_downloadsymbols.' in body) == permitted
     assert ('Triage may use the dedicated optional profiling/snapshot proxies' in body) == (path.stem == 'al-triage')
+    if path.stem == 'al-knowledge-consultant':
+        # Reads BCQuality provider files only: no AL scope, read-only sandbox.
+        assert 'No AL MCP operations' in body and 'Official AL MCP query operations' not in body
+        assert tomllib.loads(path.read_text(encoding='utf-8'))['sandbox_mode'] == 'read-only'
+        continue
     assert 'behavioral role contract, not an MCP allowlist' in body
     assert 'native Codex route remains unresolved' in body
     assert 'al-tooling.md' in body
@@ -142,4 +147,4 @@ with tempfile.TemporaryDirectory(prefix='aldc-codex-mcp-') as fixture:
             assert (project / '.agents/skills/aldc/references/al-tooling.md').read_text(encoding='utf-8') == tooling
         else:
             assert not installed.exists()
-print('Codex: 12 valid TOML profiles, full role bodies, one discoverable skill; MCP examples parsed; existing MCP config preserved through install/verify/rollback. Host loading unverified.')
+print('Codex: 13 valid TOML profiles, full role bodies, one discoverable skill; MCP examples parsed; existing MCP config preserved through install/verify/rollback. Host loading unverified.')

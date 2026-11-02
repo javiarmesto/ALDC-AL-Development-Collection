@@ -17,7 +17,7 @@ for (const profile of ['bc28', 'bc29-native']) {
       for (const key of Object.keys(before).filter(k => !['tools', 'description', 'model'].includes(k))) assert.deepEqual(meta[key], before[key], `${rel}: preserve ${key}`);
       assert.equal(meta.model, before.model ? chatModel : undefined, `${rel}: Chat model policy`);
       const role = name.replace(/\.(agent|prompt)\.md$/, '');
-      const none = ['al-conductor', 'al-memory.create'].includes(role);
+      const none = ['al-conductor', 'al-memory.create', 'al-knowledge-consultant'].includes(role);
       const tools = meta.tools;
       // Installed AL18.1: registration name differs from toolReferenceName.
       // Granting the former made native diagnostics unavailable in the host smoke.

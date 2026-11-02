@@ -92,7 +92,9 @@ function project(relative, input, profile) {
   // Triage requests dependency restore from an implementation owner in both modes.
   tools = tools.filter(t => !t.startsWith('ms-dynamics-smb.al/') ||
     (profile === 'bc29-native' && !(triage && t.endsWith('/al_downloadsymbols'))));
-  if (!coordinator) {
+  // The knowledge consultant reads BCQuality provider files only.
+  const knowledge = role === 'al-knowledge-consultant';
+  if (!coordinator && !knowledge) {
     tools.push(...lspQueries.map(t => `SShadowSdk.al-lsp-for-agents/${t}`));
     tools.push(...queries.map(t => `al/${t}`));
   }
@@ -110,6 +112,7 @@ function project(relative, input, profile) {
     .replace('Use `al_build` with `scope: current` for the selected project; use\n   `scope: all` only when every project in the workspace is authorized.', 'Use the selected provider’s `al_build` schema for the authorized project.\n   Discover supported `scope`, `projectPath` and output options for that provider; never transpose schemas.')
     .replace('installed `al_downloadsymbols` schema', 'selected provider’s `al_downloadsymbols` schema');
   const scope = coordinator ? 'Coordinate and consume evidence; do not execute AL providers.' :
+    knowledge ? 'Read the installed BCQuality provider files only; do not use AL providers.' :
     implementation ? 'Query AL and compile/build/restore only the authorized App/Test scope. Publication and authentication are separate human steps.' :
     setup ? 'Query AL and restore only explicitly approved dependencies. Do not compile, publish or change authentication in this setup workflow.' :
     triage ? 'Query AL; request builds/restores from implementation. Optional profiling/snapshot capture belongs here only, after confirming target, permissions and capture window. Stop and collect owned captures.' :
