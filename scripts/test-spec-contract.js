@@ -89,6 +89,8 @@ for (const [role, template] of architectureRoles) {
   // The executor records what ran: following the consultant's instructions inline is main-session.
   check(body.includes('only for a consultant you actually launched in this run') && body.includes('following them yourself is `main-session`'), `${role}: executor reflects an actual launch`);
   check(guidance.replace(/\s+/g, ' ').includes('The executor states what happened in this run, not what was intended'), `${role}: guide ties executor to the launch`);
+  // A launchable consultant is mandatory: a CLI run chose inline "because it seemed simpler".
+  check(body.includes('Launching the consultant is required whenever it can be launched') || body.includes('Do not consult BCQuality any other way when the consultant is available'), `${role}: delegation is mandatory when possible`);
   if (role.includes('al-architect')) {
     check(/plus `ui` when it adds pages.*`error-handling` when it defines validations or user-facing errors/.test(body), `${role}: design maps UI and errors`);
   } else {
@@ -116,6 +118,13 @@ for (const rel of ['agents/al-spec-agent.agent.md', 'agents/al-architect.agent.m
   check(JSON.stringify(split(read(rel)).data.agents) === JSON.stringify(['AL Knowledge Consultant']), `${rel}: delegation limited to the knowledge consultant`);
 }
 check(split(read('agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read/readFile,read/skill,search', 'Chat consultant is read-only');
+// Like the Conductor subagents: hidden from the picker and launched only by a role that lists
+// it in `agents` (Architect, Spec), never on the model's own initiative by an agent that is
+// not prepared to validate its knowledge-response.
+for (const rel of ['agents/al-knowledge-consultant.agent.md', 'copilot-cli-plugin/agents/al-knowledge-consultant.agent.md']) {
+  const data = split(read(rel)).data;
+  check(data['user-invocable'] === false && data['disable-model-invocation'] === true, `${rel}: internal subagent, explicit invocation only`);
+}
 check(split(read('copilot-cli-plugin/agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read,search', 'CLI consultant is read-only');
 check(!split(read('copilot-cli-plugin/agents/al-spec-agent.agent.md')).data.tools.includes('task'), 'CLI Spec consults inline (no task grant)');
 console.log(`Spec integration: ${checks} routing/reference/permission checks; no model behavior or host loading claimed.`);

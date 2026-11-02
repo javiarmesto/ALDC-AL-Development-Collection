@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Fixed — using the knowledge consultant is required when it can be launched
+
+- Host runs on 2 Nov 2026 (Architect, one domain, clean Directions copy): Claude Code
+  and Codex delegated; Copilot Chat delegated once and consulted inline once; the
+  Copilot CLI saw the consultant but consulted inline "because it seemed simpler";
+  in the Copilot harness of VS Code the consultant was not listed as launchable.
+- Design guidance, Architect and Spec make delegation required whenever the
+  consultant can be launched; consulting inline needs a stated reason.
+- The consultant keeps `user-invocable: false` and `disable-model-invocation: true`,
+  like the Conductor subagents: only a role that lists it in `agents` (Architect,
+  Spec) launches it, so no other agent receives a knowledge-response it is not
+  prepared to validate. Native Chat Conductor runs show that allowlist works with the
+  field. Whether the Copilot harness and the CLI launch such subagents is unverified;
+  other harnesses may behave differently.
+
 ### Fixed — knowledge consultation executor records what actually ran
 
 - A Codex run of Architect launched the consultant for three of six domains and
