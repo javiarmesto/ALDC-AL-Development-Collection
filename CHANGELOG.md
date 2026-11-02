@@ -4,8 +4,9 @@
 
 ### Fixed — knowledge consultation executor records what actually ran
 
-- A Codex run of Architect read the consultant's instructions and consulted inline,
-  yet recorded every response as `executor: "subagent:al-knowledge-consultant"`.
+- A Codex run of Architect launched the consultant for three of six domains and
+  consulted the other three inline, yet recorded every response as
+  `executor: "subagent:al-knowledge-consultant"`.
   The design guidance, Architect, Spec and the consultant now state that the
   subagent executor applies only to a consultant actually launched in that run
   through the host's delegation tool; following its instructions yourself is
