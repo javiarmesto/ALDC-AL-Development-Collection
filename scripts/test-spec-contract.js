@@ -87,10 +87,8 @@ for (const [role, template] of architectureRoles) {
   // can launch it, copying its response unchanged and validating it as the consumer.
   check(body.includes('al-knowledge-consultant') && body.includes('exactly as returned') && body.includes('by: "consumer"'), `${role}: knowledge consultations through the consultant`);
   // The executor records what ran: following the consultant's instructions inline is main-session.
-  if (!role.startsWith('claude-plugin/') && !role.startsWith('.claude/')) {
-    check(body.includes('only for a consultant you actually launched in this run') && body.includes('following them yourself is `main-session`'), `${role}: executor reflects an actual launch`);
-    check(guidance.replace(/\s+/g, ' ').includes('The executor states what happened in this run, not what was intended'), `${role}: guide ties executor to the launch`);
-  }
+  check(body.includes('only for a consultant you actually launched in this run') && body.includes('following them yourself is `main-session`'), `${role}: executor reflects an actual launch`);
+  check(guidance.replace(/\s+/g, ' ').includes('The executor states what happened in this run, not what was intended'), `${role}: guide ties executor to the launch`);
   if (role.includes('al-architect')) {
     check(/plus `ui` when it adds pages.*`error-handling` when it defines validations or user-facing errors/.test(body), `${role}: design maps UI and errors`);
   } else {
