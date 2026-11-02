@@ -65,6 +65,11 @@ layers are the same rule; keep the highest enabled layer.
    Record `executor: "subagent:al-knowledge-consultant"` and persist its `response`
    and `invocation` unchanged. Where it cannot be launched (no delegation tool, or
    this role already runs as a subagent), run the consultation yourself.
+   The executor states what happened in this run, not what was intended:
+   `subagent:al-knowledge-consultant` only when you launched the consultant through
+   the host's delegation tool and its output is that tool call's result. Reading the
+   consultant's instructions and following them yourself is `main-session`; correct
+   any copied `invocation.executor` accordingly.
    Where the host has no skill-invocation
    tool (a skill is an instruction file you read, as in VS Code Copilot), invoking
    it **is** reading its `SKILL.md` and executing its steps inline through the

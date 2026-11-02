@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Fixed — knowledge consultation executor records what actually ran
+
+- A Codex run of Architect launched the consultant for three of six domains and
+  consulted the other three inline, yet recorded every response as
+  `executor: "subagent:al-knowledge-consultant"`.
+  The design guidance, Architect, Spec and the consultant now state that the
+  subagent executor applies only to a consultant actually launched in that run
+  through the host's delegation tool; following its instructions yourself is
+  `main-session`. A contract test pins the rule on Copilot and Codex surfaces.
+
 ### Added — knowledge consultant on Copilot Chat, Copilot CLI and Codex
 
 - New canonical read-only role `al-knowledge-consultant` (AL Knowledge Consultant):

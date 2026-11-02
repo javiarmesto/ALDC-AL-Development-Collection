@@ -65,4 +65,7 @@ One fenced `json` block:
 `response.question` byte-identical to the question you received. If Entry produced a
 dispatch record instead (`no-match`/`failed`), put that record in `response`
 unchanged. Never invent references; `articlesRead` lists only files you read in this
-run. The caller validates the result; do not claim it is validated.
+run. The caller validates the result; do not claim it is validated. `executor` is
+`subagent:al-knowledge-consultant` only when you run as a launched subagent; if a
+session is reading this file as instructions and consulting itself, it records
+`main-session`.
