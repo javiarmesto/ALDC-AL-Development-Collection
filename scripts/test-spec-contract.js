@@ -118,12 +118,12 @@ for (const rel of ['agents/al-spec-agent.agent.md', 'agents/al-architect.agent.m
   check(JSON.stringify(split(read(rel)).data.agents) === JSON.stringify(['AL Knowledge Consultant']), `${rel}: delegation limited to the knowledge consultant`);
 }
 check(split(read('agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read/readFile,read/skill,search', 'Chat consultant is read-only');
-// Hidden from the picker but launchable by Architect and Spec. With disable-model-invocation
-// the Copilot CLI harness did not list the consultant as a launchable agent (2 Nov 2026);
-// native Chat honours the `agents` allowlist either way (Conductor subagents launch).
+// Like the Conductor subagents: hidden from the picker and launched only by a role that lists
+// it in `agents` (Architect, Spec), never on the model's own initiative by an agent that is
+// not prepared to validate its knowledge-response.
 for (const rel of ['agents/al-knowledge-consultant.agent.md', 'copilot-cli-plugin/agents/al-knowledge-consultant.agent.md']) {
   const data = split(read(rel)).data;
-  check(data['user-invocable'] === false && data['disable-model-invocation'] !== true, `${rel}: hidden but launchable as a subagent`);
+  check(data['user-invocable'] === false && data['disable-model-invocation'] === true, `${rel}: internal subagent, explicit invocation only`);
 }
 check(split(read('copilot-cli-plugin/agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read,search', 'CLI consultant is read-only');
 check(!split(read('copilot-cli-plugin/agents/al-spec-agent.agent.md')).data.tools.includes('task'), 'CLI Spec consults inline (no task grant)');
