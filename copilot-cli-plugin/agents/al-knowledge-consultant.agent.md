@@ -6,7 +6,6 @@ tools:
   - search
 model: claude-sonnet-4.6
 user-invocable: false
-disable-model-invocation: true
 ---
 
 > **Copilot CLI adapter — generated; do not edit this distribution.**
