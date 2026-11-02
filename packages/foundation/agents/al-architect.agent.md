@@ -212,7 +212,10 @@ checks}`: `response.question` byte-identical to your question, the schema keys
 present, and every reference path existing under the reported `pluginRoot` and listed
 in `articlesRead`. When the consultant cannot be launched, run the consultation
 yourself as the design guidance describes and record `executor: "main-session"`, or
-record the domain as manual with that reason.
+record the domain as manual with that reason. Record
+`executor: "subagent:al-knowledge-consultant"` only for a consultant you actually
+launched in this run whose output is that tool call's result; reading its
+instructions and following them yourself is `main-session`.
 
 Write `.github/plans/{req_name}/{req_name}.bcq-constraints.md` with two blocks:
 
