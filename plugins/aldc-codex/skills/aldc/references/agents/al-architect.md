@@ -235,6 +235,20 @@ Integration → `events`, `web-services` · Data → `data-modeling`, `upgrade`,
 `breaking-changes` · Security → `security`, `privacy` · Performance →
 `performance` (keys, FlowFields, batch — not loop-level rules).
 
+**Knowledge consultations.** When BCQuality `al-knowledge` is installed and the host
+lets you launch the read-only **AL Knowledge Consultant** subagent
+(`al-knowledge-consultant`, through `the available native subagent tool`), consult it once per domain: write
+each question into the selection record first, pass it verbatim, and copy the returned
+`response` object into `responses[].response` exactly as returned, with its
+`invocation`: do not drop, summarize or reshape it (an entry without `response` is
+invalid, and so is an `al-knowledge` selection built on it). Then validate as the
+consumer before selecting references and record `validation: {status, by: "consumer",
+checks}`: `response.question` byte-identical to your question, the schema keys
+present, and every reference path existing under the reported `pluginRoot` and listed
+in `articlesRead`. When the consultant cannot be launched, run the consultation
+yourself as the design guidance describes and record `executor: "main-session"`, or
+record the domain as manual with that reason.
+
 Write `.agents/plans/{req_name}/{req_name}.bcq-constraints.md` with two blocks:
 
 - **House rules** — every custom-layer article, first, uncapped. One line each: the

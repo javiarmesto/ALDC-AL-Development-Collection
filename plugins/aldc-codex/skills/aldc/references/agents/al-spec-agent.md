@@ -129,6 +129,21 @@ use native file retrieval when authorized helper execution is unavailable. Defin
 downstream review criteria that cite BCQuality knowledge paths — read path, per
 [the design guidance](.agents/skills/aldc/references/templates/bcquality-design-guidance.md) — and leave
 actual code review to Reviewer/Dredd.
+
+**Knowledge consultations.** When BCQuality `al-knowledge` is installed and the host
+lets you launch the read-only **AL Knowledge Consultant** subagent
+(`al-knowledge-consultant`, through `the available native subagent tool`), consult it once per domain: write
+each question into the selection record first, pass it verbatim, and copy the returned
+`response` object into `responses[].response` exactly as returned, with its
+`invocation`: do not drop, summarize or reshape it (an entry without `response` is
+invalid, and so is an `al-knowledge` selection built on it). Then validate as the
+consumer before selecting references and record `validation: {status, by: "consumer",
+checks}`: `response.question` byte-identical to your question, the schema keys
+present, and every reference path existing under the reported `pluginRoot` and listed
+in `articlesRead`. When the consultant cannot be launched (this host grants this role
+no delegation tool, or it runs as a subagent), run the consultation yourself as the
+design guidance describes and record `executor: "main-session"`, or record the domain
+as manual with that reason. Delegation grants nothing beyond the consultant.
 Do not approve your own spec or start implementation.
 
 ## Load the sources that govern this unit
@@ -223,9 +238,15 @@ and required downstream compiler/runtime/review checks in the same `.spec.md`.
 
 Under section 11, add the table **Review criteria (BCQuality)**: one row per
 object → cited `path` → what the reviewer will check → layer. Write the same rows to
-`{req_name}.bcq-criteria.json` (`[{object, path, layer, domain, check}]`), and the
-spec-stage selection file the guidance defines. Every cited path must exist in the
-corpus (`<home>/<path>` readable); a path that resolves nowhere is the one defect
+`{req_name}.bcq-criteria.json` (`[{object, path, layer, domain, check, applicability,
+unknown, source}]`), and the spec-stage selection file the guidance defines.
+`applicability` and `unknown` come from the reference that supports the row
+(`applicable` | `conditional` with the unknown dimensions, e.g. `["bc-version"]`); a
+conditional row keeps that condition visible in the table. `source` is
+`al-knowledge:<domain>` when a validated consultation response cites the path,
+`manual` or `hook-candidates` otherwise, or `house-rule`. Every cited path must exist
+in the corpus the downstream reviewer will use (the observed BCQuality root; `<home>`
+only in multiroot mode); a path that resolves nowhere is the one defect
 this table can have, and it is fixed before approval. The table declares what will
 be reviewed; it does not judge the spec and never blocks it. Carry the
 `> **BCQuality**:` evidence line from the design guidance in the header. Read the

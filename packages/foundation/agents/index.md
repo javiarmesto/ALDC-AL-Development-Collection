@@ -18,6 +18,9 @@ description: "ALDC agent roles for Business Central development."
 Conductor owns the internal [Planning](al-planning-subagent.agent.md),
 [Implementation](al-implement-subagent.agent.md) and
 [Review](al-review-subagent.agent.md) subagents.
+Architect and Spec delegate each BCQuality knowledge question to the internal,
+read-only [Knowledge Consultant](al-knowledge-consultant.agent.md) when the host
+can launch it.
 Developer Reviewer and Dredd are directly invocable; they have different purposes.
 Reviewers use [the shared pipeline](../skills/skill-al-review-pipeline/SKILL.md).
 Architecture, specs, plans and memory stay in `.github/plans/`; Dredd may write
