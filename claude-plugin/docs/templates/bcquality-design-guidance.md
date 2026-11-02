@@ -69,6 +69,11 @@ layers are the same rule; keep the highest enabled layer.
    `aldc:al-knowledge-consultant` subagent: a focused consultation completes where
    one mixed into design work did not (evals of 31 Oct 2026); persist its
    `response` and `invocation` unchanged.
+   The executor states what happened in this run, not what was intended:
+   `subagent:al-knowledge-consultant` only when you launched the consultant through
+   the Agent tool and its output is that tool call's result. Reading the
+   consultant's instructions and following them yourself is `main-session`; correct
+   any copied `invocation.executor` accordingly.
    Where the host has no skill-invocation
    tool (a skill is an instruction file you read, as in VS Code Copilot), invoking
    it **is** reading its `SKILL.md` and executing its steps inline through the

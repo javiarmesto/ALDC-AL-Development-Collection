@@ -11,6 +11,9 @@
   subagent executor applies only to a consultant actually launched in that run
   through the host's delegation tool; following its instructions yourself is
   `main-session`. A contract test pins the rule on Copilot and Codex surfaces.
+- Claude Code surface 5.2.1 carries the same rule in its maintained guide, Architect,
+  Spec and consultant. A single-domain Claude Code run (plugin 5.2.0) already
+  launched the consultant and recorded it correctly; the rule makes it explicit.
 
 ### Added — knowledge consultant on Copilot Chat, Copilot CLI and Codex
 
