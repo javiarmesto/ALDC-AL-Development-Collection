@@ -2,7 +2,6 @@
 name: AL Knowledge Consultant
 description: 'Runs exactly one BCQuality knowledge consultation (al-knowledge) for a question it receives verbatim, and returns only the knowledge-response JSON plus how it ran. Read-only; no design, no review. Used by Architect and Spec for each knowledge domain.'
 user-invocable: false
-disable-model-invocation: true
 argument-hint: 'The exact knowledge question, plus only the context dimensions the project states'
 tools: [read/readFile, read/skill, search]
 model: Claude Sonnet 5.5 (copilot)

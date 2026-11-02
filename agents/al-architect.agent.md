@@ -210,9 +210,11 @@ invalid, and so is an `al-knowledge` selection built on it). Then validate as th
 consumer before selecting references and record `validation: {status, by: "consumer",
 checks}`: `response.question` byte-identical to your question, the schema keys
 present, and every reference path existing under the reported `pluginRoot` and listed
-in `articlesRead`. When the consultant cannot be launched, run the consultation
-yourself as the design guidance describes and record `executor: "main-session"`, or
-record the domain as manual with that reason. Record
+in `articlesRead`. Launching the consultant is required whenever it can be launched;
+do not consult yourself because it seems simpler. When the consultant cannot be
+launched, run the consultation yourself as the design guidance describes, record
+`executor: "main-session"` and state why in the domain entry, or record the domain as
+manual with that reason. Record
 `executor: "subagent:al-knowledge-consultant"` only for a consultant you actually
 launched in this run whose output is that tool call's result; reading its
 instructions and following them yourself is `main-session`.
