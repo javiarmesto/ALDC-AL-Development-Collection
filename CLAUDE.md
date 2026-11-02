@@ -5,7 +5,7 @@
 ## Overview
 
 AL (Application Language) workspace for Microsoft Dynamics 365 Business Central.
-Architecture: **ALDC Core v1.2** — 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension) + 16 skills + 11 workflows + 9 instructions.
+Architecture: **ALDC Core v1.2** — 13 agents (5 core + 3 on-demand + 4 subagents + 1 extension) + 16 skills + 11 workflows + 9 instructions.
 
 ## Core Principles
 
@@ -162,6 +162,6 @@ app.json               # Extension manifest
 - [BC Development Docs](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/)
 
 ---
-**Framework**: ALDC Core v1.2 | **Primitives**: 12 agents + 16 skills + 11 workflows + 9 instructions
+**Framework**: ALDC Core v1.2 | **Primitives**: 13 agents + 16 skills + 11 workflows + 9 instructions
 
 For direct Developer increments, use AL Developer Reviewer in an independent context before human approval. Dredd remains the advisory auditor. Both load skill-al-review-pipeline; Conductor phases keep their own review subagent.

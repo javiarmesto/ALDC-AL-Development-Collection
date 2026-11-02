@@ -125,6 +125,7 @@ required:
     - "agents/al-planning-subagent.agent.md"
     - "agents/al-review-subagent.agent.md"
     - "agents/al-implement-subagent.agent.md"
+    - "agents/al-knowledge-consultant.agent.md"
 
   workflows:
     - "prompts/al-spec.create.prompt.md"

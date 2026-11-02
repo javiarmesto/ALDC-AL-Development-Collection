@@ -2,7 +2,7 @@ id: al-development
 name: AL Development Collection for GitHub Copilot
 description: |
   ALDC Core v1.2 — Skills-based modularization with preserved orchestration for Business Central AL development.
-  5 core public agents + 3 on-demand agents + 3 internal subagents + 1 extension agent; 16 skills, 11 workflows and 10 instruction contracts (9 scoped rules plus the Copilot entrypoint; documentation excluded).
+  5 core public agents + 3 on-demand agents + 4 internal subagents + 1 extension agent; 16 skills, 11 workflows and 10 instruction contracts (9 scoped rules plus the Copilot entrypoint; documentation excluded).
   Spec-first, architecture-driven, TDD-orchestrated development with human-in-the-loop gates.
 tags: [al, business-central, dynamics365, erp, microsoft, aldc, tdd, skills, orchestration, copilot]
 
@@ -191,6 +191,16 @@ items:
       Returns: APPROVED / NEEDS_REVISION / FAILED with CRITICAL/MAJOR/MINOR issues.
       Checks skills compliance (api patterns, performance patterns, test patterns).
       NOT for direct use — invoked automatically by @AL Development Conductor.
+
+  # ─── Internal knowledge subagent (Architect/Spec-only, not user-invocable) ─
+  - path: agents/al-knowledge-consultant.agent.md
+    kind: agent
+    usage: optional
+    description: |
+      Read-only BCQuality knowledge consultant. Called by Architect and Spec once per
+      knowledge domain: runs one al-knowledge consultation for a verbatim question and
+      returns the knowledge-response with how it ran. No AL tools, no edits.
+      NOT for direct use — invoked by the Architect and Spec agents.
 
   # ─── On-demand Audit & Triage (optional) ────────────────────────────────────
   - path: agents/al-triage.agent.md
