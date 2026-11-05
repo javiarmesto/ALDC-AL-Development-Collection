@@ -91,6 +91,11 @@ for (const [role, template] of architectureRoles) {
   check(guidance.replace(/\s+/g, ' ').includes('The executor states what happened in this run, not what was intended'), `${role}: guide ties executor to the launch`);
   // A launchable consultant is mandatory: a CLI run chose inline "because it seemed simpler".
   check(body.includes('Launching the consultant is required whenever it can be launched') || body.includes('Do not consult BCQuality any other way when the consultant is available'), `${role}: delegation is mandatory when possible`);
+  // Hidden subagents launch by name in VS Code's local harness but are not listed (5 Nov 2026):
+  // a missing list entry must not turn into an inline consultation.
+  if (!role.startsWith('claude-plugin/') && !role.startsWith('.claude/')) {
+    check(body.includes('launch it by its exact name') && body.includes('only a launch attempt that fails is'), `${role}: consultant launched by name, not by list`);
+  }
   if (role.includes('al-architect')) {
     check(/plus `ui` when it adds pages.*`error-handling` when it defines validations or user-facing errors/.test(body), `${role}: design maps UI and errors`);
   } else {
