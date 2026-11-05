@@ -134,7 +134,14 @@ for (const id of ['al-knowledge-consultant', 'al-implement-subagent', 'al-planni
     check(/does nothing for any other caller/.test(doc.data.description), `${rel}: description names its only callers`);
     const body = read(rel).replace(/\s+/g, ' ');
     check(body.includes('**Caller guard.**') && body.includes('NOT_FOR_THIS_CALLER'), `${rel}: caller guard in the contract`);
+    // Models judged the same bare request differently (5 Nov 2026); a fixed first line makes the check deterministic.
+    check(body.includes('its brief starts with the line `Caller: ') && body.includes('do not reject it for its wording'), `${rel}: guard checks the fixed caller line`);
   }
+}
+// Each caller writes the line its subagents check.
+check(read('agents/al-conductor.agent.md').includes('Start every brief with the line `Caller: AL Development Conductor (requirement <req_name>)`'), 'Conductor sends the caller line');
+for (const [rel, name] of [['agents/al-architect.agent.md', 'AL Architecture & Design Specialist'], ['agents/al-spec-agent.agent.md', 'AL Spec Agent'], ['copilot-cli-plugin/agents/al-architect.agent.md', 'AL Architecture & Design Specialist']]) {
+  check(read(rel).replace(/\s+/g, ' ').includes('`Caller: ' + name + ' (requirement <req_name>)`'), `${rel}: sends the caller line`);
 }
 check(split(read('copilot-cli-plugin/agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read,search', 'CLI consultant is read-only');
 check(!split(read('copilot-cli-plugin/agents/al-spec-agent.agent.md')).data.tools.includes('task'), 'CLI Spec consults inline (no task grant)');

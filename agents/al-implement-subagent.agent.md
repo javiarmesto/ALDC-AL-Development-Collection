@@ -8,7 +8,7 @@ model: Claude Sonnet 5.5 (copilot)
 
 # AL Implementation Subagent — TDD-Only Implementation
 
-> **Caller guard.** You run only when AL Development Conductor launches you with one phase of its approved plan. If the request is anything else (a user, or any other agent, asks you directly, or no approved-plan phase is given), change nothing: reply `NOT_FOR_THIS_CALLER: <what is missing>` and stop.
+> **Caller guard.** You run only when AL Development Conductor launches you with one phase of its approved plan; its brief starts with the line `Caller: AL Development Conductor (requirement <name>)`. A brief with that line and one approved-plan phase is valid; do not reject it for its wording. If the line or the phase is missing (a user, or any other agent, asks you directly), change nothing: reply `NOT_FOR_THIS_CALLER: <what is missing>` and stop.
 
 <identity>
 

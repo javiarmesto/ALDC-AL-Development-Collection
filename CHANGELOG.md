@@ -18,8 +18,20 @@
 - Copilot CLI agents now pin `claude-sonnet-5.5`. `claude-sonnet-4.6` left the CLI catalog,
   so every CLI delegation failed before the subagent ran ("Model 'claude-sonnet-4.6' is
   not available").
-- Not yet observed on a host: the Conductor and Architect launching these subagents in
-  the Copilot harness and the Copilot CLI with this change.
+- Each guard checks a fixed first line, `Caller: <agent name> (requirement <name>)`,
+  which Conductor, Architect and Spec now write into every brief. Without it, the same
+  bare request was accepted by one model and rejected by another. The line is a
+  declaration, not authentication.
+- The Copilot CLI README explains that plugin agents are namespaced
+  (`copilot --agent aldc-cli:al-architect`; a bare `al-architect` is not found) and that
+  VS Code's Copilot harness also loads installed CLI plugins.
+- Observed on 5 Nov 2026 (clean Directions copy, before the caller line): in the Copilot
+  harness the Architect launched AL Knowledge Consultant and its selection record passed
+  every check; the Conductor launched AL Planning Subagent. In Copilot CLI 1.0.105 the
+  Conductor launched `aldc-cli:al-planning-subagent` and the Architect launched
+  `aldc-cli:al-knowledge-consultant` (claude-sonnet-5.5); the record passed every check.
+  A default agent asking the consultant directly got `NOT_FOR_THIS_CALLER`. The caller
+  line itself has not been run on a host yet.
 
 ### Fixed — the knowledge consultant is launched by name, not by list
 
