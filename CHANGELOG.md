@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### Fixed — internal subagents launch in the Copilot harness and Copilot CLI
+
+- Cause, read in the Copilot engine bundled with VS Code Insiders (`@github/copilot`
+  1.0.73): the subagent tool builds its registry from custom agents filtered by
+  `disableModelInvocation !== true`, so an agent with `disable-model-invocation: true`
+  is not just unlisted but unlaunchable, even by exact name ("Unknown agent type").
+  VS Code's local harness honours the caller's `agents:` list instead.
+- AL Knowledge Consultant, AL Implementation, Planning and Code Review Subagents drop
+  `disable-model-invocation` and keep `user-invocable: false`. As in the Claude Code
+  plugin, where these agents are always listed, each contract now carries a caller
+  guard (`NOT_FOR_THIS_CALLER`) and its description names its only callers.
+- Architect and Spec still launch the consultant by its exact name, whether or not a
+  list shows it. Copilot CLI, Foundation and Codex regenerated; Claude Code unchanged.
+- Not yet observed on a host: the Conductor and Architect launching these subagents in
+  the Copilot harness and the Copilot CLI with this change.
+
 ### Fixed — the knowledge consultant is launched by name, not by list
 
 - VS Code host runs on 5 Nov 2026: in the local harness a `disable-model-invocation`

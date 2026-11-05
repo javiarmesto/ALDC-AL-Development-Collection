@@ -91,10 +91,10 @@ for (const [role, template] of architectureRoles) {
   check(guidance.replace(/\s+/g, ' ').includes('The executor states what happened in this run, not what was intended'), `${role}: guide ties executor to the launch`);
   // A launchable consultant is mandatory: a CLI run chose inline "because it seemed simpler".
   check(body.includes('Launching the consultant is required whenever it can be launched') || body.includes('Do not consult BCQuality any other way when the consultant is available'), `${role}: delegation is mandatory when possible`);
-  // Hidden subagents launch by name in VS Code's local harness but are not listed (5 Nov 2026):
-  // a missing list entry must not turn into an inline consultation.
+  // Agent lists differ by harness (5 Nov 2026): a missing list entry must not turn into an
+  // inline consultation; only a failed launch by name does.
   if (!role.startsWith('claude-plugin/') && !role.startsWith('.claude/')) {
-    check(body.includes('launch it by its exact name') && body.includes('only a launch attempt that fails is'), `${role}: consultant launched by name, not by list`);
+    check(body.includes('by its exact name') && body.includes('whether or not an agent list shows it') && body.includes('only a launch attempt that fails is'), `${role}: consultant launched by name, not by list`);
   }
   if (role.includes('al-architect')) {
     check(/plus `ui` when it adds pages.*`error-handling` when it defines validations or user-facing errors/.test(body), `${role}: design maps UI and errors`);
@@ -123,12 +123,18 @@ for (const rel of ['agents/al-spec-agent.agent.md', 'agents/al-architect.agent.m
   check(JSON.stringify(split(read(rel)).data.agents) === JSON.stringify(['AL Knowledge Consultant']), `${rel}: delegation limited to the knowledge consultant`);
 }
 check(split(read('agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read/readFile,read/skill,search', 'Chat consultant is read-only');
-// Like the Conductor subagents: hidden from the picker and launched only by a role that lists
-// it in `agents` (Architect, Spec), never on the model's own initiative by an agent that is
-// not prepared to validate its knowledge-response.
-for (const rel of ['agents/al-knowledge-consultant.agent.md', 'copilot-cli-plugin/agents/al-knowledge-consultant.agent.md']) {
-  const data = split(read(rel)).data;
-  check(data['user-invocable'] === false && data['disable-model-invocation'] === true, `${rel}: internal subagent, explicit invocation only`);
+// Internal subagents stay out of the picker but must stay launchable: the Copilot engine
+// (VS Code Copilot harness, Copilot CLI; SDK 1.0.73) drops `disable-model-invocation`
+// agents from its subagent registry, so even a launch by exact name fails ("Unknown
+// agent type"). As in Claude Code, each one guards its caller in its own contract.
+for (const id of ['al-knowledge-consultant', 'al-implement-subagent', 'al-planning-subagent', 'al-review-subagent']) {
+  for (const rel of [`agents/${id}.agent.md`, `copilot-cli-plugin/agents/${id}.agent.md`]) {
+    const doc = split(read(rel));
+    check(doc.data['user-invocable'] === false && doc.data['disable-model-invocation'] === undefined, `${rel}: internal subagent, launchable on every harness`);
+    check(/does nothing for any other caller/.test(doc.data.description), `${rel}: description names its only callers`);
+    const body = read(rel).replace(/\s+/g, ' ');
+    check(body.includes('**Caller guard.**') && body.includes('NOT_FOR_THIS_CALLER'), `${rel}: caller guard in the contract`);
+  }
 }
 check(split(read('copilot-cli-plugin/agents/al-knowledge-consultant.agent.md')).data.tools.join(',') === 'read,search', 'CLI consultant is read-only');
 check(!split(read('copilot-cli-plugin/agents/al-spec-agent.agent.md')).data.tools.includes('task'), 'CLI Spec consults inline (no task grant)');
