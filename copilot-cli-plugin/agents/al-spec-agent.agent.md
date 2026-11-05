@@ -142,7 +142,9 @@ actual code review to Reviewer/Dredd.
 **Knowledge consultations.** When BCQuality `al-knowledge` is installed and the host
 lets you launch the read-only **AL Knowledge Consultant** subagent
 (`al-knowledge-consultant`, through `task`), consult it once per domain: write
-each question into the selection record first, pass it verbatim, and copy the returned
+each question into the selection record first, start the brief with the line
+`Caller: AL Spec Agent (requirement <req_name>)` (the consultant rejects a brief without
+it), pass the question verbatim, and copy the returned
 `response` object into `responses[].response` exactly as returned, with its
 `invocation`: do not drop, summarize or reshape it (an entry without `response` is
 invalid, and so is an `al-knowledge` selection built on it). Then validate as the

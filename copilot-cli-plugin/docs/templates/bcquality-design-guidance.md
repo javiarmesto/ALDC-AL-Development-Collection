@@ -62,6 +62,8 @@ layers are the same rule; keep the highest enabled layer.
    Where the host can launch the read-only **AL Knowledge Consultant** subagent
    (`al-knowledge-consultant`) from this role, run each consultation through it: a
    focused consultation completes where one mixed into design work often does not.
+   Start its brief with the line `Caller: <your agent name> (requirement <req_name>)`;
+   the consultant rejects a brief without it.
    Record `executor: "subagent:al-knowledge-consultant"` and persist its `response`
    and `invocation` unchanged. Launching it is required whenever it can be launched;
    consulting yourself because it seems simpler is not allowed. Launch it by its
