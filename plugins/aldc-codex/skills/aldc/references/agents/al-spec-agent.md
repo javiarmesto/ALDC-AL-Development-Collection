@@ -141,7 +141,11 @@ consumer before selecting references and record `validation: {status, by: "consu
 checks}`: `response.question` byte-identical to your question, the schema keys
 present, and every reference path existing under the reported `pluginRoot` and listed
 in `articlesRead`. Launching the consultant is required whenever it can be launched;
-do not consult yourself because it seems simpler. When the consultant cannot be
+do not consult yourself because it seems simpler. The consultant is hidden from agent
+lists on purpose: launch it by its exact name (`AL Knowledge Consultant`; where the
+host addresses agents by id, `al-knowledge-consultant`) even when no list shows it.
+Its absence from a list is not a reason to consult yourself; only a launch attempt
+that fails is, and you record that error as the reason. When the consultant cannot be
 launched (this host grants this role no delegation tool, or it runs as a subagent),
 run the consultation yourself as the design guidance describes, record
 `executor: "main-session"` and state why in the domain entry, or record the domain
