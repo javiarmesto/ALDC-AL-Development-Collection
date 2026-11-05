@@ -4,7 +4,7 @@ description: Runs exactly one BCQuality knowledge consultation (al-knowledge) fo
 tools:
   - read
   - search
-model: claude-sonnet-4.6
+model: claude-sonnet-5.5
 user-invocable: false
 ---
 

@@ -15,6 +15,9 @@
   guard (`NOT_FOR_THIS_CALLER`) and its description names its only callers.
 - Architect and Spec still launch the consultant by its exact name, whether or not a
   list shows it. Copilot CLI, Foundation and Codex regenerated; Claude Code unchanged.
+- Copilot CLI agents now pin `claude-sonnet-5.5`. `claude-sonnet-4.6` left the CLI catalog,
+  so every CLI delegation failed before the subagent ran ("Model 'claude-sonnet-4.6' is
+  not available").
 - Not yet observed on a host: the Conductor and Architect launching these subagents in
   the Copilot harness and the Copilot CLI with this change.
 

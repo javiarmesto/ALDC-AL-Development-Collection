@@ -10,7 +10,7 @@ tools:
   - web
   - list_agents
   - read_agent
-model: claude-sonnet-4.6
+model: claude-sonnet-5.5
 ---
 
 > **Copilot CLI adapter — generated; do not edit this distribution.**

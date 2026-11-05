@@ -77,11 +77,12 @@ function expected(root = ROOT) {
     const name = path.basename(file, '.agent.md');
     const canonical = split(read(`agents/${name}.agent.md`));
     const src = canonical;
-    // Keep the validated CLI model during this Chat-only template refresh.
-    // A CLI model upgrade requires its own catalog/host validation.
+    // CLI model ids differ from Chat display names. claude-sonnet-4.6 left the CLI
+    // catalog (5 Nov 2026: "Model 'claude-sonnet-4.6' is not available"), which made
+    // every delegation fail before the subagent ran; claude-sonnet-5.5 is listed.
     const models = {
       'Claude Sonnet 4.6 (copilot)': 'claude-sonnet-4.6',
-      'Claude Sonnet 5.5 (copilot)': 'claude-sonnet-4.6',
+      'Claude Sonnet 5.5 (copilot)': 'claude-sonnet-5.5',
     };
     const model = models[canonical.data.model];
     if (!model) throw new Error(`Unmapped Copilot model: ${canonical.data.model}`);

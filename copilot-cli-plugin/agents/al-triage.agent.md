@@ -17,7 +17,7 @@ tools:
   - al/al_getpackagedependencies
   - bc-profiling/*
   - bc-snapshot/*
-model: claude-sonnet-4.6
+model: claude-sonnet-5.5
 user-invocable: true
 ---
 
