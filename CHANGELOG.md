@@ -22,6 +22,9 @@
   which Conductor, Architect and Spec now write into every brief. Without it, the same
   bare request was accepted by one model and rejected by another. The line is a
   declaration, not authentication.
+- The Copilot CLI Conductor entry repeats the caller line. In a CLI run the Conductor
+  delegated from that short entry without reading its bundled contract, where the line
+  lived, and the planning subagent correctly rejected the brief.
 - The Copilot CLI README explains that plugin agents are namespaced
   (`copilot --agent aldc-cli:al-architect`; a bare `al-architect` is not found) and that
   VS Code's Copilot harness also loads installed CLI plugins.
@@ -31,7 +34,8 @@
   Conductor launched `aldc-cli:al-planning-subagent` and the Architect launched
   `aldc-cli:al-knowledge-consultant` (claude-sonnet-5.5); the record passed every check.
   A default agent asking the consultant directly got `NOT_FOR_THIS_CALLER`. The caller
-  line itself has not been run on a host yet.
+  line has not yet passed a run on a clean copy: one CLI run outside it showed the
+  Architect sending the line, and its record omitted `question` on the response entry.
 
 ### Fixed — the knowledge consultant is launched by name, not by list
 

@@ -63,3 +63,5 @@ Before any role action, use view to read the COMPLETE contract at
 truncates a response. This is your own role contract, not a substitute agent.
 If it cannot be read completely, report the missing contract and stop.
 Do not plan, delegate, implement or approve anything from this entry alone.
+
+Start every brief with the line `Caller: AL Development Conductor (requirement <req_name>)`; the subagents reject a brief without it.

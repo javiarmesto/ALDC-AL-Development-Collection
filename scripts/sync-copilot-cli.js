@@ -96,7 +96,11 @@ function expected(root = ROOT) {
     if (body.length > 29000) {
       const contract = `references/agent-contracts/${name}.md`;
       put(contract, body);
-      body = HOST_PREFACE + `# ${name}\n\nBefore any role action, use view to read the COMPLETE contract at\n\`\${PLUGIN_ROOT}/${contract}\`. Read all remaining ranges if the host\ntruncates a response. This is your own role contract, not a substitute agent.\nIf it cannot be read completely, report the missing contract and stop.\nDo not plan, delegate, implement or approve anything from this entry alone.\n`;
+      // Host run (6 Nov 2026): the Conductor delegated from this entry without reading its
+      // contract, so the subagents rejected a brief with no caller line. Keep the line here too.
+      const caller = body.match(/Start every brief with the line `Caller: [^`]+`/);
+      if (!caller) throw new Error(`${name}: contract moved out of the entry has no caller line`);
+      body = HOST_PREFACE + `# ${name}\n\nBefore any role action, use view to read the COMPLETE contract at\n\`\${PLUGIN_ROOT}/${contract}\`. Read all remaining ranges if the host\ntruncates a response. This is your own role contract, not a substitute agent.\nIf it cannot be read completely, report the missing contract and stop.\nDo not plan, delegate, implement or approve anything from this entry alone.\n\n${caller[0]}; the subagents reject a brief without it.\n`;
     }
     put(`agents/${name}.agent.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + body);
   }

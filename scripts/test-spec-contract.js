@@ -140,6 +140,7 @@ for (const id of ['al-knowledge-consultant', 'al-implement-subagent', 'al-planni
 }
 // Each caller writes the line its subagents check.
 check(read('agents/al-conductor.agent.md').includes('Start every brief with the line `Caller: AL Development Conductor (requirement <req_name>)`'), 'Conductor sends the caller line');
+check(read('copilot-cli-plugin/agents/al-conductor.agent.md').includes('Start every brief with the line `Caller: AL Development Conductor (requirement <req_name>)`'), 'CLI Conductor entry carries the caller line without its contract');
 for (const [rel, name] of [['agents/al-architect.agent.md', 'AL Architecture & Design Specialist'], ['agents/al-spec-agent.agent.md', 'AL Spec Agent'], ['copilot-cli-plugin/agents/al-architect.agent.md', 'AL Architecture & Design Specialist']]) {
   check(read(rel).replace(/\s+/g, ' ').includes('`Caller: ' + name + ' (requirement <req_name>)`'), `${rel}: sends the caller line`);
 }
