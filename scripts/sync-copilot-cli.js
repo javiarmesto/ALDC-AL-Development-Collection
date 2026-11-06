@@ -77,11 +77,12 @@ function expected(root = ROOT) {
     const name = path.basename(file, '.agent.md');
     const canonical = split(read(`agents/${name}.agent.md`));
     const src = canonical;
-    // Keep the validated CLI model during this Chat-only template refresh.
-    // A CLI model upgrade requires its own catalog/host validation.
+    // CLI model ids differ from Chat display names. claude-sonnet-4.6 left the CLI
+    // catalog (5 Nov 2026: "Model 'claude-sonnet-4.6' is not available"), which made
+    // every delegation fail before the subagent ran; claude-sonnet-5.5 is listed.
     const models = {
       'Claude Sonnet 4.6 (copilot)': 'claude-sonnet-4.6',
-      'Claude Sonnet 5.5 (copilot)': 'claude-sonnet-4.6',
+      'Claude Sonnet 5.5 (copilot)': 'claude-sonnet-5.5',
     };
     const model = models[canonical.data.model];
     if (!model) throw new Error(`Unmapped Copilot model: ${canonical.data.model}`);
@@ -95,7 +96,11 @@ function expected(root = ROOT) {
     if (body.length > 29000) {
       const contract = `references/agent-contracts/${name}.md`;
       put(contract, body);
-      body = HOST_PREFACE + `# ${name}\n\nBefore any role action, use view to read the COMPLETE contract at\n\`\${PLUGIN_ROOT}/${contract}\`. Read all remaining ranges if the host\ntruncates a response. This is your own role contract, not a substitute agent.\nIf it cannot be read completely, report the missing contract and stop.\nDo not plan, delegate, implement or approve anything from this entry alone.\n`;
+      // Host run (6 Nov 2026): the Conductor delegated from this entry without reading its
+      // contract, so the subagents rejected a brief with no caller line. Keep the line here too.
+      const caller = body.match(/Start every brief with the line `Caller: [^`]+`/);
+      if (!caller) throw new Error(`${name}: contract moved out of the entry has no caller line`);
+      body = HOST_PREFACE + `# ${name}\n\nBefore any role action, use view to read the COMPLETE contract at\n\`\${PLUGIN_ROOT}/${contract}\`. Read all remaining ranges if the host\ntruncates a response. This is your own role contract, not a substitute agent.\nIf it cannot be read completely, report the missing contract and stop.\nDo not plan, delegate, implement or approve anything from this entry alone.\n\n${caller[0]}; the subagents reject a brief without it.\n`;
     }
     put(`agents/${name}.agent.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + body);
   }
@@ -176,6 +181,13 @@ Restart the CLI, inspect /agent and /skills list, and verify the loaded source.
 Reinstall the local path after updates (the CLI caches plugins). Use a separate
 test project; existing project/personal agents or skills can shadow the plugin.
 Do not install both aldc and aldc-cli into the same CLI test session.
+
+The CLI addresses plugin agents by namespace: start a role with
+\`copilot --agent aldc-cli:al-architect\` (a bare \`al-architect\` is not found), and
+roles launch subagents as \`aldc-cli:al-knowledge-consultant\`. Internal subagents
+answer \`NOT_FOR_THIS_CALLER\` unless their brief starts with the caller line their
+contract names. VS Code's Copilot harness also loads installed CLI plugins, so a
+workspace with ALDC agents can see a second copy under \`aldc-cli:\`.
 
 Read [CLI AL tooling](docs/copilot-cli-al-tooling.md) for native LSP reuse,
 optional official AL MCP and Triage. Then read the shared

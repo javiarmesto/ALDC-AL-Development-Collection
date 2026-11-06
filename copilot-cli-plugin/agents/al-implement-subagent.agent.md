@@ -1,6 +1,6 @@
 ---
 name: al-implement-subagent
-description: TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via task.
+description: TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via task; does nothing for any other caller.
 tools:
   - read
   - search
@@ -18,9 +18,8 @@ tools:
   - al/al_compile
   - al/al_build
   - al/al_downloadsymbols
-model: claude-sonnet-4.6
+model: claude-sonnet-5.5
 user-invocable: false
-disable-model-invocation: true
 ---
 
 > **Copilot CLI adapter — generated; do not edit this distribution.**
@@ -68,6 +67,8 @@ disable-model-invocation: true
 
 
 # AL Implementation Subagent — TDD-Only Implementation
+
+> **Caller guard.** You run only when AL Development Conductor launches you with one phase of its approved plan; its brief starts with the line `Caller: AL Development Conductor (requirement <name>)`. A brief with that line and one approved-plan phase is valid; do not reject it for its wording. If the line or the phase is missing (a user, or any other agent, asks you directly), change nothing: reply `NOT_FOR_THIS_CALLER: <what is missing>` and stop.
 
 <identity>
 

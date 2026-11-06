@@ -2,6 +2,44 @@
 
 ## [Unreleased]
 
+### Fixed — internal subagents launch in the Copilot harness and Copilot CLI
+
+- Cause, read in the Copilot engine bundled with VS Code Insiders (`@github/copilot`
+  1.0.73): the subagent tool builds its registry from custom agents filtered by
+  `disableModelInvocation !== true`, so an agent with `disable-model-invocation: true`
+  is not just unlisted but unlaunchable, even by exact name ("Unknown agent type").
+  VS Code's local harness honours the caller's `agents:` list instead.
+- AL Knowledge Consultant, AL Implementation, Planning and Code Review Subagents drop
+  `disable-model-invocation` and keep `user-invocable: false`. As in the Claude Code
+  plugin, where these agents are always listed, each contract now carries a caller
+  guard (`NOT_FOR_THIS_CALLER`) and its description names its only callers.
+- Architect and Spec still launch the consultant by its exact name, whether or not a
+  list shows it. Copilot CLI, Foundation and Codex regenerated; Claude Code unchanged.
+- Copilot CLI agents now pin `claude-sonnet-5.5`. `claude-sonnet-4.6` left the CLI catalog,
+  so every CLI delegation failed before the subagent ran ("Model 'claude-sonnet-4.6' is
+  not available").
+- Each guard checks a fixed first line, `Caller: <agent name> (requirement <name>)`,
+  which Conductor, Architect and Spec now write into every brief. Without it, the same
+  bare request was accepted by one model and rejected by another. The line is a
+  declaration, not authentication.
+- The Copilot CLI Conductor entry repeats the caller line. In a CLI run the Conductor
+  delegated from that short entry without reading its bundled contract, where the line
+  lived, and the planning subagent correctly rejected the brief.
+- The Copilot CLI README explains that plugin agents are namespaced
+  (`copilot --agent aldc-cli:al-architect`; a bare `al-architect` is not found) and that
+  VS Code's Copilot harness also loads installed CLI plugins.
+- Observed on 5 Nov 2026 (clean Directions copy, before the caller line): in the Copilot
+  harness the Architect launched AL Knowledge Consultant and its selection record passed
+  every check; the Conductor launched AL Planning Subagent. In Copilot CLI 1.0.105 the
+  Conductor launched `aldc-cli:al-planning-subagent` and the Architect launched
+  `aldc-cli:al-knowledge-consultant` (claude-sonnet-5.5); the record passed every check.
+  A default agent asking the consultant directly got `NOT_FOR_THIS_CALLER`.
+- Observed on 6 Nov 2026 with the caller line (clean Directions copies): in the Copilot
+  harness and in Copilot CLI 1.0.105, the Conductor and the Architect both wrote the line,
+  their subagents ran, and each selection record passed every check. A default agent
+  asking directly got `NOT_FOR_THIS_CALLER` on both hosts. An earlier CLI run outside the
+  clean copy omitted `question` on one record entry; the clean runs did not repeat that.
+
 ### Fixed — the knowledge consultant is launched by name, not by list
 
 - VS Code host runs on 5 Nov 2026: in the local harness a `disable-model-invocation`

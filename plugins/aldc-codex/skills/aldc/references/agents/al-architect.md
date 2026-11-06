@@ -238,7 +238,9 @@ Integration → `events`, `web-services` · Data → `data-modeling`, `upgrade`,
 **Knowledge consultations.** When BCQuality `al-knowledge` is installed and the host
 lets you launch the read-only **AL Knowledge Consultant** subagent
 (`al-knowledge-consultant`, through `the available native subagent tool`), consult it once per domain: write
-each question into the selection record first, pass it verbatim, and copy the returned
+each question into the selection record first, start the brief with the line
+`Caller: AL Architecture & Design Specialist (requirement <req_name>)` (the consultant rejects a brief without
+it), pass the question verbatim, and copy the returned
 `response` object into `responses[].response` exactly as returned, with its
 `invocation`: do not drop, summarize or reshape it (an entry without `response` is
 invalid, and so is an `al-knowledge` selection built on it). Then validate as the
@@ -246,9 +248,9 @@ consumer before selecting references and record `validation: {status, by: "consu
 checks}`: `response.question` byte-identical to your question, the schema keys
 present, and every reference path existing under the reported `pluginRoot` and listed
 in `articlesRead`. Launching the consultant is required whenever it can be launched;
-do not consult yourself because it seems simpler. The consultant is hidden from agent
-lists on purpose: launch it by its exact name (`AL Knowledge Consultant`; where the
-host addresses agents by id, `al-knowledge-consultant`) even when no list shows it.
+do not consult yourself because it seems simpler. Launch the consultant
+by its exact name (`AL Knowledge Consultant`; where the host addresses agents by id,
+`al-knowledge-consultant`), whether or not an agent list shows it.
 Its absence from a list is not a reason to consult yourself; only a launch attempt
 that fails is, and you record that error as the reason. When the consultant cannot be
 launched, run the consultation yourself as the design guidance describes, record

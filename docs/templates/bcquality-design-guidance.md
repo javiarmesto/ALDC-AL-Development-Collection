@@ -62,12 +62,13 @@ layers are the same rule; keep the highest enabled layer.
    Where the host can launch the read-only **AL Knowledge Consultant** subagent
    (`al-knowledge-consultant`) from this role, run each consultation through it: a
    focused consultation completes where one mixed into design work often does not.
+   Start its brief with the line `Caller: <your agent name> (requirement <req_name>)`;
+   the consultant rejects a brief without it.
    Record `executor: "subagent:al-knowledge-consultant"` and persist its `response`
    and `invocation` unchanged. Launching it is required whenever it can be launched;
-   consulting yourself because it seems simpler is not allowed. It is hidden from
-   agent lists on purpose (`disable-model-invocation`), so launch it by its exact name
-   even when no list shows it; only a failed launch attempt, recorded with its error,
-   justifies consulting yourself. Where it cannot be
+   consulting yourself because it seems simpler is not allowed. Launch it by its
+   exact name, whether or not an agent list shows it; only a failed launch attempt,
+   recorded with its error, justifies consulting yourself. Where it cannot be
    launched (no delegation tool, or this role already runs as a subagent), run the
    consultation yourself and state that reason in the domain entry.
    The executor states what happened in this run, not what was intended:

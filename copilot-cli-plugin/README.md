@@ -15,6 +15,13 @@ Reinstall the local path after updates (the CLI caches plugins). Use a separate
 test project; existing project/personal agents or skills can shadow the plugin.
 Do not install both aldc and aldc-cli into the same CLI test session.
 
+The CLI addresses plugin agents by namespace: start a role with
+`copilot --agent aldc-cli:al-architect` (a bare `al-architect` is not found), and
+roles launch subagents as `aldc-cli:al-knowledge-consultant`. Internal subagents
+answer `NOT_FOR_THIS_CALLER` unless their brief starts with the caller line their
+contract names. VS Code's Copilot harness also loads installed CLI plugins, so a
+workspace with ALDC agents can see a second copy under `aldc-cli:`.
+
 Read [CLI AL tooling](docs/copilot-cli-al-tooling.md) for native LSP reuse,
 optional official AL MCP and Triage. Then read the shared
 skills/skill-migrate/references/cli-al-tools.md for toolchain checks, BC28/BC29
