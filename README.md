@@ -31,9 +31,9 @@ See [what changed](#what-changed-in-520) and the [changelog](CHANGELOG.md).
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
 | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
-| [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.0.3) | v5.0.3 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
+| [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.1.1) | v5.1.1 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
 | 5.2.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
-| [Claude Code edition](claude-plugin/) | 5.1.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
+| [Claude Code edition](claude-plugin/) | 5.2.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
 maintained agents, hooks, contracts and release evolution. Its surface changes are
