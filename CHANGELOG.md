@@ -33,9 +33,12 @@
   every check; the Conductor launched AL Planning Subagent. In Copilot CLI 1.0.105 the
   Conductor launched `aldc-cli:al-planning-subagent` and the Architect launched
   `aldc-cli:al-knowledge-consultant` (claude-sonnet-5.5); the record passed every check.
-  A default agent asking the consultant directly got `NOT_FOR_THIS_CALLER`. The caller
-  line has not yet passed a run on a clean copy: one CLI run outside it showed the
-  Architect sending the line, and its record omitted `question` on the response entry.
+  A default agent asking the consultant directly got `NOT_FOR_THIS_CALLER`.
+- Observed on 6 Nov 2026 with the caller line (clean Directions copies): in the Copilot
+  harness and in Copilot CLI 1.0.105, the Conductor and the Architect both wrote the line,
+  their subagents ran, and each selection record passed every check. A default agent
+  asking directly got `NOT_FOR_THIS_CALLER` on both hosts. An earlier CLI run outside the
+  clean copy omitted `question` on one record entry; the clean runs did not repeat that.
 
 ### Fixed — the knowledge consultant is launched by name, not by list
 
