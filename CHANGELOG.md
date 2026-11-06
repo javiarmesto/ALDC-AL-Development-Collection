@@ -39,6 +39,8 @@
   their subagents ran, and each selection record passed every check. A default agent
   asking directly got `NOT_FOR_THIS_CALLER` on both hosts. An earlier CLI run outside the
   clean copy omitted `question` on one record entry; the clean runs did not repeat that.
+- Not yet observed on a host: Spec launching the consultant, the Conductor launching its
+  implementation and review subagents, and the local harness with these contracts.
 
 ### Fixed — the knowledge consultant is launched by name, not by list
 
@@ -50,9 +52,8 @@
 - Architect, Spec and the design guidance now launch the consultant by its exact name
   (`AL Knowledge Consultant`, or `al-knowledge-consultant` where agents are addressed by
   id) and consult inline only after a failed launch attempt, recorded as the reason.
-- Known limitation: in VS Code's Copilot harness, and likely the Copilot CLI that shares
-  its engine, `disable-model-invocation` subagents cannot be launched, so the Conductor
-  stops at its gate and Architect and Spec consult inline.
+- Launching by name was not enough on the Copilot engine, which cannot launch a
+  `disable-model-invocation` agent. Dropping the field, described above, fixes that.
 
 ### Fixed — using the knowledge consultant is required when it can be launched
 
@@ -62,12 +63,9 @@
   in the Copilot harness of VS Code the consultant was not listed as launchable.
 - Design guidance, Architect and Spec make delegation required whenever the
   consultant can be launched; consulting inline needs a stated reason.
-- The consultant keeps `user-invocable: false` and `disable-model-invocation: true`,
-  like the Conductor subagents: only a role that lists it in `agents` (Architect,
-  Spec) launches it, so no other agent receives a knowledge-response it is not
-  prepared to validate. Native Chat Conductor runs show that allowlist works with the
-  field. Whether the Copilot harness and the CLI launch such subagents is unverified;
-  other harnesses may behave differently.
+- The consultant stays `user-invocable: false`, so it is not in the agent picker, and
+  its caller guard keeps a knowledge-response from reaching an agent not prepared to
+  validate it.
 
 ### Fixed — knowledge consultation executor records what actually ran
 

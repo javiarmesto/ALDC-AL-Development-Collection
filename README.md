@@ -22,17 +22,18 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**ALDC 5.2.0** brings improvements to Copilot Chat, Copilot CLI and Codex. It adds
-explicit security review, BCQuality article dispositions, stronger planning and
+**ALDC 5.2.1** lets Architect, Spec and Conductor launch their internal subagents in
+VS Code's Copilot harness and the Copilot CLI. It builds on 5.2.0, which brings
+improvements to Copilot Chat, Copilot CLI and Codex: explicit security review, BCQuality article dispositions, stronger planning and
 delegation contracts, and configurable Conductor autonomy and test execution.
 The Marketplace badge reports the currently published extension version.
-See [what changed](#what-changed-in-520) and the [changelog](CHANGELOG.md).
+See [what changed in 5.2.1](#what-changed-in-521), [in 5.2.0](#what-changed-in-520) and the [changelog](CHANGELOG.md).
 
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
 | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
 | [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.1.1) | v5.1.1 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
-| 5.2.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
+| 5.2.1 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.1 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
 | [Claude Code edition](claude-plugin/) | 5.2.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
@@ -59,6 +60,16 @@ Choose the [installation guide](https://javiarmesto.github.io/ALDC-AL-Developmen
 Start with the toolkit installed in your project and a bounded requirement. Architect and Spec prepare the design and technical specification for your review before implementation.
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
+
+## What changed in 5.2.1
+
+The Copilot engine used by VS Code's Copilot harness and the Copilot CLI cannot launch
+an agent marked `disable-model-invocation`, so the four internal subagents no longer
+use that field. They stay out of the agent picker, and each one now answers
+`NOT_FOR_THIS_CALLER` unless its brief starts with the `Caller:` line that Architect,
+Spec or Conductor writes. Copilot CLI agents use `claude-sonnet-5.5`, and its plugin
+agents are addressed as `aldc-cli:<name>`. In existing projects, run Update Toolkit to
+adopt these contracts.
 
 ## What changed in 5.2.0
 
@@ -103,7 +114,7 @@ Claude Code stays on its independently maintained 5.1.1 edition.
 
 ### Use Project Manager in VS Code
 
-1. Update the extension to **5.2.0** and run **AL Collection: Open Project Manager**.
+1. Update the extension to **5.2.1** and run **AL Collection: Open Project Manager**.
 2. Select your solution, preview its toolkit installation or update, review customizations and confirm. Updating the extension does not replace the toolkit already installed in a project.
 3. In **BCQuality**, choose **Plugin — recommended**, **External knowledge folder** or **Disabled — native review**, then select **Change mode**. **Install BCQuality…** copies the official repository URL for the native source prompt; paste it there. Hosts without that command open the installation guide. **Manage plugins** opens the host's inventory.
 4. In **Workflow autonomy**, choose **Human — approve each checkpoint** or **Automatic — prior approval**, then select **Apply mode**. Start a new chat with **AL Development Conductor**.
@@ -710,7 +721,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.0 · **Claude Code:** 5.1.1 · **VS Code Marketplace:** see badge
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.1 · **Claude Code:** 5.2.1 · **VS Code Marketplace:** see badge
 
 </div>
 
