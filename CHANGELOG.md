@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Fixed — the knowledge consultant is launched by name, not by list
+
+- VS Code host runs on 5 Nov 2026: in the local harness a `disable-model-invocation`
+  subagent is not shown in the agent list but launches when called by its exact name
+  (the Conductor launched AL Planning Subagent and got `OK`); in the Copilot harness the
+  same call fails with "Unknown agent_type". Architect had consulted inline because the
+  consultant was missing from the list.
+- Architect, Spec and the design guidance now launch the consultant by its exact name
+  (`AL Knowledge Consultant`, or `al-knowledge-consultant` where agents are addressed by
+  id) and consult inline only after a failed launch attempt, recorded as the reason.
+- Known limitation: in VS Code's Copilot harness, and likely the Copilot CLI that shares
+  its engine, `disable-model-invocation` subagents cannot be launched, so the Conductor
+  stops at its gate and Architect and Spec consult inline.
+
 ### Fixed — using the knowledge consultant is required when it can be launched
 
 - Host runs on 2 Nov 2026 (Architect, one domain, clean Directions copy): Claude Code
