@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Fixed — agents find their tool contract from any working directory
+
+- In VS Code's Copilot harness on 6 Nov 2026, AL Planning Subagent resolved the link to its
+  Chat tool contract from the workspace root, did not find it, and continued without it.
+  The link is relative to the agent file, and the agent is not told where that file is.
+- Installed agents and prompts (`bc28` and `bc29-native`) now say that relative links start
+  from their own folder, to search the workspace for the file name when one does not
+  resolve, and to say so in their result when the contract still cannot be read.
+- Not yet observed on a host with this change.
+
 ### Fixed — using the knowledge consultant is required when it can be launched
 
 - Host runs on 2 Nov 2026 (Architect, one domain, clean Directions copy): Claude Code

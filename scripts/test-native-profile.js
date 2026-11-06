@@ -152,6 +152,8 @@ try {
       check(!/al_symbolrelations|al_search_objects|al_download_symbols|al_generate_manifest|al_download_source|al_clear_credentials_cache|al_generate_cpu_profile|al_get_package_dependencies|al_generatepermissionset|al_new_project|\bal_go\b/.test(text), `No stale tool instructions: ${name}`);
       const link = text.match(/\[the Chat tool contract\]\(([^)]+)\)/);
       check(link && fs.existsSync(path.resolve(path.dirname(installed), link[1])), `Contract readable after install: ${name}`);
+      // Copilot harness (6 Nov 2026): a subagent resolved this link from the workspace root, missed it and went on.
+      check(text.includes('search the workspace for the file name') && text.includes('If you still cannot read the contract, say so'), `Contract link works from any working directory: ${name}`);
     }
   }
   const agent = name => read(path.join(fixture, '.github/agents', name + '.agent.md'));
