@@ -43,7 +43,7 @@
     "instructions/al-performance.instructions.md": "1db9c2e08bfec26a63990e1c05229f7ed15fb2fa92e6b65ab2b8eb40c1fdf1df",
     "instructions/al-security.instructions.md": "c45a0528af3c6d2b4ff00c35a6f76bafee27854310dc0d184fb8134d99fb624b",
     "instructions/al-testing.instructions.md": "ab88c39c39d2bd0bbdd00e4224b050004e8d587d7e381a1e5b0d075b985be0c3",
-    "package.json": "236214d098dc8de0f0646a84e9576d358786095376b2e905f94f1906e61a8669",
+    "package.json": "6a3a690b4ac66cebc01f3616db324d6ac45138516ec57f53f8317836d662d67f",
     "prompts/al-agent.build-instructions.prompt.md": "1080481dc7f897b6a67f06ab8da8260d8bd67dddfdf34e3091a351711be64044",
     "prompts/al-agent.create.prompt.md": "c5220663504e12fbfc07c2b24fa71f0b5922acdf7a7eef0ef0c794c1aa3f93c3",
     "prompts/al-agent.instructions.prompt.md": "1080481dc7f897b6a67f06ab8da8260d8bd67dddfdf34e3091a351711be64044",
@@ -110,7 +110,7 @@
     "tools/context-doctor/aldc_context_doctor.py": "8792be3dd86d3716c5fe08afc6477e21bed90f4855828046f1b11e5915660d5a"
   },
   "outputs": {
-    ".codex-plugin/plugin.json": "c2f8f9bbad4e17c7cafb1fa7a3ebfb06636e316ddf8d37a171f1d36527b3f9e2",
+    ".codex-plugin/plugin.json": "855a498e4b6843f440281a52c4e191da068a4a15d0b54131a833ba5105433ef1",
     "README.md": "a5f58933c8dd6b5b894ded55b26598c9012f4f7263b93c57b517ae398fe965b0",
     "agents/al-agent-builder.toml": "6ff0f67ecbdad3b2c900cabe5fe51ddc2d057aa27571f3e319c1594416a9ae69",
     "agents/al-architect.toml": "ed0867691b9ee2d5203f6c7698fb77357744afc508b49a9acffe699cf69170f4",
