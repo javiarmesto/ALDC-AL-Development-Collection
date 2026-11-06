@@ -1,6 +1,6 @@
 # ALDC Changelog
 
-## [Unreleased]
+## [5.2.1] - 2026-11-06
 
 ### Fixed — internal subagents launch in the Copilot harness and Copilot CLI
 
