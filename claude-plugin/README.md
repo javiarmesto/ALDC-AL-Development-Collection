@@ -81,6 +81,13 @@ connection setup; see the same guide for capture scope and runtime acceptance.
 ## Requirements
 
 Claude Code CLI, Node 20+, and — for AL compilation — the AL command-line tool.
+
+Companion plugin: **aldc-verify** supplies compile (L1) and analyzer (L2)
+evidence, the build gate, `al-build-validator` and draft-PR delivery. Without it,
+ALDC warns at session start and records builds as `not-run`. Install it with
+`claude plugin marketplace add javiarmesto/aldc-verify-plugin`, then
+`claude plugin install aldc-verify@aldc-verify-dev`. See
+[aldc-verify](https://javiarmesto.github.io/ALDC-AL-Development-Collection/aldc-verify/).
 Publishing, running tests and debugging remain human- or CI-gated steps.
 
 ## License

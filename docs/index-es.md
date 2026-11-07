@@ -79,6 +79,12 @@ BCQuality es opcional y se instala por separado. Elige modo plugin o workspace e
 
 [Configurar BCQuality](../bcquality/)
 
+## Evidencia de build con aldc-verify { #aldc-verify .section-title }
+
+En Claude Code, ALDC toma la evidencia de compilación y de analizadores de aldc-verify, un plugin aparte, en lugar de duplicar la compilación. Compila el AL cambiado antes de terminar un turno, valida cada fase del conductor y abre pull requests en borrador con un guard. Sin él, las fases quedan como `not-run`.
+
+[Sobre aldc-verify](../aldc-verify-es/)
+
 ## Tu entorno. Tu punto de partida. { #install .section-title }
 
 <p class="section-lead">Elige dónde trabajas. Accede a los pasos de instalación, las comprobaciones y una primera petición para esa superficie.</p>
