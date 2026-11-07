@@ -1,0 +1,15 @@
+{
+  "name": "aldc-github-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private Directions v18 GitHub-native ALDC pilot",
+  "scripts": {
+    "validate:aldc": "node .github/tools/aldc-validate/index.js"
+  },
+  "dependencies": {
+    "js-yaml": "4.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
