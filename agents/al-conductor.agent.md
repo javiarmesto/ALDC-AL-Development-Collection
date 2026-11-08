@@ -39,21 +39,21 @@ Before starting, check what input you have:
 
 ```
 LOW (isolated changes, single phase):
-  al-spec.create → @al-developer (direct implementation)
+  al-spec-create → @al-developer (direct implementation)
 
 MEDIUM (2-3 phases, internal integrations):
-  @al-architect → al-spec.create → @al-conductor (TDD orchestration)
+  @al-architect → al-spec-create → @al-conductor (TDD orchestration)
 
 HIGH (4+ phases, external integrations, architecture critical):
-  @al-architect → al-spec.create → @al-conductor (TDD orchestration)
+  @al-architect → al-spec-create → @al-conductor (TDD orchestration)
 
 Specialized domains (MEDIUM/HIGH):
-  - API integration:    @al-architect (loads skill-api) → al-spec.create → @al-conductor
-  - Copilot features:   @al-architect (loads skill-copilot) → al-spec.create → @al-conductor
-  - Performance issues: @al-architect (loads skill-performance) → al-spec.create → @al-conductor
+  - API integration:    @al-architect (loads skill-api) → al-spec-create → @al-conductor
+  - Copilot features:   @al-architect (loads skill-copilot) → al-spec-create → @al-conductor
+  - Performance issues: @al-architect (loads skill-performance) → al-spec-create → @al-conductor
 ```
 
-> 💡 **You are step 3 in MEDIUM/HIGH.** If a request arrives without spec.md or architecture.md, recommend the user start with `@al-architect` and `@workspace use al-spec.create` first.
+> 💡 **You are step 3 in MEDIUM/HIGH.** If a request arrives without spec.md or architecture.md, recommend the user start with `@al-architect` and `/al-spec-create` first.
 
 > **Mini-design when there is no architecture.** When you run without a `.architecture.md` (LOW work, or the user explicitly chose to skip the architect), do not stop for one: write a **Mini-design** section at the top of `<task-name>-plan.md` from the planning findings — data model (tables, extensions, key fields), objects and ID ranges, the Standard Flow hooks, API/MCP surface and its write scope, permission sets per role, and what is deliberately out of scope. The plan approval gate covers it. This does not replace the architecture gate for MEDIUM/HIGH.
 
@@ -111,7 +111,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
    > **Standard flow travels with the work.** Pass the findings' *Standard Flow* section to every implementation phase that touches those publishers, and to the reviewer. If the planner returned no Standard Flow and the plan hooks into a standard publisher, send the planner back for that section before implementing.
 
-   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
+   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec-create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
 
    Show progress using Visual Progress Format. After completion, summarize findings:
    ```
@@ -544,9 +544,9 @@ DO NOT proceed past these points without explicit user confirmation. (In `pre-ap
 | Before starting: complex architecture | `@al-architect` to design first |
 | Before starting: API-heavy feature | `@al-architect` (loads `skill-api`) |
 | Before starting: AI/Copilot capabilities | `@al-architect` (loads `skill-copilot`) |
-| Before starting: no specification | `@workspace use al-spec.create` |
+| Before starting: no specification | `/al-spec-create` |
 | After completion: simple adjustments | `@al-developer` for quick changes |
-| After completion: PR preparation | `@workspace use al-pr-prepare` |
+| After completion: PR preparation | `/al-pr-prepare` |
 | During: persistent bugs | `@al-developer` loads `skill-debug` (after review cycle) |
 | During: performance issues | `@al-developer` loads `skill-performance` |
 
@@ -706,7 +706,7 @@ ALWAYS check for existing context in `.github/plans/`:
 
 1. `.github/plans/memory.md` — global memory (decisions, context, cross-session state — append-only)
 2. `.github/plans/{req_name}/{req_name}.architecture.md` — design from `@al-architect`
-3. `.github/plans/{req_name}/{req_name}.spec.md` — specification from `al-spec.create`; for multi-spec (architecture section 14) the human-approved Architect-assigned unit specs in that same folder replace it, implemented in `implementation_depends_on` order
+3. `.github/plans/{req_name}/{req_name}.spec.md` — specification from `al-spec-create`; for multi-spec (architecture section 14) the human-approved Architect-assigned unit specs in that same folder replace it, implemented in `implementation_depends_on` order
 4. `.github/plans/{req_name}/{req_name}.test-plan.md` — test strategy
 
 **Why**:
@@ -751,7 +751,7 @@ Reference architecture and spec compliance in completion files. Document deviati
 **MEDIUM / HIGH**:
 ```
 1. @al-architect designs → .github/plans/{req_name}/{req_name}.architecture.md  ← GATE
-2. @workspace use al-spec.create → reads architecture → .spec.md  ← GATE
+2. /al-spec-create → reads architecture → .spec.md  ← GATE
 3. User invokes @al-conductor → reads spec + architecture, starts orchestration
 4. al-planning-subagent → references architecture/spec + creates test-plan
 5. Plan approval gate → MANDATORY user confirmation
@@ -763,7 +763,7 @@ Reference architecture and spec compliance in completion files. Document deviati
 
 **LOW**:
 ```
-1. @workspace use al-spec.create → creates {req_name}.spec.md
+1. /al-spec-create → creates {req_name}.spec.md
 2. @al-developer → direct implementation using spec as blueprint
    (no @al-conductor needed)
 ```

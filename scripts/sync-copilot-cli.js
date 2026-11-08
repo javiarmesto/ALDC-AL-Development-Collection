@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const { HOST_PREFACE, translateHost, toolsForRole, adaptDreddPersistence } = require('./copilot-cli-adapter');
-const { split, WORKFLOWS, workflowSkillName, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
+const { split, WORKFLOWS, workflowSkillName, workflowSource, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
 const { support } = require('./plugin-runtime');
 const ROOT = path.resolve(__dirname, '..');
 const DEST = 'copilot-cli-plugin';
@@ -105,10 +105,10 @@ function expected(root = ROOT) {
     put(`agents/${name}.agent.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + body);
   }
   // Copilot CLI exposes canonical workflows as explicitly invoked commands.
-  for (const prompt of WORKFLOWS) {
-    const name = workflowSkillName(prompt);
-    const src = split(read(`prompts/${prompt}.prompt.md`));
-    const text = src.body.replace(/^\n/, '').replace('for `${input:req_name}` (complexity `${input:Complexity}`)',
+  for (const workflow of WORKFLOWS) {
+    const name = workflowSkillName(workflow);
+    const src = split(read(workflowSource(workflow)));
+    const text = src.body.replace(/^\n/, '').replace('for the requirement name and complexity given after the command (ask if missing)',
       'with the requirement, complexity and scope in `$ARGUMENTS`');
     let body = bodyFor(canonicalPaths(text));
     if (name === 'al-initialize') {
@@ -145,7 +145,7 @@ the installed CLI. Confirm instruction loading and the human review gate.
     }
     // Commands are instructions, not a permission bypass; CLI agent allowlists
     // and interactive permissions govern execution. Claude allowed-tools is omitted.
-    const data = { description: bodyFor(`${withPeriod(oneLine(src.data.description || ''))} ALDC workflow (Copilot prompt ${prompt}); invoke explicitly.`), 'disable-model-invocation': true };
+    const data = { description: bodyFor(`${withPeriod(oneLine(src.data.description || ''))} ALDC workflow skill ${name}; invoke explicitly.`), 'disable-model-invocation': true };
     put(`commands/${name}.md`, '---\n' + yaml.dump(data, { lineWidth: -1 }) + '---' + HOST_PREFACE + body);
   }
   // Only canonical knowledge skills travel; workflows became commands above.

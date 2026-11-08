@@ -35,7 +35,9 @@ and only then delegate or switch role.
 
 # Build and Deploy AL Extension
 
-Your goal is to build and deploy the AL extension for `<DeploymentType from the current request>` environment.
+Values in angle brackets come from the text typed after the command; ask for any that are missing.
+
+Your goal is to build and deploy the AL extension for `<DeploymentType>` environment.
 ## Select Deployment Strategy
 Based on source search select the appropriate deployment strategy
 Ask and confirm with the user before proceeding.

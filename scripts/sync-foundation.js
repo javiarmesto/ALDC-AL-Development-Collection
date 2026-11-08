@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const TREES = ['agents', 'skills', 'instructions', 'prompts', 'docs/templates'];
+const TREES = ['agents', 'skills', 'instructions', 'docs/templates'];
 const CHECK = process.argv.includes('--check');
 
 let copied = 0, identical = 0, extras = [], drift = [];

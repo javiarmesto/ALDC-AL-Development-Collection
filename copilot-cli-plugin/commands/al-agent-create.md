@@ -1,5 +1,5 @@
 ---
-description: End-to-end workflow to create a coded Business Central agent using the Agent SDK. Orchestrates the 7 phases following the official Agent Template structure. Generates all required objects by applying patterns from skill-agent-toolkit, skill-agent-task-patterns and skill-agent-instructions. ALDC workflow (Copilot prompt al-agent.create); invoke explicitly.
+description: End-to-end workflow to create a coded Business Central agent using the Agent SDK. Orchestrates the 7 phases following the official Agent Template structure. Generates all required objects by applying patterns from skill-agent-toolkit, skill-agent-task-patterns and skill-agent-instructions. ALDC workflow skill al-agent-create; invoke explicitly.
 disable-model-invocation: true
 ---
 
@@ -179,12 +179,12 @@ Generate:
 ## Phase 7 — Instructions + Tests
 
 Apply: `skill-agent-instructions` → RGI framework + keywords.
-Apply: `al-agent.test` prompt for the test codeunit.
+Apply: `al-agent-test` prompt for the test codeunit.
 
 Generate:
 
 1. **InstructionsV1.txt** — Responsibilities → Guidelines → Instructions, English, environment-agnostic
-2. **Test Codeunit** — 6 categories (run `al-agent.test`)
+2. **Test Codeunit** — 6 categories (run `al-agent-test`)
 
 🛑 **STOP — Review instructions and tests.**
 

@@ -55,6 +55,17 @@ class DoctorTest(unittest.TestCase):
         self.assertIsNone(report['layout']['spec_agent']['loaded'])
         self.assertEqual(report['operations']['specify']['status'], 'unobserved')
 
+    def test_workflow_skill_layout_replaces_prompt_files(self):
+        self.app()
+        (self.root / '.github/prompts/al-spec.create.prompt.md').unlink()
+        self.put('.github/skills/al-spec-create/SKILL.md', '[the canonical specification contract](../../agents/al-spec-agent.agent.md)')
+        report = self.report()
+        self.assertTrue(any(Path(p).as_posix().endswith('.github/skills/al-spec-create/SKILL.md') for p in report['layout']['paths']))
+        self.assertTrue(report['layout']['spec_agent']['required_by_workflow'])
+        self.assertEqual(report['operations']['specify']['status'], 'configuration-blocked')
+        self.put('.github/agents/al-spec-agent.agent.md', 'Spec contract')
+        self.assertTrue(self.report()['layout']['configured'])
+
     def test_previous_canonical_without_spec_agent_or_profile(self):
         self.app()
         r = self.report()

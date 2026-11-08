@@ -232,7 +232,7 @@
     "tools/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "10c02f21042b30b8ad7b24a6f38005e64baadcd1a1020472768dc7f7dddaaff7",
-    "tools/context-doctor/README.md": "1936890ffbbd6aeed9038fa01a115289db53b11f6e7c887b062c274d1fe944a5",
-    "tools/context-doctor/aldc_context_doctor.py": "8792be3dd86d3716c5fe08afc6477e21bed90f4855828046f1b11e5915660d5a"
+    "tools/context-doctor/README.md": "1bb4fe5d33b20ba50e9c06461697e41709d31361077787773a84740aabe7b264",
+    "tools/context-doctor/aldc_context_doctor.py": "2c16a78462f29fcbabd0770111a615087a9de9f3fb3570f77984353e91c030cb"
   }
 }

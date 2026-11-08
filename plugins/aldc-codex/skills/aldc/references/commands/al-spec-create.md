@@ -38,7 +38,7 @@ and only then delegate or switch role.
 Use `al-spec-agent` with the requirement, complexity and scope in `the current request`.
 Read and follow [the canonical specification contract](.agents/skills/aldc/references/agents/al-spec-agent.md)
 in full before authoring. This entrypoint does not define another specification
-workflow. Resolve the role link from this installed prompt's directory.
+workflow. Resolve the role link from this installed skill's directory.
 
 Pass the approved requirement/architecture, current spec path if revising, and
 any Architect-assigned scope. If this host cannot route to the named custom agent,

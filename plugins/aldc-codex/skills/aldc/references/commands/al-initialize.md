@@ -35,7 +35,9 @@ and only then delegate or switch role.
 
 # AL Environment Initialization
 
-Your goal is to initialize the AL development environment and workspace for `<ProjectName from the current request>`.
+Values in angle brackets come from the text typed after the command; ask for any that are missing.
+
+Your goal is to initialize the AL development environment and workspace for `<ProjectName>`.
 
 This workflow covers both initial environment setup (VS Code, GitHub Copilot) and AL workspace configuration (project structure, symbols, dependencies).
 
@@ -228,7 +230,7 @@ reviewed project scaffolding through file tools
 Implement feature-based organization:
 
 ```
-<ProjectName from the current request>/
+<ProjectName>/
 ├── .vscode/
 │   ├── settings.json          # Workspace settings
 │   └── launch.json            # Debug configurations
@@ -336,7 +338,7 @@ Create `.vscode/launch.json` based on your environment:
             "name": "Attach to agent (Sandbox)",
             "clientType": "Agent",
             "environmentType": "Sandbox",
-            "environmentName": "<EnvironmentName from the current request>",
+            "environmentName": "<EnvironmentName>",
             "breakOnNext": "WebClient"
         }
     ]
@@ -381,7 +383,7 @@ TestResults/
 Create comprehensive `README.md`:
 
 ```markdown
-# <ProjectName from the current request>
+# <ProjectName>
 
 ## Overview
 [Project purpose and business value]

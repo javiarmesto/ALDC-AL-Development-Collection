@@ -2,7 +2,7 @@ id: al-development
 name: AL Development Collection for GitHub Copilot
 description: |
   ALDC Core v1.2 — Skills-based modularization with preserved orchestration for Business Central AL development.
-  5 core public agents + 3 on-demand agents + 4 internal subagents + 1 extension agent; 16 skills, 11 workflows and 10 instruction contracts (9 scoped rules plus the Copilot entrypoint; documentation excluded).
+  5 core public agents + 3 on-demand agents + 4 internal subagents + 1 extension agent; 16 knowledge skills, 10 workflow skills and 10 instruction contracts (9 scoped rules plus the Copilot entrypoint; documentation excluded).
   Spec-first, architecture-driven, TDD-orchestrated development with human-in-the-loop gates.
 tags: [al, business-central, dynamics365, erp, microsoft, aldc, tdd, skills, orchestration, copilot]
 
@@ -11,7 +11,7 @@ items:
     kind: agent
     description: Independent review of direct Developer increments before human approval
   - path: skills/skill-al-review-pipeline/SKILL.md
-    kind: instruction
+    kind: skill
     description: Shared evidence-based review execution and coverage
   # ─── Instructions (10 files — auto-applied coding standards) ──────────────
   - path: instructions/al-guidelines.instructions.md
@@ -34,7 +34,7 @@ items:
     kind: instruction
     description: |
       Master integration document for GitHub Copilot. Routes to 5 core public agents based on task:
-      - Technical specification of approved designs? → @AL Spec Agent via al-spec.create
+      - Technical specification of approved designs? → @AL Spec Agent via al-spec-create
       - Designing/architecture? → @AL Architecture & Design Specialist
       - Implementing/coding/debugging? → @AL Implementation Specialist
       - TDD orchestrated feature (MEDIUM/HIGH)? → @AL Development Conductor
@@ -44,54 +44,54 @@ items:
     kind: instruction
 
   # ─── Workflows (6 retained — invoke with @workspace use [name]) ───────────
-  - path: prompts/al-spec.create.prompt.md
-    kind: prompt
-  - path: prompts/al-build.prompt.md
-    kind: prompt
-  - path: prompts/al-pr-prepare.prompt.md
-    kind: prompt
-  - path: prompts/al-context.create.prompt.md
-    kind: prompt
-  - path: prompts/al-memory.create.prompt.md
-    kind: prompt
-  - path: prompts/al-initialize.prompt.md
-    kind: prompt
+  - path: skills/al-spec-create/SKILL.md
+    kind: skill
+  - path: skills/al-build/SKILL.md
+    kind: skill
+  - path: skills/al-pr-prepare/SKILL.md
+    kind: skill
+  - path: skills/al-context-create/SKILL.md
+    kind: skill
+  - path: skills/al-memory-create/SKILL.md
+    kind: skill
+  - path: skills/al-initialize/SKILL.md
+    kind: skill
 
   # ─── Skills (11 composable — loaded on demand by agents) ──────────────────
   # Required skills (7)
   - path: skills/skill-api/SKILL.md
-    kind: instruction
+    kind: skill
     description: API design, OData/REST, versioning, EntityName conventions, bound actions
   - path: skills/skill-copilot/SKILL.md
-    kind: instruction
+    kind: skill
     description: Copilot capability lifecycle, PromptDialog, AI Test Toolkit, responsible AI
   - path: skills/skill-debug/SKILL.md
-    kind: instruction
+    kind: skill
     description: Root cause analysis workflow, profiling, diagnostic patterns
   - path: skills/skill-performance/SKILL.md
-    kind: instruction
+    kind: skill
     description: SetLoadFields, CalcFields grouping, early filtering, temporary tables, triage
   - path: skills/skill-events/SKILL.md
-    kind: instruction
+    kind: skill
     description: Event subscriber/publisher patterns, IsHandled, integration events
   - path: skills/skill-permissions/SKILL.md
-    kind: instruction
+    kind: skill
     description: PermissionSet generation, READ/CALC permission sets, security models
   - path: skills/skill-testing/SKILL.md
-    kind: instruction
+    kind: skill
     description: Given/When/Then, Library Assert, IsInitialized, TDD cycle, AL-Go structure
   # Recommended skills (4)
   - path: skills/skill-migrate/SKILL.md
-    kind: instruction
+    kind: skill
     description: BC version migration, breaking changes, upgrade codeunits
   - path: skills/skill-pages/SKILL.md
-    kind: instruction
+    kind: skill
     description: Page types, UX patterns, controls, Page Designer integration
   - path: skills/skill-translate/SKILL.md
-    kind: instruction
+    kind: skill
     description: XLIFF, multi-language, localization, translation management
   - path: skills/skill-estimation/SKILL.md
-    kind: instruction
+    kind: skill
     description: Project estimation, PERT, SWOT analysis, effort scoping
 
   # ─── Public Agents (5 — user-invocable) ───────────────────────────────────
@@ -105,7 +105,7 @@ items:
 
       Loads skills on demand: skill-api, skill-copilot, skill-performance, skill-events
 
-      Flow: @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
+      Flow: @AL Architecture & Design Specialist → al-spec-create → @AL Development Conductor
 
       Tool Boundaries:
       - CAN: Design solutions, create architecture docs, decompose requirements
@@ -115,7 +115,7 @@ items:
     kind: agent
     usage: recommended
     description: |
-      Specification owner — canonical contract shared with al-spec.create.
+      Specification owner — canonical contract shared with al-spec-create.
       Preserves approved architecture; defines objects, data, procedures, events
       and acceptance without AL implementation. Human approval precedes the
       Conductor (MEDIUM/HIGH) or Developer (LOW) handoff.
@@ -130,7 +130,7 @@ items:
       Loads skills on demand: skill-debug, skill-api, skill-copilot, skill-events,
       skill-permissions, skill-pages, skill-migrate, skill-translate
 
-      For LOW complexity: al-spec.create → @AL Implementation Specialist
+      For LOW complexity: al-spec-create → @AL Implementation Specialist
       For debugging/quick fixes: @AL Implementation Specialist directly
 
       Tool Boundaries:
@@ -145,7 +145,7 @@ items:
       Delegates to 3 internal subagents: planning → implement → review.
       Enforces RED→GREEN→REFACTOR TDD cycle with HITL gates per phase.
 
-      Requires: {req_name}.spec.md in .github/plans/{req_name}/ (from al-spec.create)
+      Requires: {req_name}.spec.md in .github/plans/{req_name}/ (from al-spec-create)
       Produces: {req_name}-plan.md and {req_name}-phase-N-complete.md
 
       Subagents invoked automatically (not user-invocable):
@@ -226,27 +226,27 @@ items:
       Follows the official Agent Template project structure. Handles both Designer
       (no-code) and SDK (pro-code) paths. 7-phase workflow with HITL gates.
 
-  - path: prompts/al-agent.create.prompt.md
-    kind: prompt
+  - path: skills/al-agent-create/SKILL.md
+    kind: skill
     description: "End-to-end coded agent creation workflow"
-  - path: prompts/al-agent.task.prompt.md
-    kind: prompt
+  - path: skills/al-agent-task/SKILL.md
+    kind: skill
     description: "Generate agent task integration code"
-  - path: prompts/al-agent.instructions.prompt.md
-    kind: prompt
+  - path: skills/al-agent-instructions/SKILL.md
+    kind: skill
     description: "Generate optimized agent instructions"
-  - path: prompts/al-agent.test.prompt.md
-    kind: prompt
+  - path: skills/al-agent-test/SKILL.md
+    kind: skill
     description: "Test agent SDK integration — 6 categories"
 
   - path: skills/skill-agent-instructions/SKILL.md
-    kind: instruction
+    kind: skill
     description: "Generate/review natural language instructions for BC agents"
   - path: skills/skill-agent-task-patterns/SKILL.md
-    kind: instruction
+    kind: skill
     description: "8 Agent SDK task integration patterns"
   - path: skills/skill-contribution-assistant/SKILL.md
-    kind: instruction
+    kind: skill
     description: "Guided contribution workflow — opportunity detection, onboarding, PR-readiness, quality gate"
 
   - path: instructions/al-agent-toolkit.instructions.md

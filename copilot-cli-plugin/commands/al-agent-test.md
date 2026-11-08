@@ -1,5 +1,5 @@
 ---
-description: 'Generate comprehensive test codeunits for Business Central Agent SDK integrations. Covers 6 categories: Registration, Factory, Metadata, TaskExecution, TaskIntegration, AgentSession. ALDC workflow (Copilot prompt al-agent.test); invoke explicitly.'
+description: 'Generate comprehensive test codeunits for Business Central Agent SDK integrations. Covers 6 categories: Registration, Factory, Metadata, TaskExecution, TaskIntegration, AgentSession. ALDC workflow skill al-agent-test; invoke explicitly.'
 disable-model-invocation: true
 ---
 

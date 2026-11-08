@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const { translateHost, roleTooling } = require('./codex-al-adapter');
-const { split, WORKFLOWS, workflowSkillName, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
+const { split, WORKFLOWS, workflowSkillName, workflowSource, oneLine, withPeriod, rewritePaths, knowledgeContent } = require('./generation-utils');
 const { support, plansRootFor, auditsRootFor } = require('./plugin-runtime');
 const { walk, provenance, normalized } = require('./package-provenance');
 const ROOT = path.resolve(__dirname,'..'), DEST = 'plugins/aldc-codex';
@@ -140,10 +140,10 @@ function expected(root = ROOT) {
     files.set(`agents/${name}.toml`,`name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(bodyFor(oneLine(src.data.description)))}\nsandbox_mode = ${JSON.stringify(sandboxModeFor(canonical.data.tools))}\ndeveloper_instructions = ${JSON.stringify(instructions)}\n`);
     roles.push([name,bodyFor(oneLine(src.data.description)).trim()]);
   }
-  for (const prompt of WORKFLOWS) {
-    const name = workflowSkillName(prompt);
-    const src = split(read(`prompts/${prompt}.prompt.md`));
-    const text = src.body.replace(/^\n/, '').replace('for `${input:req_name}` (complexity `${input:Complexity}`)',
+  for (const workflow of WORKFLOWS) {
+    const name = workflowSkillName(workflow);
+    const src = split(read(workflowSource(workflow)));
+    const text = src.body.replace(/^\n/, '').replace('for the requirement name and complexity given after the command (ask if missing)',
       'with the requirement, complexity and scope in `$ARGUMENTS`');
     let body = bodyFor(canonicalPaths(text));
     if (name === 'al-spec-create') body = body.replace('with the requirement, complexity and scope in `$ARGUMENTS`', 'with the requirement, complexity and scope supplied in the current request');
@@ -153,7 +153,7 @@ function expected(root = ROOT) {
       body = body.slice(0,a) + `## Phase 0: Codex project initialization\n\nRun the installed package scripts/init.js with --project <directory> to preview.\nAfter reviewing the plan, repeat with --apply. Preserve collisions unless the\nuser authorizes --force replacement. Use --verify for drift and --rollback for\nthe preceding transaction. Do not combine plugin discovery with local bootstrap\ncopies of the same ALDC skill. Confirm loaded sources before environment setup.\n\n` + body.slice(b);
     }
     files.set(`skills/aldc/references/commands/${name}.md`,preface+body);
-    commands.push([name,bodyFor(`${withPeriod(oneLine(src.data.description || ''))} ALDC workflow (Copilot prompt ${prompt}); invoke explicitly.`).trim()]);
+    commands.push([name,bodyFor(`${withPeriod(oneLine(src.data.description || ''))} ALDC workflow skill ${name}; invoke explicitly.`).trim()]);
   }
   for (const p of walk(root,'skills')) {
     const rel = p.slice('skills/'.length).replace(/SKILL\.md$/,'GUIDE.md');

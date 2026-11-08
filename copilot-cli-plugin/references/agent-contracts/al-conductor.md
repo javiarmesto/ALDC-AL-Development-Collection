@@ -69,18 +69,18 @@ Before starting, check what input you have:
 
 ```
 LOW (isolated changes, single phase):
-  al-spec.create → al-developer (direct implementation)
+  al-spec-create → al-developer (direct implementation)
 
 MEDIUM (2-3 phases, internal integrations):
-  al-architect → al-spec.create → al-conductor (TDD orchestration)
+  al-architect → al-spec-create → al-conductor (TDD orchestration)
 
 HIGH (4+ phases, external integrations, architecture critical):
-  al-architect → al-spec.create → al-conductor (TDD orchestration)
+  al-architect → al-spec-create → al-conductor (TDD orchestration)
 
 Specialized domains (MEDIUM/HIGH):
-  - API integration:    al-architect (loads skill-api) → al-spec.create → al-conductor
-  - Copilot features:   al-architect (loads skill-copilot) → al-spec.create → al-conductor
-  - Performance issues: al-architect (loads skill-performance) → al-spec.create → al-conductor
+  - API integration:    al-architect (loads skill-api) → al-spec-create → al-conductor
+  - Copilot features:   al-architect (loads skill-copilot) → al-spec-create → al-conductor
+  - Performance issues: al-architect (loads skill-performance) → al-spec-create → al-conductor
 ```
 
 > 💡 **You are step 3 in MEDIUM/HIGH.** If a request arrives without spec.md or architecture.md, recommend the user start with `al-architect` and `/al-spec-create` first.
@@ -141,7 +141,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
    > **Standard flow travels with the work.** Pass the findings' *Standard Flow* section to every implementation phase that touches those publishers, and to the reviewer. If the planner returned no Standard Flow and the plan hooks into a standard publisher, send the planner back for that section before implementing.
 
-   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
+   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec-create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
 
    Show progress using Visual Progress Format. After completion, summarize findings:
    ```
@@ -736,7 +736,7 @@ ALWAYS check for existing context in `.github/plans/`:
 
 1. `.github/plans/memory.md` — global memory (decisions, context, cross-session state — append-only)
 2. `.github/plans/{req_name}/{req_name}.architecture.md` — design from `al-architect`
-3. `.github/plans/{req_name}/{req_name}.spec.md` — specification from `al-spec.create`; for multi-spec (architecture section 14) the human-approved Architect-assigned unit specs in that same folder replace it, implemented in `implementation_depends_on` order
+3. `.github/plans/{req_name}/{req_name}.spec.md` — specification from `al-spec-create`; for multi-spec (architecture section 14) the human-approved Architect-assigned unit specs in that same folder replace it, implemented in `implementation_depends_on` order
 4. `.github/plans/{req_name}/{req_name}.test-plan.md` — test strategy
 
 **Why**:

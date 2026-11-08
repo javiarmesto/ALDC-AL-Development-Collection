@@ -1,5 +1,5 @@
 ---
-description: Build, package, and deploy AL extensions to Business Central environments. ALDC workflow (Copilot prompt al-build); invoke explicitly.
+description: Build, package, and deploy AL extensions to Business Central environments. ALDC workflow skill al-build; invoke explicitly.
 disable-model-invocation: true
 ---
 
@@ -49,7 +49,9 @@ disable-model-invocation: true
 
 # Build and Deploy AL Extension
 
-Your goal is to build and deploy the AL extension for `<DeploymentType from $ARGUMENTS>` environment.
+Values in angle brackets come from the text typed after the command; ask for any that are missing.
+
+Your goal is to build and deploy the AL extension for `<DeploymentType>` environment.
 ## Select Deployment Strategy
 Based on glob/grep source search select the appropriate deployment strategy
 Ask and confirm with the user before proceeding.

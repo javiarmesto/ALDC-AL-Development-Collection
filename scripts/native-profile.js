@@ -5,6 +5,10 @@
 // Claude distributions or canonical agents to select a different tool surface.
 const fs = require('fs');
 const path = require('path');
+const { WORKFLOWS } = require('./workflows');
+// Agents and the explicitly invoked workflow skills carry role-specific projections.
+const PROJECTED = new RegExp(`^(agents/[^/]+\\.agent\\.md|skills/(${WORKFLOWS.join('|')})/SKILL\\.md)$`);
+const roleOf = rel => rel.startsWith('agents/') ? path.basename(rel, '.agent.md') : rel.split('/')[1];
 const SEARCH = ['al_symbolsearch', 'al_getdiagnostics'];
 const BUILD = [...SEARCH, 'al_downloadsymbols', 'al_build'];
 const IMPLEMENT = [...BUILD, 'al_getnextobjectid'];
@@ -30,7 +34,7 @@ const roles = {
 
 function project(relative, input) {
   const rel = relative.replace(/\\/g, '/');
-  if (!/^(agents\/[^/]+\.agent|prompts\/[^/]+\.prompt)\.md$/.test(rel)) return input;
+  if (!PROJECTED.test(rel)) return input;
   let text = input.toString('utf8');
   // Windows checkouts can use CRLF. Parse normalized lines, then restore the
   // input convention so the unchanged workflow body remains byte-identical.
@@ -40,20 +44,23 @@ function project(relative, input) {
   if (!text.startsWith('---\n') || end < 0) throw new Error(`Invalid frontmatter: ${rel}`);
   let front = text.slice(0, end);
   let body = text.slice(end + 4);
-  const role = path.basename(rel).replace(/\.(agent|prompt)\.md$/, '');
+  const role = roleOf(rel);
   const isAgent = rel.startsWith('agents/');
+  // Skills declare no tools: they run with the invoking agent's tools.
+  const up = isAgent ? '../' : '../../';
   if (isAgent && !roles[role]) throw new Error(`Native role assignment missing: ${role}`);
   const grant = isAgent ? roles[role][0] :
     role === 'al-build' ? BUILD : role === 'al-initialize' ? [...SEARCH, 'al_downloadsymbols'] :
-    role === 'al-memory.create' ? [] : SEARCH;
+    role === 'al-memory-create' ? [] : SEARCH;
   const toolLine = front.match(/^tools: \[(.*)\]$/m);
-  if (!toolLine) throw new Error(`Expected explicit tools list: ${rel}`);
+  if (isAgent && !toolLine) throw new Error(`Expected explicit tools list: ${rel}`);
+  if (toolLine) {
   const tools = toolLine[1].split(',').map(s => s.trim()).filter(s =>
     !/ms-dynamics-smb\.al\/|al-symbols-mcp\/|sshadowsdk\.al-lsp-for-agents\/|bc[-_]?atlas/i.test(s));
   if (!tools.some(t => t === 'read' || t === 'read/readFile')) tools.push('read/readFile');
-  if (role === 'al-spec.create' && !tools.includes('edit/createFile')) tools.push('edit/createFile');
   tools.push(...grant.map(t => `ms-dynamics-smb.al/${referenceNames[t] || t}`));
   front = front.replace(toolLine[0], `tools: [${[...new Set(tools)].join(', ')}]`);
+  }
   body = body.split('al_get_diagnostics').join('al_getdiagnostics');
   if (role === 'al-developer') {
     const first = body.indexOf('## Tool surface (authoritative');
@@ -74,13 +81,13 @@ function project(relative, input) {
     .split('`al_search_objects` / `al_symbolsearch` + `bclsp_goToDefinition`').join('`al_symbolsearch` and target-matched source')
     .split('`bclsp_findReferences` / `bclsp_incomingCalls` / `bclsp_prepareCallHierarchy`').join('target-matched source and available native navigation; request bounded graph evidence if needed')
     .split(' / `bclsp_findReferences`').join(' and available native navigation');
-  if (role === 'al-spec.create') body = body.replace('download symbols first if absent', 'ask the implementation/setup owner to download symbols if absent');
+  if (role === 'al-spec-create') body = body.replace('download symbols first if absent', 'ask the implementation/setup owner to download symbols if absent');
   if (role === 'al-planning-subagent') {
     body = body.replace('`#ms-dynamics-smb.al/al_get_package_dependencies`', 'app.json and target-matched package metadata')
       .replace('`#ms-dynamics-smb.al/al_download_source`', 'source supplied through an authorized implementation-owner retrieval step');
   }
   if (role === 'al-review-subagent') body = body.replace('use `al_generate_cpu_profile` to locate hotspots', 'request scoped profiling evidence from the implementation owner to locate hotspots');
-  if (role === 'al-context.create') {
+  if (role === 'al-context-create') {
     body = body.replace('@al_get_package_dependencies', 'Read app.json and target-matched package metadata')
       .replace('al_generatepermissionset', 'Record existing permission sets; do not generate or modify them while documenting context');
   }
@@ -120,11 +127,11 @@ terminal/editor tools. A build request does not authorize publication.
       .replace('Use `al_clear_credentials_cache` to clear cached credentials', 'Use the configured VS Code authentication UI to review cached credentials; do not clear credentials without authorization')
       .replace('If persistent, download source: `al_download_source`', 'If persistent, inspect the actual dependency/cache and use an authorized source-retrieval process; no native source-download tool is assumed');
   }
-  const duty = isAgent ? roles[role][1] : role === 'al-spec.create' ?
+  const duty = isAgent ? roles[role][1] : role === 'al-spec-create' ?
     'Write the canonical specification in the existing plans folder. Propose missing dependencies; only the implementation/setup owner changes app.json or downloads symbols. An uncertain test dependency does not prevent drafting the spec; retain unresolved facts in Open Questions.' :
     'Keep this workflow’s existing artifacts and approvals. Use only the native operations declared here; graph execution belongs to Developer/Implementer.';
   const notice = '\n\n## BC29 native capability contract\n\n' +
-    'Profile: **bc29-native**, GitHub Copilot Chat in VS Code only. Before your first tool, dependency or evidence decision under this profile, read [the native tool contract](../docs/framework/native-al-tools.md). Apply its role scope, optional-provider rules, compatibility checks and evidence limits; reuse it within this invocation. A declared tool is not proof it is installed. Preserve the original human gates.\n\n' + duty + '\n';
+    'Profile: **bc29-native**, GitHub Copilot Chat in VS Code only. Before your first tool, dependency or evidence decision under this profile, read [the native tool contract](' + up + 'docs/framework/native-al-tools.md). Apply its role scope, optional-provider rules, compatibility checks and evidence limits; reuse it within this invocation. A declared tool is not proof it is installed. Preserve the original human gates.\n\n' + duty + '\n';
   return Buffer.from((front + '\n---' + notice + body).replace(/\n/g, eol));
 }
 
@@ -139,14 +146,12 @@ if (require.main === module) {
   if (dest === root || dest.startsWith(root + path.sep) || fs.existsSync(dest)) {
     throw new Error('Choose a new output directory outside the repository.');
   }
-  for (const dir of ['agents', 'prompts']) {
-    fs.mkdirSync(path.join(dest, dir), { recursive: true });
-    for (const name of fs.readdirSync(path.join(root, dir))) {
-      const rel = `${dir}/${name}`;
-      fs.writeFileSync(path.join(dest, rel), project(rel, fs.readFileSync(path.join(root, rel))));
-    }
+  const rels = [...fs.readdirSync(path.join(root, 'agents')).map(name => `agents/${name}`), ...WORKFLOWS.map(name => `skills/${name}/SKILL.md`)];
+  for (const rel of rels) {
+    fs.mkdirSync(path.dirname(path.join(dest, rel)), { recursive: true });
+    fs.writeFileSync(path.join(dest, rel), project(rel, fs.readFileSync(path.join(root, rel))));
   }
   fs.mkdirSync(path.join(dest, 'docs/framework'), { recursive: true });
   fs.copyFileSync(path.join(root, 'docs/framework/native-al-tools.md'), path.join(dest, 'docs/framework/native-al-tools.md'));
-  console.log(`Review export: ${dest} (agents/prompts and contract; use installer for a complete toolkit)`);
+  console.log(`Review export: ${dest} (agents, workflow skills and contract; use installer for a complete toolkit)`);
 }

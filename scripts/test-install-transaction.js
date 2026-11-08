@@ -232,7 +232,7 @@ for (const scenario of [
  const r=temp(t),payload=path.join(r,'payload'),project=path.join(r,'project');
  fs.mkdirSync(project);
  // A small real package exercises the same configuration projection as the VSIX.
- for(const rel of ['agents','prompts','instructions','package.json','.github/copilot-instructions.md',
+ for(const rel of ['agents','skills','instructions','package.json','.github/copilot-instructions.md',
   'docs/templates/memory-template.md','docs/framework/native-al-tools.md','docs/framework/copilot-chat-al-tooling.md']){
   fs.mkdirSync(path.dirname(path.join(payload,rel)),{recursive:true});
   fs.cpSync(path.join(root,rel),path.join(payload,rel),{recursive:true});

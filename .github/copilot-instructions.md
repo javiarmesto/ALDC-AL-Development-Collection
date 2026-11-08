@@ -22,7 +22,7 @@ Choose the right agent for your task:
 
 | Intent | Agent | What it does |
 |--------|-------|-------------|
-| Specifying approved requirements/designs? | `@AL Spec Agent` through `al-spec.create` | Technical contracts; human approval before implementation |
+| Specifying approved requirements/designs? | `@AL Spec Agent` through `al-spec-create` | Technical contracts; human approval before implementation |
 | Designing, analyzing architecture, strategic decisions? | `@AL Architecture & Design Specialist` | Solution design, data modeling, integration strategy |
 | Implementing, coding, debugging, fixing? | `@AL Implementation Specialist` | Tactical implementation with full AL MCP tools |
 | Building a feature with TDD orchestration (plan → implement → review → commit)? | `@AL Development Conductor` | Orchestrates planning, implementation, and review subagents |
@@ -32,8 +32,8 @@ Choose the right agent for your task:
 ### Quick routing guide
 
 ```
-New feature (MEDIUM/HIGH)? → @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
-New feature (LOW)?         → al-spec.create → @AL Implementation Specialist
+New feature (MEDIUM/HIGH)? → @AL Architecture & Design Specialist → al-spec-create → @AL Development Conductor
+New feature (LOW)?         → al-spec-create → @AL Implementation Specialist
 Bug fix / debugging?       → @AL Implementation Specialist
 Architecture review?       → @AL Architecture & Design Specialist
 Full TDD cycle?            → @AL Development Conductor
@@ -42,24 +42,24 @@ Project estimation?        → @AL Pre-Sales & Project Estimation Specialist
 
 ## Workflows
 
-6 workflows available via `@workspace use [name]`:
+6 workflows available as slash commands (`/name`):
 
 | Workflow | When to use |
 |----------|-------------|
-| `al-spec.create` | Create functional-technical specifications before development |
+| `al-spec-create` | Create functional-technical specifications before development |
 | `al-build` | Build, package, and deploy extensions |
 | `al-pr-prepare` | Prepare pull requests with documentation and validation |
-| `al-memory.create` | Generate/update memory.md for session continuity |
-| `al-context.create` | Generate project context.md for AI assistants |
+| `al-memory-create` | Generate/update memory.md for session continuity |
+| `al-context-create` | Generate project context.md for AI assistants |
 | `al-initialize` | Complete environment and workspace setup |
 
 ### Usage
 
 ```
-@workspace use al-spec.create    # Create specification
-@workspace use al-build          # Build & deploy
-@workspace use al-pr-prepare     # Prepare PR
-@workspace use al-initialize     # Setup project
+/al-spec-create    # Create specification
+/al-build          # Build & deploy
+/al-pr-prepare     # Prepare PR
+/al-initialize     # Setup project
 ```
 
 ## Skills
@@ -151,13 +151,13 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 **MEDIUM / HIGH:**
 
 1. `@AL Architecture & Design Specialist` — Designs solution, creates `.github/plans/{req_name}/{req_name}.architecture.md`
-2. `@workspace use al-spec.create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (technical contracts: object IDs, procedure signatures, acceptance; no AL implementation bodies)
+2. `/al-spec-create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (technical contracts: object IDs, procedure signatures, acceptance; no AL implementation bodies)
 3. `@AL Development Conductor` — Reads spec + architecture from `.github/plans/{req_name}/`, orchestrates TDD: planning → implementation → review
-4. `@workspace use al-pr-prepare` — Prepares PR referencing the plan
+4. `/al-pr-prepare` — Prepares PR referencing the plan
 
 **LOW:**
 
-1. `@workspace use al-spec.create` — Generates `.github/plans/{req_name}/{req_name}.spec.md` directly from codebase
+1. `/al-spec-create` — Generates `.github/plans/{req_name}/{req_name}.spec.md` directly from codebase
 2. `@AL Implementation Specialist` — Implements directly using spec as blueprint
 
 ## Complexity-Based Tool Selection
@@ -165,13 +165,13 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 When a user provides requirements, assess complexity to route correctly:
 
 **LOW** — Limited scope, single phase, no integrations
-→ `al-spec.create` → `@AL Implementation Specialist` direct implementation
+→ `al-spec-create` → `@AL Implementation Specialist` direct implementation
 
 **MEDIUM** — 2-3 functional areas, internal integrations, conditional logic
-→ `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` TDD orchestration
+→ `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` TDD orchestration
 
 **HIGH** — Enterprise scope, 4+ phases, external integrations, complex workflows
-→ `@AL Architecture & Design Specialist` design first → `al-spec.create` → `@AL Development Conductor` implement
+→ `@AL Architecture & Design Specialist` design first → `al-spec-create` → `@AL Development Conductor` implement
 
 Present the assessment and wait for user confirmation before proceeding.
 

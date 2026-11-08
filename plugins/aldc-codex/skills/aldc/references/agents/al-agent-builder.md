@@ -70,10 +70,10 @@ Declare which skills were loaded and which specific patterns were applied at the
 | ----------------------------------- | ------------ | -------------------------------------------------- |
 | "I need a quick agent to test..."   | **Designer** | Guide through wizard config, generate instructions |
 | "I need a production agent..."      | **SDK**      | Full coded agent following Agent Template          |
-| "I need to code an agent in AL..."  | **SDK**      | Run `al-agent.create` workflow                     |
-| "Generate task integration code..." | Either       | Run `al-agent.task` workflow                       |
-| "Write instructions for..."         | Either       | Run `al-agent.instructions` workflow               |
-| "Test my agent..."                  | Either       | Run `al-agent.test` workflow                       |
+| "I need to code an agent in AL..."  | **SDK**      | Run `al-agent-create` workflow                     |
+| "Generate task integration code..." | Either       | Run `al-agent-task` workflow                       |
+| "Write instructions for..."         | Either       | Run `al-agent-instructions` workflow               |
+| "Test my agent..."                  | Either       | Run `al-agent-test` workflow                       |
 | "My agent isn't working..."         | Either       | Troubleshooting mode                               |
 
 ## SDK orchestration — 7 phases with HITL gates
@@ -97,7 +97,7 @@ Declare which skills were loaded and which specific patterns were applied at the
    🛑 STOP
 ```
 
-Each phase uses the prompts (`al-agent.create`, `al-agent.task`, `al-agent.instructions`, `al-agent.test`) which apply patterns from the loaded skills — they do not reimplement them.
+Each phase uses the workflow skills (`al-agent-create`, `al-agent-task`, `al-agent-instructions`, `al-agent-test`) which apply patterns from the loaded skills — they do not reimplement them.
 
 ## Troubleshooting matrix
 

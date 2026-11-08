@@ -68,7 +68,11 @@ const orphan = (files, label) => {
 };
 orphan(listFiles('agents', '.agent.md'), 'Agente');
 orphan(listSkillDirs('skills').map((d) => `${d}/SKILL.md`), 'Skill');
-orphan(listFiles('prompts', '.prompt.md'), 'Prompt');
+const { WORKFLOWS } = require('./workflows');
+const workflowSkills = WORKFLOWS.map((w) => `skills/${w}/SKILL.md`).filter(exists);
+orphan(workflowSkills, 'Workflow skill');
+for (const w of WORKFLOWS) if (!exists(`skills/${w}/SKILL.md`)) errors.push(`Workflow skill declarado en scripts/workflows.js sin fichero: skills/${w}/SKILL.md`);
+if (exists('prompts')) errors.push('prompts/ ya no se distribuye: los flujos son skills (skills/<nombre>/SKILL.md)');
 orphan(listFiles('instructions', '.md'), 'Instruction');
 
 // ── 3: contadores de CLAUDE.md ──────────────────────────────────────────────
@@ -76,7 +80,7 @@ const claudeMd = read('CLAUDE.md');
 const actual = {
   agents: listFiles('agents', '.agent.md').length,
   skills: listSkillDirs('skills').length,
-  prompts: listFiles('prompts', '.prompt.md').length,
+  workflows: workflowSkills.length,
   instructions: listFiles('instructions', '.md').filter((f) => !f.endsWith('index.md') && !f.endsWith('README.md')).length,
 };
 const claims = [...claudeMd.matchAll(/(\d+)\s+(agents?|subagents?|skills?|workflows?|instructions?)/gi)];
@@ -98,7 +102,7 @@ const compare = (kind, actualN, note = '') => {
 };
 compare('agents', actual.agents, ' (ficheros .agent.md)');
 compare('skills', actual.skills, ' (directorios skill-*)');
-compare('workflows', actual.prompts, ' (ficheros .prompt.md)');
+compare('workflows', actual.workflows, ' (skills de flujo en skills/al-*/SKILL.md)');
 compare('instructions', actual.instructions, ' (md en instructions/, sin index/README)');
 
 // ── 4: @import en CLAUDE.md ─────────────────────────────────────────────────
@@ -120,7 +124,7 @@ for (const file of ['CLAUDE.md', 'README.md']) {
 
 // ── 6: sincronía raíz ↔ packages/foundation ─────────────────────────────────
 if (exists('packages/foundation')) {
-  for (const tree of ['agents', 'skills', 'instructions', 'prompts']) {
+  for (const tree of ['agents', 'skills', 'instructions']) {
     const mirror = `packages/foundation/${tree}`;
     if (!exists(mirror)) { warnings.push(`packages/foundation sin árbol: ${tree}`); continue; }
     const walk = (rel) => {
@@ -223,7 +227,7 @@ checkFm(listSkillDirs('skills').map((d) => `${d}/SKILL.md`).filter(exists), ['na
 // ── Informe ─────────────────────────────────────────────────────────────────
 console.log(`\nALDC check-conformance — ${new Date().toISOString().slice(0, 10)}`);
 console.log(`Repo: ${ROOT}`);
-console.log(`En disco: ${actual.agents} agentes · ${actual.skills} skills · ${actual.prompts} prompts · ${actual.instructions} instructions\n`);
+console.log(`En disco: ${actual.agents} agentes · ${actual.skills} skills · ${actual.workflows} skills de flujo · ${actual.instructions} instructions\n`);
 if (errors.length) {
   console.log(`✖ ERRORES (${errors.length}):`);
   errors.forEach((e) => console.log(`   ✖ ${e}`));

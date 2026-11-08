@@ -1,5 +1,5 @@
 ---
-description: Create or revise the canonical AL technical specification through AL Spec Agent, preserving approved architecture and human approval. ALDC workflow (Copilot prompt al-spec.create); invoke explicitly.
+description: Create or revise the canonical AL technical specification through AL Spec Agent, preserving approved architecture and human approval. ALDC workflow skill al-spec-create; invoke explicitly.
 disable-model-invocation: true
 ---
 
@@ -52,7 +52,7 @@ disable-model-invocation: true
 Use `al-spec-agent` with the requirement, complexity and scope in `$ARGUMENTS`.
 Read and follow [the canonical specification contract](${PLUGIN_ROOT}/agents/al-spec-agent.agent.md)
 in full before authoring. This entrypoint does not define another specification
-workflow. Resolve the role link from this installed prompt's directory.
+workflow. Resolve the role link from this installed skill's directory.
 
 Pass the approved requirement/architecture, current spec path if revising, and
 any Architect-assigned scope. If this host cannot route to the named custom agent,

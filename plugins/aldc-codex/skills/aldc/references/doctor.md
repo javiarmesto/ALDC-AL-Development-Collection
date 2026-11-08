@@ -30,7 +30,7 @@ Select `--host chat|claude|cli|codex` explicitly for terminals. Workspace means
 the AL solution root, independently of toolkit/plugin location. Each multiroot
 workspace folder is inspected separately; Doctor never traverses another root
 implicitly. For a custom Chat target, point `--toolkit` at the directory holding
-`agents/` and `prompts/`; its aldc-profile.json is diagnosed there, including
+`agents/` and `skills/` (or `prompts/` before 5.3); its aldc-profile.json is diagnosed there, including
 invalid profile values. The default installation uses .github/aldc-profile.json.
 It does not parse YAML: the caller resolves `toolkitRoot` from aldc.yaml (through
 `tools/bcquality/config.js`, which reports it alongside the solution layout) and

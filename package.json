@@ -48,7 +48,6 @@
     "scripts/",
     "agents/",
     "instructions/",
-    "prompts/",
     "skills/",
     "docs/framework/",
     "docs/templates/",

@@ -24,7 +24,7 @@
  * Primitive mapping (GitHub Copilot -> Claude Code plugin):
  *   agents/<id>.agent.md        -> agents/<id>.md        (roles and subagents)
  *   agents/<id>.agent.md        -> skills/<role>/SKILL.md (short entry skill)
- *   prompts/<wf>.prompt.md      -> skills/<wf>/SKILL.md   (disable-model-invocation)
+ *   skills/<wf>/SKILL.md (workflow) -> skills/<wf>/SKILL.md (disable-model-invocation)
  *   instructions/<r>.instructions.md -> rules/<r>.md      (applyTo -> paths)
  *   skills/<name>/**            -> skills/<name>/**
  *   docs/templates/, tools/, scripts/ -> docs/templates/, tools/, scripts/
@@ -35,7 +35,7 @@ const crypto = require('crypto');
 const yaml = require('js-yaml');
 const { walk, provenance, normalized, verify } = require('./package-provenance');
 const root = path.resolve(__dirname, '..');
-const { split, WORKFLOWS, workflowSkillName } = require('./generation-utils');
+const { split, WORKFLOWS, workflowSkillName, workflowSource } = require('./generation-utils');
 const { support, projectGuidance, plansRootFor, auditsRootFor } = require('./plugin-runtime');
 
 const PLUGIN = 'aldc';
@@ -154,6 +154,8 @@ const PATH_REWRITES = [
   [re(`${REQ}instructions\\/`), `${PLUGIN_ROOT}/rules/`],
   [re(`${OPT}prompts\\/([a-z.-]+)\\.prompt\\.md`), (_, name) => `${PLUGIN_ROOT}/skills/${workflowSkillName(name)}/SKILL.md`],
   [/@workspace use ([a-z][a-z.-]*[a-z])/g, (_, name) => `/${PLUGIN}:${workflowSkillName(name)}`],
+  [re(`${OPT}skills\\/(${WORKFLOWS.join('|')})\\/SKILL\\.md`), (_, name) => `${PLUGIN_ROOT}/skills/${name}/SKILL.md`],
+  [new RegExp(`(?<![\\w./:-])\\/(${WORKFLOWS.join('|')})(?![\\w/-])`, 'g'), (_, name) => `/${PLUGIN}:${name}`],
   [re(`${OPT}agents\\/([a-z-]+)\\.agent\\.md`), `${PLUGIN_ROOT}/agents/$1.md`],
   [re(`${OPT}docs\\/templates\\/`), `${PLUGIN_ROOT}/docs/templates/`],
   [re(`${REQ}skills\\/`), `${PLUGIN_ROOT}/skills/`],
@@ -251,7 +253,7 @@ ${mappingTable(plansRoot)}
 
 function workflowPreamble(sourceRel, sourceHash, plansRoot) {
   return `${provenanceLine(sourceRel, sourceHash)}
-> This workflow was written for \`@workspace use …\` in GitHub Copilot Chat.
+> This workflow was written as a GitHub Copilot workflow skill (\`/<workflow>\`).
 > Apply these harness mappings and treat everything else as binding:
 >
 ${mappingTable(plansRoot)}
@@ -314,19 +316,19 @@ function buildEntrySkill(entry, ctx, plansRoot) {
     `Requirement artifacts live under \`${plansRoot}/\` in the project; run \`/${PLUGIN}:al-initialize\` once if that folder does not exist.\n`);
 }
 
-function buildWorkflow(prompt, ctx, plansRoot) {
-  const sourceRel = `prompts/${prompt}.prompt.md`;
+function buildWorkflow(workflow, ctx, plansRoot) {
+  const sourceRel = workflowSource(workflow);
   const raw = ctx.readSource(sourceRel);
   const hash = sha256(raw);
   const { data, body } = split(raw.toString('utf8'));
-  const name = workflowSkillName(prompt);
-  const description = `${withPeriod(oneLine(data.description || ''))} ALDC workflow (Copilot prompt ${prompt}); invoke explicitly.`;
+  const name = workflowSkillName(workflow);
+  const description = `${withPeriod(oneLine(data.description || ''))} ALDC workflow skill ${name}; invoke explicitly.`;
   // `disable-model-invocation` is what keeps a workflow explicit: the model
-  // never fires it on its own, exactly like a Copilot prompt.
+  // never fires it on its own, exactly like the canonical workflow skill.
   const fm = `---\nname: ${name}\ndescription: ${yamlString(description)}\ndisable-model-invocation: true\n---\n`;
   let text = body;
   // Resolved parameter substitution: the Spec workflow's opening directive.
-  text = text.replace('for `${input:req_name}` (complexity `${input:Complexity}`)',
+  text = text.replace('for the requirement name and complexity given after the command (ask if missing)',
     'with the requirement, complexity and scope in `$ARGUMENTS`');
   // Installing rules into a project is a distribution step, so each surface owns
   // its own Phase 0. The canonical prompt starts at Phase 1 because a Copilot
@@ -471,7 +473,7 @@ function buildDocs(ctx, plansRoot, counts) {
     .map((e) => `| \`/${PLUGIN}:${e.name}\` | \`${PLUGIN}:${e.agent}\` | \`\${CLAUDE_PLUGIN_ROOT}/agents/${e.agent}.md\` |`)
     .join('\n');
   const workflows = WORKFLOWS
-    .map((w) => `| \`/${PLUGIN}:${workflowSkillName(w)}\` | \`prompts/${w}.prompt.md\` |`)
+    .map((w) => `| \`/${PLUGIN}:${workflowSkillName(w)}\` | \`${workflowSource(w)}\` |`)
     .join('\n');
 
   ctx.put('CLAUDE.md', `# ALDC Plugin Instructions
@@ -500,7 +502,7 @@ entry skill: only \`${PLUGIN}:al-conductor\` launches them, through the \`Task\`
 
 Explicitly invoked; \`disable-model-invocation: true\` keeps the model from firing them.
 
-| Skill | Canonical prompt |
+| Skill | Canonical source |
 |---|---|
 ${workflows}
 
@@ -645,7 +647,7 @@ function build(rootDir = root) {
 
   for (const agent of AGENTS) buildAgent(agent, ctx, plansRoot);
   for (const entry of ENTRY_SKILLS) buildEntrySkill(entry, ctx, plansRoot);
-  for (const prompt of WORKFLOWS) buildWorkflow(prompt, ctx, plansRoot);
+  for (const workflow of WORKFLOWS) buildWorkflow(workflow, ctx, plansRoot);
 
   const knowledge = fs.readdirSync(path.join(rootDir, 'skills'), { withFileTypes: true })
     .filter((e) => e.isDirectory() && e.name.startsWith('skill-')).map((e) => e.name).sort();

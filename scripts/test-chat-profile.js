@@ -4,20 +4,37 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const { project, projectConfiguration, chatModel } = require('./chat-profile');
+const { WORKFLOWS } = require('./workflows');
 const root = path.resolve(__dirname, '..');
 const queries = ['al/al_symbolsearch', 'al/al_getdiagnostics', 'al/al_getpackagedependencies'];
 let count = 0;
 for (const profile of ['bc28', 'bc29-native']) {
-  for (const dir of ['agents', 'prompts']) {
-    for (const name of fs.readdirSync(path.join(root, dir)).filter(n => /\.(agent|prompt)\.md$/.test(n))) {
-      const rel = `${dir}/${name}`, original = fs.readFileSync(path.join(root, rel));
+  const rels = [...fs.readdirSync(path.join(root, 'agents')).filter(n => n.endsWith('.agent.md')).map(n => `agents/${n}`),
+    ...WORKFLOWS.map(n => `skills/${n}/SKILL.md`)];
+  for (const rel of rels) {
+    {
+      const original = fs.readFileSync(path.join(root, rel));
       const text = project(rel, original, profile).toString();
       const fm = t => yaml.load(t.split('\n---')[0].slice(4));
       const meta = fm(text), before = fm(original.toString());
       for (const key of Object.keys(before).filter(k => !['tools', 'description', 'model'].includes(k))) assert.deepEqual(meta[key], before[key], `${rel}: preserve ${key}`);
       assert.equal(meta.model, before.model ? chatModel : undefined, `${rel}: Chat model policy`);
-      const role = name.replace(/\.(agent|prompt)\.md$/, '');
-      const none = ['al-conductor', 'al-memory.create', 'al-knowledge-consultant'].includes(role);
+      const isSkill = rel.startsWith('skills/');
+      const role = isSkill ? rel.split('/')[1] : path.basename(rel, '.agent.md');
+      if (isSkill) {
+        // Workflow skills declare no tools or model; they run with the invoking agent's tools.
+        assert.equal(meta.tools, undefined, `${rel}: no tools list`);
+        assert.equal(meta.model, undefined, `${rel}: no model`);
+        assert.equal(meta.name, role, `${rel}: name matches folder`);
+        assert.ok(text.includes(`Profile: **${profile}**`), rel);
+        assert.ok(text.includes('](../../docs/framework/copilot-chat-al-tooling.md)'), `${rel}: contract link resolves from skills/<name>/`);
+        if (role === 'al-build') assert.ok(text.includes('Stop after build/package') && text.includes('human gate'));
+        if (profile === 'bc29-native' && role === 'al-spec-create') assert.ok(text.includes('appId/appName/appPublisher/appVersion') && text.includes('Preserve approved architecture'), `${rel}: bounded environment research`);
+        if (profile !== 'bc29-native') assert.ok(!text.includes('## Native AL evidence for this role'), `${rel}: native behavior is opt-in`);
+        count++;
+        continue;
+      }
+      const none = ['al-conductor', 'al-memory-create', 'al-knowledge-consultant'].includes(role);
       const tools = meta.tools;
       // Installed AL18.1: registration name differs from toolReferenceName.
       // Granting the former made native diagnostics unavailable in the host smoke.
@@ -58,7 +75,7 @@ for (const profile of ['bc28', 'bc29-native']) {
       if (profile === 'bc29-native') {
         if (creator) assert.ok(text.includes('IDs are not reserved') && text.includes('never use nextOutOfRangeId') && text.includes('rangeStart=rangeEnd=approved ID'), `${rel}: safe allocation preserves approved IDs`);
         if (impl) assert.ok(text.includes('tests created, Test compiled and tests executed separate') && text.includes('a compiler error is not a failing runtime test'), `${rel}: real test evidence`);
-        if (['al-architect', 'al-spec-agent', 'al-spec.create'].includes(role)) assert.ok(text.includes('appId/appName/appPublisher/appVersion') && text.includes('Preserve approved architecture'), `${rel}: bounded environment research`);
+        if (['al-architect', 'al-spec-agent'].includes(role)) assert.ok(text.includes('appId/appName/appPublisher/appVersion') && text.includes('Preserve approved architecture'), `${rel}: bounded environment research`);
         if (role === 'al-conductor') assert.ok(text.includes('keep the affected phase pending') && text.includes('without calling AL tools yourself'), `${rel}: coordination gate`);
         if (['al-review-subagent', 'al-developer-reviewer', 'dredd'].includes(role)) assert.ok(text.includes('stale, missing or unexecuted checks as pending'), `${rel}: reviewer evidence limits`);
         if (role === 'al-implement-subagent') {
@@ -105,6 +122,6 @@ for (const profile of ['bc28', 'bc29-native']) {
     assert.ok(output.includes('Keep this prompt'));
   }
 }
-assert.throws(() => project('prompts/future.prompt.md', Buffer.from('---\ntools: [read]\n---\n'), 'bc28'), /assignment missing/);
+assert.throws(() => project('skills/al-future/SKILL.md', Buffer.from('---\nname: al-future\n---\n'), 'bc28'), /assignment missing/);
 assert.throws(() => project('agents/al-triage.agent.md', Buffer.from('invalid'), 'bc28'), /frontmatter/);
-console.log(`PASS: Chat-only grants, prompt precedence, metadata and gates for ${count} projected files; no runtime claim.`);
+console.log(`PASS: Chat-only grants, workflow skills, metadata and gates for ${count} projected files; no runtime claim.`);

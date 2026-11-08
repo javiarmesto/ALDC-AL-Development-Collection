@@ -178,8 +178,7 @@ function ask(question, defaultYes = true) {
 // ─── ALDC Core v1.2 component map ──────────────────────────────────────────
 const COMPONENTS = [
   { name: 'Agents',      src: 'agents',             count: '13 agents (5 public + 3 on-demand + 4 subagents + 1 optional)' },
-  { name: 'Skills',      src: 'skills',             count: '16 skills (8 required + 4 recommended + 4 optional)' },
-  { name: 'Prompts',     src: 'prompts',            count: '11 workflows (6 core + 5 agent-builder)' },
+  { name: 'Skills',      src: 'skills',             count: '16 knowledge skills + 10 workflow skills (slash commands)' },
   { name: 'Instructions',src: 'instructions',       count: '10 instruction contracts (9 scoped rules + copilot entrypoint; documentation excluded)' },
   { name: 'Templates',   src: 'docs/templates',     count: '7 contract templates' },
   { name: 'Framework',   src: 'docs/framework',     count: 'spec + docs' },
@@ -279,11 +278,14 @@ async function install(opts) {
   {
     const { project } = require('./chat-profile');
     const projected = new Map();
-    for (const dir of ['agents', 'prompts']) {
-      for (const name of fs.readdirSync(path.join(packageDir, dir))) {
-        const src = path.join(packageDir, dir, name);
-        projected.set(src, project(`${dir}/${name}`, fs.readFileSync(src), profile));
-      }
+    // Agents and workflow skills carry role projections; prompts/ no longer ships
+    // (VS Code Copilot sessions do not load prompt files).
+    const { WORKFLOWS } = require('./workflows');
+    const rels = [...fs.readdirSync(path.join(packageDir, 'agents')).map(name => `agents/${name}`),
+      ...WORKFLOWS.map(name => `skills/${name}/SKILL.md`)];
+    for (const rel of rels) {
+      const src = path.join(packageDir, ...rel.split('/'));
+      projected.set(src, project(rel, fs.readFileSync(src), profile));
     }
     if (!fs.existsSync(path.join(packageDir, 'docs/framework/native-al-tools.md'))) throw new Error('Native contract missing from package');
     if (!fs.existsSync(path.join(packageDir, 'docs/framework/copilot-chat-al-tooling.md'))) throw new Error('Chat contract missing from package');
@@ -786,7 +788,7 @@ ${C.cyan}What gets installed:${C.reset}
   <target-dir>/
     agents/           13 agents (including 4 subagents)
     skills/           17 skills (8 required + 4 recommended + 5 optional)
-    prompts/          11 workflows (6 core + 5 agent-builder)
+    skills/           16 knowledge skills + 10 workflow skills
     instructions/     8 scoped instructions + copilot entrypoint
     docs/framework/   Core specification & docs
     docs/templates/   7 contract templates

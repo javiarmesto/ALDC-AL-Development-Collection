@@ -1,5 +1,5 @@
 ---
-description: Generate optimized natural language instructions for Business Central agents (Designer or SDK). Applies the Responsibilities-Guidelines-Instructions framework from skill-agent-instructions. Output stored in .resources/Instructions/InstructionsV1.txt for SDK agents. ALDC workflow (Copilot prompt al-agent.instructions); invoke explicitly.
+description: Generate optimized natural language instructions for Business Central agents (Designer or SDK). Applies the Responsibilities-Guidelines-Instructions framework from skill-agent-instructions. Output stored in .resources/Instructions/InstructionsV1.txt for SDK agents. ALDC workflow skill al-agent-instructions; invoke explicitly.
 disable-model-invocation: true
 ---
 

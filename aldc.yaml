@@ -128,12 +128,12 @@ required:
     - "agents/al-knowledge-consultant.agent.md"
 
   workflows:
-    - "prompts/al-spec.create.prompt.md"
-    - "prompts/al-build.prompt.md"
-    - "prompts/al-pr-prepare.prompt.md"
-    - "prompts/al-memory.create.prompt.md"
-    - "prompts/al-context.create.prompt.md"
-    - "prompts/al-initialize.prompt.md"
+    - "skills/al-spec-create/SKILL.md"
+    - "skills/al-build/SKILL.md"
+    - "skills/al-pr-prepare/SKILL.md"
+    - "skills/al-memory-create/SKILL.md"
+    - "skills/al-context-create/SKILL.md"
+    - "skills/al-initialize/SKILL.md"
 
   skills:
     required:
@@ -181,11 +181,10 @@ optional:
     - "skills/skill-agent-toolkit/SKILL.md"
     - "skills/skill-contribution-assistant/SKILL.md"
   workflows:
-    - "prompts/al-agent.create.prompt.md"
-    - "prompts/al-agent.task.prompt.md"
-    - "prompts/al-agent.instructions.prompt.md"
-    - "prompts/al-agent.test.prompt.md"
-    - "prompts/al-agent.build-instructions.prompt.md"
+    - "skills/al-agent-create/SKILL.md"
+    - "skills/al-agent-task/SKILL.md"
+    - "skills/al-agent-instructions/SKILL.md"
+    - "skills/al-agent-test/SKILL.md"
   instructions:
     - "instructions/al-agent-toolkit.instructions.md"
   tools:

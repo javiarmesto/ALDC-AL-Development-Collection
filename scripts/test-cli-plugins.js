@@ -73,7 +73,7 @@ const handEdited = [...pluginFiles].filter(([rel, content]) => read('claude-plug
 check(handEdited.length === 0, `claude-plugin is generated, not hand-edited: ${handEdited.join(', ')}`);
 // Claude preambles remain separable from the canonical body for this check.
 // CLI and Codex now read canonical bodies directly and do not strip blockquotes.
-for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.map(w => `prompts/${w}.prompt.md`)]) {
+for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.map(w => `skills/${w}/SKILL.md`)]) {
   check(!/^\s*>/.test(split(read(rel)).body), `${rel}: canonical body must not open with a block quote`);
 }
 // `${input:Name}` is a Copilot prompt variable with no Claude Code equivalent; the
