@@ -34,7 +34,7 @@ those four is a canonical change.
 |---|---|
 | `agents/<id>.agent.md` | `agents/<id>.md` |
 | `agents/<id>.agent.md` (user-invocable roles) | `skills/<role>/SKILL.md` — short entry skill, `/aldc:<role>` |
-| `prompts/<wf>.prompt.md` | `skills/<wf>/SKILL.md` with `disable-model-invocation: true` |
+| `skills/<wf>/SKILL.md` (workflow, listed in `scripts/workflows.js`) | `skills/<wf>/SKILL.md` with `disable-model-invocation: true` |
 | `instructions/<r>.instructions.md` (`applyTo`) | `rules/<r>.md` (`paths:`) |
 | `skills/<name>/**` | `skills/<name>/**` |
 | `docs/templates/`, `tools/`, `scripts/` | same paths inside the plugin |

@@ -27,7 +27,7 @@ AL-Development-Collection-for-GitHub-Copilot
 │   └── al-testing.instructions.md       # (applyTo: **/test/**/*.al)
 ├── prompts/                             # Agentic workflows
 │   ├── al-workspace.prompt.md
-│   ├── al-build.prompt.md
+│   ├── skills/al-build/SKILL.md
 │   ├── al-debug.prompt.md
 │   ├── al-events.prompt.md
 │   ├── al-performance.prompt.md

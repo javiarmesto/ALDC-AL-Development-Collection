@@ -94,7 +94,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │   └── ...
 ├── prompts/               # Agentic workflows
 │   ├── al-workspace.prompt.md
-│   ├── al-build.prompt.md
+│   ├── skills/al-build/SKILL.md
 │   └── ...
 ├── agents/             # 4 public agents + 3 internal subagents
 │   ├── al-architect.agent.md

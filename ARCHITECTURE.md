@@ -8,7 +8,7 @@
 
 | Tree | Role |
 |------|------|
-| `agents/`, `skills/`, `instructions/`, `prompts/` | **Canonical primitives** (GitHub Copilot format: `.agent.md`, `applyTo` globs). Every other surface derives from here. |
+| `agents/`, `skills/`, `instructions/` | **Canonical primitives** (GitHub Copilot format: `.agent.md`, `SKILL.md`, `applyTo` globs). Workflows are skills invoked as slash commands; prompt files are no longer shipped. Every other surface derives from here. |
 | `docs/` | Source of the public website (MkDocs). |
 | `docs/framework/ALDC-Core-Spec-*.md` | Normative specification. |
 | `aldc.yaml`, `collections/al-development.collection.yml` | Manifests: what the framework contains and ships. |

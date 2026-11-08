@@ -45,7 +45,7 @@ and was exposed by the manual host smoke; changing it adds no permissions.
 | Owner | Calls | Graph responsibility |
 | --- | --- | --- |
 | Architect | Search, diagnostics | Frame a design question; consume results. |
-| Spec Agent / `al-spec.create` | Search, diagnostics | Independent specification and technical research; consume results. Documentation only. |
+| Spec Agent / `al-spec-create` | Search, diagnostics | Independent specification and technical research; consume results. Documentation only. |
 | Planning Subagent | Search, diagnostics | Fill a concrete plan gap; reuse evidence. |
 | Developer | Search, diagnostics, object IDs, download, build, debugging | Own bounded extraction/query/export via existing terminal. |
 | Implementation Subagent | Search, diagnostics, object IDs, download, build | Own bounded extraction/query/export via existing terminal. |

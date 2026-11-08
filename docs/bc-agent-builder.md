@@ -10,10 +10,10 @@
 | Skill | skill-agent-instructions | Generate/review natural language instructions for BC agents |
 | Skill | skill-agent-task-patterns | 8 task integration patterns (Public API, Page Action, Business Event, etc.) |
 | Skill | skill-agent-toolkit | Agent SDK reference: interfaces, setup patterns, troubleshooting, quality checklist |
-| Workflow | al-agent.create | End-to-end coded agent creation (7 phases with gates) |
-| Workflow | al-agent.task | Generate task integration code |
-| Workflow | al-agent.instructions | Generate optimized agent instructions |
-| Workflow | al-agent.test | Test agent SDK integration (6 categories) |
+| Workflow | al-agent-create | End-to-end coded agent creation (7 phases with gates) |
+| Workflow | al-agent-task | Generate task integration code |
+| Workflow | al-agent-instructions | Generate optimized agent instructions |
+| Workflow | al-agent-test | Test agent SDK integration (6 categories) |
 | Instruction | al-agent-toolkit | Agent SDK reference and conventions |
 | Tool | scaffold_agent.py | Python scaffolder for Agent Template structure |
 | Tool | validate_agent_config.sh | Bash validator for agent SDK configuration |
@@ -39,7 +39,7 @@ The agent runs its own 7-phase workflow with HITL gates.
   → designs agent: interfaces, patterns, permissions, profile
   → generates architecture.md
 
-al-spec.create
+al-spec-create
   → details AL objects for the agent
   → generates spec.md
 

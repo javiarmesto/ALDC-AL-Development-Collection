@@ -25,7 +25,7 @@ Workspace-level instructions for GitHub Copilot. Defines the ALDC Core v1.1 arch
 |---|---|
 | **Core principles** | Extension-only, HITL, TDD/spec-driven, least privilege |
 | **Agent routing** | Maps intent → agent (architect, developer, conductor, presales) |
-| **Workflow catalog** | 6 workflows: `al-spec.create`, `al-build`, `al-pr-prepare`, etc. |
+| **Workflow catalog** | 6 workflows: `al-spec-create`, `al-build`, `al-pr-prepare`, etc. |
 | **Skills catalog** | 11 composable knowledge modules loaded on-demand |
 | **Complexity routing** | LOW → spec+developer; MEDIUM/HIGH → architect+spec+conductor |
 | **Plans structure** | `.github/plans/{req}/` with spec, architecture, test-plan files |
@@ -35,9 +35,9 @@ Workspace-level instructions for GitHub Copilot. Defines the ALDC Core v1.1 arch
 
 | Level | Scope | Route |
 |---|---|---|
-| **LOW** | Single phase, no integrations | `al-spec.create` → Implementation Specialist |
-| **MEDIUM** | 2-3 areas, internal integrations | Architect → `al-spec.create` → Conductor |
-| **HIGH** | 4+ phases, external integrations | Architect → `al-spec.create` → Conductor |
+| **LOW** | Single phase, no integrations | `al-spec-create` → Implementation Specialist |
+| **MEDIUM** | 2-3 areas, internal integrations | Architect → `al-spec-create` → Conductor |
+| **HIGH** | 4+ phases, external integrations | Architect → `al-spec-create` → Conductor |
 
 ## Best practices for Copilot
 

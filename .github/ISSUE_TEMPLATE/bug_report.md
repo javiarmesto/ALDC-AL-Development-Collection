@@ -13,7 +13,7 @@ A clear and concise description of what the bug is.
 ## 📍 Affected Agent Primitive
 
 - [ ] Instruction (`.instructions.md`)
-- [ ] Agentic Workflow (`.prompt.md`)
+- [ ] Agentic Workflow (workflow skill, `skills/al-*/SKILL.md`)
 - [ ] Agent (`.agent.md`)
 - [ ] Collection Manifest
 - [ ] Validation Script

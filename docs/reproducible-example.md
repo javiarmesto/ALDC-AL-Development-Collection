@@ -330,7 +330,7 @@ table 50100 "Loyalty Point Entry"
 
 ```bash
 # Run all tests
-@workspace use al-build
+/al-build
 ```
 
 **Expected result**:
@@ -357,7 +357,7 @@ Coverage:
 @workspace use al-permissions
 
 # Deploy to sandbox
-@workspace use al-build
+/al-build
 ```
 
 ---
@@ -470,10 +470,10 @@ The loyalty points tests are failing with error:
 ### Build errors
 ```bash
 # Verify BC symbols
-@workspace use al-initialize
+/al-initialize
 
 # Rebuild
-@workspace use al-build
+/al-build
 ```
 
 ### Field not visible on Customer Card

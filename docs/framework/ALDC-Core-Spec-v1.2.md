@@ -22,9 +22,9 @@ v1.2 does not change the orchestration model of v1.1 (conductor + 3 subagents, P
 
 ALDC Core is designed for this routing model:
 
-**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (design) → `al-spec.create` (technical spec) → `@AL Development Conductor` (orchestrated TDD: planning → implement → review) → HITL gates → delivery
+**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (design) → `al-spec-create` (technical spec) → `@AL Development Conductor` (orchestrated TDD: planning → implement → review) → HITL gates → delivery
 
-**LOW:** `al-spec.create` (technical spec) → `@AL Implementation Specialist` (direct implementation) → delivery
+**LOW:** `al-spec-create` (technical spec) → `@AL Implementation Specialist` (direct implementation) → delivery
 
 **Reactive (NEW tier in v1.2):** bug/incident symptom → `@AL Triage` (read-only diagnosis) → minimal-fix recommendation → routed to `al-developer` or the conductor. Independent audit → `@Dredd` (read-only, advisory verdict, BCQuality-cited when available).
 
@@ -62,8 +62,7 @@ An ALDC Core repository **MUST** contain:
 - A toolkit under `toolkitRoot` with:
   - `agents/` (user-invocable agents + internal subagents with `user-invocable: false`)
   - `instructions/`
-  - `prompts/`
-  - `skills/` (composable knowledge modules, one directory per skill)
+  - `skills/` (composable knowledge modules and the explicitly invoked workflow skills, one directory per skill; workflows set `disable-model-invocation: true`)
   - `docs/templates/` (immutable templates)
 
 Note: `toolkitRoot` **MAY** be `.` in framework repositories and `.github` in consumer repositories. Project artifact paths in primitive prose **MUST** use the consumer layout (`.github/`-prefixed); relative content links **MAY** resolve from the installed primitive file so they work in canonical and custom toolkit roots (decision of #60; regression guard in conformance tooling).
@@ -73,7 +72,7 @@ Note: `toolkitRoot` **MAY** be `.` in framework repositories and `.github` in co
 ### Tier 1 — Core Public Agents (`user-invocable: true`) — MUST
 
 - **al-architect**: design, architecture, and strategic decisions. Loads skills by domain, such as API, Copilot, and performance.
-- **al-spec-agent**: specification owner behind al-spec.create. Preserves approved architecture, investigates technical contracts and loads applicable instructions/skills; writes only the assigned .spec.md and its declared BCQuality selection/criteria sidecars. Knowledge consultation follows the design guidance. No AL implementation, pre-code BCQuality code review or self-approval.
+- **al-spec-agent**: specification owner behind al-spec-create. Preserves approved architecture, investigates technical contracts and loads applicable instructions/skills; writes only the assigned .spec.md and its declared BCQuality selection/criteria sidecars. Knowledge consultation follows the design guidance. No AL implementation, pre-code BCQuality code review or self-approval.
 - **al-conductor**: primary TDD orchestrator. Coordinates subagents via `runSubagent`. Cycle: Plan → Implement → Review → Commit.
 - **al-developer**: tactical implementation and debugging. Loads skills based on the task. Directly invocable by the user.
 - **al-presales**: project estimation and planning. Lives outside the delivery cycle.
@@ -109,16 +108,16 @@ al-conductor (orchestrator)
 
 ## Required Core Workflows — MUST
 
-- **al-spec.create**: invokes the shared al-spec-agent contract → `{req_name}.spec.md`. Preserves approved architecture (MEDIUM/HIGH); distinguishes target definitions from behavioral proof. Human approval of the current spec precedes implementation.
+- **al-spec-create**: invokes the shared al-spec-agent contract → `{req_name}.spec.md`. Preserves approved architecture (MEDIUM/HIGH); distinguishes target definitions from behavioral proof. Human approval of the current spec precedes implementation.
 - **al-build**: verification, compilation, and packaging
 - **al-pr-prepare**: documentation and PR delivery
-- **al-context.create**: generate or update project context
-- **al-memory.create**: update the global `memory.md`
+- **al-context-create**: generate or update project context
+- **al-memory-create**: update the global `memory.md`
 - **al-initialize**: initial environment setup, used infrequently
 
 ## Extension Workflows (BC Agents pack) — MAY (NEW in v1.2)
 
-- **al-agent.create**, **al-agent.task**, **al-agent.instructions**, **al-agent.test**, **al-agent.build-instructions**
+- **al-agent-create**, **al-agent-task**, **al-agent-instructions**, **al-agent-test**, **al-agent-instructions**
 
 ## Core Skills
 

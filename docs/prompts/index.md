@@ -1,3 +1,9 @@
+> **After 5.2.1, ALDC workflows ship as skills**, not `.prompt.md` files:
+> `skills/<name>/SKILL.md`, invoked as `/al-spec-create`, `/al-build` and so on.
+> VS Code Copilot sessions do not load prompt files. The pages in this section still
+> use the old file names; see
+> [skills/index.md](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/skills/index.md).
+
 # Agentic Workflows - Layer 2: Agent Primitives
 
 **Complete execution processes** implemented as `.prompt.md` files providing **systematic workflows** for specific AL development tasks in Business Central.

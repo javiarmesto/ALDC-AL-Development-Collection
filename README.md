@@ -236,7 +236,7 @@ Then, from the Command Palette:
 
 ### GitHub Copilot (Plugin Marketplace)
 
-ALDC also ships as an installable Copilot plugin — `plugin.json` declares the agents (`agents/`), skills (`skills/`), and prompts (`prompts/`) that get installed, for editors that support the Copilot plugin marketplace:
+ALDC also ships as an installable Copilot plugin — `plugin.json` declares the agents (`agents/`) and skills (`skills/`, including the workflow skills invoked as slash commands) that get installed, for editors that support the Copilot plugin marketplace:
 
 The root plugin retains the VS Code-oriented primitives. For **Copilot CLI**, use
 the dedicated terminal distribution from this checkout:
@@ -271,7 +271,7 @@ Clone this repo and open it with Claude Code. The `.claude/` directory and `CLAU
 
 1. Install the extension and open your AL project
 2. Run `AL Collection: Install Toolkit to Workspace`
-3. Start with `@workspace use al-spec.create` plus your requirement
+3. Start with `/al-spec-create` plus your requirement
 4. Follow the guided flow
 
 ### Claude Code
@@ -292,7 +292,7 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 | Agent | Role |
 | --- | --- |
 | `@AL Architecture & Design Specialist` | Designs solutions, information flows, technical decisions |
-| `@AL Spec Agent` | Specifies approved designs through the shared `al-spec.create` contract |
+| `@AL Spec Agent` | Specifies approved designs through the shared `al-spec-create` contract |
 | `@AL Implementation Specialist` | Implements, debugs, quick adjustments |
 | `@AL Development Conductor` | Orchestrates TDD implementation with subagents |
 | `@AL Pre-Sales & Project Estimation Specialist` | Estimation and scoping |
@@ -317,7 +317,7 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 
 ### ⚙️ 6 Workflows — automated processes
 
-`al-spec.create` · `al-build` · `al-pr-prepare` · `al-context.create` · `al-memory.create` · `al-initialize`
+`al-spec-create` · `al-build` · `al-pr-prepare` · `al-context-create` · `al-memory-create` · `al-initialize`
 
 ### 📐 Scoped instructions and the Copilot entrypoint
 
@@ -342,10 +342,10 @@ Optional cited review through an explicitly selected host plugin or external mul
 
 ```text
 LOW complexity:
-  al-spec.create → @AL Implementation Specialist
+  al-spec-create → @AL Implementation Specialist
 
 MEDIUM/HIGH complexity:
-  @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
+  @AL Architecture & Design Specialist → al-spec-create → @AL Development Conductor
 ```
 
 The architect designs the solution and can decompose complex requirements into multiple specs, each implemented independently by the conductor.
@@ -353,15 +353,15 @@ The architect designs the solution and can decompose complex requirements into m
 ```mermaid
 flowchart TD
     REQ[Requirement] --> CLASSIFY{Complexity?}
-    CLASSIFY -->|LOW| SPEC_LOW[al-spec.create]
+    CLASSIFY -->|LOW| SPEC_LOW[al-spec-create]
     SPEC_LOW --> DEV["@AL Implementation Specialist"]
 
     CLASSIFY -->|MEDIUM/HIGH| ARCH["@AL Architecture & Design Specialist"]
     ARCH -->|Designs solution| ARCH_DOC[architecture.md]
     ARCH --> DECOMPOSE{Decompose?}
-    DECOMPOSE -->|Yes| SPEC_A[al-spec.create → spec-A]
-    DECOMPOSE -->|Yes| SPEC_B[al-spec.create → spec-B]
-    DECOMPOSE -->|No| SPEC_SINGLE[al-spec.create → spec.md]
+    DECOMPOSE -->|Yes| SPEC_A[al-spec-create → spec-A]
+    DECOMPOSE -->|Yes| SPEC_B[al-spec-create → spec-B]
+    DECOMPOSE -->|No| SPEC_SINGLE[al-spec-create → spec.md]
     SPEC_A --> COND_A["@AL Development Conductor"]
     SPEC_B --> COND_B["@AL Development Conductor"]
     SPEC_SINGLE --> COND["@AL Development Conductor"]
@@ -424,11 +424,11 @@ graph TB
     end
 
     subgraph WORKFLOWS["6 Retained Workflows"]
-        W1[al-spec.create]
+        W1[al-spec-create]
         W2[al-build]
         W3[al-pr-prepare]
-        W4[al-context.create]
-        W5[al-memory.create]
+        W4[al-context-create]
+        W5[al-memory-create]
         W6[al-initialize]
     end
 
@@ -449,8 +449,8 @@ graph TB
     ├── memory.md                          ← Global (cross-session context)
     └── {req_name}/
         ├── {req_name}.architecture.md    ← From @AL Architecture & Design Specialist
-        ├── {req_name}.spec.md            ← From al-spec.create
-        ├── {req_name}.test-plan.md       ← From al-spec.create or conductor
+        ├── {req_name}.spec.md            ← From al-spec-create
+        ├── {req_name}.test-plan.md       ← From al-spec-create or conductor
         ├── {req_name}-plan.md            ← From @AL Development Conductor (Planning)
         ├── {req_name}-phase-1-complete.md
         └── {req_name}-phase-N-complete.md
@@ -462,9 +462,9 @@ graph TB
 
 | Complexity | Route | When |
 | ---------- | ----- | ---- |
-| **LOW** | `al-spec.create` → `@AL Implementation Specialist` | Simple field, validation, single UI change |
-| **MEDIUM** | `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | Business logic, event-driven feature |
-| **HIGH** | `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | Multi-module, external integration, architectural change |
+| **LOW** | `al-spec-create` → `@AL Implementation Specialist` | Simple field, validation, single UI change |
+| **MEDIUM** | `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` | Business logic, event-driven feature |
+| **HIGH** | `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` | Multi-module, external integration, architectural change |
 
 **Not sure where to start?**
 
@@ -504,7 +504,7 @@ GitHub Copilot              →  Claude Code (Direct)         →  Claude Code (
 agents/*.agent.md           →  .claude/agents/*.md          →  agents/*.md
 skills/*/SKILL.md           →  .claude/skills/*/SKILL.md    →  skills/*/SKILL.md
 instructions/*.md           →  .claude/rules/*.md           →  rules/*.md
-prompts/*.prompt.md         →  .claude/skills/ (workflows)  →  skills/ (workflows)
+skills/al-*/SKILL.md        →  .claude/skills/ (workflows)  →  skills/ (workflows)
 .github/copilot-instructions.md → CLAUDE.md                 →  plugin.json + CLAUDE.md
 ```
 
@@ -589,8 +589,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
 ├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
-├── skills/                               # 16 composable skill directories
-├── prompts/                              # 11 workflows (6 core + 5 BC Agents pack)
+├── skills/                               # 16 knowledge skills + 10 workflow skills (slash commands)
 ├── instructions/                         # 9 scoped rules + entrypoint (10 contracts); documentation excluded
 │
 │── Claude Code (Direct) ───────────────────────────────
@@ -691,7 +690,7 @@ The framework now enforces its own spec in CI.
 ### 4.0.0 — Token efficiency & foundation layout
 
 - Agents, instructions, skills, prompts, and templates condensed for a lower token footprint — behavior preserved.
-- New `packages/foundation/` layout; Architecture Decision Records (`docs/decisions/`); new `al-agent.build-instructions` prompt; English-only content.
+- New `packages/foundation/` layout; Architecture Decision Records (`docs/decisions/`); new `al-agent-instructions` prompt; English-only content.
 - **Breaking:** primitives also available under `packages/foundation/`; agent/instruction/skill wording token-optimized (behavior unchanged).
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.

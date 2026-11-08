@@ -16,8 +16,8 @@ The AL Development Collection provides multiple pathways from requirements to pr
 graph TD
     A[📄 Start: Requirements/Task] --> B{Have requirements<br/>document?}
     B -->|NO| CreateDoc[Create Documentation]
-    CreateDoc --> Doc1["@workspace use al-context.create"]
-    CreateDoc --> Doc2["@workspace use al-spec.create"]
+    CreateDoc --> Doc1["/al-context-create"]
+    CreateDoc --> Doc2["/al-spec-create"]
     
     B -->|YES| Analyze[🔍 Automatic Complexity Analysis]
     Doc1 --> Analyze
@@ -215,7 +215,7 @@ graph LR
     C3 --> E
     D1 --> E
     
-    E --> F["@workspace use al-pr-prepare"]
+    E --> F["/al-pr-prepare"]
     F --> G[Create PR]
     
     style A fill:#e1f5ff
@@ -225,10 +225,10 @@ graph LR
 ```
 
 **Agents/Workflows used**:
-- Optional: `@workspace use al-spec.create` (document first)
+- Optional: `/al-spec-create` (document first)
 - **Workflows**: `al-events`, `al-pages`, `al-permissions`, etc.
 - **OR Agent**: `al-developer` mode
-- Final: `@workspace use al-pr-prepare`
+- Final: `/al-pr-prepare`
 
 **Time**: 15-30 minutes
 
@@ -240,7 +240,7 @@ graph LR
 
 ```mermaid
 graph TD
-    A[requirements.md] --> B["@workspace use al-spec.create"]
+    A[requirements.md] --> B["/al-spec-create"]
     B --> B1["Creates spec.md: Object IDs, Integration points, Dependencies, Acceptance criteria"]
     B1 --> C[Feature.spec.md]
     C -->|"User reviews & approves"| D[Use al-conductor mode]
@@ -263,7 +263,7 @@ graph TD
     I -->|YES| H
     I -->|NO| J["Plan Complete: All objects created, Tests 100% passing, Quality gates passed"]
     
-    J --> K["@workspace use al-pr-prepare"]
+    J --> K["/al-pr-prepare"]
     K --> L[Create PR]
     
     style A fill:#e1f5ff
@@ -275,12 +275,12 @@ graph TD
 ```
 
 **Agents/Workflows used**:
-1. `@workspace use al-spec.create` - Document requirements
+1. `/al-spec-create` - Document requirements
 2. `Use al-conductor mode` - Orchestrate implementation
    - Delegates to `AL Planning Subagent` (research)
    - Delegates to `AL Implementation Subagent` (TDD)
    - Delegates to `AL Code Review Subagent` (QA)
-3. `@workspace use al-pr-prepare` - Finalize
+3. `/al-pr-prepare` - Finalize
 
 **Time**: 1-2 hours for complete feature with tests and docs
 
@@ -353,7 +353,7 @@ graph TD
     J -->|Adjustments| K3[Use al-developer mode]
     J -->|"All good"| L
     
-    K1 --> L["@workspace use al-pr-prepare"]
+    K1 --> L["/al-pr-prepare"]
     K2 --> L
     K3 --> L
     
@@ -369,7 +369,7 @@ graph TD
         ├─ Phase 3: CRUD operations
         └─ Phase 4: Integration tests
     ↓
-@workspace use al-pr-prepare
+/al-pr-prepare
 ```
 
 **Key agents**: `al-api` (design) → `al-conductor` (implement)
@@ -391,7 +391,7 @@ graph TD
     D2 --> D3["Phase 3: Backend integration"]
     D3 --> D4["Phase 4: AI testing (@workspace use al-copilot-test)"]
     
-    D4 --> E["@workspace use al-pr-prepare"]
+    D4 --> E["/al-pr-prepare"]
     E --> F[Create PR]
     
     style A fill:#e1f5ff
@@ -460,7 +460,7 @@ graph TD
 
 ```bash
 # Step 1: Create specification
-@workspace use al-spec.create
+/al-spec-create
 # Input: FeatureName = "Sales Approval Workflow"
 # Output: /specs/sales-approval-workflow.spec.md
 
@@ -562,7 +562,7 @@ Use al-conductor mode
 # Quick check - no issues found
 
 # Step 6: Prepare pull request
-@workspace use al-pr-prepare
+/al-pr-prepare
 # Generates PR description from commits and plan
 # Output: PR template with checklist
 
@@ -590,7 +590,7 @@ Use al-conductor mode
 | **al-copilot** | None | User | AI feature design |
 | **al-tester** | None | User | Test strategy |
 | **al-debugger** | None | User | Issue analysis |
-| **al-spec.create** | None | User | Specification docs |
+| **al-spec-create** | None | User | Specification docs |
 | **al-initialize** | None | User | Environment setup |
 | **al-build** | None | User | Build & deploy |
 | **al-diagnose** | None | User | Debug issues |
@@ -646,8 +646,8 @@ Use al-conductor mode
 
 5. **Document as you go**
    - Orchestra generates documentation automatically
-   - Use al-context.create to update project context
-   - Use al-memory.create between sessions
+   - Use al-context-create to update project context
+   - Use al-memory-create between sessions
 
 ---
 
@@ -655,12 +655,12 @@ Use al-conductor mode
 
 ```bash
 # Environment Setup
-@workspace use al-initialize
+/al-initialize
 
 # Documentation
-@workspace use al-spec.create
-@workspace use al-context.create
-@workspace use al-memory.create
+/al-spec-create
+/al-context-create
+/al-memory-create
 
 # Design
 Use al-architect mode
@@ -679,10 +679,10 @@ Use al-debugger mode
 @workspace use al-performance
 
 # Build & Deploy
-@workspace use al-build
+/al-build
 
 # Finalization
-@workspace use al-pr-prepare
+/al-pr-prepare
 ```
 
 ---

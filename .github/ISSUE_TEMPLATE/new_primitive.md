@@ -13,7 +13,7 @@ assignees: ''
 **Name**: (e.g., `al-integration-testing`)
 **Type**: 
 - [ ] Instruction (`.instructions.md`)
-- [ ] Agentic Workflow (`.prompt.md`)
+- [ ] Agentic Workflow (workflow skill, `skills/al-*/SKILL.md`)
 - [ ] Agent (`.agent.md`)
 
 **Category**: (e.g., Testing, Performance, Integration, Architecture)

@@ -67,7 +67,7 @@ Implement the approval system designed by al-architect
 ```
 Step 1: Describe what you need
 Step 2: Copilot generates the code (with auto-guidelines)
-Step 3: @workspace use al-build → Deploy
+Step 3: /al-build → Deploy
 ```
 
 **Example**: "Add email validation to Customer table"
@@ -79,7 +79,7 @@ Step 3: @workspace use al-build → Deploy
 Step 1: Use al-architect mode → Design
 Step 2: Use al-conductor mode → Implement with TDD
 Step 3: @workspace use al-permissions → Permissions
-Step 4: @workspace use al-build → Deploy
+Step 4: /al-build → Deploy
 ```
 
 **Example**: "Customer loyalty points system"
@@ -94,7 +94,7 @@ Step 1: Use al-architect mode → Complete architecture
 Step 2: Use al-api mode (if APIs needed)
 Step 3: Use al-conductor mode → Multi-phase implementation
 Step 4: @workspace use al-performance → Validation
-Step 5: @workspace use al-build → Deploy
+Step 5: /al-build → Deploy
 ```
 
 **Example**: "Integration with external payment gateway (OAuth + webhooks)"
@@ -129,8 +129,8 @@ Step 5: @workspace use al-build → Deploy
 
 ### Setup Commands
 ```bash
-@workspace use al-initialize    # Initialize project
-@workspace use al-build         # Build and deploy
+/al-initialize    # Initialize project
+/al-build         # Build and deploy
 @workspace use al-permissions   # Generate permissions
 ```
 
@@ -319,7 +319,7 @@ REFACTOR: Actions and DrillDown
 @workspace use al-permissions
 
 # Build and deploy
-@workspace use al-build
+/al-build
 ```
 
 ---
@@ -426,7 +426,7 @@ end;
 3. **Deploy**:
    ```bash
    @workspace use al-permissions
-   @workspace use al-build
+   /al-build
    ```
 
 **Total time**: ~2 hours from zero to production ✨
@@ -500,7 +500,7 @@ npm run validate
 
 ### If you're new to AL:
 ```bash
-@workspace use al-initialize
+/al-initialize
 ```
 
 ### If you have a feature to build:

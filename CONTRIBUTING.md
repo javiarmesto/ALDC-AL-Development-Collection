@@ -104,25 +104,30 @@ Instructions are **Markdown Prompt Engineering** (Layer 1) files that customize 
 
 ### Adding Agentic Workflows
 
-**Agentic Workflows** (formerly called "prompts") are complete execution processes for specific AL development tasks.
+**Agentic Workflows** are complete execution processes for specific AL development tasks. They ship as skills that run only when invoked as a slash command (`/al-[task]`). VS Code Copilot sessions do not load `.prompt.md` files, so ALDC no longer ships them.
 
-📖 **See [prompts/index.md](./prompts/index.md) for complete guide to existing workflows.**
+📖 **See [skills/index.md](./skills/index.md) for the existing workflows.**
 
-1. **Create your file** in `prompts/`
-2. **Use naming convention**: `al-[task].prompt.md`
+1. **Create a folder** `skills/al-[task]/` with a `SKILL.md` file
+2. **Name rules**: lowercase letters, digits and hyphens only (no dots); `name` must match the folder
 3. **Include frontmatter**:
    ```markdown
    ---
-   mode: 'agent'
-   description: 'Brief description of what this prompt does'
-   tools: ['al_build', 'al_publish', 'codebase']
+   name: al-[task]
+   description: 'Brief description of what this workflow does'
+   argument-hint: 'What to type after the command'
+   disable-model-invocation: true
    ---
    ```
-4. **Structure your prompt**:
+   Skills have no `tools`, `model` or `agent` fields: they run with the current agent's tools.
+4. **Add it to `scripts/workflows.js`** so the Copilot CLI, Codex and Chat profile generators pick it up
+5. **Structure the workflow**:
    ```markdown
    # Task Title
 
-   Your goal is to accomplish `${input:VariableName}`.
+   Values in angle brackets come from the text typed after the command; ask for any that are missing.
+
+   Your goal is to accomplish `<VariableName>`.
 
    ## Step 1: First Action
    Clear instructions...
@@ -247,8 +252,8 @@ Example manifest entry:
 - path: instructions/al-security.instructions.md
   kind: instruction
 
-- path: prompts/al-deploy.prompt.md
-  kind: prompt
+- path: skills/al-deploy/SKILL.md
+  kind: skill
 
 - path: agents/al-security-expert.agent.md
   kind: agent
@@ -299,7 +304,7 @@ Example manifest entry:
 
 3. **Add your files** in the appropriate directory:
    - **Instructions**: Place in `instructions/` with `.instructions.md` extension
-   - **Prompts**: Place in `prompts/` with `.prompt.md` extension
+   - **Workflows**: Place in `skills/al-[task]/SKILL.md` (see Adding Agentic Workflows)
    - **Agents**: Place in `agents/` with `.agent.md` extension
 
 4. **Update the collection manifest** (`collections/al-development.collection.yml`):
