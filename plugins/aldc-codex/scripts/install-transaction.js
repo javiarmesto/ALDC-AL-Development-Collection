@@ -87,13 +87,15 @@ function plan({ root, surface, files, retire = null, force = false }) {
     actions.push({ rel, before, after: null, status: 'remove', managed: false });
   }
   // Without a receipt, a path an earlier release is known to have written and this
-  // one no longer ships is retired only when its bytes are recognised; edited bytes
-  // need the same explicit decision as a customized tracked file.
+  // one no longer ships is retired when its bytes are recognised. Edited bytes stay
+  // as a visible collision, so the update still completes; --force retires them
+  // too, recoverably, like any other collision.
   if (!state) for (const [rel, prior] of retire || []) {
     if (files.has(rel) || rel.startsWith(META + '/')) continue;
     const before = read(root, rel); if (before === null) continue;
-    if (!Array.isArray(prior) || !prior.includes(hash(before))) throw Error(`Customized obsolete file: ${rel}`);
-    actions.push({ rel, before, after: null, status: 'remove', managed: false, recognised: true });
+    const recognised = Array.isArray(prior) && prior.includes(hash(before));
+    if (!recognised && !force) { actions.push({ rel, before, after: before, status: 'collision', managed: false, customized: true }); continue; }
+    actions.push({ rel, before, after: null, status: 'remove', managed: false, recognised, customized: !recognised });
   }
   return { root, surface, state, actions };
 }
