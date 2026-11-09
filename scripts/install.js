@@ -354,7 +354,10 @@ async function install(opts) {
     profileSwitch: existingPrimitives && profile !== previousProfile, existingInstallation: existingPrimitives,
     targetDir: relTarget, force: Boolean(opts.force), digest: result.digest, transaction: result.transaction || null,
     files: result.files, summary, collisions: result.files.filter(f => f.action === 'collision').map(f => f.path),
-    replaced: result.files.filter(f => f.action === 'replace' && f.customized).map(f => f.path), recognised,
+    // Customized files this operation overwrites or retires, each with a recoverable backup.
+    replaced: result.files.filter(f => ['replace', 'remove'].includes(f.action) && f.customized).map(f => f.path), recognised,
+    // Edited files this release no longer ships (prompt files replaced by workflow skills).
+    obsolete: result.files.filter(f => f.obsolete && f.action === 'collision').map(f => f.path),
     doctorScript: relative(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) };
   if (opts.dryRun) { info('Dry run: no files written.'); return structured; }
   const totalCopied = result.files.filter(f => ['add', 'replace'].includes(f.action)).length;
@@ -370,6 +373,11 @@ async function install(opts) {
     log(`Files skipped: ${totalSkipped} (already exist)`, C.yellow);
   }
   log(`Location:      ${targetDir}`, C.cyan);
+  if (structured.obsolete.length) {
+    log(`Edited files no longer shipped, kept in place: ${structured.obsolete.length}`, C.yellow);
+    for (const rel of structured.obsolete) log(`  ${rel}`, C.yellow);
+    log('  Workflows now ship as skills. Move your changes into a skill of your own, then run with --force to retire them (backed up).', C.dim);
+  }
 
   out('');
   log('Next steps:', C.bold);

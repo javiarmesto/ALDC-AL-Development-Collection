@@ -49,7 +49,19 @@ test('retired paths remove only recognized files and rollback restores them',t=>
  const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};tx.apply(opts);
  tx.apply({...opts,files:new Map([['a.md',{content:'v1'}],['memory.md',{content:'seed',seed:true}]])});assert.equal(fs.existsSync(path.join(r,'b.md')),false);
  tx.rollback(r,'fixture');assert.equal(read(r,'b.md'),'v1');write(r,'b.md','custom');
- assert.throws(()=>tx.plan({...opts,files:new Map([['a.md',{content:'v1'}]])}),/Customized obsolete/);
+ // An edited retired file is a visible collision, not a blocked update, and the receipt
+ // keeps tracking it so the next update reports it again.
+ const next={...opts,files:new Map([['a.md',{content:'v1'}]])};
+ const kept=tx.report(tx.plan(next)).find(f=>f.path==='b.md');
+ assert.equal(kept.action,'collision');assert.equal(kept.customized,true);assert.equal(kept.obsolete,true);
+ tx.apply(next);assert.equal(read(r,'b.md'),'custom');
+ assert.equal(tx.report(tx.plan(next)).find(f=>f.path==='b.md').action,'collision');
+ // --force retires it with a backup; rollback brings the edit back.
+ const forced=tx.report(tx.plan({...next,force:true})).find(f=>f.path==='b.md');
+ assert.equal(forced.action,'remove');assert.equal(forced.customized,true);
+ tx.apply({...next,force:true});assert.equal(fs.existsSync(path.join(r,'b.md')),false);
+ assert.equal(tx.report(tx.plan(next)).some(f=>f.path==='b.md'),false);
+ tx.rollback(r,'fixture');assert.equal(read(r,'b.md'),'custom');
 });
 test('managed block preserves CRLF surrounding text and rejects malformed markers',()=>{
  const existing=Buffer.from('before\r\n<!-- BEGIN ALDC CODEX -->\nold\n<!-- END ALDC CODEX -->\r\nafter\r\n');
@@ -190,6 +202,9 @@ test('without a receipt, retired paths are removed only when an earlier release 
  const edited=temp(t);write(edited,'p/old.md','edited\n');
  assert.equal(tx.report(tx.plan({...opts,root:edited})).find(f=>f.path==='p/old.md').action,'collision');
  tx.apply({...opts,root:edited});assert.equal(read(edited,'p/old.md'),'edited\n');
+ // The receipt written by that update keeps tracking the edit, so it is not forgotten.
+ assert.equal(tx.report(tx.plan({...opts,root:edited})).find(f=>f.path==='p/old.md').action,'collision');
+ tx.apply({...opts,root:edited,force:true});assert.equal(fs.existsSync(path.join(edited,'p/old.md')),false);
  const forced=temp(t);write(forced,'p/old.md','edited\n');
  tx.apply({...opts,root:forced,force:true});assert.equal(fs.existsSync(path.join(forced,'p/old.md')),false);
  tx.rollback(forced,'fixture');assert.equal(read(forced,'p/old.md'),'edited\n');
@@ -210,7 +225,15 @@ test('a receipt-free upgrade retires the prompt files an earlier release install
  const kept=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json'],{cwd:customized,encoding:'utf8'});
  assert.equal(kept.status,0,kept.stderr);
  assert.ok(JSON.parse(kept.stdout).collisions.includes('.github/prompts/al-build.prompt.md'));
+ assert.deepEqual(JSON.parse(kept.stdout).obsolete,['.github/prompts/al-build.prompt.md']);
  assert.equal(read(customized,'.github/prompts/al-build.prompt.md'),'edited\n');
+ // The next update has a receipt and still reports the edit; --force retires it with a backup.
+ const again=JSON.parse(spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json','--dry-run'],{cwd:customized,encoding:'utf8'}).stdout);
+ assert.deepEqual(again.obsolete,['.github/prompts/al-build.prompt.md']);
+ const forced=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json','--force'],{cwd:customized,encoding:'utf8'});
+ assert.equal(forced.status,0,forced.stderr);
+ assert.ok(JSON.parse(forced.stdout).replaced.includes('.github/prompts/al-build.prompt.md'));
+ assert.equal(fs.existsSync(path.join(customized,'.github/prompts/al-build.prompt.md')),false);
 });
 test('the known-installation manifest is well formed and covers the previous release',()=>{
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'known-installations.json'),'utf8'));

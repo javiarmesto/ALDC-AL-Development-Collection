@@ -77,14 +77,17 @@ function plan({ root, surface, files, retire = null, force = false }) {
     actions.push({ rel, before, after, seed: Boolean(record.seed), managed: !preserve || oldHash !== undefined, retain: Boolean(record.retain), customized: Boolean(drift), recognised: Boolean(recognised),
       status: before === null ? 'add' : preserve ? (record.seed ? 'preserve' : 'collision') : before.equals(after) ? 'unchanged' : 'replace' });
   }
-  // Never delete unknown files. A retired tracked path needs an explicit decision
-  // if customized, otherwise remove it with a recoverable preimage.
+  // Never delete unknown files. A retired tracked path is removed with a recoverable
+  // preimage. If the developer edited it, it stays as a visible collision that the
+  // receipt keeps tracking, so every later update reports it again; --force retires
+  // it too, recoverably, like any other collision.
   for (const [rel, previous] of Object.entries(state?.files || {})) {
     if (files.has(rel) || state.retained?.includes(rel)) continue;
     if (rel.startsWith(META + '/')) throw Error('Invalid receipt destination');
     const before = read(root, rel); if (before === null) continue;
-    if (hash(before) !== previous) throw Error(`Customized obsolete file: ${rel}`);
-    actions.push({ rel, before, after: null, status: 'remove', managed: false });
+    const customized = hash(before) !== previous;
+    if (customized && !force) { actions.push({ rel, before, after: before, status: 'collision', managed: true, customized, obsolete: true, receiptHash: previous }); continue; }
+    actions.push({ rel, before, after: null, status: 'remove', managed: false, customized, obsolete: true });
   }
   // Without a receipt, a path an earlier release is known to have written and this
   // one no longer ships is retired when its bytes are recognised. Edited bytes stay
@@ -94,14 +97,17 @@ function plan({ root, surface, files, retire = null, force = false }) {
     if (files.has(rel) || rel.startsWith(META + '/')) continue;
     const before = read(root, rel); if (before === null) continue;
     const recognised = Array.isArray(prior) && prior.includes(hash(before));
-    if (!recognised && !force) { actions.push({ rel, before, after: before, status: 'collision', managed: false, customized: true }); continue; }
-    actions.push({ rel, before, after: null, status: 'remove', managed: false, recognised, customized: !recognised });
+    // The receipt then records the bytes a release wrote, so the next update, which
+    // has a receipt, still sees the edit instead of forgetting the file.
+    const known = Array.isArray(prior) && prior.length ? prior[prior.length - 1] : undefined;
+    if (!recognised && !force) { actions.push({ rel, before, after: before, status: 'collision', managed: known !== undefined, customized: true, obsolete: true, receiptHash: known }); continue; }
+    actions.push({ rel, before, after: null, status: 'remove', managed: false, recognised, customized: !recognised, obsolete: true });
   }
   return { root, surface, state, actions };
 }
 // customized: existing bytes match neither the receipt nor the packaged content,
 // so a replace action overwrites a local change (recoverably) rather than a tracked file.
-function report(plan) { return plan.actions.map(({ rel, status, before, after, customized, recognised }) => ({ path: rel, action: status, before: hash(before), after: hash(after), customized: Boolean(customized), recognised: Boolean(recognised) })); }
+function report(plan) { return plan.actions.map(({ rel, status, before, after, customized, recognised, obsolete }) => ({ path: rel, action: status, before: hash(before), after: hash(after), customized: Boolean(customized), recognised: Boolean(recognised), obsolete: Boolean(obsolete) })); }
 // Stable identity of a planned outcome: the same files, actions and bytes.
 function digest(plan) { return hash(Buffer.from(JSON.stringify(report(plan).map(f => [f.path, f.action, f.before, f.after])))); }
 function restore(root, journal, interrupted = false, beforeWrites = () => {}) {
@@ -134,7 +140,7 @@ function apply(options) {
     const files = {};
     const collisions = p.actions.filter(a => a.status === 'collision').map(a => a.rel);
     const retained = p.actions.filter(a => a.retain).map(a => a.rel);
-    for (const a of p.actions) if (a.managed && !a.seed && a.after !== null) files[a.rel] = a.status === 'collision' ? p.state.files[a.rel] : hash(a.after);
+    for (const a of p.actions) if (a.managed && !a.seed && a.after !== null) files[a.rel] = a.status === 'collision' ? (a.receiptHash ?? p.state.files[a.rel]) : hash(a.after);
     const changes = p.actions.filter(a => hash(a.before) !== hash(a.after));
     if (!changes.length && JSON.stringify(files) === JSON.stringify(p.state?.files || {}) && JSON.stringify(collisions) === JSON.stringify(p.state?.collisions || []) && JSON.stringify(retained) === JSON.stringify(p.state?.retained || [])) return { files: report(p), transaction: null, digest: digest(p) };
     const id = randomUUID(), stateRel = statePath(p.surface);
