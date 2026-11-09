@@ -326,6 +326,7 @@ class DoctorTest(unittest.TestCase):
 
     def test_real_chat_install_contains_doctor_and_rollback_removes_it(self):
         self.app()
+        (self.root / '.github/prompts/al-spec.create.prompt.md').unlink()
         env = {**os.environ, 'ALDC_PACKAGE_DIR': str(ROOT)}
         install = ['node', str(ROOT / 'scripts/install.js')]
         subprocess.run([*install, 'install', '--yes'], cwd=self.root, env=env, check=True, capture_output=True)
