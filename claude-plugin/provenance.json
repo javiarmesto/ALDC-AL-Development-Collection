@@ -167,7 +167,7 @@
     "rules/al-security.md": "2654def930c7ceeef2085e16978d6fa33b9c0da17310ed236adaa94a326b5e82",
     "rules/al-testing.md": "463d81d66a401a5d560e4fb47eeca48407c9aa95ad8cfb30c5c2f3d5b0543b2b",
     "scripts/init.js": "a674d880f00890f74d8805d8328f538d37ddfa9e59f082a4f0add742855f27db",
-    "scripts/install-transaction.js": "581fcb928c0c2d72d6cd4849f9e394be5037c1115dd39a51f0ca0c61c904dca3",
+    "scripts/install-transaction.js": "8a1a8aed1a595dc5e6e9c9c2947bdc2cc79b318a3dcfd2ad77fd16fda27bf7d6",
     "scripts/package-provenance.js": "1346cb6d522ce0310b4a6469d9b7779a8bedbad498168126ab888a371e257ec3",
     "skills/agent-builder/SKILL.md": "17df34dd563b8534b7a1898dc84048e8387ffe342aba8c715da59025e87c2ee4",
     "skills/al-agent-build-instructions/SKILL.md": "935ec6f378e1ef114e68f296d91285ec4c26d512830e2104c66913b30e28aaa7",

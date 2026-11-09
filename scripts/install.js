@@ -280,9 +280,13 @@ async function install(opts) {
     const projected = new Map();
     // Agents and workflow skills carry role projections; prompts/ no longer ships
     // (VS Code Copilot sessions do not load prompt files).
+    // Every packaged al-* skill is projected too, so one missing from the workflow
+    // list fails here ("assignment missing") instead of installing unscoped.
     const { WORKFLOWS } = require('./workflows');
+    const packagedWorkflows = fs.readdirSync(path.join(packageDir, 'skills'), { withFileTypes: true })
+      .filter(e => e.isDirectory() && e.name.startsWith('al-')).map(e => e.name);
     const rels = [...fs.readdirSync(path.join(packageDir, 'agents')).map(name => `agents/${name}`),
-      ...WORKFLOWS.map(name => `skills/${name}/SKILL.md`)];
+      ...[...new Set([...WORKFLOWS, ...packagedWorkflows])].map(name => `skills/${name}/SKILL.md`)];
     for (const rel of rels) {
       const src = path.join(packageDir, ...rel.split('/'));
       projected.set(src, project(rel, fs.readFileSync(src), profile));
@@ -340,7 +344,8 @@ async function install(opts) {
   const files = plannedFiles({ packageDir, projectDir, targetDir, profile, transform });
   const relative = dst => path.relative(projectDir, dst).split(path.sep).join('/');
   const relTarget = relative(targetDir) || '.';
-  const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
+  const retire = legacyRetirements({ packageDir, projectDir, targetDir });
+  const result = apply({ root: projectDir, surface: 'chat', files, retire, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
   for (const file of result.files) if (file.action !== 'unchanged') log(`  ${file.action}: ${file.path}`);
   const summary = {};
   for (const file of result.files) summary[file.action] = (summary[file.action] || 0) + 1;
@@ -398,6 +403,21 @@ function readProfileMarker(markerPath) {
 
 // What previous releases wrote, so their untouched content is recognised instead of
 // being reported as a local change. Absent or unreadable means nothing is recognised.
+// Prompt files an earlier release wrote that this release no longer ships. With a
+// receipt, the receipt retires them; without one (an upgrade from a release that
+// recorded none) only bytes a release is known to have written are removed, with a
+// recoverable backup. Unknown files are never listed, so they stay untouched.
+function legacyRetirements({ packageDir, projectDir, targetDir }) {
+  const relTarget = path.relative(projectDir, targetDir).split(path.sep).join('/');
+  const retire = new Map();
+  for (const [rel, hashes] of Object.entries(knownInstallations(packageDir))) {
+    const m = /^\.github\/prompts\/([^/]+)$/.exec(rel);
+    if (!m || !Array.isArray(hashes)) continue;
+    retire.set(relTarget ? `${relTarget}/prompts/${m[1]}` : `prompts/${m[1]}`, hashes);
+  }
+  return retire;
+}
+
 function knownInstallations(packageDir) {
   try {
     const data = JSON.parse(fs.readFileSync(path.join(packageDir, 'known-installations.json'), 'utf8'));

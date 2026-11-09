@@ -177,6 +177,35 @@ test('content a previous release is known to have written is ours to replace, lo
  assert.equal(byPath(tx.plan({root:other,surface:'fixture',files:new Map([['a.md',{content:NEW,prior}]])}))['a.md'].action,'collision');
  assert.equal(byPath(tx.plan({root:other,surface:'fixture',files:new Map([['a.md',{content:NEW}]])}))['a.md'].action,'collision');
 });
+test('without a receipt, retired paths are removed only when an earlier release wrote them',t=>{
+ const sha=b=>require('crypto').createHash('sha256').update(b).digest('hex');
+ const OLD='old prompt\n',retire=new Map([['p/old.md',[sha(Buffer.from(OLD))]]]);
+ const r=temp(t);write(r,'p/old.md',OLD);write(r,'p/mine.md','unknown\n');
+ const opts={root:r,surface:'fixture',files:new Map([['a.md',{content:'v1'}]]),retire};
+ const planned=Object.fromEntries(tx.report(tx.plan(opts)).map(f=>[f.path,f]));
+ assert.equal(planned['p/old.md'].action,'remove');assert.equal(planned['p/mine.md'],undefined);
+ tx.apply(opts);assert.equal(fs.existsSync(path.join(r,'p/old.md')),false);assert.equal(read(r,'p/mine.md'),'unknown\n');
+ tx.rollback(r,'fixture');assert.equal(read(r,'p/old.md'),OLD);
+ // Edited bytes need a decision; with a receipt, the receipt alone decides.
+ const edited=temp(t);write(edited,'p/old.md','edited\n');
+ assert.throws(()=>tx.plan({...opts,root:edited}),/Customized obsolete file: p\/old.md/);
+ const tracked=temp(t);tx.apply({root:tracked,surface:'fixture',files:new Map([['a.md',{content:'v1'}]])});write(tracked,'p/old.md','edited\n');
+ assert.equal(tx.report(tx.plan({...opts,root:tracked})).some(f=>f.path==='p/old.md'),false);
+});
+test('a receipt-free upgrade retires the prompt files an earlier release installed',t=>{
+ const shipped=spawnSync('git',['show','v5.0.0:prompts/al-build.prompt.md'],{cwd:root});
+ if(shipped.status!==0){t.skip('v5.0.0 tag not available');return;}
+ const r=temp(t);const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
+ write(r,'.github/prompts/al-build.prompt.md',shipped.stdout);write(r,'.github/prompts/my-own.prompt.md','mine\n');
+ const result=run(['install','--yes']);assert.equal(result.status,0,result.stderr);
+ assert.equal(fs.existsSync(path.join(r,'.github/prompts/al-build.prompt.md')),false);
+ assert.equal(read(r,'.github/prompts/my-own.prompt.md'),'mine\n');
+ assert.ok(fs.existsSync(path.join(r,'.github/skills/al-build/SKILL.md')));
+ const customized=temp(t);write(customized,'.github/prompts/al-build.prompt.md','edited\n');
+ const blocked=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes'],{cwd:customized,encoding:'utf8'});
+ assert.notEqual(blocked.status,0);assert.match(blocked.stdout+blocked.stderr,/Customized obsolete file: \.github\/prompts\/al-build\.prompt\.md/);
+ assert.equal(read(customized,'.github/prompts/al-build.prompt.md'),'edited\n');
+});
 test('the known-installation manifest is well formed and covers the previous release',()=>{
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'known-installations.json'),'utf8'));
  assert.equal(manifest.schema,1);

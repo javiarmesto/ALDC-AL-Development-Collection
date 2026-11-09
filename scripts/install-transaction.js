@@ -54,7 +54,7 @@ function acquire(root) {
   fs.writeFileSync(fd, encode({ pid: process.pid, host: hostname() }));
   return () => { fs.closeSync(fd); fs.unlinkSync(p); };
 }
-function plan({ root, surface, files, force = false }) {
+function plan({ root, surface, files, retire = null, force = false }) {
   root = path.resolve(root);
   if (json(root, `${META}/pending.json`)) throw Error('Interrupted operation: run rollback before installing');
   const state = json(root, statePath(surface));
@@ -85,6 +85,15 @@ function plan({ root, surface, files, force = false }) {
     const before = read(root, rel); if (before === null) continue;
     if (hash(before) !== previous) throw Error(`Customized obsolete file: ${rel}`);
     actions.push({ rel, before, after: null, status: 'remove', managed: false });
+  }
+  // Without a receipt, a path an earlier release is known to have written and this
+  // one no longer ships is retired only when its bytes are recognised; edited bytes
+  // need the same explicit decision as a customized tracked file.
+  if (!state) for (const [rel, prior] of retire || []) {
+    if (files.has(rel) || rel.startsWith(META + '/')) continue;
+    const before = read(root, rel); if (before === null) continue;
+    if (!Array.isArray(prior) || !prior.includes(hash(before))) throw Error(`Customized obsolete file: ${rel}`);
+    actions.push({ rel, before, after: null, status: 'remove', managed: false, recognised: true });
   }
   return { root, surface, state, actions };
 }

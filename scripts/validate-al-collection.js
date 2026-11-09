@@ -208,7 +208,11 @@ function validateCollectionItems(manifest) {
     
     // Validate frontmatter
     const frontmatter = readFrontmatter(item.path);
-    if (!frontmatter) {
+    const isMapping = frontmatter && typeof frontmatter === 'object' && !Array.isArray(frontmatter);
+    if (item.kind === 'skill' && !isMapping) {
+      // A host cannot discover a skill without a parseable name, so this is not cosmetic.
+      addError(`Item ${itemNum}: Skill has missing or unparseable frontmatter: ${item.path}`);
+    } else if (!frontmatter) {
       addWarning(`Item ${itemNum}: No frontmatter found in ${item.path}`);
     } else {
       // Check for description
