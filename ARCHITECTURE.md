@@ -30,7 +30,7 @@
    extension folder) copies `packages/foundation/` primitives into the VSIX;
    target state: copy pinned to a release tag, with a root↔foundation drift check
    in CI so the VSIX can never ship content that diverged from the canonical trees.
-2. **`npx aldc install`** (`scripts/install.js`, npm package `al-development-collection`) —
+2. **`npx --no aldc install`** (`scripts/install.js`, from a checkout or a local `.tgz`; the npm registry copy is deprecated) —
    copies canonical root trees into a consuming AL project.
 3. **Claude Code plugin** (`claude-plugin/` + `.claude-plugin/marketplace.json`) — reaches
    the non-VS Code audience.

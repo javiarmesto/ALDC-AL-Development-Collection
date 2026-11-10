@@ -6,13 +6,13 @@
  * Installs the ALDC toolkit into any AL project.
  *
  * Usage:
- *   npx aldc install [--target-dir <dir>] [--yes] [--force] [--dry-run] [--json]
- *   npx aldc status [--target-dir <dir>] [--json]
- *   npx aldc verify-install [--json]
- *   npx aldc rollback [--json]
- *   npx aldc validate [--target-dir <dir>]
- *   npx aldc bcq-index [--build] [--json]
- *   npx aldc --help
+ *   npx --no aldc install [--target-dir <dir>] [--yes] [--force] [--dry-run] [--json]
+ *   npx --no aldc status [--target-dir <dir>] [--json]
+ *   npx --no aldc verify-install [--json]
+ *   npx --no aldc rollback [--json]
+ *   npx --no aldc validate [--target-dir <dir>]
+ *   npx --no aldc bcq-index [--build] [--json]
+ *   npx --no aldc --help
  *
  * --json prints one structured document on stdout for hosts such as the VS Code
  * extension; the human output stays the default and is not part of that contract.
@@ -626,7 +626,7 @@ function status(opts) {
   const bcqIcon = { prebuilt: '🟢', generated: '🟢', 'not-attempted': '⚪', failed: '🔴', unobserved: '⚪' }[bcqIndex.status] || '⚪';
   const bcqLine = `${bcqIcon} BCQuality index: ${bcqIndex.status} — ${bcqIndex.detail}`
     + (bcqIndex.status === 'not-attempted' && bcqIndex.attemptable !== false
-        ? '\n   run: npx aldc bcq-index --build' : '');
+        ? '\n   run: npx --no aldc bcq-index --build' : '');
   return { ok: state.receipt === 'valid' && state.drift.length === 0 && targetMismatch === null, command: 'status', targetDir: relTarget, receiptTarget, targetMismatch,
     profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem, installedVersion: marker.version,
     toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),
@@ -756,7 +756,7 @@ async function validate(opts) {
     log(` INVALID — ${errors} error(s), ${warnings} warning(s)`, C.red);
     log('='.repeat(60), C.red);
     out('');
-    log('Run "npx aldc install" to fix missing components.', C.cyan);
+    log('Run "npx --no aldc install" to fix missing components.', C.cyan);
     // A verdict nobody can act on is not a verdict: a script that runs this in
     // CI reads the exit code, not the colour of the summary line.
     process.exitCode = 1;
@@ -771,7 +771,7 @@ function showHelp() {
 ${C.bold}ALDC Core v1.2 — CLI${C.reset}
 
 ${C.cyan}Usage:${C.reset}
-  npx aldc <command> [options]
+  npx --no aldc <command> [options]
 
 ${C.cyan}Commands:${C.reset}
   install     Install ALDC toolkit into current project
@@ -793,23 +793,23 @@ ${C.cyan}Options:${C.reset}
 
 ${C.cyan}Examples:${C.reset}
   ${C.green}# Install to default .github/ directory${C.reset}
-  npx aldc install
+  npx --no aldc install
 
   ${C.green}# Install to custom directory, non-interactive${C.reset}
-  npx aldc install --target-dir .copilot --yes
+  npx --no aldc install --target-dir .copilot --yes
 
   ${C.green}# Force-update all files${C.reset}
-  npx aldc install --force --yes
-  npx aldc status
-  npx aldc verify-install
-  npx aldc rollback
+  npx --no aldc install --force --yes
+  npx --no aldc status
+  npx --no aldc verify-install
+  npx --no aldc rollback
 
   ${C.green}# Install from local .tgz${C.reset}
   npm install ./al-development-collection-3.2.0.tgz
-  npx aldc install
+  npx --no aldc install
 
   ${C.green}# Validate current installation${C.reset}
-  npx aldc validate
+  npx --no aldc validate
 
 ${C.cyan}What gets installed:${C.reset}
   ${C.bold}Core:${C.reset}
@@ -995,14 +995,14 @@ switch (opts.command) {
     break;
   case 'install':
   default: {
-    // A bare `npx aldc` installs, which is the documented shorthand. A MISTYPED
+    // A bare `npx --no aldc` installs, which is the documented shorthand. A MISTYPED
     // command used to install too, because this default case was the installer:
-    // `npx aldc bcq-idnex` would start writing files into the project. A typo is
+    // `npx --no aldc bcq-idnex` would start writing files into the project. A typo is
     // not consent to write anything.
     const known = ['install', 'status', 'verify-install', 'rollback', 'solution', 'validate', 'bcq-index', 'test-local', 'help'];
     if (opts.command !== null && opts.command !== 'install') {
       fail(opts.command, Object.assign(
-        new Error(`Unknown command "${opts.command}". Known commands: ${known.join(', ')}. Run "npx aldc --help".`),
+        new Error(`Unknown command "${opts.command}". Known commands: ${known.join(', ')}. Run "npx --no aldc --help".`),
         { code: 'unknown-command' }));
       break;
     }

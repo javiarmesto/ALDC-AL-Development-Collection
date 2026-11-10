@@ -1,8 +1,6 @@
 # ALDC Changelog
 
-## [5.3.0] - YYYY-MM-DD
-
-<!-- Release day: replace YYYY-MM-DD above with the release date. -->
+## [5.3.0] - 2026-11-10
 
 ### Changed — workflows ship as skills instead of prompt files
 
