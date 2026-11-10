@@ -1,1 +1,1 @@
---8<-- "prompts/al-spec.create.prompt.md:8"
+--8<-- "skills/al-spec-create/SKILL.md:8"

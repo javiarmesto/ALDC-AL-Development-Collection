@@ -78,7 +78,7 @@ Paso 3: /al-build → Despliegue
 ```
 Paso 1: Use al-architect mode → Diseña
 Paso 2: Use al-conductor mode → Implementa con TDD
-Paso 3: @workspace use al-permissions → Permisos
+Paso 3: Use al-developer mode → Conjuntos de permisos (skill-permissions)
 Paso 4: /al-build → Despliegue
 ```
 
@@ -93,7 +93,7 @@ Paso 4: /al-build → Despliegue
 Paso 1: Use al-architect mode → Arquitectura completa
 Paso 2: Use al-api mode (si hay APIs)
 Paso 3: Use al-conductor mode → Implementación multi-fase
-Paso 4: @workspace use al-performance → Validación
+Paso 4: Use al-developer mode → Revisión de rendimiento (skill-performance)
 Paso 5: /al-build → Despliegue
 ```
 
@@ -131,13 +131,13 @@ Paso 5: /al-build → Despliegue
 ```bash
 /al-initialize    # Inicializa proyecto
 /al-build         # Construye y despliega
-@workspace use al-permissions   # Genera permisos
+Use al-developer mode   # Conjuntos de permisos (carga skill-permissions)
 ```
 
 ### Comandos de Debugging
 ```bash
-@workspace use al-diagnose      # Debug completo
-@workspace use al-performance   # Análisis de rendimiento
+Use al-triage mode      # Diagnostica un fallo o una regresión (solo lectura)
+Use al-developer mode   # Análisis de rendimiento (carga skill-performance)
 ```
 
 ### Modos Especializados
@@ -316,7 +316,7 @@ REFACTOR: Acciones y DrillDown
 
 ```bash
 # Generar permisos automáticamente
-@workspace use al-permissions
+Use al-developer mode: "Genera los conjuntos de permisos"
 
 # Construir y desplegar
 /al-build
@@ -425,7 +425,7 @@ end;
 
 3. **Despliega**:
    ```bash
-   @workspace use al-permissions
+   Use al-developer mode: "Genera los conjuntos de permisos"
    /al-build
    ```
 

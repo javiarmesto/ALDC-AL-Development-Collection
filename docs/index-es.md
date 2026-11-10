@@ -129,7 +129,7 @@ Todo lo de ALDC está aquí. Elige tu camino.
   <a class="resource-card" href="../prompts/">
     <span class="resource-kicker">Automatización</span>
     <h3>Workflows</h3>
-    <p>6 workflows, de initialize a PR prepare. Invocables desde el chat.</p>
+    <p>Workflows, de la inicialización a la preparación del PR. Se invocan desde el chat.</p>
     <span class="resource-arrow">→</span>
   </a>
 

@@ -1,1 +1,1 @@
---8<-- "prompts/al-pr-prepare.prompt.md:9"
+--8<-- "skills/al-pr-prepare/SKILL.md:8"

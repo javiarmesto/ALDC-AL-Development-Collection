@@ -251,7 +251,7 @@ Proceed with: al-conductor mode (structured TDD) OR al-developer mode
 - AI processing codeunit
 
 ## Next Steps
-Proceed with: @workspace use al-copilot-capability OR al-conductor mode
+Proceed with: al-conductor mode (loads skill-copilot)
 ```
 
 **Reads**:

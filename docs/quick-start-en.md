@@ -78,7 +78,7 @@ Step 3: /al-build → Deploy
 ```
 Step 1: Use al-architect mode → Design
 Step 2: Use al-conductor mode → Implement with TDD
-Step 3: @workspace use al-permissions → Permissions
+Step 3: Use al-developer mode → Permission sets (skill-permissions)
 Step 4: /al-build → Deploy
 ```
 
@@ -93,7 +93,7 @@ Step 4: /al-build → Deploy
 Step 1: Use al-architect mode → Complete architecture
 Step 2: Use al-api mode (if APIs needed)
 Step 3: Use al-conductor mode → Multi-phase implementation
-Step 4: @workspace use al-performance → Validation
+Step 4: Use al-developer mode → Performance review (skill-performance)
 Step 5: /al-build → Deploy
 ```
 
@@ -131,13 +131,13 @@ Step 5: /al-build → Deploy
 ```bash
 /al-initialize    # Initialize project
 /al-build         # Build and deploy
-@workspace use al-permissions   # Generate permissions
+Use al-developer mode   # Permission sets (loads skill-permissions)
 ```
 
 ### Debugging Commands
 ```bash
-@workspace use al-diagnose      # Complete debug
-@workspace use al-performance   # Performance analysis
+Use al-triage mode      # Diagnose a bug or regression (read-only)
+Use al-developer mode   # Performance analysis (loads skill-performance)
 ```
 
 ### Specialized Modes
@@ -316,7 +316,7 @@ REFACTOR: Actions and DrillDown
 
 ```bash
 # Generate permissions automatically
-@workspace use al-permissions
+Use al-developer mode: "Generate the permission sets"
 
 # Build and deploy
 /al-build
@@ -425,7 +425,7 @@ end;
 
 3. **Deploy**:
    ```bash
-   @workspace use al-permissions
+   Use al-developer mode: "Generate the permission sets"
    /al-build
    ```
 

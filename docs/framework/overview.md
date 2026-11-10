@@ -43,7 +43,7 @@ Auto-applied persistent rules via `applyTo` patterns.
 
 ### 🎯 Agentic Workflows (6 primitives)
 
-Complete task execution processes as `.prompt.md` files.
+Complete task execution processes, shipped as skills (`skills/al-*/SKILL.md`) and run as slash commands such as `/al-build`.
 
 ### 💬 Agents (7 primitives — 4 public + 3 subagents)
 

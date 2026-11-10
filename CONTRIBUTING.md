@@ -28,7 +28,7 @@ This project follows the [GitHub Community Guidelines](https://docs.github.com/e
 You can contribute three types of **Agent Primitives** (Layer 2):
 
 1. **Instructions** - Auto-applied coding guidelines (`.instructions.md`)
-2. **Agentic Workflows** - Task-specific execution processes (`.prompt.md`)
+2. **Agentic Workflows** - Task-specific execution processes (`skills/al-[task]/SKILL.md`)
 3. **Agents** - Role-based strategic consultants (`.agent.md`)
 
 ### 🔄 Contribution Workflow
@@ -180,13 +180,13 @@ Instructions are **Markdown Prompt Engineering** (Layer 1) files that customize 
   - ❌ `security.md` (missing prefix and suffix)
   - ❌ `AL-Security.instructions.md` (uppercase)
 
-### Prompts
-- Format: `al-[task].prompt.md`
+### Workflows
+- Format: `skills/al-[task]/SKILL.md`, with `name: al-[task]`
 - Examples:
-  - ✅ `al-deploy.prompt.md`
-  - ✅ `al-upgrade.prompt.md`
-  - ❌ `deploy.md` (missing prefix and suffix)
-  - ❌ `al-deploy.md` (missing .prompt)
+  - ✅ `skills/al-deploy/SKILL.md`
+  - ✅ `skills/al-upgrade/SKILL.md`
+  - ❌ `skills/deploy/SKILL.md` (missing prefix)
+  - ❌ `skills/al-db.deploy/SKILL.md` (dots are not allowed)
 
 ### Agents
 - Format: `al-[role].agent.md`
@@ -260,7 +260,7 @@ Example manifest entry:
   usage: optional
   description: |
     Specializes in AL security patterns and best practices.
-    Works best with al-permissions.prompt.md.
+    Works best with skill-permissions.
 ```
 
 ## 🔄 Pull Request Process
@@ -404,7 +404,7 @@ Once approved and merged by maintainers:
 
 Before submitting your PR, ensure:
 
-- [ ] All files follow naming conventions (`.instructions.md`, `.prompt.md`, `.agent.md`)
+- [ ] All files follow naming conventions (`.instructions.md`, `.agent.md`, `skills/<name>/SKILL.md`)
 - [ ] Frontmatter is complete and correct
 - [ ] `collections/al-development.collection.yml` is updated
 - [ ] Validation passes locally (`npm run validate`)

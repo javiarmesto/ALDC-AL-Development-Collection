@@ -1,1 +1,1 @@
---8<-- "prompts/al-context.create.prompt.md:8"
+--8<-- "skills/al-context-create/SKILL.md:8"

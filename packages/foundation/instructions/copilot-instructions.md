@@ -335,7 +335,7 @@ Integrated mode: @AL Architecture & Design Specialist + al-spec-create + @AL Dev
 **Version**: 1.2.0
 **Last Updated**: 2026-05-18
 **Workspace**: AL Development for Business Central
-**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 9 scoped instructions + Copilot entrypoint; 6 core workflows
+**Primitives**: 12 agents (including 3 subagents) + 16 skills + 10 workflow skills + 9 scoped instructions + Copilot entrypoint; 6 core workflows
 
 ## Optional BCQuality provider
 

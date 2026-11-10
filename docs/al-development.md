@@ -51,7 +51,7 @@ patterns, rules, and AL-specific guidance for its domain.
 
 ### Workflows (6)
 
-Invoke with `@workspace use [workflow-name]`:
+Invoke as a slash command, `/[workflow-name]`:
 
 | Workflow | Purpose |
 |----------|---------|

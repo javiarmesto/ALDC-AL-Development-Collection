@@ -192,6 +192,6 @@ Human-facing reference material — examples, workspace layout, links, troublesh
 **Version**: 1.2.0
 **Last Updated**: 2026-09-14
 **Workspace**: AL Development for Business Central
-**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 9 scoped instructions + Copilot entrypoint; 6 core workflows
+**Primitives**: 12 agents (including 3 subagents) + 16 skills + 10 workflow skills + 9 scoped instructions + Copilot entrypoint; 6 core workflows
 
 For direct Developer increments, use AL Developer Reviewer in an independent context before human approval. Dredd remains the advisory auditor. Both load skill-al-review-pipeline; Conductor phases keep their own review subagent.

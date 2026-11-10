@@ -37,7 +37,7 @@ graph TD
     Gate -->|"✅ HIGH"| High["🔴 HIGH Complexity<br/>Architecture first"]
     
     Low --> LowOpt{Implementation<br/>approach?}
-    LowOpt -->|Workflows| LowWork["@workspace use<br/>al-events, al-pages, etc."]
+    LowOpt -->|Skills| LowWork["Knowledge skills<br/>skill-events, skill-pages, etc."]
     LowOpt -->|Direct code| LowDev["Use al-developer mode<br/>Direct implementation"]
     
     Med --> MedSpec{Specialized<br/>domain?}
@@ -134,7 +134,7 @@ graph TD
 
 **Recommended Path:**
 → `al-developer` mode (direct implementation)
-→ OR workflows (`@workspace use al-events`, `@workspace use al-pages`, etc.)
+→ The agent loads the knowledge skills the task needs (`skill-events`, `skill-pages`, etc.)
 → OR if debugging needed: `al-debugger` → `al-developer`
 
 ---
@@ -202,10 +202,10 @@ graph TD
 graph LR
     A[requirements.md] --> B{Choose Approach}
     
-    B -->|Option A| C[Workflows]
-    C --> C1["@workspace use al-events"]
-    C --> C2["@workspace use al-pages"]
-    C --> C3["@workspace use al-permissions"]
+    B -->|Option A| C[Knowledge skills]
+    C --> C1["skill-events"]
+    C --> C2["skill-pages"]
+    C --> C3["skill-permissions"]
     
     B -->|Option B| D[Use al-developer mode]
     D --> D1["Implement X following requirements.md"]
@@ -349,7 +349,7 @@ graph TD
     I --> J{Post-Implementation Issues?}
     
     J -->|"Issues found"| K1[Use al-debugger mode]
-    J -->|Performance| K2["@workspace use al-performance"]
+    J -->|Performance| K2["skill-performance"]
     J -->|Adjustments| K3[Use al-developer mode]
     J -->|"All good"| L
     
@@ -386,10 +386,10 @@ graph TD
     B1 --> C[Use al-conductor mode]
     C --> C1[Implement with TDD]
     
-    C1 --> D1["Phase 1: Register capability (@workspace use al-copilot-capability)"]
-    D1 --> D2["Phase 2: PromptDialog page (@workspace use al-copilot-promptdialog)"]
+    C1 --> D1["Phase 1: Register capability (skill-copilot)"]
+    D1 --> D2["Phase 2: PromptDialog page (skill-copilot)"]
     D2 --> D3["Phase 3: Backend integration"]
-    D3 --> D4["Phase 4: AI testing (@workspace use al-copilot-test)"]
+    D3 --> D4["Phase 4: AI testing (skill-copilot)"]
     
     D4 --> E["/al-pr-prepare"]
     E --> F[Create PR]
@@ -412,10 +412,10 @@ graph TD
     B -->|YES| C["Use al-debugger mode (Analyze behavior and identify bottlenecks)"]
     B -->|NO| D
     
-    C --> D["@workspace use al-performance.triage"]
+    C --> D["skill-performance (quick triage)"]
     D --> D1[Quick static analysis]
     
-    D1 --> E["@workspace use al-performance"]
+    D1 --> E["skill-performance"]
     E --> E1["Deep profiling with CPU profile"]
     
     E1 --> F{Need refactoring?}
@@ -431,7 +431,7 @@ graph TD
     I1 --> J["Implement optimizations: Add SetLoadFields, Add early filtering, Optimize keys/indices, Verify no regressions"]
     I2 --> J
     
-    J --> K["@workspace use al-performance"]
+    J --> K["skill-performance"]
     K --> K1["Re-profile and confirm improvements"]
     
     style A fill:#f8d7da
@@ -441,7 +441,7 @@ graph TD
 ```     ├─ Optimize keys/indices
         └─ Verify no regressions
     ↓
-@workspace use al-performance (re-profile)
+skill-performance (re-profile)
     └─ Confirm improvements
 ```
 
@@ -558,7 +558,7 @@ Use al-conductor mode
 # (All tests already passing from TDD)
 
 # Step 5: Performance check (if needed)
-@workspace use al-performance.triage
+Use al-developer mode: "Review performance"   # loads skill-performance
 # Quick check - no issues found
 
 # Step 6: Prepare pull request
@@ -674,9 +674,8 @@ Use al-developer mode      # Simple direct implementation
 
 # Diagnostics
 Use al-debugger mode
-@workspace use al-diagnose
-@workspace use al-performance.triage
-@workspace use al-performance
+Use al-triage mode         # Diagnose a symptom (read-only)
+Use al-developer mode      # Loads skill-debug and skill-performance as needed
 
 # Build & Deploy
 /al-build

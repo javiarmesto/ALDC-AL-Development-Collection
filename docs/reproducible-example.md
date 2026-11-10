@@ -354,7 +354,7 @@ Coverage:
 
 ```bash
 # Generate permissions
-@workspace use al-permissions
+Use al-developer mode: "Generate the permission sets"
 
 # Deploy to sandbox
 /al-build

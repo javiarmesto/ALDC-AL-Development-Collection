@@ -117,7 +117,7 @@ al-conductor (orchestrator)
 
 ## Extension Workflows (BC Agents pack) — MAY (NEW in v1.2)
 
-- **al-agent-create**, **al-agent-task**, **al-agent-instructions**, **al-agent-test**, **al-agent-instructions**
+- **al-agent-create**, **al-agent-task**, **al-agent-instructions**, **al-agent-test**
 
 ## Core Skills
 
@@ -241,7 +241,7 @@ A repository is **ALDC Core v1.2 compliant** if:
 
 ## Extension Packs
 
-- **BC Agents** (`al-agent-builder` + 5 workflows + 3 skills): Business Central agent development with the AI Development Toolkit / Agent SDK.
+- **BC Agents** (`al-agent-builder` + 4 workflows + 3 skills): Business Central agent development with the AI Development Toolkit / Agent SDK.
 
 Extension packs **MUST NOT** override Core agents or workflows, modify the Core contract structure, or weaken HITL gates.
 
@@ -253,9 +253,9 @@ Extension packs **MUST NOT** override Core agents or workflows, modify the Core 
 | Internal subagents | 3 | Core | planning, implement, review |
 | On-demand agents | 3 | On-Demand | triage, dredd, developer-reviewer |
 | Extension agents | 1 | Extension | agent-builder |
-| Workflows | 6 + 5 | Core + Extension | 6 core; 5 BC Agents pack |
+| Workflows | 6 + 4 | Core + Extension | 6 core; 4 BC Agents pack |
 | Skills | 8 + 4 + 3 + 1 | Core/Recommended/Extension/Utility | **16 skills** total |
 | Instructions | 10 | Core (9) + Extension (1) | 8 general AL scoped rules + copilot entrypoint source + optional agent-toolkit |
 | Templates | 7 + 7 | Core + Auxiliary | 7 immutable required, 7 auxiliary |
 
-Totals as shipped: **12 agents · 16 skills · 11 workflows · 10 instruction contracts** (9 scoped rules plus the entrypoint; documentation excluded).
+Totals as shipped: **12 agents · 16 skills · 10 workflows · 10 instruction contracts** (9 scoped rules plus the entrypoint; documentation excluded).

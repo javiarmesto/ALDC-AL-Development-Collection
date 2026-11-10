@@ -43,7 +43,7 @@ items:
   - path: instructions/index.md
     kind: instruction
 
-  # ─── Workflows (6 retained — invoke with @workspace use [name]) ───────────
+  # ─── Workflows (6 retained — invoke as slash commands, /[name]) ───────────
   - path: skills/al-spec-create/SKILL.md
     kind: skill
   - path: skills/al-build/SKILL.md
