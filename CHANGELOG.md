@@ -1,6 +1,8 @@
 # ALDC Changelog
 
-## [Unreleased]
+## [5.3.0] - YYYY-MM-DD
+
+<!-- Release day: replace YYYY-MM-DD above with the release date. -->
 
 ### Changed — workflows ship as skills instead of prompt files
 
@@ -22,8 +24,9 @@
 - Agents and instructions now say `/al-spec-create` instead of `@workspace use
   al-spec.create`, which was not a valid invocation.
 - Updating an installation removes the `.github/prompts/` files it installed, with a
-  recoverable backup. A prompt you customized blocks the update until you decide what
-  to do with it (the installer's existing rule for customized obsolete files).
+  recoverable backup, also when the earlier release left no receipt (it uses
+  `known-installations.json`). A prompt you customized stays in place and is reported
+  as a collision on every update; `--force` retires it with a recoverable backup.
 - `scripts/workflows.js` (no dependencies) is the workflow list for the installer, the
   Chat profiles and the CLI/Codex generators. The VS Code extension must package it.
 - Doctor recognises `skills/al-spec-create/SKILL.md` and still diagnoses 5.2.x layouts.

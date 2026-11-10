@@ -43,7 +43,7 @@
     "instructions/al-performance.instructions.md": "1db9c2e08bfec26a63990e1c05229f7ed15fb2fa92e6b65ab2b8eb40c1fdf1df",
     "instructions/al-security.instructions.md": "c45a0528af3c6d2b4ff00c35a6f76bafee27854310dc0d184fb8134d99fb624b",
     "instructions/al-testing.instructions.md": "ab88c39c39d2bd0bbdd00e4224b050004e8d587d7e381a1e5b0d075b985be0c3",
-    "package.json": "616f88ccc06f2f9eb21731ac16dd511a12f5f19aea175b8cfa66eaa604a36f8e",
+    "package.json": "b56c8343bf932acf37a6a23409e5a3bb45ede2ebe2448bb5ffb5247b2ce4d891",
     "scripts/codex-al-adapter.js": "892534d0c70c7b5db37af5064a4ce24557a38b3a05148f23a46cb712dd98a9f5",
     "scripts/codex-al-tooling.md": "c1f0b2f8d40282d3747e945bbb40a77145337d7cdace619e07cf031484b867ae",
     "scripts/codex-mcp-setup.md": "cc47c002db298b845f5be29d359bafe424d5215539cffd888eb3ce590f44117b",
@@ -109,7 +109,7 @@
     "tools/context-doctor/aldc_context_doctor.py": "2c16a78462f29fcbabd0770111a615087a9de9f3fb3570f77984353e91c030cb"
   },
   "outputs": {
-    ".codex-plugin/plugin.json": "855a498e4b6843f440281a52c4e191da068a4a15d0b54131a833ba5105433ef1",
+    ".codex-plugin/plugin.json": "3123d8655ba3878942f26d3a39169487f8cea70a76cf20b7d8bd3daf5ecdf80b",
     "README.md": "a5f58933c8dd6b5b894ded55b26598c9012f4f7263b93c57b517ae398fe965b0",
     "agents/al-agent-builder.toml": "a85b5fd4a135d6819fd690ccef309fb58f45f93597ea0a595f4de4353fe2bdf9",
     "agents/al-architect.toml": "ed0867691b9ee2d5203f6c7698fb77357744afc508b49a9acffe699cf69170f4",

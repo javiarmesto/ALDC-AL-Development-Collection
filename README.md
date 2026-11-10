@@ -22,18 +22,20 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**ALDC 5.2.1** lets Architect, Spec and Conductor launch their internal subagents in
-VS Code's Copilot harness and the Copilot CLI. It builds on 5.2.0, which brings
-improvements to Copilot Chat, Copilot CLI and Codex: explicit security review, BCQuality article dispositions, stronger planning and
+**ALDC 5.3.0** ships the ten workflows as skills instead of prompt files: you run
+`/al-spec-create`, `/al-build` and the rest as slash commands, because VS Code's Copilot
+harness does not load `.prompt.md` files. It builds on 5.2.1, which lets Architect, Spec
+and Conductor launch their internal subagents in that harness and the Copilot CLI, and on
+5.2.0: explicit security review, BCQuality article dispositions, stronger planning and
 delegation contracts, and configurable Conductor autonomy and test execution.
 The Marketplace badge reports the currently published extension version.
-See [what changed in 5.2.1](#what-changed-in-521), [in 5.2.0](#what-changed-in-520) and the [changelog](CHANGELOG.md).
+See [what changed in 5.3.0](#what-changed-in-530), [in 5.2.1](#what-changed-in-521), [in 5.2.0](#what-changed-in-520) and the [changelog](CHANGELOG.md).
 
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
 | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
 | [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.1.1) | v5.1.1 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
-| 5.2.1 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.1 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
+| 5.3.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.3.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
 | [Claude Code edition](claude-plugin/) | 5.2.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
@@ -60,6 +62,18 @@ Choose the [installation guide](https://javiarmesto.github.io/ALDC-AL-Developmen
 Start with the toolkit installed in your project and a bounded requirement. Architect and Spec prepare the design and technical specification for your review before implementation.
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
+
+## What changed in 5.3.0
+
+The ten workflows are now skills at `skills/<name>/SKILL.md`, run as slash commands:
+`/al-spec-create`, `/al-build`, `/al-pr-prepare`, `/al-memory-create`, `/al-context-create`,
+`/al-initialize`, `/al-agent-create`, `/al-agent-task`, `/al-agent-instructions` and
+`/al-agent-test`. Names that had a dot now have a hyphen (`al-spec.create` is
+`/al-spec-create`), and `@workspace use <name>` is no longer how you call them.
+`al-agent.build-instructions` is gone; it was a copy of `al-agent.instructions`.
+A workflow runs with the tools of the agent that invokes it. In existing projects, Update
+Toolkit removes the `.github/prompts/` files it installed and keeps a backup; a prompt
+you edited stays in place and is reported on every update until you replace it.
 
 ## What changed in 5.2.1
 
@@ -114,7 +128,7 @@ Claude Code stays on its independently maintained 5.1.1 edition.
 
 ### Use Project Manager in VS Code
 
-1. Update the extension to **5.2.1** and run **AL Collection: Open Project Manager**.
+1. Update the extension to **5.3.0** and run **AL Collection: Open Project Manager**.
 2. Select your solution, preview its toolkit installation or update, review customizations and confirm. Updating the extension does not replace the toolkit already installed in a project.
 3. In **BCQuality**, choose **Plugin — recommended**, **External knowledge folder** or **Disabled — native review**, then select **Change mode**. **Install BCQuality…** copies the official repository URL for the native source prompt; paste it there. Hosts without that command open the installation guide. **Manage plugins** opens the host's inventory.
 4. In **Workflow autonomy**, choose **Human — approve each checkpoint** or **Automatic — prior approval**, then select **Apply mode**. Start a new chat with **AL Development Conductor**.
@@ -720,7 +734,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.1 · **Claude Code:** 5.2.1 · **VS Code Marketplace:** see badge
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.3.0 · **Claude Code:** 5.2.1 · **VS Code Marketplace:** see badge
 
 </div>
 
