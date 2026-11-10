@@ -42,12 +42,12 @@ graph TD
     
     Med --> MedSpec{Specialized<br/>domain?}
     MedSpec -->|No| MedCond["Use al-conductor mode<br/>TDD Orchestra"]
-    MedSpec -->|Yes| MedSpecAgent["al-api / al-copilot<br/>Then al-conductor"]
+    MedSpec -->|Yes| MedSpecAgent["al-architect with skill-api / skill-copilot<br/>Then al-conductor"]
     
     High --> HighArch["Use al-architect mode<br/>Design solution"]
     HighArch --> HighSpec{Specialized<br/>design?}
-    HighSpec -->|APIs| HighAPI["al-api mode<br/>Design contracts"]
-    HighSpec -->|AI/Copilot| HighCopilot["al-copilot mode<br/>Design experience"]
+    HighSpec -->|APIs| HighAPI["skill-api<br/>Design contracts"]
+    HighSpec -->|AI/Copilot| HighCopilot["skill-copilot<br/>Design experience"]
     HighSpec -->|Standard| HighStd["Complete architecture"]
     
     HighAPI --> HighCond1["Use al-conductor mode"]
@@ -135,7 +135,7 @@ graph TD
 **Recommended Path:**
 → `al-developer` mode (direct implementation)
 → The agent loads the knowledge skills the task needs (`skill-events`, `skill-pages`, etc.)
-→ OR if debugging needed: `al-debugger` → `al-developer`
+→ OR if diagnosis is needed first: `al-triage` (read-only) → `al-developer`
 
 ---
 
@@ -158,9 +158,9 @@ graph TD
 
 **Recommended Path (by specialization):**
 → Standard feature: `al-conductor` mode (TDD Orchestra)
-→ API integration: `al-api` mode → `al-conductor` mode
-→ AI/Copilot feature: `al-copilot` mode → `al-conductor` mode
-→ Testing focus: `al-tester` mode → `al-conductor` mode
+→ API integration: `al-architect` mode (loads `skill-api`) → `al-conductor` mode
+→ AI/Copilot feature: `al-architect` mode (loads `skill-copilot`) → `al-conductor` mode
+→ Testing focus: `al-conductor` mode (tests first, loads `skill-testing`)
 
 ---
 
@@ -185,10 +185,10 @@ graph TD
 
 **Recommended Path (by specialization):**
 → Standard complex: `al-architect` → `al-conductor`
-→ Complex APIs: `al-api` → `al-architect` → `al-conductor`
-→ Complex AI system: `al-copilot` → `al-architect` → `al-conductor`
+→ Complex APIs: `al-architect` (with `skill-api`) → `al-conductor`
+→ Complex AI system: `al-architect` (with `skill-copilot`) → `al-conductor`
 → Performance-critical: `al-architect` (with perf analysis) → `al-conductor`
-→ Legacy refactoring: `al-debugger` (understand) → `al-architect` (redesign) → `al-conductor`
+→ Legacy refactoring: `al-triage` (understand) → `al-architect` (redesign) → `al-conductor`
 
 ---
 
@@ -226,7 +226,7 @@ graph LR
 
 **Agents/Workflows used**:
 - Optional: `/al-spec-create` (document first)
-- **Workflows**: `al-events`, `al-pages`, `al-permissions`, etc.
+- **Knowledge skills**: `skill-events`, `skill-pages`, `skill-permissions`, etc.
 - **OR Agent**: `al-developer` mode
 - Final: `/al-pr-prepare`
 
@@ -290,36 +290,6 @@ graph TD
 
 **Use when**: 5+ objects, architectural decisions needed, complex integrations
 
-```
-┌─────────────────┐
-│ requirements.md │
-└────────┬────────┘
-         ↓
-┌──────────────────────┐
-│ Use al-architect     │ Strategic design phase:
-│ mode                 │ - Analyzes requirements
-│                      │ - Reviews existing architecture
-│                      │ - Designs solution patterns
-│                      │ - Creates architecture spec
-│                      │ - Documents decisions
-└────────┬─────────────┘
-         ↓
-    ┌──────────────────────────┐
-    │ Architecture Document    │ Includes:
-    │                          │ - Object model design
-    │                          │ - Integration architecture
-    │                          │ - Data architecture
-    │                          │ - Security model
-    │                          │ - Performance strategy
-    │                          │ - Testing approach
-    └────────┬─────────────────┘
-             ↓ User reviews
-    ┌──────────────────────┐
-    │ Specialized Design   │ If needed:
-    │ (Optional)           │
-    ├──────────────────────┤
-**Use when**: 5+ objects, architectural decisions needed, complex integrations
-
 ```mermaid
 graph TD
     A[requirements.md] --> B[Use al-architect mode]
@@ -330,9 +300,9 @@ graph TD
     
     C1 -->|User reviews| D{Specialized Design Needed?}
     
-    D -->|APIs| E1["Use al-api mode (Design REST/OData)"]
-    D -->|"AI Features"| E2["Use al-copilot mode (Prompt engineering)"]
-    D -->|"Complex Tests"| E3["Use al-tester mode (Test strategy)"]
+    D -->|APIs| E1["Load skill-api (Design REST/OData)"]
+    D -->|"AI Features"| E2["Load skill-copilot (Prompt engineering)"]
+    D -->|"Complex Tests"| E3["Load skill-testing (Test strategy)"]
     D -->|No| F
     
     E1 --> F[Use al-conductor mode]
@@ -348,7 +318,7 @@ graph TD
     
     I --> J{Post-Implementation Issues?}
     
-    J -->|"Issues found"| K1[Use al-debugger mode]
+    J -->|"Issues found"| K1[Use al-triage mode]
     J -->|Performance| K2["skill-performance"]
     J -->|Adjustments| K3[Use al-developer mode]
     J -->|"All good"| L
@@ -365,14 +335,25 @@ graph TD
     style F fill:#fff3cd
     style I fill:#d4edda
     style M fill:#d4edda
-```     ├─ Phase 2: Authorization logic
+```
+
+---
+
+### Flow A: API Integration
+
+```text
+al-architect (loads skill-api: design REST/OData contracts)
+    ↓
+al-conductor (implement with TDD)
+        ├─ Phase 1: API Page structure
+        ├─ Phase 2: Authorization logic
         ├─ Phase 3: CRUD operations
         └─ Phase 4: Integration tests
     ↓
 /al-pr-prepare
 ```
 
-**Key agents**: `al-api` (design) → `al-conductor` (implement)
+**Key agents**: `al-architect` with `skill-api` (design) → `al-conductor` (implement)
 
 ---
 
@@ -380,7 +361,7 @@ graph TD
 
 ```mermaid
 graph TD
-    A["requirements.md (AI feature specification)"] --> B[Use al-copilot mode]
+    A["requirements.md (AI feature specification)"] --> B["Use al-architect mode (loads skill-copilot)"]
     B --> B1["Design Copilot capability, Engineer prompts, Plan Azure OpenAI integration, Design PromptDialog UI, Plan responsible AI approach"]
     
     B1 --> C[Use al-conductor mode]
@@ -398,18 +379,17 @@ graph TD
     style B fill:#e7e7ff
     style C fill:#fff3cd
     style F fill:#d4edda
-``` C1 --> D1[Phase 1: API Page structure]
-    D1 --> D2[Phase 2: Authorization logic]
-    D2 --> D3[Phase 3: CRUD operations]
-    D3 --> D4[Phase 4: Integration tests]
-    
+```
+
+---
+
 ### Flow C: Performance Optimization
 
 ```mermaid
 graph TD
     A["Existing feature with performance issues"] --> B{Need behavior analysis?}
     
-    B -->|YES| C["Use al-debugger mode (Analyze behavior and identify bottlenecks)"]
+    B -->|YES| C["Use al-triage mode (Analyze behavior and identify bottlenecks)"]
     B -->|NO| D
     
     C --> D["skill-performance (quick triage)"]
@@ -438,15 +418,10 @@ graph TD
     style D fill:#fff3cd
     style E fill:#fff3cd
     style K1 fill:#d4edda
-```     ├─ Optimize keys/indices
-        └─ Verify no regressions
-    ↓
-skill-performance (re-profile)
-    └─ Confirm improvements
 ```
 
-**Key agents**: `al-debugger`, `al-architect`, `al-conductor`  
-**Key workflows**: `al-performance.triage`, `al-performance`
+**Key agents**: `al-triage`, `al-architect`, `al-conductor`  
+**Key skill**: `skill-performance`
 
 ---
 
@@ -462,7 +437,7 @@ skill-performance (re-profile)
 # Step 1: Create specification
 /al-spec-create
 # Input: FeatureName = "Sales Approval Workflow"
-# Output: /specs/sales-approval-workflow.spec.md
+# Output: .github/plans/sales-approval-workflow/sales-approval-workflow.spec.md
 
 # Step 2: Design architecture
 Use al-architect mode
@@ -476,7 +451,7 @@ Use al-architect mode
 ```
 
 **Artifacts created**:
-- `/specs/sales-approval-workflow.spec.md`
+- `.github/plans/sales-approval-workflow/sales-approval-workflow.spec.md`
 - Architecture document (in chat or saved)
 
 ---
@@ -543,9 +518,9 @@ Use al-conductor mode
 ```
 
 **Artifacts created**:
-- `.github/plans/sales-approval-workflow-plan.md`
-- `.github/plans/sales-approval-workflow-phase-1-complete.md` (through 6)
-- `.github/plans/sales-approval-workflow-complete.md`
+- `.github/plans/sales-approval-workflow/sales-approval-workflow-plan.md`
+- `.github/plans/sales-approval-workflow/sales-approval-workflow-phase-1-complete.md` (through 6)
+- `.github/plans/sales-approval-workflow/sales-approval-workflow-complete.md`
 - 15+ AL files (tables, codeunits, pages, tests)
 - 6 git commits
 
@@ -580,21 +555,19 @@ Use al-developer mode: "Review performance"   # loads skill-performance
 
 | Agent/Workflow | Can Invoke | Invoked By | Use Case |
 |----------------|-----------|------------|----------|
-| **al-architect** | None | User | Strategic design |
-| **al-conductor** | al-planning, al-implement, al-review | User | TDD orchestration |
+| **al-architect** | AL Knowledge Consultant | User | Strategic design |
+| **al-spec-agent** | AL Knowledge Consultant | User, `/al-spec-create` | Technical specification |
+| **al-conductor** | al-planning, al-implement, al-review, AL Knowledge Consultant | User | TDD orchestration |
 | **AL Planning Subagent** | None | al-conductor | Research AL context |
 | **AL Implementation Subagent** | None | al-conductor | TDD implementation |
 | **AL Code Review Subagent** | None | al-conductor | Code quality review |
 | **al-developer** | None | User | Direct implementation |
-| **al-api** | None | User | API design |
-| **al-copilot** | None | User | AI feature design |
-| **al-tester** | None | User | Test strategy |
-| **al-debugger** | None | User | Issue analysis |
+| **al-triage** | None | User | Issue diagnosis (read-only) |
+| **dredd** | None | User | Independent audit (read-only) |
 | **al-spec-create** | None | User | Specification docs |
 | **al-initialize** | None | User | Environment setup |
 | **al-build** | None | User | Build & deploy |
-| **al-diagnose** | None | User | Debug issues |
-| **al-performance** | None | User | Performance profiling |
+| **skill-debug**, **skill-performance** | None | Agents (loaded on demand) | Diagnosis and performance knowledge |
 | **al-pr-prepare** | None | User | PR preparation |
 
 ---
@@ -639,10 +612,10 @@ Use al-developer mode: "Review performance"   # loads skill-performance
    - Each phase is independently committable
    - Quality gates prevent technical debt
 
-4. **Leverage specialized agents**
-   - al-api for API-heavy features
-   - al-copilot for AI features
-   - al-debugger when stuck
+4. **Leverage skills and on-demand specialists**
+   - skill-api for API-heavy features
+   - skill-copilot for AI features
+   - al-triage when stuck
 
 5. **Document as you go**
    - Orchestra generates documentation automatically
@@ -663,17 +636,13 @@ Use al-developer mode: "Review performance"   # loads skill-performance
 /al-memory-create
 
 # Design
-Use al-architect mode
-Use al-api mode
-Use al-copilot mode
-Use al-tester mode
+Use al-architect mode      # Loads skill-api, skill-copilot, skill-testing as needed
 
 # Implementation
 Use al-conductor mode      # Complex features with TDD
 Use al-developer mode      # Simple direct implementation
 
 # Diagnostics
-Use al-debugger mode
 Use al-triage mode         # Diagnose a symptom (read-only)
 Use al-developer mode      # Loads skill-debug and skill-performance as needed
 
@@ -687,5 +656,5 @@ Use al-developer mode      # Loads skill-debug and skill-performance as needed
 ---
 
 **Framework**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)  
-**Collection**: AL Development Collection v2.6.0  
-**Last Updated**: 2025-11-08
+**Collection**: ALDC 5.3.0  
+**Last Updated**: 2026-11-10

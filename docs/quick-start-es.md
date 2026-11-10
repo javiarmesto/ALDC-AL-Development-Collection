@@ -15,18 +15,21 @@
 3. Recargar VS Code
 ```
 
-### Opción 2: NPM
+### Opción 2: Instalador de terminal desde un checkout
 ```bash
-npm install github:javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-npx al-collection install
+git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
+git -C ALDC-AL-Development-Collection checkout v5.3.0
+
+# Desde la carpeta de tu proyecto AL:
+npm install [ruta-a]/ALDC-AL-Development-Collection
+npx --no aldc install
 ```
 
-### Opción 3: Manual
-```bash
-git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection-for-GitHub-Copilot.git
-cd AL_Copilot_Collection
-node install.js install [tu-directorio-al]
-```
+El paquete del registro npm no se mantiene; instala desde un checkout, no desde el registro.
+
+### Opción 3: Copilot CLI, Claude Code o Codex
+
+Sigue la [guía de instalación por superficie](./start-es.md).
 
 **Después de la instalación**: Recarga VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`)
 
@@ -91,7 +94,7 @@ Paso 4: /al-build → Despliegue
 ### Para Funcionalidades Complejas (🔴 7+ objetos)
 ```
 Paso 1: Use al-architect mode → Arquitectura completa
-Paso 2: Use al-api mode (si hay APIs)
+Paso 2: al-architect carga skill-api (si hay APIs)
 Paso 3: Use al-conductor mode → Implementación multi-fase
 Paso 4: Use al-developer mode → Revisión de rendimiento (skill-performance)
 Paso 5: /al-build → Despliegue
@@ -117,7 +120,7 @@ Paso 5: /al-build → Despliegue
 - ✅ Eventos de integración interna
 - ✅ 2-3 fases de implementación
 
-### 🔴 Compleja (al-architect + especialistas + al-conductor)
+### 🔴 Compleja (al-architect + al-conductor)
 - ✅ Alcance extenso — impacto arquitectónico amplio
 - ✅ APIs o servicios externos
 - ✅ OAuth/autenticación
@@ -142,12 +145,12 @@ Use al-developer mode   # Análisis de rendimiento (carga skill-performance)
 
 ### Modos Especializados
 ```markdown
-Use al-architect mode     # Diseño de arquitectura
-Use al-conductor mode     # Implementación TDD
-Use al-api mode          # APIs REST/OData
-Use al-debugger mode     # Diagnóstico profundo
-Use al-tester mode       # Estrategia de testing
-Use al-presales mode     # Planificación y estimación de proyectos
+Use al-architect mode     # Diseño de arquitectura (carga skill-api, skill-copilot si hace falta)
+Use al-spec-agent mode    # Especificación técnica (/al-spec-create)
+Use al-conductor mode     # Implementación TDD (tests primero)
+Use al-triage mode        # Diagnostica un bug existente (solo lectura)
+Use dredd mode            # Auditoría independiente (solo lectura)
+Use al-presales mode      # Planificación y estimación de proyectos
 ```
 
 ---
@@ -223,7 +226,7 @@ CONSIDERACIONES TÉCNICAS:
 - Test al FlowField
 ```
 
-**✅ Arquitectura lista** → Guardada automáticamente en `.github/plans/architecture.md`
+**✅ Arquitectura lista** → Guardada en `.github/plans/{req_name}/{req_name}.architecture.md`
 
 ---
 
@@ -445,6 +448,7 @@ Mientras codificas, estas reglas se aplican **automáticamente**:
 - ✅ **al-error-handling** → TryFunctions, error labels
 - ✅ **al-events** → Patrón event-driven
 - ✅ **al-testing** → Estructura AL-Go
+- ✅ **al-security** → Mínimo privilegio, SecretText
 
 **No necesitas pedirlas**, simplemente funcionan.
 
@@ -475,14 +479,13 @@ Mientras codificas, estas reglas se aplican **automáticamente**:
 3. Abre un archivo `.al`
 
 ### "Los modos no aparecen"
-1. Verifica archivos en `.github/copilot/agents/`
+1. Verifica archivos en `.github/agents/`
 2. Recarga VS Code
 3. Revisa que tienen extensión `.agent.md`
 
 ### "Validación falla"
 ```bash
-npm install
-npm run validate
+node .github/tools/aldc-validate/index.js --config aldc.yaml
 ```
 
 ---
@@ -512,16 +515,16 @@ Use al-architect mode
 
 ### Si tienes un bug:
 ```markdown
-Use al-debugger mode
+Use al-triage mode
 
 [Describe el problema]
 ```
 
 ---
 
-**Versión**: 2.11.0  
+**Versión**: 5.3.0 (el ejemplo de Puntos de Fidelidad se validó en 2.11.0)  
 **Modelo de referencia**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)  
-**Última Actualización**: 2026-02-06
+**Última Actualización**: 2026-11-10
 
 ---
 
