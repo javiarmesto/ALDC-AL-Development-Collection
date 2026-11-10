@@ -33,9 +33,9 @@ See [what changed in 5.3.0](#what-changed-in-530), [in 5.2.1](#what-changed-in-5
 
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
-| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
-| [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.1.1) | v5.1.1 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
-| 5.3.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.3.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
+| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | 5.3.0 (the badge reports the live version) | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
+| [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.3.0) | v5.3.0 | Tagged source, toolkit archive and VSIX file; a separate delivery from the Marketplace listing. |
+| Source at tag `v5.3.0` | Root package, Copilot catalogs and generated CLI/Codex distributions 5.3.0 | Used from a checkout by the terminal hosts. The npm registry package is not maintained: from a checkout or a local `.tgz`, run `npx --no aldc …`. |
 | [Claude Code edition](claude-plugin/) | 5.3.0 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
@@ -124,7 +124,7 @@ its configured path. Existing workspace files remain owned by the project.
 
 Both Chat profiles retain 5.0.4's dependency guidance: resolve only libraries used
 by the planned tests from approved dependencies, declared versions and symbols.
-Claude Code stays on its independently maintained 5.1.1 edition.
+At 5.2.0, Claude Code stayed on its independently maintained 5.1.1 edition; it is 5.3.0 today.
 
 ### Use Project Manager in VS Code
 
@@ -200,7 +200,7 @@ AI accelerates AL development — but raw code generation is unpredictable, hard
 
 ALDC (AL Development Collection) transforms how you develop Business Central extensions. Instead of ad-hoc code generation, it provides **structured, contract-driven development** with specialized agents, composable skills, and human-in-the-loop gates — with host-specific distributions:
 
-- **GitHub Copilot** — Agents, skills, prompts, and instructions in `.github/` and `agents/`
+- **GitHub Copilot** — Agents, skills (workflows included) and instructions in `.github/` and `agents/`
 - **Claude Code** — Agents, skills, rules, and hooks in `.claude/` and `claude-plugin/`
 - **Copilot CLI** — Terminal agents and commands in `copilot-cli-plugin/`
 - **Codex** — Generated agent profiles and a local ALDC skill in `plugins/aldc-codex/`
@@ -311,11 +311,12 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 | `@AL Development Conductor` | Orchestrates TDD implementation with subagents |
 | `@AL Pre-Sales & Project Estimation Specialist` | Estimation and scoping |
 
-### 🔬 3 Internal Subagents — autonomous specialists inside the Conductor
+### 🔬 4 Internal Subagents — launched by Architect, Spec Agent or Conductor, never picked directly
 
 - **AL Planning Subagent** — research and context gathering
 - **AL Implementation Subagent** — TDD-only (tests FIRST, code SECOND)
 - **AL Code Review Subagent** — review against spec + architecture
+- **AL Knowledge Consultant** — one BCQuality knowledge consultation per question, for Architect, Spec Agent and Conductor
 
 ### 🩺 3 On-demand Specialists — user-invocable, read-only on code
 
@@ -329,13 +330,14 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 - **Recommended:** migrate · pages · translate · estimation
 - The complete source has 16 skill directories, including contribution assistance, BC Agent modules and the shared AL review pipeline. See [skills/](skills/). Host distributions also package role entries and workflows; their folder counts measure a different scope.
 
-### ⚙️ 6 Workflows — automated processes
+### ⚙️ 10 Workflows — skills run as slash commands
 
-`al-spec-create` · `al-build` · `al-pr-prepare` · `al-context-create` · `al-memory-create` · `al-initialize`
+- **Core (6):** `/al-spec-create` · `/al-build` · `/al-pr-prepare` · `/al-context-create` · `/al-memory-create` · `/al-initialize`
+- **BC Agent Builder (4, optional):** `/al-agent-create` · `/al-agent-task` · `/al-agent-instructions` · `/al-agent-test`
 
 ### 📐 Scoped instructions and the Copilot entrypoint
 
-Eight `*.instructions.md` files apply by their declared globs, including the optional BC Agent toolkit rule. `copilot-instructions.md` is the always-on entrypoint and `index.md` is documentation; neither is an additional scoped rule. See [instructions/](instructions/).
+Nine `*.instructions.md` files apply by their declared globs, including the security rule and the optional BC Agent toolkit rule. `copilot-instructions.md` is the always-on entrypoint and `index.md` is documentation; neither is an additional scoped rule. See [instructions/](instructions/).
 
 ### 📚 BCQuality (recommended) — external, citable BC knowledge layer
 
@@ -344,7 +346,7 @@ Optional cited review through an explicitly selected host plugin or external mul
 ### 📄 Contracts per Requirement — structured docs in `.github/plans/{req_name}/`
 
 - `{req_name}.architecture.md` — solution design (from architect)
-- `{req_name}.spec.md` — technical blueprint (from spec.create)
+- `{req_name}.spec.md` — technical blueprint (from `/al-spec-create`)
 - `{req_name}.test-plan.md` — test strategy
 - `memory.md` — global context across sessions
 
@@ -412,18 +414,20 @@ flowchart LR
 graph TB
     subgraph PUBLIC["Public Agents (user-invocable)"]
         ARCH["@AL Architecture & Design Specialist"]
+        SPEC["@AL Spec Agent"]
         DEV["@AL Implementation Specialist"]
         COND["@AL Development Conductor"]
         PRE["@AL Pre-Sales & Project Estimation Specialist"]
     end
 
-    subgraph INTERNAL["Internal Subagents (conductor-only)"]
+    subgraph INTERNAL["Internal Subagents (not user-invocable)"]
         PLAN[AL Planning Subagent]
         IMPL[AL Implementation Subagent]
         REV[AL Code Review Subagent]
+        KNOW[AL Knowledge Consultant]
     end
 
-    subgraph SKILLS["11 Composable Skills"]
+    subgraph SKILLS["Knowledge Skills (11 of 16 shown)"]
         S1[skill-api]
         S2[skill-copilot]
         S3[skill-debug]
@@ -437,7 +441,7 @@ graph TB
         S11[skill-estimation]
     end
 
-    subgraph WORKFLOWS["6 Retained Workflows"]
+    subgraph WORKFLOWS["Core Workflows (6 of 10)"]
         W1[al-spec-create]
         W2[al-build]
         W3[al-pr-prepare]
@@ -451,6 +455,7 @@ graph TB
     COND --> INTERNAL
     PRE --> SKILLS
 
+    W1 --> SPEC
     W1 --> ARCH
     W1 --> COND
 ```
@@ -503,11 +508,11 @@ ALDC is available as a native **Claude Code** integration in two forms:
 
 | Primitive | Direct (`.claude/`) | Plugin (`aldc:`) | Count |
 | --------- | ------------------- | ---------------- | ----- |
-| Agents | `.claude/agents/` | `agents/` | 9 public + 3 internal |
+| Agents | `.claude/agents/` | `agents/` | 9 public + 4 internal |
 | Skills | `.claude/skills/` | `skills/` | 16 knowledge modules + 9 role entries + 10 workflows |
-| Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 8 coding standards |
+| Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 9 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
-| Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
+| Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 reminders (Direct); SessionStart, PreToolUse, PostToolUse and Stop hooks (Plugin) |
 | Instructions | `CLAUDE.md` | `CLAUDE.md` | Agent routing, workflows |
 
 ### How It Maps
@@ -546,10 +551,12 @@ skills/al-*/SKILL.md        →  .claude/skills/ (workflows)  →  skills/ (work
 
 ### Hooks
 
-Claude Code hooks enforce quality gates automatically:
+The Direct integration (`.claude/settings.json`) has two reminder hooks:
 
 - **PostToolUse** (Write/Edit) — Reminds to run tests after file modifications
 - **Stop** — Reminds to verify Skills Evidencing was declared
+
+The plugin ships its own hook set in [`claude-plugin/hooks/hooks.json`](claude-plugin/hooks/hooks.json): SessionStart, PreToolUse, PostToolUse and Stop.
 
 ### Plugin User Configuration
 
@@ -584,14 +591,14 @@ See [BC Agent Builder documentation](docs/bc-agent-builder.md).
 node tools/aldc-validate/index.js --config aldc.yaml
 ```
 
-Expected result: `✅ ALDC Core v1.2 COMPLIANT`
+Expected result: a final line starting with `✅ ALDC Core v1.1 COMPLIANT`. The validator's banner still reads v1.1; it checks the Core v1.2 manifest in `aldc.yaml`.
 
 ---
 
 ## File Structure
 
 ```text
-AL-Development-Collection-for-GitHub-Copilot/
+ALDC-AL-Development-Collection/
 │
 │── GitHub Copilot ─────────────────────────────────────
 ├── .github/
@@ -602,7 +609,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.architecture.md
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
-├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
+├── agents/                               # 13 agents (5 core + 3 on-demand + 4 subagents + 1 extension)
 ├── skills/                               # 16 knowledge skills + 10 workflow skills (slash commands)
 ├── instructions/                         # 9 scoped rules + entrypoint (10 contracts); documentation excluded
 │
@@ -610,18 +617,18 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── CLAUDE.md                             # Master instructions
 ├── .mcp.json                             # MCP server configuration
 ├── .claude/
-│   ├── agents/                           # 12 agents (9 public + 3 internal)
-│   ├── skills/                           # 16 skills (composable knowledge modules)
-│   ├── rules/                            # 8 path-scoped coding standards
+│   ├── agents/                           # 13 agents (9 public + 4 internal)
+│   ├── skills/                           # 9 role entries + 10 workflows + 16 knowledge
+│   ├── rules/                            # 9 path-scoped coding standards
 │   └── settings.json                     # Hooks + permissions
 │
 │── Claude Code Plugin ─────────────────────────────────
 ├── claude-plugin/                        # independently maintained Claude Code edition
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
-│   ├── agents/                           # 12 agents (auto-discovered)
+│   ├── agents/                           # 13 agents (auto-discovered)
 │   ├── skills/                           # 9 role entries + 10 workflows + 16 knowledge
-│   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
-│   ├── rules/                            # 8 rules (injected via al-initialize)
+│   ├── hooks/hooks.json                  # SessionStart, PreToolUse, PostToolUse and Stop hooks
+│   ├── rules/                            # 9 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
 │   └── README.md                         # Plugin documentation
 │
