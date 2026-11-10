@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#whats-new">
   <span class="hero-banner__badge">NEW</span>
-  <span class="hero-banner__text">ALDC 5.0.4 · Copilot Chat</span>
+  <span class="hero-banner__text">ALDC 5.3.0 · Workflows as slash commands</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="index-es/">Español</a></div>
@@ -21,48 +21,50 @@ hide:
   <a class="md-button" href="#whats-new">Explore what is new</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">VS Code Marketplace 5.0.4 adds native AL tooling improvements to 5.0.3's BCQuality consultation. Claude Code remains part of ALDC with its own maintained surface evolution; see the <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme">versions by channel</a>.</p>
+<p class="hero-subnote">ALDC 5.3.0 is the current release on the VS Code Marketplace and on GitHub. Claude Code remains part of ALDC with its own maintained surface evolution, and its edition is also 5.3.0. Each channel is delivered separately; see the <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme">versions by channel</a>.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>VS Code 5.0.4</b> · MIT</span>
+  <span class="pill pill--version"><b>ALDC 5.3.0</b> · MIT</span>
 </div>
 </div>
 
-## What is new in 5.0.3 and 5.0.4 { #whats-new .section-title }
+## What is new { #whats-new .section-title }
 
 <div class="grid cards" markdown="1">
 
--   **5.0.3 · Knowledge before coding**
+-   **5.3.0 · Workflows are slash commands**
 
     ---
 
-    Architect and Spec consult complete BCQuality articles and record the evidence used in design and specification. BCQuality is installed separately; missing knowledge and manual fallbacks remain explicit. Windows validation also improves.
+    The ten workflows ship as skills instead of prompt files, because VS Code's Copilot harness does not load `.prompt.md` files. Run `/al-spec-create`, `/al-build`, `/al-pr-prepare` and the rest from the chat. Names that had a dot now have a hyphen, and `@workspace use <name>` is no longer how you call them.
 
--   **5.0.4 · Native AL research and IDs**
-
-    ---
-
-    Copilot Chat's bc29-native profile bounds symbol and dependency research. Developer and Implementation Subagent query IDs in approved project ranges; IDs are not reserved and installed extensions are outside the local scan.
-
--   **5.0.4 · Compilation and diagnostics**
+-   **5.3.0 · Updating an existing project**
 
     ---
 
-    Select the AL project to compile and consult its diagnostics with the compatible AL18.1 native tools. Developer uses the project context and compiler information to guide implementation.
+    Update the extension and run AL Collection: Update Toolkit. It removes the `.github/prompts/` files ALDC installed and keeps a recoverable backup. A prompt you edited stays in place and is reported on every update until you replace it. Terminal plugins have separate update routes.
 
--   **Role permissions and project updates**
+-   **5.2.1 · Internal subagents in Copilot**
 
     ---
 
-    Conductor coordinates and Reviewer retains query permissions; publication requires explicit authorization. Update the extension, run AL Collection: Update Toolkit, review collisions, then Verify Installed Toolkit and reload. Terminal plugins have separate update routes.
+    Architect, Spec and Conductor can launch their internal subagents in VS Code's Copilot harness and in the Copilot CLI. Those subagents stay out of the agent picker and answer only a brief that starts with their caller's `Caller:` line.
+
+-   **5.2.0 · Security review and autonomy**
+
+    ---
+
+    Reviews include five mandatory security checks and a disposition for every selected BCQuality article. `aldc.yaml` adds `autonomy.gates` and `testing.runner`; human approval at each checkpoint remains the default.
 
 </div>
 
-Graph, LSP, profiling and snapshot operations remain optional and
-depend on the host's available tools. BC28 remains the default profile.
-See the [5.0.3/5.0.4 release notes](CHANGELOG.md) and the
+A workflow runs with the tools of the agent that invokes it. Graph, LSP,
+profiling and snapshot operations remain optional and depend on the host's
+available tools. BC28 remains the default profile. See the
+[workflow commands](prompts/index.md), the [changelog](CHANGELOG.md) for the
+full notes of every release, including what was not verified in a host, and the
 [native tooling guide](framework/native-al-tools.md).
 
 ## From design to reviewable implementation { #whats-aldc .section-title }
@@ -122,7 +124,7 @@ Everything ALDC-related lives here. Pick your path.
   <a class="resource-card" href="prompts/">
     <span class="resource-kicker">Automation</span>
     <h3>Workflows</h3>
-    <p>Workflows from initialization to PR preparation. Invocable from chat.</p>
+    <p>Workflows from initialization to PR preparation. Run as slash commands such as <code>/al-spec-create</code>.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -221,7 +223,7 @@ Four ways to make ALDC better. No contribution is too small.
 
   <div class="collab-card">
     <div class="collab-num">03</div>
-    <h3>Shape v1.2</h3>
+    <h3>Shape what comes next</h3>
     <p>Priorities are discussed openly. Vote on trade-offs, challenge assumptions,
     and propose alternatives with the community.</p>
     <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection/discussions">Join the discussion →</a>
@@ -251,7 +253,7 @@ Four ways to make ALDC better. No contribution is too small.
 
 <div class="status-footer" markdown="1">
 
-`✓ ALDC Core v1.1 COMPLIANT` &nbsp;·&nbsp; `v4.1.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Made by [Javier Armesto](https://www.linkedin.com/in/javiarmesto)
+`✓ ALDC Core v1.2 COMPLIANT` &nbsp;·&nbsp; `v5.3.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Made by [Javier Armesto](https://www.linkedin.com/in/javiarmesto)
 Reference model: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)
 
 </div>

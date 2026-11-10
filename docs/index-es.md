@@ -9,7 +9,7 @@ hide:
 <div class="hero">
 <a class="hero-banner" href="#novedades">
   <span class="hero-banner__badge">NUEVO</span>
-  <span class="hero-banner__text">ALDC 5.0.4 · Copilot Chat</span>
+  <span class="hero-banner__text">ALDC 5.3.0 · Workflows como comandos</span>
   <span class="hero-banner__arrow">→</span>
 </a>
 <div class="hero-eyebrow">ALDC · AL Agentic Engineering System · Business Central · <a href="../">English</a></div>
@@ -21,49 +21,52 @@ hide:
   <a class="md-button" href="#novedades">Explora las novedades</a>
   <a class="md-button" href="https://github.com/javiarmesto/ALDC-AL-Development-Collection">GitHub</a>
 </div>
-<p class="hero-subnote">VS Code Marketplace 5.0.4 añade mejoras de herramientas AL nativas a la consulta de BCQuality de 5.0.3. Claude Code sigue ligado a ALDC con evolutivos propios de su superficie; consulta las <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme">versiones por canal</a>.</p>
+<p class="hero-subnote">ALDC 5.3.0 es la versión actual en VS Code Marketplace y en GitHub. Claude Code sigue ligado a ALDC con evolutivos propios de su superficie, y su edición también es la 5.3.0. Cada canal se entrega por separado; consulta las <a href="https://github.com/javiarmesto/ALDC-AL-Development-Collection#readme">versiones por canal</a>.</p>
 <div class="hero-pills">
   <span class="pill">Architect → Spec → Conductor</span>
   <span class="pill pill--accent">Copilot Chat · CLI · Claude Code · Codex</span>
   <span class="pill pill--accent">AL18 · Tools · MCP</span>
-  <span class="pill pill--version"><b>VS Code 5.0.4</b> · MIT</span>
+  <span class="pill pill--version"><b>ALDC 5.3.0</b> · MIT</span>
 </div>
 </div>
 
-## Novedades de 5.0.3 y 5.0.4 { #novedades .section-title }
+## Novedades { #novedades .section-title }
 
 <div class="grid cards" markdown="1">
 
--   **5.0.3 · Conocimiento antes de programar**
+-   **5.3.0 · Los workflows son comandos**
 
     ---
 
-    Architect y Spec consultan artículos completos de BCQuality y registran las evidencias utilizadas en diseño y especificación. BCQuality se instala por separado; las ausencias y alternativas manuales quedan explícitas. También mejora la validación en Windows.
+    Los diez workflows se distribuyen como skills en lugar de archivos de prompt, porque el harness de Copilot de VS Code no carga archivos `.prompt.md`. Ejecuta `/al-spec-create`, `/al-build`, `/al-pr-prepare` y el resto desde el chat. Los nombres que tenían un punto llevan ahora un guion, y `@workspace use <nombre>` ya no es la forma de invocarlos.
 
--   **5.0.4 · Investigación e IDs nativos de AL**
-
-    ---
-
-    El perfil bc29-native de Copilot Chat acota la investigación de símbolos y dependencias. Developer e Implementation Subagent consultan IDs dentro de rangos aprobados; los IDs no quedan reservados y las extensiones instaladas quedan fuera de la búsqueda local.
-
--   **5.0.4 · Compilación y diagnósticos**
+-   **5.3.0 · Actualizar un proyecto existente**
 
     ---
 
-    Selecciona el proyecto AL que quieres compilar y consulta sus diagnósticos con las herramientas nativas compatibles con AL18.1. Developer utiliza el contexto del proyecto y la información del compilador para orientar la implementación.
+    Actualiza la extensión y ejecuta AL Collection: Update Toolkit. Elimina los archivos de `.github/prompts/` que instaló ALDC y conserva una copia recuperable. Un prompt que hayas editado se queda en su sitio y se avisa en cada actualización hasta que lo sustituyas. Los plugins de terminal tienen su propia actualización.
 
--   **Permisos por rol y actualización del proyecto**
+-   **5.2.1 · Subagentes internos en Copilot**
 
     ---
 
-    Conductor coordina y Reviewer conserva permisos de consulta; publicar requiere autorización explícita. Actualiza la extensión, ejecuta AL Collection: Update Toolkit, revisa las colisiones y utiliza Verify Installed Toolkit antes de recargar. Los plugins de terminal tienen su propia actualización.
+    Architect, Spec y Conductor pueden lanzar sus subagentes internos en el harness de Copilot de VS Code y en Copilot CLI. Esos subagentes no aparecen en el selector de agentes y solo responden a un encargo que empiece con la línea `Caller:` de quien los llama.
+
+-   **5.2.0 · Revisión de seguridad y autonomía**
+
+    ---
+
+    Las revisiones incluyen cinco comprobaciones de seguridad obligatorias y una decisión sobre cada artículo de BCQuality seleccionado. `aldc.yaml` añade `autonomy.gates` y `testing.runner`; la aprobación humana en cada punto de control sigue siendo la opción por defecto.
 
 </div>
 
-Graph, LSP, profiling y las operaciones de snapshot siguen siendo
-opcionales y dependen de las herramientas disponibles en el host. BC28 sigue
-siendo el perfil por defecto. Consulta las [notas de 5.0.3/5.0.4](CHANGELOG.md)
-y la [guía de herramientas nativas](framework/native-al-tools.md).
+Un workflow se ejecuta con las herramientas del agente que lo invoca. Graph,
+LSP, profiling y las operaciones de snapshot siguen siendo opcionales y
+dependen de las herramientas disponibles en el host. BC28 sigue siendo el
+perfil por defecto. Consulta los [comandos de workflow](prompts/index.md), el
+[changelog](CHANGELOG.md) con las notas completas de cada versión, incluido lo
+que no se verificó en un host, y la
+[guía de herramientas nativas](framework/native-al-tools.md).
 
 ## Del diseño a una implementación revisable { #que-es .section-title }
 
@@ -129,14 +132,14 @@ Todo lo de ALDC está aquí. Elige tu camino.
   <a class="resource-card" href="../prompts/">
     <span class="resource-kicker">Automatización</span>
     <h3>Workflows</h3>
-    <p>Workflows, de la inicialización a la preparación del PR. Se invocan desde el chat.</p>
+    <p>Workflows, de la inicialización a la preparación del PR. Se ejecutan como comandos, por ejemplo <code>/al-spec-create</code>.</p>
     <span class="resource-arrow">→</span>
   </a>
 
   <a class="resource-card" href="../instructions/">
     <span class="resource-kicker">Estándares</span>
     <h3>Instrucciones</h3>
-    <p>9 estándares de AL siempre activos. Estilo, rendimiento, naming, errores, eventos.</p>
+    <p>Instrucciones de AL acotadas por tipo de archivo. Estilo, rendimiento, naming, errores, eventos.</p>
     <span class="resource-arrow">→</span>
   </a>
 
@@ -170,6 +173,6 @@ Todo lo de ALDC está aquí. Elige tu camino.
 
 <div class="status-footer" markdown="1">
 
-`✓ ALDC Core v1.1 COMPLIANT` &nbsp;·&nbsp; `v4.1.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Hecho por [Javier Armesto](https://www.linkedin.com/in/javiarmesto) &nbsp;·&nbsp; [English](../)
+`✓ ALDC Core v1.2 COMPLIANT` &nbsp;·&nbsp; `v5.3.0` &nbsp;·&nbsp; `MIT` &nbsp;·&nbsp; Hecho por [Javier Armesto](https://www.linkedin.com/in/javiarmesto) &nbsp;·&nbsp; [English](../)
 
 </div>
