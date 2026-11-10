@@ -1,4 +1,4 @@
-# Copilot Reference (ALDC Core v1.1)
+# Copilot Reference (ALDC Core v1.2)
 
 > Human-facing reference material moved out of `.github/copilot-instructions.md` to keep that file
 > a lean, always-on entrypoint. Nothing here is operational routing logic — it is examples,
@@ -102,16 +102,24 @@ ALDC-Core/
 │   ├── al-performance.instructions.md           # Query/loop rules (**/*.Codeunit.al, **/*.Query.al)
 │   ├── al-error-handling.instructions.md        # TryFunctions, Labels (**/*.Codeunit.al)
 │   ├── al-events.instructions.md                # Subscribers, no Commit (**/*.Codeunit.al)
-│   └── al-testing.instructions.md               # Given/When/Then (**/test/**/*.al)
+│   ├── al-security.instructions.md              # Security review (**/*.al)
+│   ├── al-testing.instructions.md               # Given/When/Then (**/test/**/*.al)
+│   └── al-agent-toolkit.instructions.md         # Agent SDK codeunits (optional)
 ├── agents/
 │   ├── al-architect.agent.md              # Architecture & design
+│   ├── al-spec-agent.agent.md             # Technical specification
 │   ├── al-developer.agent.md              # Tactical implementation
 │   ├── al-conductor.agent.md              # TDD orchestrator
 │   ├── al-presales.agent.md               # Estimation & planning
-│   ├── AL Planning Subagent.agent.md      # Research (internal, user-invocable: false)
-│   ├── AL Implementation Subagent.agent.md     # TDD implementation (internal)
-│   └── AL Code Review Subagent.agent.md        # Code review (internal)
-├── skills/                                # Composable knowledge modules (11)
+│   ├── al-triage.agent.md                 # Diagnosis (on demand, read-only)
+│   ├── dredd.agent.md                     # Audit (on demand, read-only)
+│   ├── al-developer-reviewer.agent.md     # Review of a direct increment (on demand)
+│   ├── al-agent-builder.agent.md          # BC agents with the Agent SDK (optional)
+│   ├── al-planning-subagent.agent.md      # Research (internal, user-invocable: false)
+│   ├── al-implement-subagent.agent.md     # TDD implementation (internal)
+│   ├── al-review-subagent.agent.md        # Code review (internal)
+│   └── al-knowledge-consultant.agent.md   # BCQuality knowledge consultation (internal)
+├── skills/                                # 16 knowledge skills + 10 workflow skills
 │   ├── skill-api/SKILL.md
 │   ├── skill-copilot/SKILL.md
 │   ├── skill-debug/SKILL.md
@@ -123,15 +131,19 @@ ALDC-Core/
 │   ├── skill-permissions/SKILL.md
 │   ├── skill-testing/SKILL.md
 │   ├── skill-translate/SKILL.md
+│   ├── skill-al-review-pipeline/SKILL.md
+│   ├── skill-contribution-assistant/SKILL.md
+│   ├── skill-agent-*/SKILL.md             # 3 BC Agent SDK skills (optional)
 │   ├── al-spec-create/SKILL.md            # Workflow skills (slash commands)
 │   ├── al-build/SKILL.md
 │   ├── al-pr-prepare/SKILL.md
 │   ├── al-memory-create/SKILL.md
 │   ├── al-context-create/SKILL.md
-│   └── al-initialize/SKILL.md
+│   ├── al-initialize/SKILL.md
+│   └── al-agent-*/SKILL.md                # 4 BC Agent Builder workflows (optional)
 ├── docs/
 │   ├── framework/
-│   │   └── ALDC-Core-Spec-v1.1.md         # Normative specification
+│   │   └── ALDC-Core-Spec-v1.2.md         # Normative specification
 │   └── templates/                         # Immutable templates
 ├── .github/plans/                         # Requirement sets & memory
 ├── src/                                   # Your AL code
@@ -144,7 +156,8 @@ For agent development with AI Development Toolkit:
 - @AL Agent Builder — standalone agent builder (7-phase workflow)
 - skill-agent-task-patterns — 8 SDK integration patterns
 - skill-agent-instructions — instruction authoring framework
-- al-agent-create / al-agent-task / al-agent-instructions / al-agent-test — workflows
+- skill-agent-toolkit — Agent SDK reference
+- /al-agent-create, /al-agent-task, /al-agent-instructions, /al-agent-test — workflows
 
 Integrated mode: @AL Architecture & Design Specialist + al-spec-create + @AL Development Conductor
 (architect loads skill-agent-task-patterns for design decisions)

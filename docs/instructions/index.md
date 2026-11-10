@@ -123,6 +123,6 @@ Run `npm run validate` to verify:
 
 **Framework Compliance**: These instructions implement **AI Native-Instructions Architecture** - Layer 2 (Agent Primitives) using Layer 1 (Markdown Prompt Engineering) and Layer 3 (Context Engineering) principles.
 
-**Version**: 2.8.0
+**Version**: 5.3.0
 **Total Instruction Contracts**: 10 (9 scoped rules plus the Copilot entrypoint; documentation excluded)
-**Last Updated**: 2025-11-25
+**Last Updated**: 2026-11-10

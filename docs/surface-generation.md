@@ -16,7 +16,7 @@ No release or version bump is part of P0.
 | `npm run sync:codex` | Canonical trees, Codex adapter/setup guide, shared packaging helpers | `plugins/aldc-codex/` |
 | `npm run sync:plugins` | Explicit invocation of the three commands above | The three distribution directories only |
 | `npm run sync:claude-workspace` | Generated Claude package | Repository development mirror `.claude/{agents,skills,rules}/` |
-| `npm run sync:foundation` | Canonical agents, prompts, skills, instructions and templates | `packages/foundation/` |
+| `npm run sync:foundation` | Canonical agents, skills (workflows included), instructions and templates | `packages/foundation/` |
 
 Each individual command accepts `-- --check`. Checks are read-only and fail on
 drift. `sync:plugins` is an explicit write command for all three distributions;
