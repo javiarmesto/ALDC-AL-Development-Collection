@@ -86,7 +86,7 @@ applyTo: ['**/*.al']
 
 ### Combining with Other Primitives
 Instructions work alongside:
-- **Agentic Workflows** (`@workspace use [prompt]`) - For specific tasks
+- **Agentic Workflows** (`/[workflow]`, for example `/al-build`) - For specific tasks
 - **Agents** (`Use [mode-name]`) - For strategic consultation
 - Both can reference instruction rules in their guidance
 

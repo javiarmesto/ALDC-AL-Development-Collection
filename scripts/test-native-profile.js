@@ -10,12 +10,16 @@ const { spawnSync } = require('child_process');
 const yaml = require('js-yaml');
 const { project } = require('./native-profile');
 const { project: chatProject, chatModel } = require('./chat-profile');
+const { WORKFLOWS } = require('./workflows');
 const root = path.resolve(__dirname, '..');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-native-profile-'));
 let checks = 0;
 const check = (condition, message) => { assert.ok(condition, message); checks++; };
 const read = p => fs.readFileSync(p, 'utf8');
 const fm = text => yaml.load(text.split('\n---')[0].slice(4));
+// Projected sources: agents plus the workflow skills that replaced prompt files.
+const projectedRels = () => [...fs.readdirSync(path.join(root, 'agents')).filter(n => n.endsWith('.agent.md')).map(n => `agents/${n}`),
+  ...WORKFLOWS.map(n => `skills/${n}/SKILL.md`)];
 const installer = (cwd, args = [], env = {}) => spawnSync(process.execPath,
   [path.join(root, 'scripts/install.js'), 'install', '--yes', ...args],
   { cwd, encoding: 'utf8', timeout: 30000, env: { ...process.env, npm_config_offline: 'true', ...env } });
@@ -33,34 +37,39 @@ const digestFiles = directory => {
 
 try {
   // Base copies are also consumed without the installer/projector.
-  for (const tree of ['agents', 'prompts']) {
-    for (const name of fs.readdirSync(path.join(root, tree)).filter(n => /\.(agent|prompt)\.md$/.test(n))) {
-      const source = read(path.join(root, tree, name));
-      const metadata = fm(source);
-      check(metadata.model === undefined || metadata.model === chatModel, `Base Chat model: ${tree}/${name}`);
-      check(!(metadata.handoffs || []).some(h => h.model && h.model !== chatModel), `Base handoff model: ${tree}/${name}`);
-      if (tree === 'agents') check(metadata.model === chatModel, `Base agent has explicit model: ${name}`);
+  for (const rel of projectedRels()) {
+    const source = read(path.join(root, rel));
+    const metadata = fm(source);
+    check(metadata.model === undefined || metadata.model === chatModel, `Base Chat model: ${rel}`);
+    check(!(metadata.handoffs || []).some(h => h.model && h.model !== chatModel), `Base handoff model: ${rel}`);
+    if (rel.startsWith('agents/')) check(metadata.model === chatModel, `Base agent has explicit model: ${rel}`);
+    else {
+      // VS Code silently skips a skill whose name is invalid or differs from its folder.
+      check(metadata.name === rel.split('/')[1] && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(metadata.name), `Workflow skill name matches folder: ${rel}`);
+      check(metadata['disable-model-invocation'] === true, `Workflow skill is explicit-only: ${rel}`);
+      check(!metadata.tools && !metadata.model && !metadata.agent, `Workflow skill declares no prompt-only fields: ${rel}`);
+      check(!source.includes('${input:'), `Workflow skill has no prompt input variables: ${rel}`);
     }
   }
+  check(!fs.existsSync(path.join(root, 'prompts')), 'Prompt files are no longer shipped');
   // Existing-project MCP preparation must survive each distribution's Phase 0
   // injection and must not grant registration to specialist Chat agents.
-  const initialize = read(path.join(root, 'prompts/al-initialize.prompt.md'));
+  // Skills cannot declare tools: Initialize runs with the invoking agent's tools,
+  // so the projection must not add a tools list either.
+  const initialize = read(path.join(root, 'skills/al-initialize/SKILL.md'));
   for (const content of [initialize,
-    project('prompts/al-initialize.prompt.md', Buffer.from(initialize)).toString()]) {
-    const tools = fm(content).tools;
-    check(tools.includes('al/al_addproject'), 'Initialize exposes exact optional registration selector');
-    check(tools.includes('al/al_getpackagedependencies'), 'Initialize exposes verification query');
-    check(!tools.includes('al/*'), 'Initialize does not grant an official AL wildcard');
+    project('skills/al-initialize/SKILL.md', Buffer.from(initialize)).toString()]) {
+    check(fm(content).tools === undefined, 'Initialize skill declares no tools');
   }
   // Foundation is a repository/VSIX projection, not part of the npm archive.
   // Keep checking it in a checkout, while validating the actual shipped paths
   // when this test runs from the extracted npm package.
-  const foundationPrompt = 'packages/foundation/prompts/al-initialize.prompt.md';
+  const foundationPrompt = 'packages/foundation/skills/al-initialize/SKILL.md';
   const sourceCheckout = fs.existsSync(path.join(root, '.git'));
   if (sourceCheckout) check(fs.existsSync(path.join(root, foundationPrompt)), 'Source checkout contains the Foundation projection');
   else check(!require('../package.json').files.some(rel => rel.startsWith('packages/foundation')), 'npm package excludes the Foundation projection');
   for (const relative of [
-    'prompts/al-initialize.prompt.md',
+    'skills/al-initialize/SKILL.md',
     ...(sourceCheckout ? [foundationPrompt] : []),
     'claude-plugin/skills/al-initialize/SKILL.md',
     'copilot-cli-plugin/commands/al-initialize.md',
@@ -114,13 +123,12 @@ try {
   fs.writeFileSync(path.join(fixture, '.vscode/mcp.json'), mcp);
   let run = installer(fixture);
   check(run.status === 0, `Default install: ${run.stderr}`);
-  for (const tree of ['agents', 'prompts']) {
-    for (const name of fs.readdirSync(path.join(root, tree))) {
-      const installed = read(path.join(fixture, '.github', tree, name));
-      check(installed === chatProject(`${tree}/${name}`, fs.readFileSync(path.join(root, tree, name)), 'bc28').toString(), `BC28 Chat projection: ${tree}/${name}`);
-      if (/\.(agent|prompt)\.md$/.test(name)) check(!fm(installed).tools.some(t => t.startsWith('ms-dynamics-smb.al/')), `BC28 does not assume native catalog: ${name}`);
-    }
+  for (const rel of projectedRels()) {
+    const installed = read(path.join(fixture, '.github', rel));
+    check(installed === chatProject(rel, fs.readFileSync(path.join(root, rel)), 'bc28').toString(), `BC28 Chat projection: ${rel}`);
+    check(!(fm(installed).tools || []).some(t => t.startsWith('ms-dynamics-smb.al/')), `BC28 does not assume native catalog: ${rel}`);
   }
+  check(!fs.existsSync(path.join(fixture, '.github/prompts')), 'Install writes no prompt files');
   const before = digestFiles(fixture);
   run = installer(fixture, ['--profile', 'bc29-native']);
   check(run.status !== 0 && (run.stdout + run.stderr).includes('Profile switch'), 'Mixed-profile update is refused');
@@ -139,11 +147,13 @@ try {
   }
 
   const allowed = new Set(['al_symbolsearch', 'al_get_diagnostics', 'al_getnextobjectid', 'al_build', 'al_downloadsymbols', 'al_debug', 'al_setbreakpoint', 'al_snapshotdebugging']);
-  for (const tree of ['agents', 'prompts']) {
-    for (const name of fs.readdirSync(path.join(root, tree)).filter(n => /\.(agent|prompt)\.md$/.test(n))) {
-      const installed = path.join(fixture, '.github', tree, name);
+  for (const rel of projectedRels()) {
+    {
+      const name = rel;
+      const installed = path.join(fixture, '.github', rel);
       const text = read(installed), metadata = fm(text);
-      const original = fm(read(path.join(root, tree, name)));
+      metadata.tools = metadata.tools || [];
+      const original = fm(read(path.join(root, rel)));
       check(metadata.model === (original.model ? chatModel : undefined), `Chat model selected: ${name}`);
       assert.deepEqual(metadata.handoffs, original.handoffs); checks++;
       check(!metadata.tools.some(t => /al-symbols-mcp|atlas/i.test(t)), `No obsolete provider grant: ${name}`);
@@ -166,12 +176,12 @@ try {
     check(grants(name).includes('ms-dynamics-smb.al/al_build'), `Implementation build grant: ${name}`);
     check(grants(name).includes('ms-dynamics-smb.al/al_getnextobjectid'), `Implementation allocation grant: ${name}`);
   }
-  for (const name of ['al-build', 'al-spec.create', 'al-initialize']) {
-    const tools = fm(read(path.join(fixture, '.github/prompts', name + '.prompt.md'))).tools;
-    check(!tools.includes('ms-dynamics-smb.al/al_getnextobjectid'), `Prompt cannot expand allocation scope: ${name}`);
+  for (const name of ['al-build', 'al-spec-create', 'al-initialize']) {
+    const tools = fm(read(path.join(fixture, '.github/skills', name, 'SKILL.md'))).tools;
+    check(tools === undefined, `Workflow skill grants no tools of its own: ${name}`);
   }
   check(!grants('al-triage').includes('ms-dynamics-smb.al/al_build'), 'Triage cannot build through native grant');
-  const build = read(path.join(fixture, '.github/prompts/al-build.prompt.md'));
+  const build = read(path.join(fixture, '.github/skills/al-build/SKILL.md'));
   check(!/al_(?:incremental_publish|publish|publish_existing_extension|package|full_package)/.test(build), 'Native build has no deployment or invented packaging operations');
   check(build.includes('Stop after build/package') && build.includes('human gate'), 'Native build stops at the deployment handoff');
   const nativeBefore = agent('al-conductor');
@@ -209,9 +219,8 @@ try {
   // Reproduce a Windows-style source checkout without requiring a Windows host.
   const crlfPackage = path.join(tmp, 'crlf-package');
   fs.cpSync(root, crlfPackage, { recursive: true, filter: p => !['.git', 'node_modules'].includes(path.basename(p)) });
-  for (const tree of ['agents', 'prompts']) {
-    for (const name of fs.readdirSync(path.join(root, tree)).filter(n => /\.(agent|prompt)\.md$/.test(n))) {
-      const rel = `${tree}/${name}`;
+  for (const rel of projectedRels()) {
+    {
       const lf = read(path.join(root, rel)).replace(/\r\n/g, '\n');
       const crlf = lf.replace(/\n/g, '\r\n');
       fs.writeFileSync(path.join(crlfPackage, rel), crlf);

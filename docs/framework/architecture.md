@@ -46,7 +46,7 @@ model: claude-sonnet-4.5
 
 **Features**:
 
-- Invoked explicitly via `@workspace use <name>`
+- Invoked explicitly as a slash command, `/<name>`
 - Model-specific targeting
 - Multi-step validation gates
 - Structured output requirements
@@ -81,7 +81,7 @@ tools:
 | Type | Pattern | Example |
 |:-----|:--------|:--------|
 | **Instruction** | `*.instructions.md` | `al-guidelines.instructions.md` |
-| **Prompt** | `*.prompt.md` | `al-workspace.prompt.md` |
+| **Workflow skill** | `skills/al-*/SKILL.md` | `skills/al-build/SKILL.md` |
 | **Agent** | `*.agent.md` | `al-architect.agent.md` |
 
 ## Directory Structure
@@ -92,9 +92,9 @@ AL-Development-Collection-for-GitHub-Copilot/
 │   ├── al-guidelines.instructions.md
 │   ├── al-code-style.instructions.md
 │   └── ...
-├── prompts/               # Agentic workflows
-│   ├── al-workspace.prompt.md
-│   ├── al-build.prompt.md
+├── skills/                # Agentic workflows (al-*) and knowledge skills (skill-*)
+│   ├── al-initialize/SKILL.md
+│   ├── al-build/SKILL.md
 │   └── ...
 ├── agents/             # 4 public agents + 3 internal subagents
 │   ├── al-architect.agent.md
@@ -125,10 +125,10 @@ applyTo:
 
 ### Explicit Invocation
 
-Prompts are invoked explicitly:
+Workflows are invoked explicitly:
 
 ```bash
-@workspace use al-workspace
+/al-initialize
 ```
 
 ### Mode Switching
@@ -188,10 +188,10 @@ npm run validate
 3. Write guidelines in Markdown
 4. Validate and test
 
-### Adding New Prompts
+### Adding New Workflows
 
-1. Create file: `your-name.prompt.md`
-2. Add frontmatter with name and description
+1. Create file: `skills/al-your-name/SKILL.md`
+2. Add frontmatter with `name`, `description` and `disable-model-invocation: true`
 3. Define workflow steps
 4. Validate and test
 

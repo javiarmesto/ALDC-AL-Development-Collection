@@ -66,9 +66,9 @@ graph LR
 ## Recommended routing
 
 ```
-LOW  → al-spec.create → al-developer (skip conductor)
-MED  → al-architect → al-spec.create → al-conductor
-HIGH → al-architect → al-spec.create → al-conductor
+LOW  → al-spec-create → al-developer (skip conductor)
+MED  → al-architect → al-spec-create → al-conductor
+HIGH → al-architect → al-spec-create → al-conductor
 ```
 
 ---

@@ -25,17 +25,16 @@ AL-Development-Collection-for-GitHub-Copilot
 │   ├── al-error-handling.instructions.md
 │   ├── al-events.instructions.md
 │   └── al-testing.instructions.md       # (applyTo: **/test/**/*.al)
-├── prompts/                             # Agentic workflows
-│   ├── al-workspace.prompt.md
-│   ├── al-build.prompt.md
-│   ├── al-debug.prompt.md
-│   ├── al-events.prompt.md
-│   ├── al-performance.prompt.md
-│   ├── al-permissions.prompt.md
-│   ├── al-troubleshoot.prompt.md
-│   ├── al-migrate.prompt.md
-│   ├── al-pages.prompt.md
-│   └── al-workflow.prompt.md
+├── skills/                              # Agentic workflows (al-*) and knowledge skills (skill-*)
+│   ├── al-initialize/SKILL.md
+│   ├── al-spec-create/SKILL.md
+│   ├── al-build/SKILL.md
+│   ├── al-pr-prepare/SKILL.md
+│   ├── al-context-create/SKILL.md
+│   ├── al-memory-create/SKILL.md
+│   ├── skill-debug/SKILL.md
+│   ├── skill-events/SKILL.md
+│   └── ...
 └── agents/                           # 4 public agents + 3 internal subagents
     ├── al-architect.agent.md
     ├── al-developer.agent.md
@@ -157,8 +156,8 @@ No changes required! The collection works the same way:
 # Instructions still auto-apply
 # Just code in *.al files
 
-# Prompts work the same
-@workspace use al-workspace
+# Workflows are slash commands
+/al-initialize
 
 # Modes work the same
 Use al-architect mode
@@ -168,7 +167,7 @@ Use al-architect mode
 
 When adding new files:
 1. Place in appropriate `.github/` subdirectory
-2. Use proper file extensions (`.instructions.md`, `.prompt.md`, `.agent.md`)
+2. Use the proper file names (`.instructions.md`, `.agent.md`, `skills/<name>/SKILL.md`)
 3. Include required frontmatter fields
 4. Run `npm run validate` to verify compliance
 

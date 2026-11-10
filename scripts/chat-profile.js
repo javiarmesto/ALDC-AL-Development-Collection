@@ -3,6 +3,7 @@
 // Copilot Chat installation only. Never imported by terminal surface generators.
 const path = require('path');
 const { project: normalize, roles } = require('./native-profile');
+const { WORKFLOWS } = require('./workflows');
 // Confirmed from the user's local VS Code model selector on 2026-10-05.
 const chatModel = 'Claude Sonnet 5.5 (copilot)';
 const lspQueries = [
@@ -15,9 +16,10 @@ const queries = ['al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependenc
 const writes = ['al_compile', 'al_build', 'al_downloadsymbols'];
 // AL18 adds run_tests to this proxy. Triage owns capture, not test execution.
 const snapshotCaptures = ['initialize_snapshot_debugging', 'get_snapshot_status', 'stop_snapshot_debugging'];
-const prompts = new Set(['al-agent.build-instructions', 'al-agent.create',
-  'al-agent.instructions', 'al-agent.task', 'al-agent.test', 'al-build',
-  'al-context.create', 'al-initialize', 'al-memory.create', 'al-pr-prepare', 'al-spec.create']);
+// Workflow skills (skills/<name>/SKILL.md) replace the former prompt files.
+const workflows = new Set(WORKFLOWS);
+// The al- prefix is reserved for workflow skills, so an unknown one fails loudly.
+const PROJECTED = /^(agents\/[^/]+\.agent\.md|skills\/al-[a-z0-9-]+\/SKILL\.md)$/;
 
 // Chat consumer configuration only. Keep the canonical/terminal template independent.
 // Update bounded scalar lines rather than reserializing the template and its comments.
@@ -68,11 +70,11 @@ function projectConfiguration(sourceText, previousText) {
 
 function project(relative, input, profile) {
   const rel = relative.replace(/\\/g, '/');
-  if (!/^(agents\/[^/]+\.agent|prompts\/[^/]+\.prompt)\.md$/.test(rel)) return input;
+  if (!PROJECTED.test(rel)) return input;
   if (!['bc28', 'bc29-native'].includes(profile)) throw new Error(`Unknown Chat profile: ${profile}`);
-  const role = path.basename(rel).replace(/\.(agent|prompt)\.md$/, '');
   const isAgent = rel.startsWith('agents/');
-  if (isAgent ? !roles[role] : !prompts.has(role)) throw new Error(`Chat role assignment missing: ${role}`);
+  const role = isAgent ? path.basename(rel, '.agent.md') : rel.split('/')[1];
+  if (isAgent ? !roles[role] : !workflows.has(role)) throw new Error(`Chat role assignment missing: ${role}`);
   // Reuse the existing correction of obsolete tool instructions and the build
   // deployment gate. This is a Chat projection, not certification of BC29 tools.
   const eol = input.toString().includes('\r\n') ? '\r\n' : '\n';
@@ -80,32 +82,36 @@ function project(relative, input, profile) {
   const end = text.indexOf('\n---', 3);
   let front = text.slice(0, end);
   let body = text.slice(end + 4);
-  // Only explicit Chat selections change; model-less prompts keep inheriting.
+  // Only explicit Chat selections change; skills and model-less agents keep inheriting.
   front = front.replace(/^(\s*)model: [^\n]+$/gm, (_, indent) => `${indent}model: ${chatModel}`);
-  const coordinator = role === 'al-conductor' || role === 'al-memory.create';
+  const coordinator = role === 'al-conductor' || role === 'al-memory-create';
   const implementation = ['al-developer', 'al-implement-subagent', 'al-build'].includes(role);
   const setup = role === 'al-initialize';
   const triage = role === 'al-triage';
-  const toolLine = front.match(/^tools: \[(.*)\]$/m);
-  let tools = toolLine[1].split(',').map(s => s.trim()).filter(Boolean);
-  // BC28 keeps a source/LSP/MCP fallback without assuming the BC29 native catalog.
-  // Triage requests dependency restore from an implementation owner in both modes.
-  tools = tools.filter(t => !t.startsWith('ms-dynamics-smb.al/') ||
-    (profile === 'bc29-native' && !(triage && t.endsWith('/al_downloadsymbols'))));
   // The knowledge consultant reads BCQuality provider files only.
   const knowledge = role === 'al-knowledge-consultant';
-  if (!coordinator && !knowledge) {
-    tools.push(...lspQueries.map(t => `SShadowSdk.al-lsp-for-agents/${t}`));
-    tools.push(...queries.map(t => `al/${t}`));
+  // Skills have no tools list: they run with the invoking agent's tools, and the
+  // scope paragraph below states what the workflow may do.
+  const toolLine = front.match(/^tools: \[(.*)\]$/m);
+  if (toolLine) {
+    let tools = toolLine[1].split(',').map(s => s.trim()).filter(Boolean);
+    // BC28 keeps a source/LSP/MCP fallback without assuming the BC29 native catalog.
+    // Triage requests dependency restore from an implementation owner in both modes.
+    tools = tools.filter(t => !t.startsWith('ms-dynamics-smb.al/') ||
+      (profile === 'bc29-native' && !(triage && t.endsWith('/al_downloadsymbols'))));
+    if (!coordinator && !knowledge) {
+      tools.push(...lspQueries.map(t => `SShadowSdk.al-lsp-for-agents/${t}`));
+      tools.push(...queries.map(t => `al/${t}`));
+    }
+    if (implementation) tools.push(...writes.map(t => `al/${t}`));
+    if (setup) tools.push('al/al_downloadsymbols');
+    if (triage) tools.push('bc-profiling/*', ...snapshotCaptures.map(t => `bc-snapshot/${t}`));
+    front = front.replace(toolLine[0], `tools: [${[...new Set(tools)].join(', ')}]`);
   }
-  if (implementation) tools.push(...writes.map(t => `al/${t}`));
-  if (setup) tools.push('al/al_downloadsymbols');
-  if (triage) tools.push('bc-profiling/*', ...snapshotCaptures.map(t => `bc-snapshot/${t}`));
-  front = front.replace(toolLine[0], `tools: [${[...new Set(tools)].join(', ')}]`);
   front = front.replace('builds with native AL tools or the terminal', 'builds with available AL tools or the terminal');
   body = body.replace('## BC29 native capability contract', '## Copilot Chat AL tooling contract')
     .replace('Profile: **bc29-native**', `Profile: **${profile}**`)
-    .replace('[the native tool contract](../docs/framework/native-al-tools.md)', '[the Chat tool contract](../docs/framework/copilot-chat-al-tooling.md)')
+    .replace(/\[the native tool contract\]\(((?:\.\.\/)+)docs\/framework\/native-al-tools\.md\)/, '[the Chat tool contract]($1docs/framework/copilot-chat-al-tooling.md)')
     .replace('Use only the native operations declared here;', 'Use only the operations declared here;')
     .replace('Use the granted native AL tools under the shared native contract.', 'Use the granted AL tools under the Chat contract.')
     .replace('Inspect app.json, available symbols and the installed native build schema.', 'Inspect app.json, available symbols and the selected provider’s build schema.')
@@ -133,7 +139,7 @@ Use the assertion codeunit name and API resolved from this project's symbols. Na
       .replace(/^\s*Any: Codeunit Any;\r?\n/gm, '\n        // Add other library variables only when the test uses their resolved API.\n');
   }
   if (profile === 'bc29-native') {
-    const research = ['al-architect', 'al-spec-agent', 'al-spec.create'].includes(role);
+    const research = ['al-architect', 'al-spec-agent', 'al-spec-create'].includes(role);
     const creator = ['al-developer', 'al-implement-subagent'].includes(role);
     const reviewer = ['al-developer-reviewer', 'al-review-subagent', 'dredd'].includes(role);
     const guidance = [];

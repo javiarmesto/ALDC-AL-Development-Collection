@@ -49,7 +49,19 @@ test('retired paths remove only recognized files and rollback restores them',t=>
  const r=temp(t),opts={root:r,surface:'fixture',files:files('v1')};tx.apply(opts);
  tx.apply({...opts,files:new Map([['a.md',{content:'v1'}],['memory.md',{content:'seed',seed:true}]])});assert.equal(fs.existsSync(path.join(r,'b.md')),false);
  tx.rollback(r,'fixture');assert.equal(read(r,'b.md'),'v1');write(r,'b.md','custom');
- assert.throws(()=>tx.plan({...opts,files:new Map([['a.md',{content:'v1'}]])}),/Customized obsolete/);
+ // An edited retired file is a visible collision, not a blocked update, and the receipt
+ // keeps tracking it so the next update reports it again.
+ const next={...opts,files:new Map([['a.md',{content:'v1'}]])};
+ const kept=tx.report(tx.plan(next)).find(f=>f.path==='b.md');
+ assert.equal(kept.action,'collision');assert.equal(kept.customized,true);assert.equal(kept.obsolete,true);
+ tx.apply(next);assert.equal(read(r,'b.md'),'custom');
+ assert.equal(tx.report(tx.plan(next)).find(f=>f.path==='b.md').action,'collision');
+ // --force retires it with a backup; rollback brings the edit back.
+ const forced=tx.report(tx.plan({...next,force:true})).find(f=>f.path==='b.md');
+ assert.equal(forced.action,'remove');assert.equal(forced.customized,true);
+ tx.apply({...next,force:true});assert.equal(fs.existsSync(path.join(r,'b.md')),false);
+ assert.equal(tx.report(tx.plan(next)).some(f=>f.path==='b.md'),false);
+ tx.rollback(r,'fixture');assert.equal(read(r,'b.md'),'custom');
 });
 test('managed block preserves CRLF surrounding text and rejects malformed markers',()=>{
  const existing=Buffer.from('before\r\n<!-- BEGIN ALDC CODEX -->\nold\n<!-- END ALDC CODEX -->\r\nafter\r\n');
@@ -177,6 +189,52 @@ test('content a previous release is known to have written is ours to replace, lo
  assert.equal(byPath(tx.plan({root:other,surface:'fixture',files:new Map([['a.md',{content:NEW,prior}]])}))['a.md'].action,'collision');
  assert.equal(byPath(tx.plan({root:other,surface:'fixture',files:new Map([['a.md',{content:NEW}]])}))['a.md'].action,'collision');
 });
+test('without a receipt, retired paths are removed only when an earlier release wrote them',t=>{
+ const sha=b=>require('crypto').createHash('sha256').update(b).digest('hex');
+ const OLD='old prompt\n',retire=new Map([['p/old.md',[sha(Buffer.from(OLD))]]]);
+ const r=temp(t);write(r,'p/old.md',OLD);write(r,'p/mine.md','unknown\n');
+ const opts={root:r,surface:'fixture',files:new Map([['a.md',{content:'v1'}]]),retire};
+ const planned=Object.fromEntries(tx.report(tx.plan(opts)).map(f=>[f.path,f]));
+ assert.equal(planned['p/old.md'].action,'remove');assert.equal(planned['p/mine.md'],undefined);
+ tx.apply(opts);assert.equal(fs.existsSync(path.join(r,'p/old.md')),false);assert.equal(read(r,'p/mine.md'),'unknown\n');
+ tx.rollback(r,'fixture');assert.equal(read(r,'p/old.md'),OLD);
+ // Edited bytes stay as a visible collision; --force retires them recoverably.
+ const edited=temp(t);write(edited,'p/old.md','edited\n');
+ assert.equal(tx.report(tx.plan({...opts,root:edited})).find(f=>f.path==='p/old.md').action,'collision');
+ tx.apply({...opts,root:edited});assert.equal(read(edited,'p/old.md'),'edited\n');
+ // The receipt written by that update keeps tracking the edit, so it is not forgotten.
+ assert.equal(tx.report(tx.plan({...opts,root:edited})).find(f=>f.path==='p/old.md').action,'collision');
+ tx.apply({...opts,root:edited,force:true});assert.equal(fs.existsSync(path.join(edited,'p/old.md')),false);
+ const forced=temp(t);write(forced,'p/old.md','edited\n');
+ tx.apply({...opts,root:forced,force:true});assert.equal(fs.existsSync(path.join(forced,'p/old.md')),false);
+ tx.rollback(forced,'fixture');assert.equal(read(forced,'p/old.md'),'edited\n');
+ // With a receipt, the receipt alone decides.
+ const tracked=temp(t);tx.apply({root:tracked,surface:'fixture',files:new Map([['a.md',{content:'v1'}]])});write(tracked,'p/old.md','edited\n');
+ assert.equal(tx.report(tx.plan({...opts,root:tracked})).some(f=>f.path==='p/old.md'),false);
+});
+test('a receipt-free upgrade retires the prompt files an earlier release installed',t=>{
+ const shipped=spawnSync('git',['show','v5.0.0:prompts/al-build.prompt.md'],{cwd:root});
+ if(shipped.status!==0){t.skip('v5.0.0 tag not available');return;}
+ const r=temp(t);const run=args=>spawnSync(process.execPath,[path.join(root,'scripts/install.js'),...args],{cwd:r,encoding:'utf8'});
+ write(r,'.github/prompts/al-build.prompt.md',shipped.stdout);write(r,'.github/prompts/my-own.prompt.md','mine\n');
+ const result=run(['install','--yes']);assert.equal(result.status,0,result.stderr);
+ assert.equal(fs.existsSync(path.join(r,'.github/prompts/al-build.prompt.md')),false);
+ assert.equal(read(r,'.github/prompts/my-own.prompt.md'),'mine\n');
+ assert.ok(fs.existsSync(path.join(r,'.github/skills/al-build/SKILL.md')));
+ const customized=temp(t);write(customized,'.github/prompts/al-build.prompt.md','edited\n');
+ const kept=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json'],{cwd:customized,encoding:'utf8'});
+ assert.equal(kept.status,0,kept.stderr);
+ assert.ok(JSON.parse(kept.stdout).collisions.includes('.github/prompts/al-build.prompt.md'));
+ assert.deepEqual(JSON.parse(kept.stdout).obsolete,['.github/prompts/al-build.prompt.md']);
+ assert.equal(read(customized,'.github/prompts/al-build.prompt.md'),'edited\n');
+ // The next update has a receipt and still reports the edit; --force retires it with a backup.
+ const again=JSON.parse(spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json','--dry-run'],{cwd:customized,encoding:'utf8'}).stdout);
+ assert.deepEqual(again.obsolete,['.github/prompts/al-build.prompt.md']);
+ const forced=spawnSync(process.execPath,[path.join(root,'scripts/install.js'),'install','--yes','--json','--force'],{cwd:customized,encoding:'utf8'});
+ assert.equal(forced.status,0,forced.stderr);
+ assert.ok(JSON.parse(forced.stdout).replaced.includes('.github/prompts/al-build.prompt.md'));
+ assert.equal(fs.existsSync(path.join(customized,'.github/prompts/al-build.prompt.md')),false);
+});
 test('the known-installation manifest is well formed and covers the previous release',()=>{
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'known-installations.json'),'utf8'));
  assert.equal(manifest.schema,1);
@@ -232,7 +290,7 @@ for (const scenario of [
  const r=temp(t),payload=path.join(r,'payload'),project=path.join(r,'project');
  fs.mkdirSync(project);
  // A small real package exercises the same configuration projection as the VSIX.
- for(const rel of ['agents','prompts','instructions','package.json','.github/copilot-instructions.md',
+ for(const rel of ['agents','skills','instructions','package.json','.github/copilot-instructions.md',
   'docs/templates/memory-template.md','docs/framework/native-al-tools.md','docs/framework/copilot-chat-al-tooling.md']){
   fs.mkdirSync(path.dirname(path.join(payload,rel)),{recursive:true});
   fs.cpSync(path.join(root,rel),path.join(payload,rel),{recursive:true});

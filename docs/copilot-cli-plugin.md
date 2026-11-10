@@ -19,7 +19,7 @@ Do not add the Agent Plugins schema to the current layout.
 | `agents/` | 12 custom-agent profiles; explicit tools and canonical model |
 | `references/agent-contracts/` | Complete Conductor workflow; mandatory read before action; entry stays below 29,000 characters |
 | `skills/` | 16 domain skills, loaded when needed |
-| `commands/` | 11 explicit workflows; `disable-model-invocation: true` |
+| `commands/` | 10 explicit workflows; `disable-model-invocation: true` |
 | MCP | Existing `al-symbols-mcp`, `context7`, `microsoft-docs`; declared is not connected |
 | `rules-templates/` | Scoped rules copied by project bootstrap |
 | `scripts/init.js` | CLI-only adaptation of the shared transaction engine; no change to other hosts |
@@ -134,11 +134,11 @@ copilot mcp list --json
 copilot instruction list --json
 ```
 
-The skill catalog can include the 11 command files alongside the 16 domain
+The skill catalog can include the 10 command files alongside the 16 domain
 skills. Count by source path, excluding built-ins. Commands use their filenames:
 `/al-spec-create`, `/al-build`, `/al-pr-prepare`, `/al-memory-create`,
 `/al-context-create`, `/al-initialize`, `/al-agent-create`, `/al-agent-task`,
-`/al-agent-instructions`, `/al-agent-build-instructions`, `/al-agent-test`.
+`/al-agent-instructions`, `/al-agent-test`.
 
 Expected role IDs: `al-agent-builder`, `al-architect`, `al-conductor`,
 `al-developer`, `al-developer-reviewer`, `al-implement-subagent`,

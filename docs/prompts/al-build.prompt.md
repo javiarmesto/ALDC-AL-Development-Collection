@@ -1,1 +1,1 @@
---8<-- "prompts/al-build.prompt.md:9"
+--8<-- "skills/al-build/SKILL.md:8"

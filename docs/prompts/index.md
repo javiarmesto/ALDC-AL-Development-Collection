@@ -1,237 +1,92 @@
-# Agentic Workflows - Layer 2: Agent Primitives
+# Agentic Workflows
 
-**Complete execution processes** implemented as `.prompt.md` files providing **systematic workflows** for specific AL development tasks in Business Central.
+A workflow is a complete, explicit process for one AL development task: write a
+specification, build, prepare a pull request. Since 5.3.0 workflows ship as skills at
+`skills/<name>/SKILL.md`, not as `.prompt.md` files, because VS Code's Copilot harness
+does not load prompt files.
 
-## 📋 What Are Agentic Workflows?
+## How to run a workflow
 
-Agentic Workflows (formerly called "prompts") are:
-- **Task-specific execution processes** with step-by-step guidance
-- **Complete workflows** from planning through validation
-- **Tool-integrated** processes that can execute AL commands
-- **Reusable templates** for common development scenarios
+Type its slash command in the chat. Text after the command is passed to the workflow:
 
-## 🎯 How to Use Agentic Workflows
-
-Activate workflows explicitly when needed:
-```markdown
-@workspace use [workflow-name]
-
-Examples:
-@workspace use al-initialize
-@workspace use al-diagnose
-@workspace use al-build
+```text
+/al-spec-create customer loyalty points
+/al-build
 ```
 
-## 📦 Available Workflows (18 files)
+A workflow runs only when you invoke it (`disable-model-invocation: true`) and uses the
+tools of the agent that is active. `/al-spec-create` hands the work to AL Spec Agent.
 
-### Environment & Setup
+| Host | Command |
+|------|---------|
+| VS Code Copilot Chat | `/al-spec-create` |
+| Copilot CLI | `/al-spec-create` |
+| Claude Code plugin | `/aldc:al-spec-create` |
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-initialize** | Complete environment and workspace initialization | First-time setup, new projects, onboarding |
+Codex reads the same workflows as references of its single ALDC skill.
 
-### Development & Diagnostics
+## Core workflows (6)
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-diagnose** | Runtime debugging and configuration troubleshooting | Debugging issues, auth problems, symbol errors |
-| **al-spec.create** | Create functional specifications | Planning new features |
-| **al-pages** | Design and implement page objects | Creating UI components |
-| **al-events** | Implement event publishers/subscribers | Extending BC without modifying base |
+| Command | Purpose | When to use |
+|---------|---------|-------------|
+| [`/al-initialize`](al-initialize.prompt.md) | Set up the AL environment and workspace | First-time setup, new projects, onboarding |
+| [`/al-context-create`](al-context.create.prompt.md) | Create or update `context.md` | Giving assistants the project context |
+| [`/al-memory-create`](al-memory.create.prompt.md) | Create or update `memory.md` | Keeping continuity between sessions |
+| [`/al-spec-create`](al-spec.create.prompt.md) | Create or revise the technical specification through AL Spec Agent | After the architecture is approved, before implementation |
+| [`/al-build`](al-build.prompt.md) | Build and package AL extensions | Verification, compilation and packaging |
+| [`/al-pr-prepare`](al-pr-prepare.prompt.md) | Prepare a pull request draft | Before review or merge |
 
-### Build & Deployment
+## BC Agents pack workflows (4)
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-build** | Build, package, and deploy extensions | Building for release, deployment |
-| **al-permissions** | Generate permission sets | Setting up security |
-| **al-migrate** | Data migration strategies | Moving data between systems/versions |
+| Command | Purpose |
+|---------|---------|
+| `/al-agent-create` | Create a coded Business Central agent (Agent SDK) |
+| `/al-agent-task` | Generate Agent SDK task integration code |
+| `/al-agent-instructions` | Write agent instructions |
+| `/al-agent-test` | Generate Agent SDK test codeunits |
 
-### Quality & Performance
+## Names that changed in 5.3.0
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-performance.triage** | Quick performance diagnosis (static analysis) | Rapid performance assessment, code review |
-| **al-performance** | Deep performance analysis (runtime profiling) | Slow queries, bottlenecks, optimization |
+`@workspace use <name>` is no longer how a workflow is called. Names that had a dot now
+have a hyphen:
 
-### Code Review & Documentation
+| Before 5.3.0 | Now |
+|--------------|-----|
+| `al-spec.create` | `/al-spec-create` |
+| `al-context.create` | `/al-context-create` |
+| `al-memory.create` | `/al-memory-create` |
+| `al-agent.create` | `/al-agent-create` |
+| `al-agent.task` | `/al-agent-task` |
+| `al-agent.instructions` | `/al-agent-instructions` |
+| `al-agent.test` | `/al-agent-test` |
+| `al-agent.build-instructions` | Removed; use `/al-agent-instructions` |
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-pr-prepare** | Prepare pull request documentation | Before code review/merge |
-| **al-context.create** | Generate project context.md file | Setting up project for AI assistants |
-| **al-memory.create** | Generate/update memory.md file | Maintaining session continuity |
+`al-build`, `al-pr-prepare` and `al-initialize` keep their names.
 
-### AI/Copilot Features
+Updating an installed toolkit removes the `.github/prompts/` files that ALDC installed
+and keeps a backup. A prompt you edited stays in place and is reported on every update.
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-copilot-capability** | Register Copilot capability | Adding AI features to BC |
-| **al-copilot-promptdialog** | Create PromptDialog pages | Building Copilot UI |
-| **al-copilot-test** | Test Copilot features | Validating AI functionality |
-| **al-copilot-generate** | Generate Copilot code from natural language | Creating AI-powered features |
+## Domains that are knowledge skills, not workflows
 
-### Translation & Localization
+Earlier releases shipped workflows such as `al-diagnose`, `al-performance`,
+`al-permissions`, `al-events`, `al-pages`, `al-migrate`, `al-translate` and the
+`al-copilot-*` set. These domains are now knowledge skills that an agent loads when the
+task needs them, so there is no workflow command to run for them.
 
-| File | Purpose | When to Use |
-|------|---------|-------------|
-| **al-translate** | XLF translation file management | Localization workflows |
+| Domain | Skill |
+|--------|-------|
+| Debugging and diagnosis | `skill-debug` |
+| Performance | `skill-performance` |
+| Permission sets | `skill-permissions` |
+| Events | `skill-events` |
+| Pages | `skill-pages` |
+| Version migration | `skill-migrate` |
+| Translation | `skill-translate` |
+| Copilot capabilities | `skill-copilot` |
 
-> **Note**: Total of 18 workflow files matching the prompts/ directory contents.
+## Related resources
 
-## 🏗️ Workflow Structure
-
-Each workflow follows this pattern:
-
-### 1. Objective
-Clear statement of what the workflow accomplishes
-
-### 2. Prerequisites
-- Required context (files, settings)
-- Required tools
-- Required knowledge
-
-### 3. Step-by-Step Process
-Detailed instructions with:
-- Context gathering
-- Analysis phase
-- Implementation steps
-- Validation gates
-
-### 4. Validation Criteria
-How to verify success
-
-### 5. Common Issues & Solutions
-Troubleshooting guide
-
-## 💡 Best Practices
-
-### Choosing the Right Workflow
-
-```mermaid
-graph TD
-    Start[Task to Complete] --> Setup{First Time?}
-    Setup -->|Yes| InitFlow[al-initialize]
-    Setup -->|No| Type{Task Type?}
-
-    Type -->|Issue/Bug| Diagnose[al-diagnose]
-    Type -->|Build/Deploy| Build[al-build]
-    Type -->|Performance| Perf{Quick or Deep?}
-    Type -->|New Feature| Spec[al-spec.create]
-
-    Perf -->|Quick Check| Triage[al-performance.triage]
-    Perf -->|Deep Analysis| PerfFull[al-performance]
-```
-
-### Workflow Combinations
-
-Common workflow sequences:
-
-1. **New Feature Development**
-   ```
-   al-spec.create → al-pages → al-events → al-build → al-diagnose
-   ```
-
-2. **Performance Issue**
-   ```
-   al-performance.triage → al-performance → al-build
-   ```
-
-3. **Security Setup**
-   ```
-   al-permissions → al-build → al-diagnose
-   ```
-
-4. **Integration Work**
-   ```
-   al-events → al-migrate → al-build → al-diagnose
-   ```
-
-5. **First-Time Setup**
-   ```
-   al-initialize → al-spec.create → al-build
-   ```
-
-### Integration with Other Primitives
-
-Workflows complement:
-- **Instructions** - Automatically loaded context during workflow execution
-- **Agents** - Strategic consultation before/after workflow execution
-  - Use `al-architect` to design before implementing workflow (entry point for new features)
-  - Use `al-conductor` for TDD orchestration on medium/high complexity tasks
-  - Use `al-debugger` when workflow execution reveals issues
-
-## 🔄 Workflow Evolution
-
-This collection has evolved to optimize clarity and completeness:
-
-### Current State (v2.8)
-
-**18 Agentic Workflows:**
-
-1. `al-initialize` - Environment & workspace setup
-2. `al-diagnose` - Debug & troubleshoot  
-3. `al-build` - Build/package/deploy
-4. `al-events` - Event implementation
-5. `al-performance` - Deep performance profiling
-6. `al-performance.triage` - Quick performance check
-7. `al-permissions` - Permission set generation
-8. `al-migrate` - Version migration
-9. `al-pages` - Page design & UI
-10. `al-spec.create` - Functional specifications
-11. `al-pr-prepare` - Pull request preparation
-12. `al-context.create` - Project context generation
-13. `al-memory.create` - Session memory management
-14. `al-copilot-capability` - Copilot capability registration
-15. `al-copilot-promptdialog` - PromptDialog creation
-16. `al-copilot-test` - Copilot feature testing
-17. `al-copilot-generate` - AI code generation
-18. `al-translate` - XLF translation management
-
-### Historical Changes
-
-**v2.3 Consolidations:**
-- `al-setup` + `al-workspace` → **al-initialize**
-- `al-debug` + `al-troubleshoot` → **al-diagnose**
-
-**v2.7 Additions:**
-- `al-context.create` - Project context for AI assistants
-- `al-memory.create` - Session continuity
-- `al-copilot-generate` - Natural language code generation
-
-## 🔗 Related Resources
-
-- **Collection Manifest**: `collections/al-development.collection.yml`
-- **Framework Reference**: `docs/framework/ai-native-instructions-architecture.md`
-- **User Guide**: `al-development.md`
-- **Contributing**: `CONTRIBUTING.md`
-
-## 📊 Validation
-
-Run `npm run validate` to verify:
-- All workflow files exist
-- Frontmatter is properly formatted
-- File naming conventions are followed
-- Required fields are present
-
-## 🎯 Quick Reference
-
-| Need to... | Use Workflow |
-|-----------|--------------|
-| Set up new project/environment | `al-initialize` |
-| Debug or troubleshoot issues | `al-diagnose` |
-| Build & deploy | `al-build` |
-| Fix performance issues | `al-performance.triage` → `al-performance` |
-| Create new feature | `al-spec.create` → `al-pages` |
-| Add events | `al-events` |
-| Set up security | `al-permissions` |
-| Migrate data | `al-migrate` |
-| Prepare for review | `al-pr-prepare` |
-
----
-
-**Framework Compliance**: These workflows implement **AI-Native Instructions Architecture** - Layer 2 (Agent Primitives) providing systematic execution processes that coordinate Instructions and Agents for complete task fulfillment.
-
-**Version**: 2.8.0
-**Total Workflows**: 18
-**Last Updated**: 2025-11-25
+- [Skills catalog](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/skills/index.md)
+- [Agents](../agents/index.md)
+- [Instructions](../instructions/index.md)
+- [Complete development flow](../workflows/complete-development-flow.md)

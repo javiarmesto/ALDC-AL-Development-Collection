@@ -16,8 +16,8 @@ The AL Development Collection provides multiple pathways from requirements to pr
 graph TD
     A[📄 Start: Requirements/Task] --> B{Have requirements<br/>document?}
     B -->|NO| CreateDoc[Create Documentation]
-    CreateDoc --> Doc1["@workspace use al-context.create"]
-    CreateDoc --> Doc2["@workspace use al-spec.create"]
+    CreateDoc --> Doc1["/al-context-create"]
+    CreateDoc --> Doc2["/al-spec-create"]
     
     B -->|YES| Analyze[🔍 Automatic Complexity Analysis]
     Doc1 --> Analyze
@@ -37,7 +37,7 @@ graph TD
     Gate -->|"✅ HIGH"| High["🔴 HIGH Complexity<br/>Architecture first"]
     
     Low --> LowOpt{Implementation<br/>approach?}
-    LowOpt -->|Workflows| LowWork["@workspace use<br/>al-events, al-pages, etc."]
+    LowOpt -->|Skills| LowWork["Knowledge skills<br/>skill-events, skill-pages, etc."]
     LowOpt -->|Direct code| LowDev["Use al-developer mode<br/>Direct implementation"]
     
     Med --> MedSpec{Specialized<br/>domain?}
@@ -134,7 +134,7 @@ graph TD
 
 **Recommended Path:**
 → `al-developer` mode (direct implementation)
-→ OR workflows (`@workspace use al-events`, `@workspace use al-pages`, etc.)
+→ The agent loads the knowledge skills the task needs (`skill-events`, `skill-pages`, etc.)
 → OR if debugging needed: `al-debugger` → `al-developer`
 
 ---
@@ -202,10 +202,10 @@ graph TD
 graph LR
     A[requirements.md] --> B{Choose Approach}
     
-    B -->|Option A| C[Workflows]
-    C --> C1["@workspace use al-events"]
-    C --> C2["@workspace use al-pages"]
-    C --> C3["@workspace use al-permissions"]
+    B -->|Option A| C[Knowledge skills]
+    C --> C1["skill-events"]
+    C --> C2["skill-pages"]
+    C --> C3["skill-permissions"]
     
     B -->|Option B| D[Use al-developer mode]
     D --> D1["Implement X following requirements.md"]
@@ -215,7 +215,7 @@ graph LR
     C3 --> E
     D1 --> E
     
-    E --> F["@workspace use al-pr-prepare"]
+    E --> F["/al-pr-prepare"]
     F --> G[Create PR]
     
     style A fill:#e1f5ff
@@ -225,10 +225,10 @@ graph LR
 ```
 
 **Agents/Workflows used**:
-- Optional: `@workspace use al-spec.create` (document first)
+- Optional: `/al-spec-create` (document first)
 - **Workflows**: `al-events`, `al-pages`, `al-permissions`, etc.
 - **OR Agent**: `al-developer` mode
-- Final: `@workspace use al-pr-prepare`
+- Final: `/al-pr-prepare`
 
 **Time**: 15-30 minutes
 
@@ -240,7 +240,7 @@ graph LR
 
 ```mermaid
 graph TD
-    A[requirements.md] --> B["@workspace use al-spec.create"]
+    A[requirements.md] --> B["/al-spec-create"]
     B --> B1["Creates spec.md: Object IDs, Integration points, Dependencies, Acceptance criteria"]
     B1 --> C[Feature.spec.md]
     C -->|"User reviews & approves"| D[Use al-conductor mode]
@@ -263,7 +263,7 @@ graph TD
     I -->|YES| H
     I -->|NO| J["Plan Complete: All objects created, Tests 100% passing, Quality gates passed"]
     
-    J --> K["@workspace use al-pr-prepare"]
+    J --> K["/al-pr-prepare"]
     K --> L[Create PR]
     
     style A fill:#e1f5ff
@@ -275,12 +275,12 @@ graph TD
 ```
 
 **Agents/Workflows used**:
-1. `@workspace use al-spec.create` - Document requirements
+1. `/al-spec-create` - Document requirements
 2. `Use al-conductor mode` - Orchestrate implementation
    - Delegates to `AL Planning Subagent` (research)
    - Delegates to `AL Implementation Subagent` (TDD)
    - Delegates to `AL Code Review Subagent` (QA)
-3. `@workspace use al-pr-prepare` - Finalize
+3. `/al-pr-prepare` - Finalize
 
 **Time**: 1-2 hours for complete feature with tests and docs
 
@@ -349,11 +349,11 @@ graph TD
     I --> J{Post-Implementation Issues?}
     
     J -->|"Issues found"| K1[Use al-debugger mode]
-    J -->|Performance| K2["@workspace use al-performance"]
+    J -->|Performance| K2["skill-performance"]
     J -->|Adjustments| K3[Use al-developer mode]
     J -->|"All good"| L
     
-    K1 --> L["@workspace use al-pr-prepare"]
+    K1 --> L["/al-pr-prepare"]
     K2 --> L
     K3 --> L
     
@@ -369,7 +369,7 @@ graph TD
         ├─ Phase 3: CRUD operations
         └─ Phase 4: Integration tests
     ↓
-@workspace use al-pr-prepare
+/al-pr-prepare
 ```
 
 **Key agents**: `al-api` (design) → `al-conductor` (implement)
@@ -386,12 +386,12 @@ graph TD
     B1 --> C[Use al-conductor mode]
     C --> C1[Implement with TDD]
     
-    C1 --> D1["Phase 1: Register capability (@workspace use al-copilot-capability)"]
-    D1 --> D2["Phase 2: PromptDialog page (@workspace use al-copilot-promptdialog)"]
+    C1 --> D1["Phase 1: Register capability (skill-copilot)"]
+    D1 --> D2["Phase 2: PromptDialog page (skill-copilot)"]
     D2 --> D3["Phase 3: Backend integration"]
-    D3 --> D4["Phase 4: AI testing (@workspace use al-copilot-test)"]
+    D3 --> D4["Phase 4: AI testing (skill-copilot)"]
     
-    D4 --> E["@workspace use al-pr-prepare"]
+    D4 --> E["/al-pr-prepare"]
     E --> F[Create PR]
     
     style A fill:#e1f5ff
@@ -412,10 +412,10 @@ graph TD
     B -->|YES| C["Use al-debugger mode (Analyze behavior and identify bottlenecks)"]
     B -->|NO| D
     
-    C --> D["@workspace use al-performance.triage"]
+    C --> D["skill-performance (quick triage)"]
     D --> D1[Quick static analysis]
     
-    D1 --> E["@workspace use al-performance"]
+    D1 --> E["skill-performance"]
     E --> E1["Deep profiling with CPU profile"]
     
     E1 --> F{Need refactoring?}
@@ -431,7 +431,7 @@ graph TD
     I1 --> J["Implement optimizations: Add SetLoadFields, Add early filtering, Optimize keys/indices, Verify no regressions"]
     I2 --> J
     
-    J --> K["@workspace use al-performance"]
+    J --> K["skill-performance"]
     K --> K1["Re-profile and confirm improvements"]
     
     style A fill:#f8d7da
@@ -441,7 +441,7 @@ graph TD
 ```     ├─ Optimize keys/indices
         └─ Verify no regressions
     ↓
-@workspace use al-performance (re-profile)
+skill-performance (re-profile)
     └─ Confirm improvements
 ```
 
@@ -460,7 +460,7 @@ graph TD
 
 ```bash
 # Step 1: Create specification
-@workspace use al-spec.create
+/al-spec-create
 # Input: FeatureName = "Sales Approval Workflow"
 # Output: /specs/sales-approval-workflow.spec.md
 
@@ -558,11 +558,11 @@ Use al-conductor mode
 # (All tests already passing from TDD)
 
 # Step 5: Performance check (if needed)
-@workspace use al-performance.triage
+Use al-developer mode: "Review performance"   # loads skill-performance
 # Quick check - no issues found
 
 # Step 6: Prepare pull request
-@workspace use al-pr-prepare
+/al-pr-prepare
 # Generates PR description from commits and plan
 # Output: PR template with checklist
 
@@ -590,7 +590,7 @@ Use al-conductor mode
 | **al-copilot** | None | User | AI feature design |
 | **al-tester** | None | User | Test strategy |
 | **al-debugger** | None | User | Issue analysis |
-| **al-spec.create** | None | User | Specification docs |
+| **al-spec-create** | None | User | Specification docs |
 | **al-initialize** | None | User | Environment setup |
 | **al-build** | None | User | Build & deploy |
 | **al-diagnose** | None | User | Debug issues |
@@ -646,8 +646,8 @@ Use al-conductor mode
 
 5. **Document as you go**
    - Orchestra generates documentation automatically
-   - Use al-context.create to update project context
-   - Use al-memory.create between sessions
+   - Use al-context-create to update project context
+   - Use al-memory-create between sessions
 
 ---
 
@@ -655,12 +655,12 @@ Use al-conductor mode
 
 ```bash
 # Environment Setup
-@workspace use al-initialize
+/al-initialize
 
 # Documentation
-@workspace use al-spec.create
-@workspace use al-context.create
-@workspace use al-memory.create
+/al-spec-create
+/al-context-create
+/al-memory-create
 
 # Design
 Use al-architect mode
@@ -674,15 +674,14 @@ Use al-developer mode      # Simple direct implementation
 
 # Diagnostics
 Use al-debugger mode
-@workspace use al-diagnose
-@workspace use al-performance.triage
-@workspace use al-performance
+Use al-triage mode         # Diagnose a symptom (read-only)
+Use al-developer mode      # Loads skill-debug and skill-performance as needed
 
 # Build & Deploy
-@workspace use al-build
+/al-build
 
 # Finalization
-@workspace use al-pr-prepare
+/al-pr-prepare
 ```
 
 ---

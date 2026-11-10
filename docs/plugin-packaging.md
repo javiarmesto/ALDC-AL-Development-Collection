@@ -105,8 +105,8 @@ Validation checks drift and exercises initialization from the extracted archive.
 | Surface | Distribution | Host requirements |
 | --- | --- | --- |
 | Chat | BC28/BC29 fixtures, force switching, custom target, receipts/recovery | VS Code discovery, full role loading and operation-specific AL capability |
-| Claude | 12 canonical roles/11 workflows; safe rules initialization; read-only SessionStart context for AL workspaces | Plugin reload, hook output injection, rules and full Conductor loading |
-| Copilot CLI | 12 canonical roles/11 workflows; independent generator, hashes and CLI initializer; no Claude hooks | Reinstall cached plugin, inspect `/agent` and skills, verify provenance and no shadowing |
+| Claude | 12 canonical roles/10 workflows; safe rules initialization; read-only SessionStart context for AL workspaces | Plugin reload, hook output injection, rules and full Conductor loading |
+| Copilot CLI | 12 canonical roles/10 workflows; independent generator, hashes and CLI initializer; no Claude hooks | Reinstall cached plugin, inspect `/agent` and skills, verify provenance and no shadowing |
 | Codex | 12 TOML profiles, one ALDC skill with full role/workflow/domain references; managed guidance and bootstrap | Restart host, inspect skills and instruction sources, invoke a bounded role and verify full body loading |
 
 Use either Codex plugin skill discovery or local bootstrap, never both in the same

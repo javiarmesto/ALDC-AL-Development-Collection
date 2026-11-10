@@ -41,11 +41,11 @@ graph TB
     end
 
     subgraph WORKFLOWS["6 Retained Workflows"]
-        W1[al-spec.create]
+        W1[al-spec-create]
         W2[al-build]
         W3[al-pr-prepare]
-        W4[al-context.create]
-        W5[al-memory.create]
+        W4[al-context-create]
+        W5[al-memory-create]
         W6[al-initialize]
     end
 
@@ -81,16 +81,16 @@ graph TB
 flowchart TD
     REQ[Requirement] --> CLASSIFY{Complexity?}
 
-    CLASSIFY -->|LOW| SPEC_LOW[al-spec.create]
+    CLASSIFY -->|LOW| SPEC_LOW[al-spec-create]
     SPEC_LOW --> DEV["@AL Implementation Specialist\nDirect Implementation"]
 
     CLASSIFY -->|MEDIUM/HIGH| ARCH["@AL Architecture & Design Specialist\nSolution Architect"]
     ARCH -->|Produces architecture.md| ARCH_DOC[(architecture.md)]
     ARCH --> DECOMPOSE{Decompose\ninto sub-requirements?}
 
-    DECOMPOSE -->|Yes| SPEC_A[al-spec.create\n→ spec-A.md]
-    DECOMPOSE -->|Yes| SPEC_B[al-spec.create\n→ spec-B.md]
-    DECOMPOSE -->|No| SPEC_SINGLE[al-spec.create\n→ spec.md]
+    DECOMPOSE -->|Yes| SPEC_A[al-spec-create\n→ spec-A.md]
+    DECOMPOSE -->|Yes| SPEC_B[al-spec-create\n→ spec-B.md]
+    DECOMPOSE -->|No| SPEC_SINGLE[al-spec-create\n→ spec.md]
 
     SPEC_A --> COND_A["@AL Development Conductor\nTDD Orchestration A"]
     SPEC_B --> COND_B["@AL Development Conductor\nTDD Orchestration B"]
@@ -183,8 +183,8 @@ graph TB
 
         subgraph REQ_A["{req_name}/"]
             ARCH_A["{req_name}.architecture.md\nFrom: @AL Architecture & Design Specialist"]
-            SPEC_A["{req_name}.spec.md\nFrom: al-spec.create"]
-            TP_A["{req_name}.test-plan.md\nFrom: al-spec.create or conductor"]
+            SPEC_A["{req_name}.spec.md\nFrom: al-spec-create"]
+            TP_A["{req_name}.test-plan.md\nFrom: al-spec-create or conductor"]
             PLAN_A["{req_name}-plan.md\nFrom: @AL Development Conductor Phase 1"]
             PH1["{req_name}-phase-1-complete.md"]
             PHN["{req_name}-phase-N-complete.md"]
@@ -199,7 +199,7 @@ graph TB
     end
 
     ARCH["@AL Architecture & Design Specialist"] -->|produces| ARCH_A
-    SPEC_WF["al-spec.create"] -->|produces| SPEC_A
+    SPEC_WF["al-spec-create"] -->|produces| SPEC_A
     SPEC_WF -->|produces| TP_A
     COND["@AL Development Conductor"] -->|produces| PLAN_A
     COND -->|produces| PH1

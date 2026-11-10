@@ -22,7 +22,7 @@ Choose the right agent for your task:
 
 | Intent | Agent | What it does |
 |--------|-------|-------------|
-| Specifying approved requirements/designs? | `@AL Spec Agent` through `al-spec.create` | Technical contracts; human approval before implementation |
+| Specifying approved requirements/designs? | `@AL Spec Agent` through `al-spec-create` | Technical contracts; human approval before implementation |
 | Designing, analyzing architecture, strategic decisions? | `@AL Architecture & Design Specialist` | Solution design, data modeling, integration strategy |
 | Implementing, coding, debugging, fixing? | `@AL Implementation Specialist` | Tactical implementation with full AL MCP tools |
 | Building a feature with TDD orchestration (plan → implement → review → commit)? | `@AL Development Conductor` | Orchestrates planning, implementation, and review subagents |
@@ -31,8 +31,8 @@ Choose the right agent for your task:
 ### Quick routing guide
 
 ```
-New feature (MEDIUM/HIGH)? → @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
-New feature (LOW)?         → al-spec.create → @AL Implementation Specialist
+New feature (MEDIUM/HIGH)? → @AL Architecture & Design Specialist → al-spec-create → @AL Development Conductor
+New feature (LOW)?         → al-spec-create → @AL Implementation Specialist
 Bug fix / debugging?       → @AL Implementation Specialist
 Architecture review?       → @AL Architecture & Design Specialist
 Full TDD cycle?            → @AL Development Conductor
@@ -41,24 +41,24 @@ Project estimation?        → @AL Pre-Sales & Project Estimation Specialist
 
 ## Workflows
 
-6 workflows available via `@workspace use [name]`:
+6 workflows available as slash commands (`/name`):
 
 | Workflow | When to use |
 |----------|-------------|
-| `al-spec.create` | Create functional-technical specifications before development |
+| `al-spec-create` | Create functional-technical specifications before development |
 | `al-build` | Build, package, and deploy extensions |
 | `al-pr-prepare` | Prepare pull requests with documentation and validation |
-| `al-memory.create` | Generate/update memory.md for session continuity |
-| `al-context.create` | Generate project context.md for AI assistants |
+| `al-memory-create` | Generate/update memory.md for session continuity |
+| `al-context-create` | Generate project context.md for AI assistants |
 | `al-initialize` | Complete environment and workspace setup |
 
 ### Usage
 
 ```
-@workspace use al-spec.create    # Create specification
-@workspace use al-build          # Build & deploy
-@workspace use al-pr-prepare     # Prepare PR
-@workspace use al-initialize     # Setup project
+/al-spec-create    # Create specification
+/al-build          # Build & deploy
+/al-pr-prepare     # Prepare PR
+/al-initialize     # Setup project
 ```
 
 ## Skills
@@ -132,13 +132,13 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 **MEDIUM / HIGH:**
 
 1. `@AL Architecture & Design Specialist` — Designs solution, creates `.github/plans/{req_name}/{req_name}.architecture.md`
-2. `@workspace use al-spec.create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (detailed blueprint: object IDs, procedure signatures, AL code)
+2. `/al-spec-create` — Reads architecture, generates `.github/plans/{req_name}/{req_name}.spec.md` (detailed blueprint: object IDs, procedure signatures, AL code)
 3. `@AL Development Conductor` — Reads spec + architecture from `.github/plans/{req_name}/`, orchestrates TDD: planning → implementation → review
-4. `@workspace use al-pr-prepare` — Prepares PR referencing the plan
+4. `/al-pr-prepare` — Prepares PR referencing the plan
 
 **LOW:**
 
-1. `@workspace use al-spec.create` — Generates `.github/plans/{req_name}/{req_name}.spec.md` directly from codebase
+1. `/al-spec-create` — Generates `.github/plans/{req_name}/{req_name}.spec.md` directly from codebase
 2. `@AL Implementation Specialist` — Implements directly using spec as blueprint
 
 ## Complexity-Based Tool Selection
@@ -146,13 +146,13 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 When a user provides requirements, assess complexity to route correctly:
 
 **LOW** — Limited scope, single phase, no integrations
-→ `al-spec.create` → `@AL Implementation Specialist` direct implementation
+→ `al-spec-create` → `@AL Implementation Specialist` direct implementation
 
 **MEDIUM** — 2-3 functional areas, internal integrations, conditional logic
-→ `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` TDD orchestration
+→ `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` TDD orchestration
 
 **HIGH** — Enterprise scope, 4+ phases, external integrations, complex workflows
-→ `@AL Architecture & Design Specialist` design first → `al-spec.create` → `@AL Development Conductor` implement
+→ `@AL Architecture & Design Specialist` design first → `al-spec-create` → `@AL Development Conductor` implement
 
 Present the assessment and wait for user confirmation before proceeding.
 
@@ -224,7 +224,7 @@ end;
 ### 2. Use the Right Tool
 
 - **Strategic questions** → Use agents (`@AL Architecture & Design Specialist`, `@AL Implementation Specialist`, etc.)
-- **Tactical tasks** → Use workflows (`@workspace use al-build`)
+- **Tactical tasks** → Use workflows (`/al-build`)
 - **Normal coding** → Let auto-applied instructions work in background
 
 ### 3. Trust the Auto-Instructions
@@ -274,14 +274,13 @@ ALDC-Core/
 │   ├── skill-performance/SKILL.md
 │   ├── skill-permissions/SKILL.md
 │   ├── skill-testing/SKILL.md
-│   └── skill-translate/SKILL.md
-├── prompts/                               # Workflows (6)
-│   ├── al-spec.create.prompt.md
-│   ├── al-build.prompt.md
-│   ├── al-pr-prepare.prompt.md
-│   ├── al-memory.create.prompt.md
-│   ├── al-context.create.prompt.md
-│   └── al-initialize.prompt.md
+│   ├── skill-translate/SKILL.md
+│   ├── al-spec-create/SKILL.md          # Workflow skills (slash commands)
+│   ├── al-build/SKILL.md
+│   ├── al-pr-prepare/SKILL.md
+│   ├── al-memory-create/SKILL.md
+│   ├── al-context-create/SKILL.md
+│   └── al-initialize/SKILL.md
 ├── docs/
 │   ├── framework/
 │   │   └── ALDC-Core-Spec-v1.1.md         # Normative specification
@@ -297,9 +296,9 @@ For agent development with AI Development Toolkit:
 - @AL Agent Builder — standalone agent builder (7-phase workflow)
 - skill-agent-task-patterns — 8 SDK integration patterns
 - skill-agent-instructions — instruction authoring framework
-- al-agent.create / al-agent.task / al-agent.instructions / al-agent.test — workflows
+- al-agent-create / al-agent-task / al-agent-instructions / al-agent-test — workflows
 
-Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Development Conductor
+Integrated mode: @AL Architecture & Design Specialist + al-spec-create + @AL Development Conductor
 (architect loads skill-agent-task-patterns for design decisions)
 
 ## Reference Documentation
@@ -336,7 +335,7 @@ Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Dev
 **Version**: 1.2.0
 **Last Updated**: 2026-05-18
 **Workspace**: AL Development for Business Central
-**Primitives**: 12 agents (including 3 subagents) + 16 skills + 11 prompts + 9 scoped instructions + Copilot entrypoint; 6 core workflows
+**Primitives**: 12 agents (including 3 subagents) + 16 skills + 10 workflow skills + 9 scoped instructions + Copilot entrypoint; 6 core workflows
 
 ## Optional BCQuality provider
 

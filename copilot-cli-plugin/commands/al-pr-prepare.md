@@ -1,5 +1,5 @@
 ---
-description: Prepare a clean, documented pull request draft for AL features or fixes with summary, testing notes, and checklist. ALDC workflow (Copilot prompt al-pr-prepare); invoke explicitly.
+description: Prepare a clean, documented pull request draft for AL features or fixes with summary, testing notes, and checklist. ALDC workflow skill al-pr-prepare; invoke explicitly.
 disable-model-invocation: true
 ---
 
@@ -49,7 +49,9 @@ disable-model-invocation: true
 
 # AL Pull Request Preparation
 
-Your goal is to prepare a **pull request draft** for the branch `<Branch from $ARGUMENTS>` summarizing all modifications, test evidence, and validation steps.
+Values in angle brackets come from the text typed after the command; ask for any that are missing.
+
+Your goal is to prepare a **pull request draft** for the branch `<Branch>` summarizing all modifications, test evidence, and validation steps.
 
 ## 🔒 Human Gate: Pre-PR Review
 
@@ -68,7 +70,7 @@ Your goal is to prepare a **pull request draft** for the branch `<Branch from $A
 
 Use `codebase` to analyze modifications:
 ```
-codebase: Compare <Branch from $ARGUMENTS> with main branch
+codebase: Compare <Branch> with main branch
 ```
 
 Use `githubRepo` to gather context:
@@ -107,7 +109,7 @@ Scan commit messages for:
 - Related to WORK-789
 
 **Identify Reviewers:**
-If `<Reviewer from $ARGUMENTS>` is specified, include in the draft.
+If `<Reviewer>` is specified, include in the draft.
 
 ### 3. Generate PR Draft
 
@@ -116,7 +118,7 @@ Create `/reports/pr-draft.md` with this structure:
 ```markdown
 # Pull Request: [Feature/Fix Title]
 
-**Branch:** `<Branch from $ARGUMENTS>`
+**Branch:** `<Branch>`
 **Target:** `main`
 **Author:** [Author Name]
 **Date:** [Current Date]
@@ -299,7 +301,7 @@ Create `/reports/pr-draft.md` with this structure:
 ## Reviewer Notes
 
 **Suggested Reviewers:**
-- <Reviewer from $ARGUMENTS> - [Reason]
+- <Reviewer> - [Reason]
 
 **Focus Areas:**
 1. [Area to review carefully]

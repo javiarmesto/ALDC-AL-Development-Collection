@@ -22,9 +22,9 @@ ALDC Core v1.1 reorganizes capabilities into composable modules (skills) while p
 
 ALDC Core is designed for this routing model:
 
-**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (design) → `al-spec.create` (technical spec) → `@AL Development Conductor` (orchestrated TDD: planning → implement → review) → HITL gates → delivery
+**MEDIUM/HIGH:** `@AL Architecture & Design Specialist` (design) → `al-spec-create` (technical spec) → `@AL Development Conductor` (orchestrated TDD: planning → implement → review) → HITL gates → delivery
 
-**LOW:** `al-spec.create` (technical spec) → `@AL Implementation Specialist` (direct implementation) → delivery
+**LOW:** `al-spec-create` (technical spec) → `@AL Implementation Specialist` (direct implementation) → delivery
 
 ## Definitions
 
@@ -104,11 +104,11 @@ The following agents are absorbed into the simplified model:
 
 To execute the Core flow, the toolkit **MUST** include:
 
-- **al-spec.create**: normalize requirements → `{req_name}.spec.md`
+- **al-spec-create**: normalize requirements → `{req_name}.spec.md`
 - **al-build**: verification, compilation, and packaging
 - **al-pr-prepare**: documentation and PR delivery
-- **al-context.create**: generate or update project context
-- **al-memory.create**: update the global `memory.md`
+- **al-context-create**: generate or update project context
+- **al-memory-create**: update the global `memory.md`
 - **al-initialize**: initial environment setup, used infrequently
 
 ### Workflows Removed from v1.0
@@ -266,7 +266,7 @@ Agents and humans **SHOULD** update `memory.md` at every significant handoff.
 | Agent / Workflow | Role | Produces |
 |------------------|------|----------|
 | `@AL Architecture & Design Specialist` | Solution Architect: designs the solution, data flows, and strategic decisions | `.github/plans/{req_name}/{req_name}.architecture.md` |
-| `al-spec.create` | Detailed technical spec: reads `architecture.md` and generates an implementable blueprint with IDs, signatures, and AL code | `.github/plans/{req_name}/{req_name}.spec.md` |
+| `al-spec-create` | Detailed technical spec: reads `architecture.md` and generates an implementable blueprint with IDs, signatures, and AL code | `.github/plans/{req_name}/{req_name}.spec.md` |
 | `@AL Development Conductor` | TDD orchestrator: reads spec + architecture and coordinates planning → implement → review | implementation + `.github/plans/{req_name}/{req_name}.test-plan.md` |
 | `@AL Implementation Specialist` | Direct tactical implementation: reads the spec, without orchestrated TDD | implementation |
 
@@ -277,20 +277,20 @@ Agents and humans **SHOULD** update `memory.md` at every significant handoff.
 1. Assign `{req_name}` in kebab-case.
 2. `@AL Architecture & Design Specialist` generates `.github/plans/{req_name}/{req_name}.architecture.md` with the approved design.
    - ⚠️ **GATE**: architecture must be approved before continuing
-3. `@workspace use al-spec.create` reads `architecture.md` and the codebase, then generates `.github/plans/{req_name}/{req_name}.spec.md`
+3. `/al-spec-create` reads `architecture.md` and the codebase, then generates `.github/plans/{req_name}/{req_name}.spec.md`
    - Technical spec includes object IDs, field types, procedure signatures, and Given/When/Then tests
    - ⚠️ **GATE**: spec must be approved before implementation
 4. Update the global `memory.md` with the requirement context.
 5. `@AL Development Conductor` orchestrates the TDD cycle from `.github/plans/{req_name}/`:
    - planning-subagent (research) → implement-subagent (TDD) → review-subagent (review)
    - ⚠️ **GATE**: human validation for each phase
-6. Delivery → `@workspace use al-pr-prepare` → update `memory.md`
+6. Delivery → `/al-pr-prepare` → update `memory.md`
 7. Archive the completed set in `archive/` if desired
 
 #### LOW (without formal architecture)
 
 1. Assign `{req_name}` in kebab-case.
-2. `@workspace use al-spec.create` generates `.github/plans/{req_name}/{req_name}.spec.md` directly from the codebase
+2. `/al-spec-create` generates `.github/plans/{req_name}/{req_name}.spec.md` directly from the codebase
    - ⚠️ **GATE**: spec must be approved before implementation
 3. Update the global `memory.md`
 4. `@AL Implementation Specialist` implements directly using the spec as a blueprint

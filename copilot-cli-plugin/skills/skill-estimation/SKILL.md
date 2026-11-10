@@ -278,4 +278,4 @@ Consolidate estimation into a financial summary:
 - Do NOT build, compile, or deploy code — estimation only
 - Do NOT modify production source code — analysis and documentation only
 - Do NOT skip the SWOT analysis for any project — risk awareness is mandatory
-- Architecture design → al-architect agent | Technical specifications → al-spec.create workflow | Implementation → al-conductor agent
+- Architecture design → al-architect agent | Technical specifications → al-spec-create workflow | Implementation → al-conductor agent

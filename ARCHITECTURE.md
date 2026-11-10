@@ -8,7 +8,7 @@
 
 | Tree | Role |
 |------|------|
-| `agents/`, `skills/`, `instructions/`, `prompts/` | **Canonical primitives** (GitHub Copilot format: `.agent.md`, `applyTo` globs). Every other surface derives from here. |
+| `agents/`, `skills/`, `instructions/` | **Canonical primitives** (GitHub Copilot format: `.agent.md`, `SKILL.md`, `applyTo` globs). Workflows are skills invoked as slash commands; prompt files are no longer shipped. Every other surface derives from here. |
 | `docs/` | Source of the public website (MkDocs). |
 | `docs/framework/ALDC-Core-Spec-*.md` | Normative specification. |
 | `aldc.yaml`, `collections/al-development.collection.yml` | Manifests: what the framework contains and ships. |
@@ -30,7 +30,7 @@
    extension folder) copies `packages/foundation/` primitives into the VSIX;
    target state: copy pinned to a release tag, with a root↔foundation drift check
    in CI so the VSIX can never ship content that diverged from the canonical trees.
-2. **`npx aldc install`** (`scripts/install.js`, npm package `al-development-collection`) —
+2. **`npx --no aldc install`** (`scripts/install.js`, from a checkout or a local `.tgz`; the npm registry copy is deprecated) —
    copies canonical root trees into a consuming AL project.
 3. **Claude Code plugin** (`claude-plugin/` + `.claude-plugin/marketplace.json`) — reaches
    the non-VS Code audience.

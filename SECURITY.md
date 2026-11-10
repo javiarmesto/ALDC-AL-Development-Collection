@@ -59,7 +59,7 @@ When using this collection:
 
 This security policy applies to:
 - All instruction files (`.instructions.md`)
-- All agentic workflows (`.prompt.md`)
+- All agentic workflows and skills (`skills/*/SKILL.md`)
 - All agents (`.agent.md`)
 - Collection manifest files
 - Validation scripts

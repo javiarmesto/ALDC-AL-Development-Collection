@@ -1,5 +1,5 @@
 ---
-description: Generate or update context.md file documenting project structure, architecture, and key patterns for AI assistants and developers. ALDC workflow (Copilot prompt al-context.create); invoke explicitly.
+description: Generate or update context.md file documenting project structure, architecture, and key patterns for AI assistants and developers. ALDC workflow skill al-context-create; invoke explicitly.
 disable-model-invocation: true
 ---
 

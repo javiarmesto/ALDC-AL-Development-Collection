@@ -24,7 +24,7 @@ Describe your proposed solution:
 ### Agent Primitive Type
 
 - [ ] New Instruction (`.instructions.md`)
-- [ ] New Agentic Workflow (`.prompt.md`)
+- [ ] New Agentic Workflow (workflow skill, `skills/al-*/SKILL.md`)
 - [ ] New Agent (`.agent.md`)
 - [ ] Enhancement to existing primitive
 - [ ] Other (please specify)
@@ -75,7 +75,7 @@ How would users interact with this feature?
 
 ```markdown
 Example interaction:
-@workspace use [new-primitive-name]
+/[new-primitive-name]
 
 Expected output...
 ```

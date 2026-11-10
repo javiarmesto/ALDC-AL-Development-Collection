@@ -23,7 +23,7 @@ From a clone, register this directory as a local marketplace:
 ```
 
 Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 12 agents,
-9 role entry skills, 11 workflow skills and
+9 role entry skills, 10 workflow skills and
 16 knowledge skills, all prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local
 verification; installation certifies none of them.
@@ -48,7 +48,7 @@ claude-plugin/
 ├── .claude-plugin/marketplace.json # marketplace entry
 ├── agents/                         # 12 agent contracts
 ├── skills/<role>/                  # 9 short role entry skills
-├── skills/<workflow>/              # 11 explicit workflow skills
+├── skills/<workflow>/              # 10 explicit workflow skills
 ├── skills/skill-*/                 # 16 knowledge skills
 ├── rules/                          # 8 path-scoped AL rules
 ├── docs/templates/                 # requirement artifact templates

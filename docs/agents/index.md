@@ -253,9 +253,8 @@ Implement email validation on Customer table extension:
 - Investigating intermittent issues
 
 **Recommends Workflows**:
-- `al-diagnose.prompt.md`
-- `al-performance.prompt.md`
-- `al-performance.triage.prompt.md`
+- `skill-debug` (knowledge skill)
+- `skill-performance` (knowledge skill)
 
 **Example**:
 ```markdown

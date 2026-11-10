@@ -1,7 +1,7 @@
 # AL Spec Agent
 
 AL Spec Agent turns approved Business Central requirements into technical contracts
-before implementation. The `al-spec.create` entrypoint uses this same role.
+before implementation. The `al-spec-create` entrypoint uses this same role.
 
 For MEDIUM/HIGH work: Architect → Spec Agent → human approval → Conductor.
 For LOW work: approved requirement → Spec Agent → human approval → Developer.
@@ -40,9 +40,9 @@ The canonical role is `agents/al-spec-agent.agent.md`. Foundation and the Claude
 Copilot CLI and Codex adapters are generated from the canonical sources. Relative
 references are adapted to the installed host layout.
 
-In Copilot Chat, prompt files require a session type that supports them. If the host
-does not expose the prompt, use its supported direct custom-agent entrypoint and
-verify discovery. Do not infer host loading from file presence. Doctor recognizes
+In Copilot Chat the entrypoint is the `/al-spec-create` workflow skill, which both
+the Local and Copilot harnesses load (Copilot sessions do not load prompt files).
+If the host does not expose it, select AL Spec Agent directly and verify discovery. Do not infer host loading from file presence. Doctor recognizes
 legacy installations and reports a missing role linked by a newer entrypoint.
 
 ## Architecture-led specification decomposition

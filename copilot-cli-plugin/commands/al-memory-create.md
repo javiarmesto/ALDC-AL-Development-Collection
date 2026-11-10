@@ -1,5 +1,5 @@
 ---
-description: Generate or update memory.md file tracking decisions, changes, and learnings throughout project development for continuity across sessions. ALDC workflow (Copilot prompt al-memory.create); invoke explicitly.
+description: Generate or update memory.md file tracking decisions, changes, and learnings throughout project development for continuity across sessions. ALDC workflow skill al-memory-create; invoke explicitly.
 disable-model-invocation: true
 ---
 

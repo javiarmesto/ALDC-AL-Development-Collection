@@ -28,7 +28,8 @@ change that affects the development workspace.
 ## Source and adapter ownership
 
 Agents, workflows, knowledge skills and rules come directly from `agents/`,
-`prompts/`, `skills/` and `instructions/`. CLI and Codex neither read
+`skills/` (workflows are the `al-*` skills listed in `scripts/workflows.js`) and
+`instructions/`. CLI and Codex neither read
 `claude-plugin/` nor import another host's generator. Their generated bodies,
 bootstrap behavior and MCP guidance preserve the integrated baseline. CLI Planning
 loses edit, execute and delegation permissions that contradicted its canonical

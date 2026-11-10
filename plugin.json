@@ -1,6 +1,6 @@
 {
   "name": "aldc",
-  "version": "5.2.1",
+  "version": "5.3.0",
   "description": "AI-Native AL Development Collection for Microsoft Dynamics 365 Business Central. Agents (architect, developer, conductor, pre-sales, agent-builder, triage, dredd) + TDD subagents, skills, and workflows for extension-only development with TDD, BCQuality-cited review/audit, event-driven architecture, and HITL gates.",
   "author": {
     "name": "javiarmesto",
@@ -25,7 +25,6 @@
   ],
   "agents": "agents/",
   "skills": "skills/",
-  "commands": "prompts/",
   "mcpServers": {
     "al-symbols-mcp": {
       "type": "stdio",

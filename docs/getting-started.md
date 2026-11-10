@@ -14,8 +14,7 @@ After installing the VS Code toolkit, the following directories hold the project
 .github/
   agents/          Specialist agents and internal subagents
   instructions/    Scoped coding standards
-  prompts/         Development workflows
-  skills/          Reusable domain skills
+  skills/          Reusable domain skills and workflow skills (/al-*)
   plans/
     memory.md      Global memory (append-only, cross-session context)
   docs/
@@ -42,7 +41,7 @@ Read the reported missing components, errors and warnings for your installed ver
 ### Step 1: Create a spec
 
 ```text
-@workspace use al-spec.create
+/al-spec-create
 
 "I need to add a Loyalty Points field to the Customer table,
 incremented on each posted sales order."
@@ -73,8 +72,8 @@ Then:
 ### Step 3: Follow the flow
 
 ```text
-LOW:      al-spec.create -> @AL Implementation Specialist
-MED/HIGH: @AL Architecture & Design Specialist -> al-spec.create -> @AL Development Conductor
+LOW:      al-spec-create -> @AL Implementation Specialist
+MED/HIGH: @AL Architecture & Design Specialist -> al-spec-create -> @AL Development Conductor
 ```
 
 The conductor enforces TDD through subagents:
@@ -98,12 +97,12 @@ The conductor enforces TDD through subagents:
 
 | Workflow | Invoke with |
 |----------|-------------|
-| Create spec | `@workspace use al-spec.create` |
-| Build/deploy | `@workspace use al-build` |
-| Prepare PR | `@workspace use al-pr-prepare` |
-| Update memory | `@workspace use al-memory.create` |
-| Generate context | `@workspace use al-context.create` |
-| Initialize project | `@workspace use al-initialize` |
+| Create spec | `/al-spec-create` |
+| Build/deploy | `/al-build` |
+| Prepare PR | `/al-pr-prepare` |
+| Update memory | `/al-memory-create` |
+| Generate context | `/al-context-create` |
+| Initialize project | `/al-initialize` |
 
 ## Composable skills
 

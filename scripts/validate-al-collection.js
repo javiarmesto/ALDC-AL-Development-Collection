@@ -145,11 +145,12 @@ function validateCollectionManifest(manifest, manifestPath) {
 function validateCollectionItems(manifest) {
   log('\n📁 Validating Collection Items...', 'cyan');
   
-  const validKinds = ['instruction', 'prompt', 'agent'];
+  const validKinds = ['instruction', 'prompt', 'agent', 'skill'];
   const itemsByKind = {
     'instruction': 0,
     'prompt': 0,
-    'agent': 0
+    'agent': 0,
+    'skill': 0
   };
   
   manifest.items.forEach((item, index) => {
@@ -193,6 +194,11 @@ function validateCollectionItems(manifest) {
           addWarning(`Item ${itemNum}: Prompt file should end with .prompt.md: ${item.path}`);
         }
         break;
+      case 'skill':
+        if (!/(^|\/)skills\/[^/]+\/SKILL\.md$/.test(item.path)) {
+          addError(`Item ${itemNum}: Skill must be skills/<name>/SKILL.md: ${item.path}`);
+        }
+        break;
       case 'agent':
         if (!item.path.endsWith('.agent.md')) {
           addWarning(`Item ${itemNum}: Agent file should end with .agent.md: ${item.path}`);
@@ -202,7 +208,11 @@ function validateCollectionItems(manifest) {
     
     // Validate frontmatter
     const frontmatter = readFrontmatter(item.path);
-    if (!frontmatter) {
+    const isMapping = frontmatter && typeof frontmatter === 'object' && !Array.isArray(frontmatter);
+    if (item.kind === 'skill' && !isMapping) {
+      // A host cannot discover a skill without a parseable name, so this is not cosmetic.
+      addError(`Item ${itemNum}: Skill has missing or unparseable frontmatter: ${item.path}`);
+    } else if (!frontmatter) {
       addWarning(`Item ${itemNum}: No frontmatter found in ${item.path}`);
     } else {
       // Check for description
@@ -230,6 +240,16 @@ function validateCollectionItems(manifest) {
         }
       }
       
+      if (item.kind === 'skill') {
+        // VS Code silently skips a skill whose name is invalid or differs from its folder.
+        const folder = path.basename(path.dirname(item.path));
+        if (!frontmatter.name) {
+          addError(`Item ${itemNum}: Skill missing 'name' in frontmatter: ${item.path}`);
+        } else if (frontmatter.name !== folder || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(frontmatter.name) || frontmatter.name.length > 64) {
+          addError(`Item ${itemNum}: Skill name '${frontmatter.name}' must match its folder and use only lowercase letters, digits and hyphens: ${item.path}`);
+        }
+      }
+
       if (item.kind === 'agent') {
         if (!frontmatter.tools) {
           addWarning(`Item ${itemNum}: Agent missing 'tools' in frontmatter: ${item.path}`);

@@ -51,15 +51,15 @@ patterns, rules, and AL-specific guidance for its domain.
 
 ### Workflows (6)
 
-Invoke with `@workspace use [workflow-name]`:
+Invoke as a slash command, `/[workflow-name]`:
 
 | Workflow | Purpose |
 |----------|---------|
-| `al-spec.create` | Generate technical blueprint (spec.md) from requirement |
+| `al-spec-create` | Generate technical blueprint (spec.md) from requirement |
 | `al-build` | Build, package, publish operations |
 | `al-pr-prepare` | Pull request preparation |
-| `al-memory.create` | Generate/update memory.md for session continuity |
-| `al-context.create` | Generate project context for AI assistants |
+| `al-memory-create` | Generate/update memory.md for session continuity |
+| `al-context-create` | Generate project context for AI assistants |
 | `al-initialize` | Environment and workspace setup |
 
 ### Instructions (9 auto-applied)
@@ -82,10 +82,10 @@ Coding standards that apply automatically via `applyTo` patterns:
 
 ```
 LOW complexity:
-  al-spec.create -> @AL Implementation Specialist
+  al-spec-create -> @AL Implementation Specialist
 
 MEDIUM/HIGH complexity:
-  @AL Architecture & Design Specialist -> al-spec.create -> @AL Development Conductor
+  @AL Architecture & Design Specialist -> al-spec-create -> @AL Development Conductor
 ```
 
 ### TDD Orchestration (conductor)
@@ -106,7 +106,7 @@ The conductor enforces Test-Driven Development through subagents:
 
 Each requirement produces a contract set in `.github/plans/`:
 
-- `{req_name}.spec.md` — Technical blueprint (from al-spec.create)
+- `{req_name}.spec.md` — Technical blueprint (from al-spec-create)
 - `{req_name}.architecture.md` — Solution design (from @AL Architecture & Design Specialist)
 - `{req_name}.test-plan.md` — Test strategy
 - `memory.md` — Global context across sessions (append-only)
@@ -128,13 +128,13 @@ Patterns applied:
 2. Open your AL project
 3. Run: `AL Collection: Install Toolkit to Workspace`
 4. Validate: `node .github/tools/aldc-validate/index.js --config aldc.yaml`
-5. Start with: `@workspace use al-spec.create` with your requirement
+5. Start with: `/al-spec-create` with your requirement
 6. Follow the guided flow
 
 ### For LOW Complexity
 
 ```
-@workspace use al-spec.create
+/al-spec-create
 -> generates {req_name}.spec.md
 -> @AL Implementation Specialist implements directly
 ```
@@ -143,7 +143,7 @@ Patterns applied:
 
 ```
 @AL Architecture & Design Specialist -> designs architecture
--> @workspace use al-spec.create -> generates spec
+-> /al-spec-create -> generates spec
 -> @AL Development Conductor -> TDD orchestration with subagents
 -> Each phase: RED -> GREEN -> REFACTOR -> HITL approval
 -> Final review + delivery
@@ -155,19 +155,19 @@ Patterns applied:
 
 ```
 1. @AL Architecture & Design Specialist -> Design solution architecture
-2. @workspace use al-spec.create -> Generate technical spec
+2. /al-spec-create -> Generate technical spec
 3. @AL Development Conductor -> TDD orchestration
    - Planning: context research
    - Phase 1-N: implement + review per phase
    - Each phase: HITL gate
-4. @workspace use al-pr-prepare -> Prepare PR
+4. /al-pr-prepare -> Prepare PR
 ```
 
 ### Quick Fix (LOW)
 
 ```
 1. @AL Implementation Specialist -> Direct implementation
-2. @workspace use al-build -> Deploy
+2. /al-build -> Deploy
 ```
 
 ### Debugging
@@ -175,7 +175,7 @@ Patterns applied:
 ```
 1. @AL Implementation Specialist with skill-debug -> Systematic diagnosis
 2. Fix implementation
-3. @workspace use al-build -> Deploy
+3. /al-build -> Deploy
 ```
 
 ## Validation
@@ -196,8 +196,7 @@ After installation, your workspace has:
 .github/
   agents/          (4 public + 3 subagents)
   instructions/    (9 files)
-  prompts/         (6 workflows)
-  skills/          (11 composable skills)
+  skills/          (16 knowledge skills + 10 workflow skills)
   plans/
     memory.md      (global memory template)
   docs/

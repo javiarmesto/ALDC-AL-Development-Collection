@@ -27,6 +27,26 @@ Skills follow the GitHub Copilot Agent Skills structure (`skills/{skill-name}/SK
 | [skill-translate](skill-translate/SKILL.md) | XLF, multi-language | developer |
 | [skill-estimation](skill-estimation/SKILL.md) | Project estimation, SWOT | presales |
 
+## Workflow skills (invoked explicitly)
+
+Workflows that used to ship as `.prompt.md` files. Each one sets
+`disable-model-invocation: true`, so it runs only when you type its slash
+command, for example `/al-spec-create`. Text typed after the command is passed
+to the workflow.
+
+| Skill | Purpose |
+|-------|---------|
+| [al-spec-create](al-spec-create/SKILL.md) | Create or revise the technical specification through AL Spec Agent |
+| [al-build](al-build/SKILL.md) | Build and package AL extensions |
+| [al-pr-prepare](al-pr-prepare/SKILL.md) | Prepare a pull request draft |
+| [al-memory-create](al-memory-create/SKILL.md) | Create or update `memory.md` |
+| [al-context-create](al-context-create/SKILL.md) | Create or update `context.md` |
+| [al-initialize](al-initialize/SKILL.md) | Set up the AL environment and workspace |
+| [al-agent-create](al-agent-create/SKILL.md) | Create a coded Business Central agent (Agent SDK) |
+| [al-agent-task](al-agent-task/SKILL.md) | Generate Agent SDK task integration code |
+| [al-agent-instructions](al-agent-instructions/SKILL.md) | Write agent instructions |
+| [al-agent-test](al-agent-test/SKILL.md) | Generate Agent SDK test codeunits |
+
 ## Creating New Skills
 
 1. Create folder `skills/skill-{domain}/`

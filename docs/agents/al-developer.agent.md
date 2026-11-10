@@ -54,7 +54,7 @@ Tactical implementation specialist that **executes and codes** Business Central 
 ## Workflow position
 
 ```
-al-spec.create (SPEC) → al-developer (IMPLEMENT)     # LOW complexity
+al-spec-create (SPEC) → al-developer (IMPLEMENT)     # LOW complexity
 al-conductor → al-developer (via subagent)             # MEDIUM/HIGH
 ```
 

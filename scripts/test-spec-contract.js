@@ -12,23 +12,27 @@ const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 let checks = 0;
 function check(value, label) { assert.ok(value, label); checks++; }
 const agent = split(read('agents/al-spec-agent.agent.md'));
-const prompt = split(read('prompts/al-spec.create.prompt.md'));
-check(prompt.data.agent === agent.data.name, 'Chat prompt selects registered role name');
-check(!prompt.data.model, 'Prompt does not override host model selection');
+// The Spec workflow is an explicitly invoked skill. Skills cannot select an agent,
+// so its body routes to the Spec role contract instead of the old `agent:` field.
+const workflow = split(read('skills/al-spec-create/SKILL.md'));
+check(workflow.data.name === 'al-spec-create' && workflow.data['disable-model-invocation'] === true, 'Spec workflow is an explicit-only skill');
+check(!workflow.data.model && !workflow.data.agent && !workflow.data.tools, 'Spec workflow declares no model, agent or tools');
+check(workflow.body.includes('`al-spec-agent`') && workflow.body.includes('](../../agents/al-spec-agent.agent.md)'), 'Spec workflow routes to the Spec role contract');
 for (const handoff of agent.data.handoffs) {
   check(handoff.send === false, 'Forward handoff is not automatically submitted');
 }
-for (const source of ['agents/al-spec-agent.agent.md', 'prompts/al-spec.create.prompt.md']) {
+for (const source of ['agents/al-spec-agent.agent.md', 'skills/al-spec-create/SKILL.md']) {
   for (const profile of ['bc28', 'bc29-native']) {
     const doc = split(profile === 'bc28' ? read(source) : project(source, Buffer.from(read(source))).toString());
+    if (source.startsWith('skills/')) { check(doc.data.tools === undefined, `${profile} workflow skill adds no tools`); continue; }
     check(doc.data.tools.some(t => t.startsWith('edit/')), `${profile} can author the spec`);
     check(!doc.data.tools.some(t => /execute|rename|al_build|al_download|al_debug|publish|runCommand/i.test(t)), `${profile} has no execution, setup or AL rename grant`);
   }
 }
 const { resolveRef, refsIn } = require('./surface-refs');
 const surfaces = [
-  ['prompts/al-spec.create.prompt.md', 'agents/al-spec-agent.agent.md'],
-  ['packages/foundation/prompts/al-spec.create.prompt.md', 'packages/foundation/agents/al-spec-agent.agent.md'],
+  ['skills/al-spec-create/SKILL.md', 'agents/al-spec-agent.agent.md'],
+  ['packages/foundation/skills/al-spec-create/SKILL.md', 'packages/foundation/agents/al-spec-agent.agent.md'],
   // ALDC workflows are explicitly invoked skills in the Claude Code plugin.
   ['claude-plugin/skills/al-spec-create/SKILL.md', 'claude-plugin/agents/al-spec-agent.md'],
   ['copilot-cli-plugin/commands/al-spec-create.md', 'copilot-cli-plugin/agents/al-spec-agent.agent.md'],

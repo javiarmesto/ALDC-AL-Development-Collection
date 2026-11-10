@@ -12,8 +12,8 @@
 ├── memory.md                              # Global context (all agents read/update)
 └── {req_name}/                            # Per-requirement subdirectory
     ├── {req_name}.architecture.md         # Architecture design (@AL Architecture & Design Specialist)
-    ├── {req_name}.spec.md                 # Technical spec (al-spec.create)
-    ├── {req_name}.test-plan.md            # Test strategy (al-spec.create or conductor)
+    ├── {req_name}.spec.md                 # Technical spec (al-spec-create)
+    ├── {req_name}.test-plan.md            # Test strategy (al-spec-create or conductor)
     ├── {req_name}-plan.md                 # Execution plan (@AL Development Conductor Phase 1)
     ├── {req_name}-phase-1-complete.md     # Phase completion (@AL Development Conductor)
     ├── {req_name}-phase-N-complete.md
@@ -72,7 +72,7 @@ After completing architectural design, create `.github/plans/<feature>-arch.md`:
 - Performance considerations
 
 ## Next Steps
-Recommended to proceed with: al-conductor mode OR @workspace use al-spec.create
+Recommended to proceed with: al-conductor mode OR /al-spec-create
 ```
 
 **Reads**:
@@ -251,7 +251,7 @@ Proceed with: al-conductor mode (structured TDD) OR al-developer mode
 - AI processing codeunit
 
 ## Next Steps
-Proceed with: @workspace use al-copilot-capability OR al-conductor mode
+Proceed with: al-conductor mode (loads skill-copilot)
 ```
 
 **Reads**:
@@ -266,7 +266,7 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
 
 **Reads**:
 - `.github/context/architecture/<feature>-arch.md` (if from al-architect)
-- `.github/specs/<feature>.spec.md` (if from al-spec.create)
+- `.github/specs/<feature>.spec.md` (if from al-spec-create)
 - `.github/testing/<feature>-test-plan.md` (if from al-tester)
 - `.github/api/<endpoint>-design.md` (if from al-api)
 
@@ -350,7 +350,7 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
 |-----------|---------|---------|----------|
 | Architecture | al-architect | Manual (ADR) | Never (reference) |
 | Plans | al-conductor | Never | After 6 months |
-| Specs | al-spec.create | Manual | When superseded |
+| Specs | al-spec-create | Manual | When superseded |
 | Debug | al-debugger | Never | After issue closed |
 | Testing | al-tester | al-tester (coverage) | After feature complete |
 | API | al-api | Manual (version updates) | When deprecated |
@@ -368,21 +368,21 @@ Proceed with: @workspace use al-copilot-capability OR al-conductor mode
 
 ### For Users
 
-1. **Run `@workspace use al-context.create`** at project start
-2. **Update `session-memory.md`** via `@workspace use al-memory.create` periodically
+1. **Run `/al-context-create`** at project start
+2. **Update `session-memory.md`** via `/al-memory-create` periodically
 3. **Review architecture files** before major changes
 4. **Archive completed plans** to keep directory clean
 5. **Use specs for clear object structure** before implementation
 
 ## Integration with Workflows
 
-### al-spec.create workflow
+### al-spec-create workflow
 Creates: `.github/specs/<feature>.spec.md`
 
-### al-context.create workflow
+### al-context-create workflow
 Creates: `.github/context/project-context.md`
 
-### al-memory.create workflow
+### al-memory-create workflow
 Creates/Updates: `.github/context/session-memory.md`
 
 ## Version History

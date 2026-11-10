@@ -1,1 +1,1 @@
---8<-- "prompts/al-memory.create.prompt.md:8"
+--8<-- "skills/al-memory-create/SKILL.md:8"

@@ -1,5 +1,5 @@
 ---
-description: Initialize AL development environment and workspace for Business Central. ALDC workflow (Copilot prompt al-initialize); invoke explicitly.
+description: Initialize AL development environment and workspace for Business Central. ALDC workflow skill al-initialize; invoke explicitly.
 disable-model-invocation: true
 ---
 
@@ -49,7 +49,9 @@ disable-model-invocation: true
 
 # AL Environment Initialization
 
-Your goal is to initialize the AL development environment and workspace for `<ProjectName from $ARGUMENTS>`.
+Values in angle brackets come from the text typed after the command; ask for any that are missing.
+
+Your goal is to initialize the AL development environment and workspace for `<ProjectName>`.
 
 This workflow configures Copilot CLI and the approved AL project. Bootstrap alone adds no AL sources or manifest; project scaffolding below requires its own approved scope.
 
@@ -190,7 +192,7 @@ reviewed project scaffolding through file tools
 Implement feature-based organization:
 
 ```
-<ProjectName from $ARGUMENTS>/
+<ProjectName>/
 ├── .vscode/
 │   ├── settings.json          # Workspace settings
 │   └── launch.json            # Debug configurations
@@ -275,7 +277,7 @@ TestResults/
 Create comprehensive `README.md`:
 
 ```markdown
-# <ProjectName from $ARGUMENTS>
+# <ProjectName>
 
 ## Overview
 [Project purpose and business value]

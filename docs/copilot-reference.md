@@ -72,7 +72,7 @@ end;
 ### 2. Use the Right Tool
 
 - **Strategic questions** → Use agents (`@AL Architecture & Design Specialist`, `@AL Implementation Specialist`, etc.)
-- **Tactical tasks** → Use workflows (`@workspace use al-build`)
+- **Tactical tasks** → Use workflows (`/al-build`)
 - **Normal coding** → Let auto-applied instructions work in background
 
 ### 3. Trust the Auto-Instructions
@@ -122,14 +122,13 @@ ALDC-Core/
 │   ├── skill-performance/SKILL.md
 │   ├── skill-permissions/SKILL.md
 │   ├── skill-testing/SKILL.md
-│   └── skill-translate/SKILL.md
-├── prompts/                               # Workflows (6)
-│   ├── al-spec.create.prompt.md
-│   ├── al-build.prompt.md
-│   ├── al-pr-prepare.prompt.md
-│   ├── al-memory.create.prompt.md
-│   ├── al-context.create.prompt.md
-│   └── al-initialize.prompt.md
+│   ├── skill-translate/SKILL.md
+│   ├── al-spec-create/SKILL.md            # Workflow skills (slash commands)
+│   ├── al-build/SKILL.md
+│   ├── al-pr-prepare/SKILL.md
+│   ├── al-memory-create/SKILL.md
+│   ├── al-context-create/SKILL.md
+│   └── al-initialize/SKILL.md
 ├── docs/
 │   ├── framework/
 │   │   └── ALDC-Core-Spec-v1.1.md         # Normative specification
@@ -145,9 +144,9 @@ For agent development with AI Development Toolkit:
 - @AL Agent Builder — standalone agent builder (7-phase workflow)
 - skill-agent-task-patterns — 8 SDK integration patterns
 - skill-agent-instructions — instruction authoring framework
-- al-agent.create / al-agent.task / al-agent.instructions / al-agent.test — workflows
+- al-agent-create / al-agent-task / al-agent-instructions / al-agent-test — workflows
 
-Integrated mode: @AL Architecture & Design Specialist + al-spec.create + @AL Development Conductor
+Integrated mode: @AL Architecture & Design Specialist + al-spec-create + @AL Development Conductor
 (architect loads skill-agent-task-patterns for design decisions)
 
 ## Reference Documentation

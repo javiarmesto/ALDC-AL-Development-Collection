@@ -5,13 +5,13 @@
 ## Overview
 
 AL (Application Language) workspace for Microsoft Dynamics 365 Business Central.
-Architecture: **ALDC Core v1.2** — 13 agents (5 core + 3 on-demand + 4 subagents + 1 extension) + 16 skills + 11 workflows + 9 instructions.
+Architecture: **ALDC Core v1.2** — 13 agents (5 core + 3 on-demand + 4 subagents + 1 extension) + 16 skills + 10 workflows + 9 instructions.
 
 ## Core Principles
 
 - **Extension-only development** — Never modify base application objects. Use tableextensions, pageextensions, event subscribers.
 - **Human-in-the-Loop (HITL)** — All critical decisions require user confirmation before proceeding.
-- **TDD / spec-driven** — Features follow: `architecture (MEDIUM/HIGH)` -> `al-spec-agent` via `al-spec.create` -> human approval -> test-plan -> implementation -> review.
+- **TDD / spec-driven** — Features follow: `architecture (MEDIUM/HIGH)` -> `al-spec-agent` via `al-spec-create` -> human approval -> test-plan -> implementation -> review.
 - **Least privilege** — Generate only the minimum permissions required. Use XLIFF for all user-facing strings.
 
 ## Agent Routing
@@ -27,8 +27,8 @@ Architecture: **ALDC Core v1.2** — 13 agents (5 core + 3 on-demand + 4 subagen
 ### Quick Routing
 
 ```
-New feature (MEDIUM/HIGH)? -> al-architect -> /al-spec.create -> al-conductor
-New feature (LOW)?         -> /al-spec.create -> al-developer
+New feature (MEDIUM/HIGH)? -> al-architect -> /al-spec-create -> al-conductor
+New feature (LOW)?         -> /al-spec-create -> al-developer
 Bug fix / debugging?       -> al-developer
 Architecture review?       -> al-architect
 Full TDD cycle?            -> al-conductor
@@ -37,15 +37,15 @@ Project estimation?        -> al-presales
 
 ## Workflows
 
-11 workflows (6 core + 5 BC Agents pack). The 6 core, invoked via `/workflow-name`:
+10 workflows (6 core + 4 BC Agents pack), shipped as explicitly invoked skills (`skills/<name>/SKILL.md`, `disable-model-invocation: true`). The 6 core, invoked via `/workflow-name`:
 
 | Workflow | When to use |
 |----------|-------------|
-| `/al-spec.create` | Create functional-technical specifications before development |
+| `/al-spec-create` | Create functional-technical specifications before development |
 | `/al-build` | Build, package, and deploy extensions |
 | `/al-pr-prepare` | Prepare pull requests with documentation and validation |
-| `/al-memory.create` | Generate/update memory.md for session continuity |
-| `/al-context.create` | Generate project context.md for AI assistants |
+| `/al-memory-create` | Generate/update memory.md for session continuity |
+| `/al-context-create` | Generate project context.md for AI assistants |
 | `/al-initialize` | Complete environment and workspace setup |
 
 ## Skills
@@ -101,27 +101,27 @@ Requirement sets live in `.github/plans/`, one subdirectory per requirement:
 
 **MEDIUM / HIGH complexity:**
 1. `al-architect` designs solution, creates `{req_name}.architecture.md`
-2. `/al-spec.create` reads architecture, generates `{req_name}.spec.md`
+2. `/al-spec-create` reads architecture, generates `{req_name}.spec.md`
 3. `al-conductor` reads spec + architecture, orchestrates TDD
 4. `/al-pr-prepare` prepares PR referencing the plan
 
 **LOW complexity:**
-1. `/al-spec.create` generates spec directly from codebase
+1. `/al-spec-create` generates spec directly from codebase
 2. `al-developer` implements using spec as blueprint
 
 ## Complexity-Based Routing
 
 | Level | Scope | Route |
 |-------|-------|-------|
-| **LOW** | Single phase, no integrations | `/al-spec.create` -> `al-developer` |
-| **MEDIUM** | 2-3 areas, internal integrations | `al-architect` -> `/al-spec.create` -> `al-conductor` |
-| **HIGH** | 4+ phases, external integrations | `al-architect` -> `/al-spec.create` -> `al-conductor` |
+| **LOW** | Single phase, no integrations | `/al-spec-create` -> `al-developer` |
+| **MEDIUM** | 2-3 areas, internal integrations | `al-architect` -> `/al-spec-create` -> `al-conductor` |
+| **HIGH** | 4+ phases, external integrations | `al-architect` -> `/al-spec-create` -> `al-conductor` |
 
 Present the assessment and wait for user confirmation before proceeding.
 
 ## BC Agents Pack (Extension)
 
-For agent development with AI Development Toolkit. Includes al-agent-builder agent and skill-agent-task-patterns (8 SDK integration patterns). Workflows: `/al-agent.create`, `/al-agent.task`, `/al-agent.instructions`, `/al-agent.test`.
+For agent development with AI Development Toolkit. Includes al-agent-builder agent and skill-agent-task-patterns (8 SDK integration patterns). Workflows: `/al-agent-create`, `/al-agent-task`, `/al-agent-instructions`, `/al-agent-test`.
 
 ## Build & Test
 
@@ -146,8 +146,7 @@ No npm/yarn build steps. AL compilation is handled by the AL Language VS Code ex
 ```
 instructions/          # Auto-applied instruction files (9)
 agents/                # Agent definitions (5 core + 3 on-demand + 3 subagents + 1 extension)
-skills/                # Composable knowledge modules (16 skill directories)
-prompts/               # Workflow definitions (11 prompt files)
+skills/                # 16 knowledge skills (skill-*) + 10 workflow skills (al-*)
 docs/framework/        # Normative spec (ALDC-Core-Spec-v1.2.md)
 docs/templates/        # Immutable templates
 .github/plans/         # Requirement sets & memory
@@ -162,6 +161,6 @@ app.json               # Extension manifest
 - [BC Development Docs](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/)
 
 ---
-**Framework**: ALDC Core v1.2 | **Primitives**: 13 agents + 16 skills + 11 workflows + 9 instructions
+**Framework**: ALDC Core v1.2 | **Primitives**: 13 agents + 16 skills + 10 workflows + 9 instructions
 
 For direct Developer increments, use AL Developer Reviewer in an independent context before human approval. Dredd remains the advisory auditor. Both load skill-al-review-pipeline; Conductor phases keep their own review subagent.

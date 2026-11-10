@@ -22,19 +22,21 @@ _Engineering systems, visibly reasoned._
 ALDC combines specialist agents, reusable domain skills and human approval to
 support Business Central extension development from requirements to review.
 
-**ALDC 5.2.1** lets Architect, Spec and Conductor launch their internal subagents in
-VS Code's Copilot harness and the Copilot CLI. It builds on 5.2.0, which brings
-improvements to Copilot Chat, Copilot CLI and Codex: explicit security review, BCQuality article dispositions, stronger planning and
+**ALDC 5.3.0** ships the ten workflows as skills instead of prompt files: you run
+`/al-spec-create`, `/al-build` and the rest as slash commands, because VS Code's Copilot
+harness does not load `.prompt.md` files. It builds on 5.2.1, which lets Architect, Spec
+and Conductor launch their internal subagents in that harness and the Copilot CLI, and on
+5.2.0: explicit security review, BCQuality article dispositions, stronger planning and
 delegation contracts, and configurable Conductor autonomy and test execution.
 The Marketplace badge reports the currently published extension version.
-See [what changed in 5.2.1](#what-changed-in-521), [in 5.2.0](#what-changed-in-520) and the [changelog](CHANGELOG.md).
+See [what changed in 5.3.0](#what-changed-in-530), [in 5.2.1](#what-changed-in-521), [in 5.2.0](#what-changed-in-520) and the [changelog](CHANGELOG.md).
 
 | Channel | Current delivery | Scope |
 | --- | --- | --- |
 | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
 | [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.1.1) | v5.1.1 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
-| 5.2.1 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.2.1 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
-| [Claude Code edition](claude-plugin/) | 5.2.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
+| 5.3.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.3.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
+| [Claude Code edition](claude-plugin/) | 5.3.0 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
 maintained agents, hooks, contracts and release evolution. Its surface changes are
@@ -60,6 +62,18 @@ Choose the [installation guide](https://javiarmesto.github.io/ALDC-AL-Developmen
 Start with the toolkit installed in your project and a bounded requirement. Architect and Spec prepare the design and technical specification for your review before implementation.
 
 [Architecture and distribution map](ARCHITECTURE.md) · [Installation/recovery](docs/plugin-packaging.md) · [Doctor](tools/context-doctor/README.md) · [Public BC/AL/MCP repository catalogue](docs/public-repositories.md).
+
+## What changed in 5.3.0
+
+The ten workflows are now skills at `skills/<name>/SKILL.md`, run as slash commands:
+`/al-spec-create`, `/al-build`, `/al-pr-prepare`, `/al-memory-create`, `/al-context-create`,
+`/al-initialize`, `/al-agent-create`, `/al-agent-task`, `/al-agent-instructions` and
+`/al-agent-test`. Names that had a dot now have a hyphen (`al-spec.create` is
+`/al-spec-create`), and `@workspace use <name>` is no longer how you call them.
+`al-agent.build-instructions` is gone; it was a copy of `al-agent.instructions`.
+A workflow runs with the tools of the agent that invokes it. In existing projects, Update
+Toolkit removes the `.github/prompts/` files it installed and keeps a backup; a prompt
+you edited stays in place and is reported on every update until you replace it.
 
 ## What changed in 5.2.1
 
@@ -114,7 +128,7 @@ Claude Code stays on its independently maintained 5.1.1 edition.
 
 ### Use Project Manager in VS Code
 
-1. Update the extension to **5.2.1** and run **AL Collection: Open Project Manager**.
+1. Update the extension to **5.3.0** and run **AL Collection: Open Project Manager**.
 2. Select your solution, preview its toolkit installation or update, review customizations and confirm. Updating the extension does not replace the toolkit already installed in a project.
 3. In **BCQuality**, choose **Plugin — recommended**, **External knowledge folder** or **Disabled — native review**, then select **Change mode**. **Install BCQuality…** copies the official repository URL for the native source prompt; paste it there. Hosts without that command open the installation guide. **Manage plugins** opens the host's inventory.
 4. In **Workflow autonomy**, choose **Human — approve each checkpoint** or **Automatic — prior approval**, then select **Apply mode**. Start a new chat with **AL Development Conductor**.
@@ -236,7 +250,7 @@ Then, from the Command Palette:
 
 ### GitHub Copilot (Plugin Marketplace)
 
-ALDC also ships as an installable Copilot plugin — `plugin.json` declares the agents (`agents/`), skills (`skills/`), and prompts (`prompts/`) that get installed, for editors that support the Copilot plugin marketplace:
+ALDC also ships as an installable Copilot plugin — `plugin.json` declares the agents (`agents/`) and skills (`skills/`, including the workflow skills invoked as slash commands) that get installed, for editors that support the Copilot plugin marketplace:
 
 The root plugin retains the VS Code-oriented primitives. For **Copilot CLI**, use
 the dedicated terminal distribution from this checkout:
@@ -271,7 +285,7 @@ Clone this repo and open it with Claude Code. The `.claude/` directory and `CLAU
 
 1. Install the extension and open your AL project
 2. Run `AL Collection: Install Toolkit to Workspace`
-3. Start with `@workspace use al-spec.create` plus your requirement
+3. Start with `/al-spec-create` plus your requirement
 4. Follow the guided flow
 
 ### Claude Code
@@ -292,7 +306,7 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 | Agent | Role |
 | --- | --- |
 | `@AL Architecture & Design Specialist` | Designs solutions, information flows, technical decisions |
-| `@AL Spec Agent` | Specifies approved designs through the shared `al-spec.create` contract |
+| `@AL Spec Agent` | Specifies approved designs through the shared `al-spec-create` contract |
 | `@AL Implementation Specialist` | Implements, debugs, quick adjustments |
 | `@AL Development Conductor` | Orchestrates TDD implementation with subagents |
 | `@AL Pre-Sales & Project Estimation Specialist` | Estimation and scoping |
@@ -317,7 +331,7 @@ See [QUICKSTART.md](docs/framework/QUICKSTART.md) for the full onboarding guide.
 
 ### ⚙️ 6 Workflows — automated processes
 
-`al-spec.create` · `al-build` · `al-pr-prepare` · `al-context.create` · `al-memory.create` · `al-initialize`
+`al-spec-create` · `al-build` · `al-pr-prepare` · `al-context-create` · `al-memory-create` · `al-initialize`
 
 ### 📐 Scoped instructions and the Copilot entrypoint
 
@@ -342,10 +356,10 @@ Optional cited review through an explicitly selected host plugin or external mul
 
 ```text
 LOW complexity:
-  al-spec.create → @AL Implementation Specialist
+  al-spec-create → @AL Implementation Specialist
 
 MEDIUM/HIGH complexity:
-  @AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor
+  @AL Architecture & Design Specialist → al-spec-create → @AL Development Conductor
 ```
 
 The architect designs the solution and can decompose complex requirements into multiple specs, each implemented independently by the conductor.
@@ -353,15 +367,15 @@ The architect designs the solution and can decompose complex requirements into m
 ```mermaid
 flowchart TD
     REQ[Requirement] --> CLASSIFY{Complexity?}
-    CLASSIFY -->|LOW| SPEC_LOW[al-spec.create]
+    CLASSIFY -->|LOW| SPEC_LOW[al-spec-create]
     SPEC_LOW --> DEV["@AL Implementation Specialist"]
 
     CLASSIFY -->|MEDIUM/HIGH| ARCH["@AL Architecture & Design Specialist"]
     ARCH -->|Designs solution| ARCH_DOC[architecture.md]
     ARCH --> DECOMPOSE{Decompose?}
-    DECOMPOSE -->|Yes| SPEC_A[al-spec.create → spec-A]
-    DECOMPOSE -->|Yes| SPEC_B[al-spec.create → spec-B]
-    DECOMPOSE -->|No| SPEC_SINGLE[al-spec.create → spec.md]
+    DECOMPOSE -->|Yes| SPEC_A[al-spec-create → spec-A]
+    DECOMPOSE -->|Yes| SPEC_B[al-spec-create → spec-B]
+    DECOMPOSE -->|No| SPEC_SINGLE[al-spec-create → spec.md]
     SPEC_A --> COND_A["@AL Development Conductor"]
     SPEC_B --> COND_B["@AL Development Conductor"]
     SPEC_SINGLE --> COND["@AL Development Conductor"]
@@ -424,11 +438,11 @@ graph TB
     end
 
     subgraph WORKFLOWS["6 Retained Workflows"]
-        W1[al-spec.create]
+        W1[al-spec-create]
         W2[al-build]
         W3[al-pr-prepare]
-        W4[al-context.create]
-        W5[al-memory.create]
+        W4[al-context-create]
+        W5[al-memory-create]
         W6[al-initialize]
     end
 
@@ -449,8 +463,8 @@ graph TB
     ├── memory.md                          ← Global (cross-session context)
     └── {req_name}/
         ├── {req_name}.architecture.md    ← From @AL Architecture & Design Specialist
-        ├── {req_name}.spec.md            ← From al-spec.create
-        ├── {req_name}.test-plan.md       ← From al-spec.create or conductor
+        ├── {req_name}.spec.md            ← From al-spec-create
+        ├── {req_name}.test-plan.md       ← From al-spec-create or conductor
         ├── {req_name}-plan.md            ← From @AL Development Conductor (Planning)
         ├── {req_name}-phase-1-complete.md
         └── {req_name}-phase-N-complete.md
@@ -462,9 +476,9 @@ graph TB
 
 | Complexity | Route | When |
 | ---------- | ----- | ---- |
-| **LOW** | `al-spec.create` → `@AL Implementation Specialist` | Simple field, validation, single UI change |
-| **MEDIUM** | `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | Business logic, event-driven feature |
-| **HIGH** | `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | Multi-module, external integration, architectural change |
+| **LOW** | `al-spec-create` → `@AL Implementation Specialist` | Simple field, validation, single UI change |
+| **MEDIUM** | `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` | Business logic, event-driven feature |
+| **HIGH** | `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` | Multi-module, external integration, architectural change |
 
 **Not sure where to start?**
 
@@ -490,7 +504,7 @@ ALDC is available as a native **Claude Code** integration in two forms:
 | Primitive | Direct (`.claude/`) | Plugin (`aldc:`) | Count |
 | --------- | ------------------- | ---------------- | ----- |
 | Agents | `.claude/agents/` | `agents/` | 9 public + 3 internal |
-| Skills | `.claude/skills/` | `skills/` | 16 knowledge modules + 9 role entries + 11 workflows |
+| Skills | `.claude/skills/` | `skills/` | 16 knowledge modules + 9 role entries + 10 workflows |
 | Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 8 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
 | Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
@@ -504,7 +518,7 @@ GitHub Copilot              →  Claude Code (Direct)         →  Claude Code (
 agents/*.agent.md           →  .claude/agents/*.md          →  agents/*.md
 skills/*/SKILL.md           →  .claude/skills/*/SKILL.md    →  skills/*/SKILL.md
 instructions/*.md           →  .claude/rules/*.md           →  rules/*.md
-prompts/*.prompt.md         →  .claude/skills/ (workflows)  →  skills/ (workflows)
+skills/al-*/SKILL.md        →  .claude/skills/ (workflows)  →  skills/ (workflows)
 .github/copilot-instructions.md → CLAUDE.md                 →  plugin.json + CLAUDE.md
 ```
 
@@ -589,8 +603,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 │           ├── {req_name}.spec.md
 │           └── {req_name}.test-plan.md
 ├── agents/                               # 12 agents (5 core + 3 on-demand + 3 subagents + 1 extension)
-├── skills/                               # 16 composable skill directories
-├── prompts/                              # 11 workflows (6 core + 5 BC Agents pack)
+├── skills/                               # 16 knowledge skills + 10 workflow skills (slash commands)
 ├── instructions/                         # 9 scoped rules + entrypoint (10 contracts); documentation excluded
 │
 │── Claude Code (Direct) ───────────────────────────────
@@ -606,7 +619,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── claude-plugin/                        # independently maintained Claude Code edition
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
 │   ├── agents/                           # 12 agents (auto-discovered)
-│   ├── skills/                           # 9 role entries + 11 workflows + 16 knowledge
+│   ├── skills/                           # 9 role entries + 10 workflows + 16 knowledge
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
 │   ├── rules/                            # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
@@ -691,7 +704,7 @@ The framework now enforces its own spec in CI.
 ### 4.0.0 — Token efficiency & foundation layout
 
 - Agents, instructions, skills, prompts, and templates condensed for a lower token footprint — behavior preserved.
-- New `packages/foundation/` layout; Architecture Decision Records (`docs/decisions/`); new `al-agent.build-instructions` prompt; English-only content.
+- New `packages/foundation/` layout; Architecture Decision Records (`docs/decisions/`); new `al-agent-instructions` prompt; English-only content.
 - **Breaking:** primitives also available under `packages/foundation/`; agent/instruction/skill wording token-optimized (behavior unchanged).
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.
@@ -721,7 +734,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.2.1 · **Claude Code:** 5.2.1 · **VS Code Marketplace:** see badge
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.3.0 · **Claude Code:** 5.3.0 · **VS Code Marketplace:** see badge
 
 </div>
 

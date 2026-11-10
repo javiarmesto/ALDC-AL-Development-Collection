@@ -4,7 +4,7 @@
 
 ## When it is used
 
-- After `al-architect` approves the design (MEDIUM / HIGH complexity), through the `al-spec.create` workflow.
+- After `al-architect` approves the design (MEDIUM / HIGH complexity), through the `al-spec-create` workflow.
 - Directly for LOW complexity requirements with clear requisites.
 - To revise an existing `{req_name}.spec.md` when Architect assigns a bounded scope or a contradiction is found.
 
@@ -26,6 +26,6 @@ Architect decides the specification boundaries, shared contracts and dependencie
 
 ## Relationship with other agents
 
-`al-architect` → **al-spec-agent** (`/al-spec.create`) → human approval → `al-conductor` (MEDIUM / HIGH) or `al-developer` (LOW). Specifications eligible for parallel drafting are not permission for concurrent code changes.
+`al-architect` → **al-spec-agent** (`/al-spec-create`) → human approval → `al-conductor` (MEDIUM / HIGH) or `al-developer` (LOW). Specifications eligible for parallel drafting are not permission for concurrent code changes.
 
-Source contract: [`agents/al-spec-agent.agent.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/agents/al-spec-agent.agent.md) · Workflow: [Specifications](../prompts/al-spec.create.prompt.md) · [Spec Agent and architecture contracts](../spec-agent.md)
+Source contract: [`agents/al-spec-agent.agent.md`](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/agents/al-spec-agent.agent.md) · Workflow: [Specifications](https://github.com/javiarmesto/ALDC-AL-Development-Collection/blob/main/skills/al-spec-create/SKILL.md) · [Spec Agent and architecture contracts](../spec-agent.md)

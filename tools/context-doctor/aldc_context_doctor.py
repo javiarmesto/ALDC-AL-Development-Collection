@@ -121,7 +121,11 @@ def discover_projects(root):
 def inspect_layout(root, host):
     """One selected host; presence is configuration, never host loading."""
     layouts = {
-        "chat": [("agents/al-architect.agent.md", "prompts/al-spec.create.prompt.md"),
+        # Chat workflows are skills since VS Code Copilot sessions stopped loading prompt
+        # files; the prompt pairs keep diagnosing installations from 5.2.x and earlier.
+        "chat": [("agents/al-architect.agent.md", "skills/al-spec-create/SKILL.md"),
+                 (".github/agents/al-architect.agent.md", ".github/skills/al-spec-create/SKILL.md"),
+                 ("agents/al-architect.agent.md", "prompts/al-spec.create.prompt.md"),
                  (".github/agents/al-architect.agent.md", ".github/prompts/al-spec.create.prompt.md")],
         # Claude Code workflows are skills, not commands: a slash command there would
         # be model-invocable, and a workflow is explicit. commands/ no longer exists.
@@ -138,7 +142,7 @@ def inspect_layout(root, host):
     count, present, missing, directory, selected = max(candidates, key=lambda c: c[0])
     spec_path = root / selected[0].replace("al-architect", "al-spec-agent")
     workflow = root / selected[1]
-    required = workflow.is_file() and bool(re.search(r"\]\(\.\./agents/al-spec-agent(?:\.agent)?\.md\)", workflow.read_text(encoding="utf-8-sig")))
+    required = workflow.is_file() and bool(re.search(r"\]\((?:\.\./)+agents/al-spec-agent(?:\.agent)?\.md\)", workflow.read_text(encoding="utf-8-sig")))
     available = spec_path.is_file() and spec_path.stat().st_size > 0
     if required and not available:
         missing.append(str(spec_path))

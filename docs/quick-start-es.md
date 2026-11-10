@@ -67,7 +67,7 @@ Implementa el sistema de aprobación diseñado por al-architect
 ```
 Paso 1: Describe lo que necesitas
 Paso 2: Copilot genera el código (con auto-guidelines)
-Paso 3: @workspace use al-build → Despliegue
+Paso 3: /al-build → Despliegue
 ```
 
 **Ejemplo**: "Añade validación de email a tabla Customer"
@@ -78,8 +78,8 @@ Paso 3: @workspace use al-build → Despliegue
 ```
 Paso 1: Use al-architect mode → Diseña
 Paso 2: Use al-conductor mode → Implementa con TDD
-Paso 3: @workspace use al-permissions → Permisos
-Paso 4: @workspace use al-build → Despliegue
+Paso 3: Use al-developer mode → Conjuntos de permisos (skill-permissions)
+Paso 4: /al-build → Despliegue
 ```
 
 **Ejemplo**: "Sistema de puntos de lealtad para clientes"
@@ -93,8 +93,8 @@ Paso 4: @workspace use al-build → Despliegue
 Paso 1: Use al-architect mode → Arquitectura completa
 Paso 2: Use al-api mode (si hay APIs)
 Paso 3: Use al-conductor mode → Implementación multi-fase
-Paso 4: @workspace use al-performance → Validación
-Paso 5: @workspace use al-build → Despliegue
+Paso 4: Use al-developer mode → Revisión de rendimiento (skill-performance)
+Paso 5: /al-build → Despliegue
 ```
 
 **Ejemplo**: "Integración con pasarela de pago externa (OAuth + webhooks)"
@@ -129,15 +129,15 @@ Paso 5: @workspace use al-build → Despliegue
 
 ### Comandos de Setup
 ```bash
-@workspace use al-initialize    # Inicializa proyecto
-@workspace use al-build         # Construye y despliega
-@workspace use al-permissions   # Genera permisos
+/al-initialize    # Inicializa proyecto
+/al-build         # Construye y despliega
+Use al-developer mode   # Conjuntos de permisos (carga skill-permissions)
 ```
 
 ### Comandos de Debugging
 ```bash
-@workspace use al-diagnose      # Debug completo
-@workspace use al-performance   # Análisis de rendimiento
+Use al-triage mode      # Diagnostica un fallo o una regresión (solo lectura)
+Use al-developer mode   # Análisis de rendimiento (carga skill-performance)
 ```
 
 ### Modos Especializados
@@ -316,10 +316,10 @@ REFACTOR: Acciones y DrillDown
 
 ```bash
 # Generar permisos automáticamente
-@workspace use al-permissions
+Use al-developer mode: "Genera los conjuntos de permisos"
 
 # Construir y desplegar
-@workspace use al-build
+/al-build
 ```
 
 ---
@@ -425,8 +425,8 @@ end;
 
 3. **Despliega**:
    ```bash
-   @workspace use al-permissions
-   @workspace use al-build
+   Use al-developer mode: "Genera los conjuntos de permisos"
+   /al-build
    ```
 
 **Tiempo total**: ~2 horas desde cero hasta producción ✨
@@ -500,7 +500,7 @@ npm run validate
 
 ### Si eres nuevo en AL:
 ```bash
-@workspace use al-initialize
+/al-initialize
 ```
 
 ### Si tienes una funcionalidad que construir:

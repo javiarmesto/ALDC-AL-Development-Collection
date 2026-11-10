@@ -23,7 +23,7 @@ ALDC Core v1.1 impone:
 | Herramienta | Rol SE | Produce | Cuándo usar |
 | ----------- | ------ | ------- | ----------- |
 | `@AL Architecture & Design Specialist` | Software Architect — define solución técnica, patrones de integración, ADRs | `{req_name}.architecture.md` | MEDIUM/HIGH: primer paso |
-| `al-spec.create` | Design Doc Generator — traduce arquitectura en spec implementable (IDs, firmas, tests) | `{req_name}.spec.md` | Siempre: LOW y MEDIUM/HIGH |
+| `al-spec-create` | Design Doc Generator — traduce arquitectura en spec implementable (IDs, firmas, tests) | `{req_name}.spec.md` | Siempre: LOW y MEDIUM/HIGH |
 | `@AL Development Conductor` | TDD Orchestrator — ciclo planning → implementation → review con HITL gates | implementación completa | MEDIUM/HIGH: tras spec y architecture |
 | `@AL Implementation Specialist` | AL Developer — implementación directa, debugging, correcciones | código AL | LOW / ajustes puntuales |
 | `@AL Pre-Sales & Project Estimation Specialist` | Solution Engineer — estimación, análisis técnico-económico, propuestas | sizing, SWOT, propuesta | Antes del proyecto |
@@ -33,7 +33,7 @@ ALDC Core v1.1 impone:
 **MEDIUM / HIGH:**
 
 ```text
-@AL Architecture & Design Specialist → al-spec.create → @AL Development Conductor → entrega
+@AL Architecture & Design Specialist → al-spec-create → @AL Development Conductor → entrega
      ↓               ↓                ↓
 architecture.md   spec.md     plan → TDD → review
   [GATE]          [GATE]        [GATE por fase]
@@ -42,7 +42,7 @@ architecture.md   spec.md     plan → TDD → review
 **LOW:**
 
 ```text
-al-spec.create → @AL Implementation Specialist → entrega
+al-spec-create → @AL Implementation Specialist → entrega
      ↓                ↓
    spec.md      implementación directa
    [GATE]
@@ -53,7 +53,7 @@ al-spec.create → @AL Implementation Specialist → entrega
 4 agentes públicos + 1 workflow de especificación. Una pregunta para elegir:
 
 - ¿Diseñando arquitectura? → `@AL Architecture & Design Specialist`
-- ¿Generando spec técnica detallada? → `@workspace use al-spec.create`
+- ¿Generando spec técnica detallada? → `/al-spec-create`
 - ¿Implementando (LOW)? → `@AL Implementation Specialist`
 - ¿Feature TDD completa (MEDIUM/HIGH)? → `@AL Development Conductor`
 - ¿Estimando proyecto? → `@AL Pre-Sales & Project Estimation Specialist`

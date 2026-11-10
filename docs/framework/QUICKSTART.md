@@ -30,13 +30,13 @@ agents/                                ← 4 agentes públicos
   AL Implementation Subagent.agent.md       ← subagent interno (user-invocable: false)
   AL Code Review Subagent.agent.md          ← subagent interno (user-invocable: false)
 
-prompts/                               ← 6 workflows
-  al-spec.create.prompt.md
-  al-build.prompt.md
-  al-pr-prepare.prompt.md
-  al-memory.create.prompt.md
-  al-context.create.prompt.md
-  al-initialize.prompt.md
+skills/al-*/                           ← 6 workflows (skills invocados con /nombre)
+  al-spec-create/SKILL.md
+  al-build/SKILL.md
+  al-pr-prepare/SKILL.md
+  al-memory-create/SKILL.md
+  al-context-create/SKILL.md
+  al-initialize/SKILL.md
 
 skills/                                ← 11 skills composables
   skill-api/SKILL.md
@@ -76,7 +76,7 @@ Resultado esperado: `✅ ALDC Core v1.1 COMPLIANT`
 ### Requerimiento LOW (sin arquitectura)
 
 1. Asignar nombre: `{req_name}` en kebab-case (ej: `customer-discount`)
-2. `@workspace use al-spec.create` → genera `.github/plans/customer-discount/customer-discount.spec.md`
+2. `/al-spec-create` → genera `.github/plans/customer-discount/customer-discount.spec.md`
 3. `@AL Implementation Specialist` → implementa directamente (carga skills según necesidad)
 4. Actualizar `memory.md` con resultado
 
@@ -85,14 +85,14 @@ Resultado esperado: `✅ ALDC Core v1.1 COMPLIANT`
 1. Asignar nombre: `{req_name}` (ej: `api-integration`)
 2. `@AL Architecture & Design Specialist` → genera `.github/plans/api-integration/api-integration.architecture.md`
    - ⚠️ **GATE**: aprobar arquitectura antes de continuar
-3. `@workspace use al-spec.create` → lee `architecture.md` → genera `.github/plans/api-integration/api-integration.spec.md`
+3. `/al-spec-create` → lee `architecture.md` → genera `.github/plans/api-integration/api-integration.spec.md`
    - Spec técnica: object IDs, procedure signatures, tests Given/When/Then
    - ⚠️ **GATE**: aprobar spec antes de implementar
 4. Actualizar `memory.md` con contexto del nuevo requerimiento
 5. `@AL Development Conductor` → orquesta ciclo TDD:
    - planning-subagent (research + test-plan) → implement-subagent (TDD) → review-subagent (review)
    - ⚠️ **GATE**: validación humana por fase
-6. `@workspace use al-pr-prepare` → documentación PR
+6. `/al-pr-prepare` → documentación PR
 7. Actualizar `memory.md` con resultado
 8. Archivar set completado en `.github/plans/archive/` (opcional)
 
@@ -114,7 +114,7 @@ Resultado esperado: `✅ ALDC Core v1.1 COMPLIANT`
 | ¿Qué necesitas? | Herramienta |
 |---|---|
 | Diseñar arquitectura, analizar, decidir | `@AL Architecture & Design Specialist` |
-| Generar spec técnica detallada (blueprint implementable) | `@workspace use al-spec.create` |
+| Generar spec técnica detallada (blueprint implementable) | `/al-spec-create` |
 | Implementar, codificar, debuggear (LOW / tareas directas) | `@AL Implementation Specialist` |
 | Feature TDD completa (plan → impl → review → commit) | `@AL Development Conductor` |
 | Estimar proyecto, sizing, propuesta | `@AL Pre-Sales & Project Estimation Specialist` |
@@ -123,7 +123,7 @@ Los agentes cargan skills automáticamente según el contexto de la tarea. No ne
 
 **Skills Evidencing**: Todos los agentes declaran qué skills cargaron y qué patrones aplicaron. El implement-subagent reporta `### Skills Loaded` en cada fase, el review-subagent verifica con `Skills Compliance Check`, y el conductor consolida en tablas de `Skills Applied in This Phase` y `Skills Utilization Summary`.
 
-**Flujo resumido:** MEDIUM/HIGH: `@AL Architecture & Design Specialist` → `al-spec.create` → `@AL Development Conductor` | LOW: `al-spec.create` → `@AL Implementation Specialist`
+**Flujo resumido:** MEDIUM/HIGH: `@AL Architecture & Design Specialist` → `al-spec-create` → `@AL Development Conductor` | LOW: `al-spec-create` → `@AL Implementation Specialist`
 
 ## Checklist de onboarding
 

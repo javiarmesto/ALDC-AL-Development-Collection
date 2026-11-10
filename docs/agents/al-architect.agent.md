@@ -51,7 +51,7 @@ Designs robust, scalable, and maintainable architectures for Business Central AL
 ## Workflow position
 
 ```
-al-architect (DESIGN) → al-spec.create (SPEC) → al-conductor (IMPLEMENT)
+al-architect (DESIGN) → al-spec-create (SPEC) → al-conductor (IMPLEMENT)
 ```
 
 !!! tip "Architect vs Planning Subagent"

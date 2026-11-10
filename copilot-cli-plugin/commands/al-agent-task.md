@@ -1,5 +1,5 @@
 ---
-description: Generate AL code for Business Central Agent SDK task integration. Applies the patterns from skill-agent-task-patterns to produce production-ready codeunits, page extensions, and event subscribers — verified against the runtime API availability matrix. ALDC workflow (Copilot prompt al-agent.task); invoke explicitly.
+description: Generate AL code for Business Central Agent SDK task integration. Applies the patterns from skill-agent-task-patterns to produce production-ready codeunits, page extensions, and event subscribers — verified against the runtime API availability matrix. ALDC workflow skill al-agent-task; invoke explicitly.
 disable-model-invocation: true
 ---
 

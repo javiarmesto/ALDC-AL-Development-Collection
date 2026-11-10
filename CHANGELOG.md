@@ -1,5 +1,47 @@
 # ALDC Changelog
 
+## [5.3.0] - 2026-11-10
+
+### Changed — workflows ship as skills instead of prompt files
+
+- Cause: VS Code Copilot harness sessions do not load `*.prompt.md` files; prompt files
+  run only in the Local harness, which VS Code is retiring. VS Code offered to convert the
+  11 installed ALDC prompts ("Convert Prompt to Skills"), which would have left
+  unmanaged copies without tools, model or agent selection.
+- The 10 workflows are now canonical skills at `skills/<name>/SKILL.md` with
+  `disable-model-invocation: true`, invoked as `/al-spec-create`, `/al-build`,
+  `/al-pr-prepare`, `/al-memory-create`, `/al-context-create`, `/al-initialize`,
+  `/al-agent-create`, `/al-agent-task`, `/al-agent-instructions` and `/al-agent-test`.
+  Dotted names become hyphens, the names Copilot CLI, Codex and Claude Code already used.
+- Removed `al-agent.build-instructions`: it was byte-identical to `al-agent.instructions`
+  and nothing referenced it.
+- Skills cannot set `tools`, `model` or `agent`. A workflow now runs with the tools
+  of the agent that invokes it; the Chat profiles keep adding each workflow's scope
+  and native-tool guidance to its body. `/al-spec-create` routes to AL Spec Agent
+  through its body, as it already did when a host could not honour the `agent:` field.
+- Agents and instructions now say `/al-spec-create` instead of `@workspace use
+  al-spec.create`, which was not a valid invocation.
+- Updating an installation removes the `.github/prompts/` files it installed, with a
+  recoverable backup, also when the earlier release left no receipt (it uses
+  `known-installations.json`). A prompt you customized stays in place and is reported
+  as a collision on every update; `--force` retires it with a recoverable backup.
+- `scripts/workflows.js` (no dependencies) is the workflow list for the installer, the
+  Chat profiles and the CLI/Codex generators. The VS Code extension must package it.
+- Doctor recognises `skills/al-spec-create/SKILL.md` and still diagnoses 5.2.x layouts.
+- The collection manifest gains `kind: skill`; the validator rejects a skill whose
+  name has dots or differs from its folder (VS Code skips those silently).
+- Not verified in a host: `/al-*` commands appearing in VS Code (Local and Copilot
+  harnesses) after an update, and the Migrations view no longer listing ALDC prompts.
+
+### Removed — Claude Code edition 5.3.0 drops the duplicate workflow skill
+
+- `/aldc:al-agent-build-instructions` is gone from the maintained Claude Code plugin. It
+  was the adapter of the removed `al-agent.build-instructions` and did the same as
+  `/aldc:al-agent-instructions`, which stays. The plugin now ships 10 workflow skills.
+- Payload relocked; the Claude edition moves from 5.2.1 to 5.3.0. Its other workflow
+  skills are unchanged and still name the prompt file each one was adapted from.
+- Not verified in a host: the command list after `claude plugin update`.
+
 ## [5.2.1] - 2026-11-06
 
 ### Fixed — internal subagents launch in the Copilot harness and Copilot CLI

@@ -6,13 +6,13 @@
  * Installs the ALDC toolkit into any AL project.
  *
  * Usage:
- *   npx aldc install [--target-dir <dir>] [--yes] [--force] [--dry-run] [--json]
- *   npx aldc status [--target-dir <dir>] [--json]
- *   npx aldc verify-install [--json]
- *   npx aldc rollback [--json]
- *   npx aldc validate [--target-dir <dir>]
- *   npx aldc bcq-index [--build] [--json]
- *   npx aldc --help
+ *   npx --no aldc install [--target-dir <dir>] [--yes] [--force] [--dry-run] [--json]
+ *   npx --no aldc status [--target-dir <dir>] [--json]
+ *   npx --no aldc verify-install [--json]
+ *   npx --no aldc rollback [--json]
+ *   npx --no aldc validate [--target-dir <dir>]
+ *   npx --no aldc bcq-index [--build] [--json]
+ *   npx --no aldc --help
  *
  * --json prints one structured document on stdout for hosts such as the VS Code
  * extension; the human output stays the default and is not part of that contract.
@@ -178,8 +178,7 @@ function ask(question, defaultYes = true) {
 // ─── ALDC Core v1.2 component map ──────────────────────────────────────────
 const COMPONENTS = [
   { name: 'Agents',      src: 'agents',             count: '13 agents (5 public + 3 on-demand + 4 subagents + 1 optional)' },
-  { name: 'Skills',      src: 'skills',             count: '16 skills (8 required + 4 recommended + 4 optional)' },
-  { name: 'Prompts',     src: 'prompts',            count: '11 workflows (6 core + 5 agent-builder)' },
+  { name: 'Skills',      src: 'skills',             count: '16 knowledge skills + 10 workflow skills (slash commands)' },
   { name: 'Instructions',src: 'instructions',       count: '10 instruction contracts (9 scoped rules + copilot entrypoint; documentation excluded)' },
   { name: 'Templates',   src: 'docs/templates',     count: '7 contract templates' },
   { name: 'Framework',   src: 'docs/framework',     count: 'spec + docs' },
@@ -279,11 +278,18 @@ async function install(opts) {
   {
     const { project } = require('./chat-profile');
     const projected = new Map();
-    for (const dir of ['agents', 'prompts']) {
-      for (const name of fs.readdirSync(path.join(packageDir, dir))) {
-        const src = path.join(packageDir, dir, name);
-        projected.set(src, project(`${dir}/${name}`, fs.readFileSync(src), profile));
-      }
+    // Agents and workflow skills carry role projections; prompts/ no longer ships
+    // (VS Code Copilot sessions do not load prompt files).
+    // Every packaged al-* skill is projected too, so one missing from the workflow
+    // list fails here ("assignment missing") instead of installing unscoped.
+    const { WORKFLOWS } = require('./workflows');
+    const packagedWorkflows = fs.readdirSync(path.join(packageDir, 'skills'), { withFileTypes: true })
+      .filter(e => e.isDirectory() && e.name.startsWith('al-')).map(e => e.name);
+    const rels = [...fs.readdirSync(path.join(packageDir, 'agents')).map(name => `agents/${name}`),
+      ...[...new Set([...WORKFLOWS, ...packagedWorkflows])].map(name => `skills/${name}/SKILL.md`)];
+    for (const rel of rels) {
+      const src = path.join(packageDir, ...rel.split('/'));
+      projected.set(src, project(rel, fs.readFileSync(src), profile));
     }
     if (!fs.existsSync(path.join(packageDir, 'docs/framework/native-al-tools.md'))) throw new Error('Native contract missing from package');
     if (!fs.existsSync(path.join(packageDir, 'docs/framework/copilot-chat-al-tooling.md'))) throw new Error('Chat contract missing from package');
@@ -338,7 +344,8 @@ async function install(opts) {
   const files = plannedFiles({ packageDir, projectDir, targetDir, profile, transform });
   const relative = dst => path.relative(projectDir, dst).split(path.sep).join('/');
   const relTarget = relative(targetDir) || '.';
-  const result = apply({ root: projectDir, surface: 'chat', files, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
+  const retire = legacyRetirements({ packageDir, projectDir, targetDir });
+  const result = apply({ root: projectDir, surface: 'chat', files, retire, force: opts.force, dryRun: opts.dryRun, expectDigest: opts.expectPlan });
   for (const file of result.files) if (file.action !== 'unchanged') log(`  ${file.action}: ${file.path}`);
   const summary = {};
   for (const file of result.files) summary[file.action] = (summary[file.action] || 0) + 1;
@@ -347,7 +354,10 @@ async function install(opts) {
     profileSwitch: existingPrimitives && profile !== previousProfile, existingInstallation: existingPrimitives,
     targetDir: relTarget, force: Boolean(opts.force), digest: result.digest, transaction: result.transaction || null,
     files: result.files, summary, collisions: result.files.filter(f => f.action === 'collision').map(f => f.path),
-    replaced: result.files.filter(f => f.action === 'replace' && f.customized).map(f => f.path), recognised,
+    // Customized files this operation overwrites or retires, each with a recoverable backup.
+    replaced: result.files.filter(f => ['replace', 'remove'].includes(f.action) && f.customized).map(f => f.path), recognised,
+    // Edited files this release no longer ships (prompt files replaced by workflow skills).
+    obsolete: result.files.filter(f => f.obsolete && f.action === 'collision').map(f => f.path),
     doctorScript: relative(path.join(targetDir, 'tools/context-doctor/aldc_context_doctor.py')) };
   if (opts.dryRun) { info('Dry run: no files written.'); return structured; }
   const totalCopied = result.files.filter(f => ['add', 'replace'].includes(f.action)).length;
@@ -363,6 +373,11 @@ async function install(opts) {
     log(`Files skipped: ${totalSkipped} (already exist)`, C.yellow);
   }
   log(`Location:      ${targetDir}`, C.cyan);
+  if (structured.obsolete.length) {
+    log(`Edited files no longer shipped, kept in place: ${structured.obsolete.length}`, C.yellow);
+    for (const rel of structured.obsolete) log(`  ${rel}`, C.yellow);
+    log('  Workflows now ship as skills. Move your changes into a skill of your own, then run with --force to retire them (backed up).', C.dim);
+  }
 
   out('');
   log('Next steps:', C.bold);
@@ -396,6 +411,21 @@ function readProfileMarker(markerPath) {
 
 // What previous releases wrote, so their untouched content is recognised instead of
 // being reported as a local change. Absent or unreadable means nothing is recognised.
+// Prompt files an earlier release wrote that this release no longer ships. With a
+// receipt, the receipt retires them; without one (an upgrade from a release that
+// recorded none) only bytes a release is known to have written are removed, with a
+// recoverable backup. Unknown files are never listed, so they stay untouched.
+function legacyRetirements({ packageDir, projectDir, targetDir }) {
+  const relTarget = path.relative(projectDir, targetDir).split(path.sep).join('/');
+  const retire = new Map();
+  for (const [rel, hashes] of Object.entries(knownInstallations(packageDir))) {
+    const m = /^\.github\/prompts\/([^/]+)$/.exec(rel);
+    if (!m || !Array.isArray(hashes)) continue;
+    retire.set(relTarget ? `${relTarget}/prompts/${m[1]}` : `prompts/${m[1]}`, hashes);
+  }
+  return retire;
+}
+
 function knownInstallations(packageDir) {
   try {
     const data = JSON.parse(fs.readFileSync(path.join(packageDir, 'known-installations.json'), 'utf8'));
@@ -596,7 +626,7 @@ function status(opts) {
   const bcqIcon = { prebuilt: '🟢', generated: '🟢', 'not-attempted': '⚪', failed: '🔴', unobserved: '⚪' }[bcqIndex.status] || '⚪';
   const bcqLine = `${bcqIcon} BCQuality index: ${bcqIndex.status} — ${bcqIndex.detail}`
     + (bcqIndex.status === 'not-attempted' && bcqIndex.attemptable !== false
-        ? '\n   run: npx aldc bcq-index --build' : '');
+        ? '\n   run: npx --no aldc bcq-index --build' : '');
   return { ok: state.receipt === 'valid' && state.drift.length === 0 && targetMismatch === null, command: 'status', targetDir: relTarget, receiptTarget, targetMismatch,
     profile: marker.profile, profileMarker: marker.present ? (marker.problem ? 'invalid' : 'valid') : 'absent', profileProblem: marker.problem, installedVersion: marker.version,
     toolkitPresent: ['agents', 'prompts', 'skills', 'instructions'].some(dir => fs.existsSync(path.join(targetDir, dir))),
@@ -726,7 +756,7 @@ async function validate(opts) {
     log(` INVALID — ${errors} error(s), ${warnings} warning(s)`, C.red);
     log('='.repeat(60), C.red);
     out('');
-    log('Run "npx aldc install" to fix missing components.', C.cyan);
+    log('Run "npx --no aldc install" to fix missing components.', C.cyan);
     // A verdict nobody can act on is not a verdict: a script that runs this in
     // CI reads the exit code, not the colour of the summary line.
     process.exitCode = 1;
@@ -741,7 +771,7 @@ function showHelp() {
 ${C.bold}ALDC Core v1.2 — CLI${C.reset}
 
 ${C.cyan}Usage:${C.reset}
-  npx aldc <command> [options]
+  npx --no aldc <command> [options]
 
 ${C.cyan}Commands:${C.reset}
   install     Install ALDC toolkit into current project
@@ -763,30 +793,30 @@ ${C.cyan}Options:${C.reset}
 
 ${C.cyan}Examples:${C.reset}
   ${C.green}# Install to default .github/ directory${C.reset}
-  npx aldc install
+  npx --no aldc install
 
   ${C.green}# Install to custom directory, non-interactive${C.reset}
-  npx aldc install --target-dir .copilot --yes
+  npx --no aldc install --target-dir .copilot --yes
 
   ${C.green}# Force-update all files${C.reset}
-  npx aldc install --force --yes
-  npx aldc status
-  npx aldc verify-install
-  npx aldc rollback
+  npx --no aldc install --force --yes
+  npx --no aldc status
+  npx --no aldc verify-install
+  npx --no aldc rollback
 
   ${C.green}# Install from local .tgz${C.reset}
   npm install ./al-development-collection-3.2.0.tgz
-  npx aldc install
+  npx --no aldc install
 
   ${C.green}# Validate current installation${C.reset}
-  npx aldc validate
+  npx --no aldc validate
 
 ${C.cyan}What gets installed:${C.reset}
   ${C.bold}Core:${C.reset}
   <target-dir>/
     agents/           13 agents (including 4 subagents)
     skills/           17 skills (8 required + 4 recommended + 5 optional)
-    prompts/          11 workflows (6 core + 5 agent-builder)
+    skills/           16 knowledge skills + 10 workflow skills
     instructions/     8 scoped instructions + copilot entrypoint
     docs/framework/   Core specification & docs
     docs/templates/   7 contract templates
@@ -965,14 +995,14 @@ switch (opts.command) {
     break;
   case 'install':
   default: {
-    // A bare `npx aldc` installs, which is the documented shorthand. A MISTYPED
+    // A bare `npx --no aldc` installs, which is the documented shorthand. A MISTYPED
     // command used to install too, because this default case was the installer:
-    // `npx aldc bcq-idnex` would start writing files into the project. A typo is
+    // `npx --no aldc bcq-idnex` would start writing files into the project. A typo is
     // not consent to write anything.
     const known = ['install', 'status', 'verify-install', 'rollback', 'solution', 'validate', 'bcq-index', 'test-local', 'help'];
     if (opts.command !== null && opts.command !== 'install') {
       fail(opts.command, Object.assign(
-        new Error(`Unknown command "${opts.command}". Known commands: ${known.join(', ')}. Run "npx aldc --help".`),
+        new Error(`Unknown command "${opts.command}". Known commands: ${known.join(', ')}. Run "npx --no aldc --help".`),
         { code: 'unknown-command' }));
       break;
     }
