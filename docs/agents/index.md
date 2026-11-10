@@ -19,7 +19,7 @@ Use [mode-name]
 Examples:
 Use al-architect
 Use al-conductor
-Use al-debugger
+Use al-triage
 ```
 
 Or in multi-turn conversations:
@@ -50,7 +50,7 @@ I need to build a sales forecasting system...
 
 **Customization Tip**: You can adjust these complexity definitions by editing this file in your repository. For example, if your team typically works with smaller changes, you might redefine MEDIUM as "1-2 phases" instead of "2-3 phases". The framework adapts to your workflow.
 
-### 📦 Available Agents (12 total)
+### 📦 Available Agents (13 total)
 
 ### 🏗️ Implementation Agents (Complexity-Driven)
 
@@ -62,15 +62,16 @@ I need to build a sales forecasting system...
 | **al-developer** | Tactical Implementation Specialist | 🟢 LOW / 🟡 MEDIUM | Direct implementation when design is clear and scope is limited |
 | **al-developer-reviewer** | Independent Increment Review | 🟢 LOW / 🟡 MEDIUM | Read-only review of a direct Developer increment before human approval ([details](al-developer-reviewer.agent.md)) |
 
-### 🎭 Orchestra Subagents (Invoked by al-conductor)
+### 🎭 Internal Subagents (launched by al-architect, al-spec-agent or al-conductor)
 
 | Mode | Role | Purpose |
 |------|------|---------|
 | **AL Planning Subagent** | AL-aware Research Specialist | Analyzes codebase, gathers context for planning |
 | **AL Implementation Subagent** | TDD Implementation Executor | Executes RED→GREEN→REFACTOR cycle |
 | **AL Code Review Subagent** | Quality Assurance Validator | Reviews each phase against the specification and AL best practices |
+| **AL Knowledge Consultant** | BCQuality Knowledge Consultation | Answers one knowledge question for Architect, Spec Agent or Conductor |
 
-> 💡 **Note**: Subagents are invoked by `al-conductor`. You don't invoke them directly.
+> 💡 **Note**: Subagents are launched by the agents that own them. You don't invoke them directly.
 
 ### 🔎 On-demand Specialists (user-invocable)
 
@@ -90,7 +91,7 @@ Invoked directly when you start from a **symptom** or want an **independent audi
 | **al-presales** | Pre-Sales & Project Estimation | Any complexity | Project planning, cost estimation, feasibility analysis, SWOT |
 | **al-agent-builder** | Business Central Agent Toolkit Builder | Any complexity | Designing and coding BC agents with the AI Development Toolkit and Agent SDK (optional pack) |
 
-Domain expertise for API, Copilot, debugging, testing, performance, events, permissions, pages, migration and translation is provided by the 17 composable **skills** that agents load on demand, not by separate agents.
+Domain expertise for API, Copilot, debugging, testing, performance, events, permissions, pages, migration and translation is provided by the 16 composable **skills** that agents load on demand, not by separate agents.
 
 ## 🏗️ Tool Boundaries (MCP Model)
 
@@ -104,7 +105,7 @@ Each mode follows **professional licensing** constraints:
 - ✅ Review and critique
 - ✅ Explain concepts
 
-### CANNOT (Execution - Delegates to Workflows)
+### CANNOT (advisory agents; `al-developer` and the implementation subagent do edit and build)
 - ❌ Execute builds directly
 - ❌ Run debuggers
 - ❌ Deploy code
@@ -138,26 +139,24 @@ graph TD
     
     Low --> LowRoute{Specialized help?}
     LowRoute -->|No| DevDirect[💻 al-developer<br/>Direct implementation]
-    LowRoute -->|Debug| Debug[🐛 al-debugger]
-    LowRoute -->|Tests| Test1[🧪 al-tester]
+    LowRoute -->|Debug| Debug[🩺 al-triage<br/>Diagnosis, read-only]
+    LowRoute -->|Tests| Test1[🧪 al-developer<br/>loads skill-testing]
     
     Med --> MedRoute{Need design first?}
     MedRoute -->|Yes| Arch1[👨‍💼 al-architect<br/>Then al-conductor]
     MedRoute -->|No, spec ready| Conductor1[🎼 al-conductor<br/>TDD Orchestra]
     MedRoute -->|Debug| Debug
-    MedRoute -->|Tests| Test2[🧪 al-tester]
+    MedRoute -->|Tests| Test2[🧪 al-conductor<br/>tests first, skill-testing]
     
     High --> HighRoute{Specialized domain?}
     HighRoute -->|Standard| Arch2[👨‍💼 al-architect<br/>Design phase]
-    HighRoute -->|APIs| API[🌐 al-api<br/>Then al-architect]
-    HighRoute -->|AI Features| Copilot[🤖 al-copilot<br/>Then al-architect]
+    HighRoute -->|APIs| API[🌐 al-architect<br/>loads skill-api]
+    HighRoute -->|AI Features| Copilot[🤖 al-architect<br/>loads skill-copilot]
     
     Arch1 --> Conductor2[🎼 al-conductor<br/>Implementation]
     Arch2 --> Conductor3[🎼 al-conductor<br/>Implementation]
-    API --> Arch3[👨‍💼 al-architect]
-    Copilot --> Arch4[👨‍💼 al-architect]
-    Arch3 --> Conductor4[🎼 al-conductor]
-    Arch4 --> Conductor5[🎼 al-conductor]
+    API --> Conductor4[🎼 al-conductor]
+    Copilot --> Conductor5[🎼 al-conductor]
     
     style Gate fill:#D946EF,stroke:#A21CAF,color:#fff
     style Low fill:#0F766E,stroke:#0F766E,color:#fff
@@ -236,109 +235,14 @@ Implement email validation on Customer table extension:
 
 **Delegates to**:
 - `al-architect` (strategic decisions)
-- `al-tester` (test strategy)
-- `al-debugger` (complex diagnosis)
+- `al-developer-reviewer` (independent review of the increment)
+- **AL Triage** (diagnosis of an existing defect)
 
 ---
 
-### 🐛 al-debugger
+### 🧠 Domains covered by skills, not agents
 
-**Role**: Systematic debugging specialist
-
-**Use when**:
-- Diagnosing bugs
-- Root cause analysis
-- Understanding code execution flow
-- Performance bottleneck identification
-- Investigating intermittent issues
-
-**Recommends Workflows**:
-- `skill-debug` (knowledge skill)
-- `skill-performance` (knowledge skill)
-
-**Example**:
-```markdown
-Use al-debugger
-
-#file: src/Sales/SalesEventHandler.Codeunit.al
-
-My OnBeforePostSalesDoc event subscriber isn't being called.
-```
-
----
-
-### 🧪 al-tester
-
-**Role**: Testing strategy and TDD specialist
-
-**Use when**:
-- Designing test strategies
-- Implementing TDD
-- Planning test coverage
-- Creating comprehensive test suites
-- Setting up test automation
-
-**Auto-loads Instructions**:
-- `al-testing.instructions.md`
-
-**Example**:
-```markdown
-Use al-tester
-
-#file: src/Sales/SalesPost.Codeunit.al
-
-What test scenarios should I cover for sales posting logic?
-```
-
----
-
-### 🌐 al-api
-
-**Role**: RESTful API design specialist
-
-**Use when**:
-- Designing API endpoints
-- Implementing API pages (v2.0)
-- Creating OData endpoints
-- Planning API versioning
-- External system integrations
-
-**Coordinates with**:
-- `al-architect` (for API architecture decisions)
-- `al-error-handling.instructions.md` (for API error responses)
-
-**Example**:
-```markdown
-Use al-api
-
-Design a REST API for customer data with CRUD operations.
-Should support filtering and pagination.
-```
-
----
-
-### 🤖 al-copilot
-
-**Role**: AI-powered features specialist
-
-**Use when**:
-- Designing Copilot user experiences
-- Implementing Azure OpenAI integration
-- Prompt engineering for business scenarios
-- Creating AI-powered suggestions
-- Implementing responsible AI practices
-
-**Coordinates with**:
-- `al-architect` (for AI integration architecture)
-- `al-error-handling.instructions.md` (for AI service failures)
-
-**Example**:
-```markdown
-Use al-copilot
-
-Add AI sales forecasting feature to customer card.
-Should analyze historical data and suggest order quantities.
-```
+Earlier releases had separate `al-debugger`, `al-tester`, `al-api` and `al-copilot` agents. They no longer exist. Their knowledge lives in the skills `skill-debug`, `skill-testing`, `skill-api` and `skill-copilot`, which the agents above load when the task needs them. To diagnose an existing defect, use **AL Triage**.
 
 ---
 
@@ -348,22 +252,22 @@ Should analyze historical data and suggest order quantities.
 
 1. **New Feature Development**
    ```
-   al-architect (design) → al-conductor (TDD) → al-debugger (if needed)
+   al-architect (design) → /al-spec-create → al-conductor (TDD) → al-triage (if a defect appears)
    ```
 
 2. **Performance Optimization**
    ```
-   al-debugger (diagnosis) → Execute al-performance.triage → al-architect (redesign)
+   al-triage (diagnosis) → al-developer with skill-performance → al-architect (redesign, if needed)
    ```
 
 3. **Testing Implementation**
    ```
-   al-tester (strategy) → Execute test creation → al-debugger (fix failures)
+   al-conductor (tests first, skill-testing) → al-triage (diagnose failures)
    ```
 
 4. **API Development**
    ```
-   al-architect (overall design) → al-api (endpoint design) → Execute al-build
+   al-architect (design, skill-api) → al-conductor or al-developer (implementation) → /al-build
    ```
 
 ### Mode Handoffs
@@ -371,8 +275,8 @@ Should analyze historical data and suggest order quantities.
 Modes can recommend switching:
 ```markdown
 Architect: "Design complete. Switch to al-conductor for TDD implementation."
-Conductor: "Implementation complete. Execute @workspace /al-build to deploy."
-Debugger: "Root cause identified. Switch to al-architect to redesign this component."
+Conductor: "Implementation complete. Run /al-build to build."
+Triage: "Root cause identified. Hand the fix to al-developer."
 ```
 
 ## 💡 Best Practices
@@ -431,8 +335,8 @@ Run `npm run validate` to verify:
 
 **Framework Compliance**: These agents implement **AI Native-Instructions Architecture** - Layer 2 (Agent Primitives) with clear Tool Boundaries (MCP model), auto-loading Instructions (Layer 1), and strategic Context Engineering (Layer 3).
 
-**Version**: 2.8.0
-**Total Agents**: core set (4 public + 3 orchestra subagents) + on-demand specialists (al-triage, dredd) + al-agent-builder
-**Last Updated**: 2026-06-04
+**Version**: 5.3.0
+**Total Agents**: 13 (5 core + 3 on-demand specialists + 4 internal subagents + al-agent-builder)
+**Last Updated**: 2026-11-10
 
 **Usage Philosophy**: Agents are **strategic consultants**, not **code executors**. They analyze, design, and recommend. For execution, they delegate to **Agentic Workflows**.

@@ -15,18 +15,21 @@
 3. Reload VS Code
 ```
 
-### Option 2: NPM
+### Option 2: Terminal installer from a checkout
 ```bash
-npm install github:javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-npx al-collection install
+git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
+git -C ALDC-AL-Development-Collection checkout v5.3.0
+
+# From your AL project folder:
+npm install [path-to]/ALDC-AL-Development-Collection
+npx --no aldc install
 ```
 
-### Option 3: Manual
-```bash
-git clone https://github.com/javiarmesto/ALDC-AL-Development-Collection-for-GitHub-Copilot.git
-cd AL_Copilot_Collection
-node install.js install [your-al-directory]
-```
+The npm registry package is not maintained; install from a checkout, not from the registry.
+
+### Option 3: Copilot CLI, Claude Code or Codex
+
+Follow the [installation guide by surface](./start.md).
 
 **After installation**: Reload VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`)
 
@@ -91,7 +94,7 @@ Step 4: /al-build → Deploy
 ### For Complex Features (🔴 7+ objects)
 ```
 Step 1: Use al-architect mode → Complete architecture
-Step 2: Use al-api mode (if APIs needed)
+Step 2: al-architect loads skill-api (if APIs needed)
 Step 3: Use al-conductor mode → Multi-phase implementation
 Step 4: Use al-developer mode → Performance review (skill-performance)
 Step 5: /al-build → Deploy
@@ -117,7 +120,7 @@ Step 5: /al-build → Deploy
 - ✅ Internal integration events
 - ✅ 2-3 implementation phases
 
-### 🔴 Complex (al-architect + specialists + al-conductor)
+### 🔴 Complex (al-architect + al-conductor)
 - ✅ Extensive scope — broad architectural impact
 - ✅ External APIs or services
 - ✅ OAuth/authentication
@@ -142,12 +145,12 @@ Use al-developer mode   # Performance analysis (loads skill-performance)
 
 ### Specialized Modes
 ```markdown
-Use al-architect mode     # Architecture design
-Use al-conductor mode     # TDD implementation
-Use al-api mode          # REST/OData APIs
-Use al-debugger mode     # Deep diagnostics
-Use al-tester mode       # Testing strategy
-Use al-presales mode     # Project planning & cost estimation
+Use al-architect mode     # Architecture design (loads skill-api, skill-copilot as needed)
+Use al-spec-agent mode    # Technical specification (/al-spec-create)
+Use al-conductor mode     # TDD implementation (tests first)
+Use al-triage mode        # Diagnose an existing bug (read-only)
+Use dredd mode            # Independent audit (read-only)
+Use al-presales mode      # Project planning & cost estimation
 ```
 
 ---
@@ -223,7 +226,7 @@ TECHNICAL CONSIDERATIONS:
 - Test for FlowField
 ```
 
-**✅ Architecture ready** → Automatically saved in `.github/plans/architecture.md`
+**✅ Architecture ready** → Saved in `.github/plans/{req_name}/{req_name}.architecture.md`
 
 ---
 
@@ -445,6 +448,7 @@ While coding, these rules apply **automatically**:
 - ✅ **al-error-handling** → TryFunctions, error labels
 - ✅ **al-events** → Event-driven pattern
 - ✅ **al-testing** → AL-Go structure
+- ✅ **al-security** → Least privilege, SecretText
 
 **You don't need to ask for them**, they just work.
 
@@ -475,14 +479,13 @@ While coding, these rules apply **automatically**:
 3. Open a `.al` file
 
 ### "Modes don't appear"
-1. Check files in `.github/copilot/agents/`
+1. Check files in `.github/agents/`
 2. Reload VS Code
 3. Verify they have `.agent.md` extension
 
 ### "Validation fails"
 ```bash
-npm install
-npm run validate
+node .github/tools/aldc-validate/index.js --config aldc.yaml
 ```
 
 ---
@@ -512,16 +515,16 @@ Use al-architect mode
 
 ### If you have a bug:
 ```markdown
-Use al-debugger mode
+Use al-triage mode
 
 [Describe the problem]
 ```
 
 ---
 
-**Version**: 2.11.0  
+**Version**: 5.3.0 (the Loyalty Points example was validated on 2.11.0)  
 **Reference Model**: [AI Native-Instructions Architecture](https://danielmeppiel.github.io/awesome-ai-native/)  
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-11-10
 
 ---
 

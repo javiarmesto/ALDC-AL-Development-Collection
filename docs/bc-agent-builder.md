@@ -10,10 +10,10 @@
 | Skill | skill-agent-instructions | Generate/review natural language instructions for BC agents |
 | Skill | skill-agent-task-patterns | 8 task integration patterns (Public API, Page Action, Business Event, etc.) |
 | Skill | skill-agent-toolkit | Agent SDK reference: interfaces, setup patterns, troubleshooting, quality checklist |
-| Workflow | al-agent-create | End-to-end coded agent creation (7 phases with gates) |
-| Workflow | al-agent-task | Generate task integration code |
-| Workflow | al-agent-instructions | Generate optimized agent instructions |
-| Workflow | al-agent-test | Test agent SDK integration (6 categories) |
+| Workflow | `/al-agent-create` | End-to-end coded agent creation (7 phases with gates) |
+| Workflow | `/al-agent-task` | Generate task integration code |
+| Workflow | `/al-agent-instructions` | Generate optimized agent instructions |
+| Workflow | `/al-agent-test` | Test agent SDK integration (6 categories) |
 | Instruction | al-agent-toolkit | Agent SDK reference and conventions |
 | Tool | scaffold_agent.py | Python scaffolder for Agent Template structure |
 | Tool | validate_agent_config.sh | Bash validator for agent SDK configuration |
@@ -70,7 +70,7 @@ python tools/bc-agents/scaffold_agent.py --name "My Agent" --prefix "MA" --range
 
 ## Requirements
 
-- ALDC Core v1.1 (for integrated mode)
+- ALDC Core v1.2 (for integrated mode)
 - Business Central v25+ with AI Development Toolkit
 - GitHub Copilot or Claude Code
 

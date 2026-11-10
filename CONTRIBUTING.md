@@ -53,7 +53,7 @@ graph LR
 
 **Key Points**:
 - ✅ **Fork** the repository (don't request direct write access)
-- ✅ **Add** your instructions, prompts, or agents
+- ✅ **Add** your instructions, workflow skills, or agents
 - ✅ **Validate** locally before submitting
 - ✅ **Submit** pull request for review
 - ✅ **Maintainers** will validate and merge
@@ -202,17 +202,17 @@ Instructions are **Markdown Prompt Engineering** (Layer 1) files that customize 
 ```yaml
 ---
 description: 'Clear description of what this instruction provides'
-globs: ["*.al", "*.json"]  # File patterns this applies to
-alwaysApply: true          # or false for contextual activation
+applyTo: "**/*.al"  # Glob of the files this rule applies to
 ---
 ```
 
-### Prompts
+### Workflow skills
 ```yaml
 ---
-mode: 'agent'
-description: 'Clear description of what this prompt accomplishes'
-tools: ['tool1', 'tool2', 'tool3']  # AL tools or VS Code tools used
+name: al-[task]                 # must match the folder name
+description: 'Clear description of what this workflow accomplishes'
+argument-hint: 'What to type after the command'
+disable-model-invocation: true  # runs only as a slash command
 ---
 ```
 
@@ -244,7 +244,7 @@ Before submitting a pull request:
 
 4. **Update the collection manifest**:
    - Add your file to `collections/al-development.collection.yml`
-   - Use correct `kind`: `instruction`, `prompt`, or `agent`
+   - Use correct `kind`: `instruction`, `skill`, or `agent`
    - For agents, add `usage` guidance
 
 Example manifest entry:
@@ -273,13 +273,13 @@ Example manifest entry:
 
 2. **Clone your fork locally**:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/AL-Development-Collection-for-GitHub-Copilot.git
-   cd AL-Development-Collection-for-GitHub-Copilot
+   git clone https://github.com/YOUR-USERNAME/ALDC-AL-Development-Collection.git
+   cd ALDC-AL-Development-Collection
    ```
 
 3. **Add the upstream remote** (to keep your fork in sync):
    ```bash
-   git remote add upstream https://github.com/javiarmesto/AL-Development-Collection-for-GitHub-Copilot.git
+   git remote add upstream https://github.com/javiarmesto/ALDC-AL-Development-Collection.git
    ```
 
 ### Step 2: Create Your Contribution
@@ -298,7 +298,7 @@ Example manifest entry:
    
    Use descriptive branch names:
    - `feature/al-security-instructions` - New instruction file
-   - `feature/al-deployment-prompt` - New prompt file
+   - `feature/al-deployment-workflow` - New workflow skill
    - `feature/al-integration-agent` - New agent mode
    - `fix/update-documentation` - Documentation fixes
 
@@ -329,7 +329,7 @@ Example manifest entry:
    
    Good commit message examples:
    - ✅ "Add AL security instructions for OAuth2 authentication"
-   - ✅ "Create deployment automation prompt with AL-Go integration"
+   - ✅ "Create deployment automation workflow with AL-Go integration"
    - ✅ "Fix: Update performance instructions with BC24 patterns"
    - ❌ "update files"
    - ❌ "changes"
@@ -353,7 +353,7 @@ Example manifest entry:
 3. **PR Title Format**:
    - `feat: Add AL security instructions for OAuth2`
    - `docs: Update CONTRIBUTING guide with fork workflow`
-   - `fix: Correct frontmatter in performance prompt`
+   - `fix: Correct frontmatter in performance instructions`
 
 4. **Wait for automated validation**:
    - GitHub Actions will run validation automatically
@@ -432,7 +432,7 @@ Before submitting your PR, ensure:
 1. Copy your file(s) to a test AL project
 2. Open relevant AL files
 3. Verify Copilot suggestions follow your instructions
-4. Test prompts or agents work as expected
+4. Test workflows or agents work as expected
 5. Ensure no conflicts with existing files
 
 ## 🎯 What Makes a Good Contribution
@@ -443,7 +443,7 @@ Before submitting your PR, ensure:
 - ✅ Include both good and bad patterns
 - ✅ Don't overlap with existing instructions
 
-### Good Prompt Files
+### Good Workflow Skills
 - ✅ Solve a common AL development task
 - ✅ Use available AL tools effectively
 - ✅ Provide step-by-step workflow

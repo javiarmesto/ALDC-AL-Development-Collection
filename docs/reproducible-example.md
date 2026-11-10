@@ -10,7 +10,7 @@ This document guides you step-by-step to reproduce the complete loyalty points s
 
 - ✅ VS Code with AL Language extension
 - ✅ GitHub Copilot active
-- ✅ AL Development Collection installed (v2.11.0+)
+- ✅ AL Development Collection installed (5.3.0)
 - ✅ AL project initialized or BC sandbox available
 - ⏱️ Estimated time: 2 hours
 
@@ -26,19 +26,17 @@ ls .github/agents/
 
 # You should see:
 # - al-architect.agent.md
+# - al-spec-agent.agent.md
 # - al-conductor.agent.md
-# - al-debugger.agent.md
 # - al-developer.agent.md
-# - al-tester.agent.md
-# - al-api.agent.md
-# - al-copilot.agent.md
+# - al-presales.agent.md
+# (13 agent files in total)
 ```
 
 If you don't see them:
 ```bash
-# Reinstall
-npm install github:javiarmesto/AL-Development-Collection-for-GitHub-Copilot
-npx al-collection install
+# Reinstall from VS Code
+Ctrl+Shift+P → "AL Collection: Install Toolkit to Workspace"
 
 # Reload VS Code
 Ctrl+Shift+P → "Developer: Reload Window"
@@ -152,7 +150,7 @@ BUSINESS RULES:
 - [ ] UI: Customer Card extension + History page
 - [ ] Testing plan with specific cases
 
-**📝 Generated documentation**: `.github/plans/architecture.md`
+**📝 Generated documentation**: `.github/plans/{req_name}/{req_name}.architecture.md`
 
 ---
 
@@ -379,11 +377,10 @@ Verify you have:
 **Generated tests** (`Test/`):
 - [ ] `LoyaltyTests.Codeunit.al` (63 test functions)
 
-**Generated documentation** (`.github/plans/`):
-- [ ] `architecture.md` (al-architect design)
-- [ ] `implementation-plan.md` (al-conductor phases)
-- [ ] `test-results.md` (test results)
-- [ ] `review-notes.md` (AL Code Review Subagent feedback)
+**Generated documentation** (`.github/plans/{req_name}/`):
+- [ ] `{req_name}.architecture.md` (al-architect design)
+- [ ] `{req_name}-plan.md` (al-conductor phases)
+- [ ] `{req_name}-phase-N-complete.md` (per-phase results and AL Code Review Subagent feedback)
 
 **Metrics**:
 - [ ] 10 AL objects created
@@ -453,15 +450,14 @@ mindmap
 
 ### Error: "al-architect mode not found"
 ```bash
-# Reinstall the collection
-npm install github:javiarmesto/AL-Development-Collection-for-GitHub-Copilot --force
-npx al-collection install
+# Update the toolkit from VS Code
+Ctrl+Shift+P → "AL Collection: Update Toolkit"
 # Reload VS Code
 ```
 
 ### Tests fail after implementation
 ```markdown
-Use al-debugger mode
+Use al-triage mode
 
 The loyalty points tests are failing with error:
 [describe the specific error you see]
@@ -504,8 +500,8 @@ Now that you master the complete flow:
 
 ---
 
-**Last updated**: 2026-02-06  
-**Version**: 2.11.0  
+**Last updated**: 2026-11-10 (agent and command names; the walkthrough was validated on 2.11.0)  
+**Version**: 5.3.0  
 **Validation**: ✅ 24/24 checks passed  
 **Average time**: 2 hours  
 **Difficulty**: 🟡 MEDIUM
