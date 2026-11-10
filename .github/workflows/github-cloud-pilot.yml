@@ -1,0 +1,48 @@
+name: GitHub cloud pilot tooling
+on:
+  pull_request:
+    paths:
+      - 'tools/github-pilot/**'
+      - 'scripts/generation-utils.js'
+      - 'scripts/install-transaction.js'
+      - 'agents/**'
+      - 'skills/**'
+      - 'instructions/**'
+      - 'prompts/**'
+      - 'docs/templates/**'
+      - 'docs/framework/**'
+      - 'docs/schema/**'
+      - 'aldc.yaml'
+      - '.github/workflows/github-cloud-pilot.yml'
+  push:
+    paths:
+      - 'tools/github-pilot/**'
+      - 'scripts/generation-utils.js'
+      - 'scripts/install-transaction.js'
+      - 'agents/**'
+      - 'skills/**'
+      - 'instructions/**'
+      - 'prompts/**'
+      - 'docs/templates/**'
+      - 'docs/framework/**'
+      - 'docs/schema/**'
+      - 'aldc.yaml'
+      - '.github/workflows/github-cloud-pilot.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts
+      - run: node --test tools/github-pilot/test-project.js
+      - run: python -B tools/github-pilot/test_prepare.py

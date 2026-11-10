@@ -1,0 +1,12 @@
+**/.alpackages/
+.artifacts/
+.bcquality/
+node_modules/
+__pycache__/
+*.pyc
+*.app
+*.appsourcecop.json
+.env
+.env.*
+.vscode/launch.json
+.aldc-install/
