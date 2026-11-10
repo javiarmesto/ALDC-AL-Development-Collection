@@ -195,7 +195,6 @@ optional:
     - "prompts/al-agent.task.prompt.md"
     - "prompts/al-agent.instructions.prompt.md"
     - "prompts/al-agent.test.prompt.md"
-    - "prompts/al-agent.build-instructions.prompt.md"
   instructions:
     - "instructions/al-agent-toolkit.instructions.md"
   tools:

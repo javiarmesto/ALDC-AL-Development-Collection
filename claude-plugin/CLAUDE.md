@@ -43,7 +43,6 @@ Explicitly invoked; `disable-model-invocation: true` keeps the model from firing
 | `/aldc:al-agent-create` | `prompts/al-agent.create.prompt.md` |
 | `/aldc:al-agent-task` | `prompts/al-agent.task.prompt.md` |
 | `/aldc:al-agent-instructions` | `prompts/al-agent.instructions.prompt.md` |
-| `/aldc:al-agent-build-instructions` | `prompts/al-agent.build-instructions.prompt.md` |
 | `/aldc:al-agent-test` | `prompts/al-agent.test.prompt.md` |
 
 ## Rules

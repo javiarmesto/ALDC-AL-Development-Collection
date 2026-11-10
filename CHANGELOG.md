@@ -35,6 +35,15 @@
 - Not verified in a host: `/al-*` commands appearing in VS Code (Local and Copilot
   harnesses) after an update, and the Migrations view no longer listing ALDC prompts.
 
+### Removed — Claude Code edition 5.3.0 drops the duplicate workflow skill
+
+- `/aldc:al-agent-build-instructions` is gone from the maintained Claude Code plugin. It
+  was the adapter of the removed `al-agent.build-instructions` and did the same as
+  `/aldc:al-agent-instructions`, which stays. The plugin now ships 10 workflow skills.
+- Payload relocked; the Claude edition moves from 5.2.1 to 5.3.0. Its other workflow
+  skills are unchanged and still name the prompt file each one was adapted from.
+- Not verified in a host: the command list after `claude plugin update`.
+
 ## [5.2.1] - 2026-11-06
 
 ### Fixed — internal subagents launch in the Copilot harness and Copilot CLI

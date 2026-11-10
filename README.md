@@ -36,7 +36,7 @@ See [what changed in 5.3.0](#what-changed-in-530), [in 5.2.1](#what-changed-in-5
 | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=javierarmestogonzalez.al-development-collection) | See Marketplace badge | Copilot Chat extension and packaged toolkit; existing projects adopt new contracts through Update Toolkit. |
 | [Latest GitHub release](https://github.com/javiarmesto/ALDC-AL-Development-Collection/releases/tag/v5.1.1) | v5.1.1 | Tagged source and toolkit archive; a separate delivery from the VSIX. |
 | 5.3.0 | Root package, Copilot catalogs and generated CLI/Codex distributions 5.3.0 | Prepared source; publication to Marketplace, GitHub releases and npm is separate. |
-| [Claude Code edition](claude-plugin/) | 5.2.1 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
+| [Claude Code edition](claude-plugin/) | 5.3.0 | Maintained independently, with its own agents, hooks, contracts and release evolution. |
 
 Claude Code remains part of ALDC, with a shared engineering foundation and its own
 maintained agents, hooks, contracts and release evolution. Its surface changes are
@@ -504,7 +504,7 @@ ALDC is available as a native **Claude Code** integration in two forms:
 | Primitive | Direct (`.claude/`) | Plugin (`aldc:`) | Count |
 | --------- | ------------------- | ---------------- | ----- |
 | Agents | `.claude/agents/` | `agents/` | 9 public + 3 internal |
-| Skills | `.claude/skills/` | `skills/` | 16 knowledge modules + 9 role entries + 11 workflows |
+| Skills | `.claude/skills/` | `skills/` | 16 knowledge modules + 9 role entries + 10 workflows |
 | Rules | `.claude/rules/` | `rules/` (injected via `al-initialize`) | 8 coding standards |
 | MCP Servers | `.mcp.json` | `.mcp.json` | 3 servers |
 | Hooks | `.claude/settings.json` | `hooks/hooks.json` | 2 hooks |
@@ -619,7 +619,7 @@ AL-Development-Collection-for-GitHub-Copilot/
 ├── claude-plugin/                        # independently maintained Claude Code edition
 │   ├── .claude-plugin/plugin.json        # Plugin manifest
 │   ├── agents/                           # 12 agents (auto-discovered)
-│   ├── skills/                           # 9 role entries + 11 workflows + 16 knowledge
+│   ├── skills/                           # 9 role entries + 10 workflows + 16 knowledge
 │   ├── hooks/hooks.json                  # PostToolUse + Stop hooks
 │   ├── rules/                            # 8 rules (injected via al-initialize)
 │   ├── .mcp.json                         # 3 MCP servers
@@ -734,7 +734,7 @@ MIT — See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.3.0 · **Claude Code:** 5.2.1 · **VS Code Marketplace:** see badge
+**Status:** ALDC Core v1.2 COMPLIANT · **Distributions:** Copilot Chat / CLI, Claude Code, Codex · **Root package:** 5.3.0 · **Claude Code:** 5.3.0 · **VS Code Marketplace:** see badge
 
 </div>
 
