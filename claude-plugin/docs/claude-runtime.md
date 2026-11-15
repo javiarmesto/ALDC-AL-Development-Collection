@@ -80,3 +80,6 @@ Claude Code has no such button, so the gate is the role's to keep.
 | handoff | A delegation or a recommendation to the user, under the gate rules above |
 | `<Name from $ARGUMENTS>` | Take it from the skill arguments; ask with `AskUserQuestion` when missing |
 | `.instructions.md` | The matching rule in `${CLAUDE_PLUGIN_ROOT}/rules/` |
+| `al-symbols-mcp/*`, `context7`, `microsoft-docs` | `mcp__al-symbols-mcp__*`, `mcp__context7__*`, `mcp__microsoft-docs__*` (or the `mcp__plugin_aldc_…` form) |
+| A bare `al_<tool>` name | The official AL MCP tool `mcp__al__al_<tool>`, only if your role is granted it (tooling guide) |
+| **[human]** in a workflow step | A VS Code command or CI step: prepare it and hand it to the user |

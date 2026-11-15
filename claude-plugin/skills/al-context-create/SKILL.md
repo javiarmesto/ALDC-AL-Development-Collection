@@ -28,13 +28,13 @@ This enables AI assistants to load complete project context quickly and make inf
 **Load project metadata:**
 ```powershell
 # Get app.json configuration
-@read_file app.json
+Read app.json
 
 # Understand dependencies
-@al_get_package_dependencies
+mcp__al__al_getpackagedependencies   # when the official AL MCP is connected
 
 # Map directory structure
-@list_dir src/
+Glob src/**
 ```
 
 **Identify key patterns:**
@@ -290,17 +290,10 @@ src/
 ## 15. Useful Commands
 
 ```powershell
-# Build project
-al_build
-
-# Download symbols
-al_downloadsymbols
-
-# Run tests
-@workspace /al-test
-
-# Generate permissions
-al_generatepermissionset
+# Build project: agent mcp__al__al_build, or VS Code "AL: Package"
+# Download symbols: agent mcp__al__al_downloadsymbols, or VS Code "AL: Download Symbols"
+# Run tests: aldc.yaml -> testing.runner, or VS Code Test Explorer (human)
+# Generate permissions: VS Code "AL: Generate permission set" (human)
 ```
 
 ## 16. References

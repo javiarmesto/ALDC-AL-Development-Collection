@@ -1,7 +1,7 @@
 ---
 name: al-implement-subagent
-description: TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via runSubagent.
-tools: Read, Glob, Grep, LSP, Write, Edit, Bash, Task, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, mcp__al__al_compile, mcp__al__al_build, mcp__al__al_downloadsymbols, Skill
+description: TDD Implementation Subagent — Creates AL objects following strict RED→GREEN→REFACTOR cycle. Only invokable by al-conductor via the Agent tool.
+tools: Read, Glob, Grep, LSP, Write, Edit, Bash, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, mcp__al__al_compile, mcp__al__al_build, mcp__al__al_downloadsymbols, Skill
 model: sonnet
 color: yellow
 ---
@@ -127,7 +127,7 @@ end;
 - You **MUST NOT** modify base objects — extension-only
 - You **MUST** follow the spec and architecture documents provided by the Conductor
 - You **MUST** report back: objects created, **event subscribers (exact base object + event name + signature)**, tests created, test results, build status, any issues
-- **Don't re-read a file already in context.** If you already read a spec/architecture excerpt, a source file, or a skill this invocation, reuse it — do not issue another `read_file` for the same path.
+- **Don't re-read a file already in context.** If you already read a spec/architecture excerpt, a source file, or a skill this invocation, reuse it — do not issue another `Read` for the same path.
 - **Resolve base-app symbols from symbols — and if you can't, ask; don't hunt.** Resolve event signatures and base-object members via `al_symbolsearch` / `al-symbols-mcp/*` against `.alpackages/` (authoritative for symbol facts). If a symbol or event the spec names **cannot be resolved** (e.g. the event does not exist in this BC version), **stop and surface it as a blocker / end-of-phase open question** in your return to the Conductor — don't burn turns guessing it via web/mirror searches, and never invent a signature.
 
 </boundary_rules>

@@ -253,7 +253,7 @@ Use AL Symbols MCP if available:
 ```markdown
 ## Complexity Metrics
 
-**Object Analysis** (use al-symbols-mcp/al_search_objects):
+**Object Analysis** (use `mcp__al-symbols-mcp__al_search_objects`):
 - Tables: [count] - Complexity: [Low/Med/High per table]
 - Pages: [count] - Complexity: [Low/Med/High per page]
 - Codeunits: [count] - Complexity: [Low/Med/High per codeunit]

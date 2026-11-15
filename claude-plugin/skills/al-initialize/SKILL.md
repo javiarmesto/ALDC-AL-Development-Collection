@@ -199,15 +199,12 @@ Create or update `.vscode/settings.json` in the workspace root:
 
 ### Choose Project Type
 
-**For New Projects:**
+**For New Projects [human]:**
 ```
-al_new_project
+VS Code: AL: Go!
 ```
 
-**For Existing Folders:**
-```
-al_go
-```
+**For Existing Folders:** keep the existing `app.json`; nothing to scaffold.
 
 ### Project Structure
 
@@ -240,16 +237,16 @@ Implement feature-based organization:
 
 Download required symbols:
 ```
-al_download_symbols
+mcp__al__al_downloadsymbols   # or [human] VS Code: AL: Download Symbols
 ```
 
 Verify all base application dependencies are available.
 
 ### Generate Manifest
 
-Create manifest file:
+Create or review the manifest (`app.json`) [human]:
 ```
-al_generate_manifest
+VS Code: edit app.json (id, name, publisher, version, idRanges, dependencies)
 ```
 
 **Human Review:** Validate manifest contents before proceeding.
@@ -445,15 +442,15 @@ end;
 ### Authentication Issues
 
 If authentication fails:
-- Use `al_clear_credentials_cache` to clear cached credentials
+- [human] VS Code: AL: Clear credentials cache
 - Re-authenticate when prompted
 - Verify launch.json authentication method is correct
 
 ### Symbol Issues
 
 If symbols are missing:
-1. Download symbols: `al_download_symbols`
-2. If persistent, download source: `al_download_source`
+1. Download symbols: `mcp__al__al_downloadsymbols` (or [human] VS Code: AL: Download Symbols)
+2. If persistent, [human] VS Code: AL: Download source code
 3. Verify app.json dependencies match BC version
 
 ### AI Suggestions Not Appearing

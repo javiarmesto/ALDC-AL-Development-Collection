@@ -103,7 +103,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
    > **Resolve BCQuality selection once per host/configuration.** Read and apply [the shared BCQuality provider contract](${CLAUDE_PLUGIN_ROOT}/docs/templates/bcquality-provider-contract.md). Resolve the current project configuration, select plugin or external-multiroot, and honor enabled=false without probing. Consume a passed selection and task-context; otherwise resolve them once. Load instructions in this executing context and distinguish discovered, loaded, executed and index generation. Use only observed revision/version in evidence. Missing or incompatible BCQuality never blocks native review. Pass selection, expected identity and actual observations separately. A parent load is not a child load; require fresh execution evidence for each phase's inputs. Do not run a review during specification-only work.
 
-3. **Delegate Research**: Use `#runSubagent` to invoke **AL Planning Subagent** (icon 🔍). **Pass the resolved BCQuality decision** so it records it in its findings (evidenced). Instruct it to:
+3. **Delegate Research**: Use the `Agent` tool to invoke **AL Planning Subagent** (icon 🔍). **Pass the resolved BCQuality decision** so it records it in its findings (evidenced). Instruct it to:
    - Analyze AL codebase structure and dependencies
    - Identify relevant AL objects (Tables, Pages, Codeunits, etc.)
    - Understand event architecture and extension patterns
@@ -161,7 +161,7 @@ For each phase in the plan, execute this 4-step cycle:
 
 #### 2A. Implement Phase
 
-Invoke **AL Implementation Subagent** (💻) via `#runSubagent` with:
+Invoke **AL Implementation Subagent** (💻) via the `Agent` tool with:
 - Phase number and objective
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the spec section for this phase's objects, the architecture decisions it must honor, and the test-plan tests scoped to it — not bare file references. Include the file paths as the escape hatch.
 - AL objects to create/modify (TableExtension, Codeunit, Page, etc.)
@@ -180,7 +180,7 @@ Invoke **AL Implementation Subagent** (💻) via `#runSubagent` with:
 
 Review subagent MUST run after EVERY phase, even with 0 build errors. **Build success ≠ review approval. NEVER skip review.**
 
-Invoke **AL Code Review Subagent** (✅) via `#runSubagent` with:
+Invoke **AL Code Review Subagent** (✅) via the `Agent` tool with:
 - Phase objective and acceptance criteria
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.claude/plans/` files only if a detail is missing.
 - **BCQuality selection + task-context inline.** Pass the current mode, enabled value, exact plugin ID/skill or external root, expected identity and scoped observations. Build task-context only for an applicable review. The reviewer loads its own instructions and records actual results; disabled/unavailable uses native A–G.
@@ -507,7 +507,7 @@ fix/feat/chore/test/refactor: Short description (max 50 characters)
 
 ## State Tracking
 
-Use `#todos` tool to track progress at **milestone boundaries only**: at the start of a phase, after a logical work block of 3-5 actions completes, and at HITL pause points. Do NOT update the todo after every tool call — that wastes turns. Provide ongoing status updates in chat responses using the Visual Progress Format above; the `#todos` tool is for persistence, the chat is for ongoing visibility. When you must update the todo, batch multiple state transitions into a single call.
+Use `TodoWrite` to track progress at **milestone boundaries only**: at the start of a phase, after a logical work block of 3-5 actions completes, and at HITL pause points. Do NOT update the todo after every tool call — that wastes turns. Provide ongoing status updates in chat responses using the Visual Progress Format above; `TodoWrite` is for in-session tracking (durable state stays in `.claude/plans/`), the chat is for ongoing visibility. When you must update the todo, batch multiple state transitions into a single call.
 
 **🚨 CRITICAL PAUSE POINTS** — STOP and wait for user input at:
 1. After presenting the plan (before starting implementation)
@@ -520,7 +520,7 @@ DO NOT proceed past these points without explicit user confirmation.
 
 ## Integration with Specialized Agents
 
-### You DELEGATE to (via runSubagent):
+### You DELEGATE to (via the Agent tool):
 - ✅ al-planning-subagent (research)
 - ✅ al-implement-subagent (TDD implementation — tests FIRST, then code)
 - ✅ al-review-subagent (code review)
@@ -701,7 +701,7 @@ ALWAYS check for existing context in `.claude/plans/`:
 
 You have already read memory.md, architecture.md, spec.md, and test-plan.md (§"Context Files to Read Before Orchestration"). Subagents start with a **fresh context** and do **not** share yours — so do not merely point them at the files and let them re-read everything. That spends a full re-read of spec + architecture + test-plan + memory (and the same skill files) on **every** phase invocation.
 
-Instead, **pass phase-relevant excerpts inline** in the `#runSubagent` instruction:
+Instead, **pass phase-relevant excerpts inline** in the `Agent` call prompt:
 - **Spec excerpt** — only the section(s) covering this phase's objects (object IDs, field types, procedure signatures), not the whole spec.
 - **Architecture decisions** — only the decisions/constraints this phase must honor (e.g. "use CalcSums, not a FlowField"; "publish IntegrationEvent X"), not the full document.
 - **Test-plan excerpt** — only the tests scoped to this phase.
@@ -709,9 +709,9 @@ Instead, **pass phase-relevant excerpts inline** in the `#runSubagent` instructi
 - **The 7 always-on instruction micro-rules** (`${CLAUDE_PLUGIN_ROOT}/rules/al-*.md`) — read them **once** at run start and pass them inline to **every** code-touching subagent (implement, review). They are tiny (~1.3K tokens total) hard-rule baselines, and the `applyTo` auto-apply does **not** fire in subagent runtime (no attached files) — so injecting them is the only way they take effect. **Not optional, not per-domain**: pass all seven on every code phase. They are the floor; the depth lives in the skills they point to.
 - **Domain skill *hints*** — name the skills likely relevant to this phase's domain (e.g. `skill-events` for an event phase). These are **hints, not mandates**: the subagent loads the `SKILL.md` on demand when it enters the domain, and may load a skill you didn't hint if it finds it needs one.
 
-Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.claude/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `read_file` round-trips per subagent invocation.
+Tell the subagent: **the excerpts are authoritative for this phase; read the full file under `.claude/plans/` only if a referenced detail is missing from the excerpt.** Always include the file path so that escape hatch works. This trades a few KB in the invocation prompt for eliminating 5–8 redundant `Read` round-trips per subagent invocation.
 
-> **Don't re-read what's already in context (yours or theirs).** Within a single invocation, a file read once must be **reused, not re-read** — measured runs show the same source `.al`/`spec`/`memory` read 5–7× in one review, each re-injecting the file into the growing context. Instruct subagents: *"if you already read a path this invocation, reuse it; do not `read_file` it again."*
+> **Don't re-read what's already in context (yours or theirs).** Within a single invocation, a file read once must be **reused, not re-read** — measured runs show the same source `.al`/`spec`/`memory` read 5–7× in one review, each re-injecting the file into the growing context. Instruct subagents: *"if you already read a path this invocation, reuse it; do not `Read` it again."*
 
 > Scope: this governs the per-phase implement/review invocations. The same principle now covers the **BCQuality task-context** — you build it (per `${CLAUDE_PLUGIN_ROOT}/docs/templates/bcquality-task-context.md`) and pass it inline, since you already hold `app.json` and the phase's changed objects. The review subagent still reads the selected BCQuality provider itself (the knowledge files), but no longer re-derives the task-context.
 
