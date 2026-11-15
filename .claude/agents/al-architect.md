@@ -63,11 +63,11 @@ Workflow: al-architect (DESIGN) → al-spec.create (DETAIL) → @al-conductor (I
    └─> Read architecture.md → create {req_name}.spec.md
 
 3. After human approval of the current spec: @al-conductor (IMPLEMENT)
-   ├─> al-planning-subagent: Gather AL context
-   ├─> al-implement-subagent: TDD cycle per phase
-   └─> al-review-subagent: Quality gates
+   ├─> al-researcher: Gather AL context
+   ├─> al-implementer (mode phase): TDD cycle per phase
+   └─> al-reviewer (scope phase): Quality gates
 
-4. @al-developer (ADJUST, optional)
+4. @al-implementer (ADJUST, optional, mode direct)
    └─> Quick fixes after completion
 ```
 
@@ -97,7 +97,7 @@ Workflow: al-architect (DESIGN) → al-spec.create (DETAIL) → @al-conductor (I
 
 **If user hasn't approved yet**: present design, ask "Does this architecture meet your requirements?", wait for confirmation, THEN execute above.
 
-**Why this matters**: @al-conductor, al-planning-subagent, and @al-developer all read this file. It preserves cross-session context and ensures implementation aligns with approved design.
+**Why this matters**: @al-conductor, al-researcher, and @al-implementer all read this file. It preserves cross-session context and ensures implementation aligns with approved design.
 
 ## Tool Boundaries
 
@@ -207,7 +207,7 @@ stage `design`). Nothing here gates approval. When you deviate from a house rule
 record the deviation and reason in the architecture document's decisions. Not
 mounted: skip, say so in the evidence line, continue.
 
-For **LOW complexity**: skip architect, use `al-spec.create` → `@al-developer` directly.
+For **LOW complexity**: skip architect, use `al-spec.create` → `@al-implementer` directly.
 </workflow>
 
 ## Common AL Architectural Patterns
@@ -268,7 +268,7 @@ The `> **Skills applied**:` line at the top of the architecture document is **ma
 
 ### Escalate/Handoff When:
 1. ➡️ Architecture approved → handoff to **AL Spec Agent** via al-spec.create; Conductor follows only after human approval of the current spec
-2. ➡️ Simple implementation → **@al-developer** only with a current human-approved LOW spec; otherwise Spec Agent first
+2. ➡️ Simple implementation → **@al-implementer** only with a current human-approved LOW spec; otherwise Spec Agent first
 3. ➡️ API design needed → load `skill-api`
 4. ➡️ AI/Copilot design → load `skill-copilot`
 5. ➡️ Test strategy → load `skill-testing`
@@ -385,8 +385,8 @@ Execute the sequence in **§🚨 Critical: Automatic Architecture Document Creat
 ### Integration with Other Agents
 
 - **@al-conductor** reads architecture.md during planning to align implementation with strategic decisions
-- **al-planning-subagent** uses architecture as research guide, validates findings against design
-- **@al-developer** follows architectural patterns when implementing
+- **al-researcher** uses architecture as research guide, validates findings against design
+- **@al-implementer** follows architectural patterns when implementing
 
 ### End-to-End Integration Pattern
 
