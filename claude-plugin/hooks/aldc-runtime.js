@@ -60,7 +60,7 @@ function bcqualityInstalled() {
   return Object.keys(data.plugins || data).some((k) => /^bcquality@/.test(k));
 }
 
-/** The plugin's AL rules, without frontmatter or adapter banner, for inline injection. */
+/** The plugin's AL rules, without frontmatter (or a leading blockquote in an older copy), for inline injection. */
 function rulesBrief({ includeAgentToolkit = false } = {}) {
   const dir = path.join(PLUGIN_ROOT, 'rules');
   let names = [];
@@ -68,7 +68,7 @@ function rulesBrief({ includeAgentToolkit = false } = {}) {
   if (!includeAgentToolkit) names = names.filter((n) => n !== 'al-agent-toolkit.md');
   return names.map((n) => (read(path.join(dir, n)) || '')
     .replace(/^---[\s\S]*?---\s*/, '')
-    .replace(/^(>.*\r?\n)+\s*/m, '')
+    .replace(/^(>.*\r?\n)+\s*/, '')
     .trim()).filter(Boolean).join('\n\n');
 }
 
