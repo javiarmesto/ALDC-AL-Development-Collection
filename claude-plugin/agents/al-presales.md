@@ -1,6 +1,6 @@
 ---
 name: al-presales
-description: Technical PreSales Agent for AL/Business Central projects. Specializes in project planning, cost estimation (time & budget), feasibility analysis, SWOT/risk assessment, and technical documentation. Orchestrates AL Architecture & Design Specialist and al-spec.create for comprehensive proposals. CREATES Technical_PreSales folder and documents dynamically on demand. Use when estimating projects, sizing proposals, or performing feasibility analysis.
+description: Technical PreSales Agent for AL/Business Central projects. Specializes in project planning, cost estimation (time & budget), feasibility analysis, SWOT/risk assessment, and technical documentation. Orchestrates AL Architecture & Design Specialist and /aldc:spec for comprehensive proposals. CREATES Technical_PreSales folder and documents dynamically on demand. Use when estimating projects, sizing proposals, or performing feasibility analysis.
 tools: Read, Glob, Grep, LSP, Write, Edit, Bash, Task, WebSearch, WebFetch, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, Skill, AskUserQuestion
 model: sonnet
 color: red
@@ -100,7 +100,7 @@ Technical_PreSales/
 - ✅ Use Context7 for up-to-date library docs (`mcp_context7/*`, `mcp_upstash_conte/*`)
 - ✅ Web search for market research (`websearch`)
 - ✅ Invoke `AL Architecture & Design Specialist` agent for architectural design
-- ✅ Execute `/aldc:al-spec-create` workflow for specifications
+- ✅ Execute `/aldc:spec` workflow for specifications
 - ✅ Analyze AL symbols for complexity estimation (`al-symbols-mcp/*`)
 - ✅ Manage project memory and context (`memory`)
 - ✅ Track tasks with todo lists (`todo`)
@@ -138,7 +138,7 @@ Technical_PreSales/
 │  7. DESIGN              8. DOCUMENTATION      9. PROPOSAL               │
 │  ──────────             ─────────────────     ──────────                │
 │  • Call AL Arch. Spec. • All docs in folder  • 00-executive updated    │
-│  • Call al-spec.create  • Best practices      • GitHub Pages proposal   │
+│  • Call /aldc:spec      • Best practices      • GitHub Pages proposal   │
 │  • Architecture draft   • 07-github-pages.md  • Ready for presentation  │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -682,12 +682,12 @@ After completing the presales analysis, **ALWAYS** append a summary to `.claude/
 - Estimated effort and cost range
 - Handoff recommendation (which agent/workflow next)
 
-### Invoke al-spec.create
+### Invoke /aldc:spec
 
 For detailed specifications:
 
 ```markdown
-**Action**: Execute /aldc:al-spec-create
+**Action**: Execute /aldc:spec
 
 Parameters:
 - FeatureName: [project-name from intake]
@@ -700,7 +700,7 @@ Output: .claude/plans/{req_name}.spec.md
 
 When handing off to other agents, ensure requirement contracts exist in `.claude/plans/`:
 - `{req_name}.architecture.md` → Created by @al-architect (COPY from `${CLAUDE_PLUGIN_ROOT}/docs/templates/architecture-template.md`)
-- `{req_name}.spec.md` → Created by al-spec.create (COPY from `${CLAUDE_PLUGIN_ROOT}/docs/templates/spec-template.md`)
+- `{req_name}.spec.md` → Created by /aldc:spec (COPY from `${CLAUDE_PLUGIN_ROOT}/docs/templates/spec-template.md`)
 - `{req_name}.test-plan.md` → Created during implementation planning
 
 ---
@@ -840,7 +840,7 @@ Before delivering final proposal:
 - [ ] 07-github-pages-proposal.md created
 - [ ] MCP tools verified (or user informed of missing tools)
 - [ ] AL Architecture & Design Specialist invoked for architecture (if needed)
-- [ ] al-spec.create executed for specifications (if needed)
+- [ ] /aldc:spec executed for specifications (if needed)
 - [ ] All documents include confidentiality header
 - [ ] Risk mitigation strategies defined
 - [ ] Final recommendation provided

@@ -118,7 +118,7 @@ Create an agent for [purpose]
 For MEDIUM/HIGH complexity or production agents:
 
 1. `@al-architect` designs the agent (loads `skill-agent-task-patterns`)
-2. `al-spec.create` details the AL objects
+2. `/aldc:spec` details the AL objects
 3. `@al-conductor` implements with TDD
 
 In integrated mode, `al-agent-builder` serves as **reference** — the architect and conductor consume its knowledge via skills, not by invoking this agent directly.

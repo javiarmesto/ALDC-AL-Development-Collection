@@ -11,7 +11,7 @@ color: cyan
 # AL Spec Agent — canonical specification contract
 
 This role is the single behavioral contract for direct invocation and
-`al-spec.create`. Produce one bounded, implementable specification at
+`/aldc:spec`. Produce one bounded, implementable specification at
 `.claude/plans/{req_name}/{req_name}.spec.md`. Preserve the existing filename
 when revising an Architect-assigned unit. Do not introduce another artifact
 family or an automatic decomposition/scheduling system.

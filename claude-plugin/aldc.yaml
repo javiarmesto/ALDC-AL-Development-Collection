@@ -138,8 +138,11 @@ required:
     - "agents/dredd.md"
     - "agents/al-planning-subagent.md"
 
-  workflows:
+  # Deprecated workflow alias (5.4.0), removed in 6.0.0: /aldc:al-spec-create -> /aldc:spec.
+  deprecatedWorkflows:
     - "skills/al-spec-create/SKILL.md"
+
+  workflows:
     - "skills/al-build/SKILL.md"
     - "skills/al-pr-prepare/SKILL.md"
     - "skills/al-memory-create/SKILL.md"

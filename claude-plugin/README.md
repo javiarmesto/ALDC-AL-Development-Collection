@@ -22,8 +22,8 @@ From a clone, register this directory as a local marketplace:
 
 Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 16 agents
 (10 core agents and 6 deprecated aliases),
-9 role entry skills, 10 workflow skills and
-16 knowledge skills, all prefixed `aldc:`. Plugin loading,
+9 role entry skills, 9 workflow skills (plus the deprecated
+`al-spec-create` alias) and 16 knowledge skills, all prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local
 verification; installation certifies none of them.
 
@@ -47,7 +47,7 @@ claude-plugin/
 ├── .claude-plugin/marketplace.json # marketplace entry
 ├── agents/                         # 10 agent contracts + 6 deprecated aliases
 ├── skills/<role>/                  # 9 short role entry skills
-├── skills/<workflow>/              # 10 explicit workflow skills
+├── skills/<workflow>/              # 9 explicit workflow skills + 1 deprecated alias
 ├── skills/skill-*/                 # 16 knowledge skills
 ├── rules/                          # 9 path-scoped AL rules
 ├── docs/claude-runtime.md          # binding runtime rules on this surface
@@ -108,6 +108,9 @@ their names (`/aldc:develop`, `/aldc:review`, `/aldc:audit`, `/aldc:conduct`).
 | `al-review-subagent` | `al-reviewer`, scope `phase` |
 | `dredd` | `al-reviewer`, scope `audit` |
 | `al-planning-subagent` | `al-researcher` |
+
+The `/aldc:al-spec-create` workflow is now a deprecated alias of `/aldc:spec`, the
+one specification entry; it reads `skills/spec/SKILL.md` and is removed in 6.0.0.
 
 Behaviour changes: `al-reviewer` has no write or shell tool in any scope, so
 `/aldc:audit` computes the changed-file list with `git diff` and saves the returned

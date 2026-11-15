@@ -388,3 +388,24 @@ test('5.4.0: Conductor gates, hard stops and artifact paths stay reachable; temp
   for (const h of ['**BCQuality Evidence:**', '**Build and test evidence:**', '**Git Commit Message:**', 'never the configured pin as proof'])
     assert.ok(phase.includes(h), 'phase-complete template: ' + h);
 });
+
+test('5.4.0: /aldc:spec is the one specification entry and al-spec-create a deprecated alias of it', () => {
+  const alias = front(path.join(PLUGIN, 'skills', 'al-spec-create', 'SKILL.md'));
+  assert.strictEqual(alias.data.name, 'al-spec-create');
+  assert.strictEqual(alias.data['disable-model-invocation'], 'true', 'the alias stays explicit-only');
+  assert.match(alias.data.description, /^"?Deprecated alias of \/aldc:spec/);
+  assert.match(alias.text, /<!-- aldc-alias-of: spec -->/);
+  assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/skills/spec/SKILL.md'), 'alias reads the entry skill');
+  assert.ok(alias.text.includes('](${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md)'), 'alias still resolves the single role contract');
+  assert.match(alias.text, /removed in 6\.0\.0/);
+  const spec = fs.readFileSync(path.join(PLUGIN, 'skills', 'spec', 'SKILL.md'), 'utf8');
+  assert.ok(spec.includes('${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md'), 'entry reads the Spec contract');
+  assert.match(spec, /SPEC-ID/, 'entry carries the multi-spec handoff the workflow had');
+  // Nothing in the plugin routes to the alias any more.
+  const dirs = [['agents', AGENTS_DIR], ['skills', path.join(PLUGIN, 'skills')]];
+  for (const [kind, dir] of dirs) for (const f of fs.readdirSync(dir)) {
+    const file = kind === 'agents' ? path.join(dir, f) : path.join(dir, f, 'SKILL.md');
+    if (!fs.existsSync(file) || f === 'al-spec-create' || f === 'spec') continue;
+    assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /al-spec-create|al-spec\.create/, kind + '/' + f + ' routes to the deprecated spec workflow');
+  }
+});

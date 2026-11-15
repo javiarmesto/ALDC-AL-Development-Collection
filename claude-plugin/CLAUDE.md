@@ -63,7 +63,6 @@ Explicitly invoked; `disable-model-invocation: true` keeps the model from firing
 
 | Skill | File |
 |---|---|
-| `/aldc:al-spec-create` | `skills/al-spec-create/SKILL.md` |
 | `/aldc:al-build` | `skills/al-build/SKILL.md` |
 | `/aldc:al-pr-prepare` | `skills/al-pr-prepare/SKILL.md` |
 | `/aldc:al-memory-create` | `skills/al-memory-create/SKILL.md` |
@@ -73,6 +72,9 @@ Explicitly invoked; `disable-model-invocation: true` keeps the model from firing
 | `/aldc:al-agent-task` | `skills/al-agent-task/SKILL.md` |
 | `/aldc:al-agent-instructions` | `skills/al-agent-instructions/SKILL.md` |
 | `/aldc:al-agent-test` | `skills/al-agent-test/SKILL.md` |
+
+`/aldc:al-spec-create` is a deprecated alias of the `/aldc:spec` entry skill (5.4.0,
+removed in 6.0.0): it reads `skills/spec/SKILL.md` and adds a deprecation line.
 
 ## Rules
 
