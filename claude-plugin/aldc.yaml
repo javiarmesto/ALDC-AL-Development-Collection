@@ -4,7 +4,7 @@
 # not copy this file).
 #
 # Work products live under .claude/ in a Claude Code deployment: requirement artifacts
-# in .claude/plans (plans.root) and Dredd's audit reports in .claude/audits (audits.root).
+# in .claude/plans (plans.root) and audit reports in .claude/audits (audits.root).
 # The canonical repository file keeps .github/, which is correct for the Copilot
 # deployment and the VS Code extension package.
 
@@ -46,8 +46,8 @@ autonomy:
 testing:
   runner: ""
 
-# External citable knowledge base: an audit/citation layer for the reviewers, Dredd and
-# Triage (al-code-review), and design knowledge for Architect, Spec and Conductor through
+# External citable knowledge base: an audit/citation layer for al-reviewer (phase,
+# increment and audit scopes) and Triage (al-code-review), and design knowledge for Architect, Spec and Conductor through
 # al-knowledge-consultant (al-knowledge). Does NOT replace instructions or skills.
 external:
   bcquality:
@@ -74,7 +74,7 @@ external:
       skill: "al-code-review"          # BCQuality >= 0.2.0 (renamed upstream in #150)
       expectedVersion: ""             # unset: any installed version is accepted and recorded as observed
       sourceRef: ""
-    consumedBy: ["agents/al-review-subagent.md", "agents/al-developer-reviewer.md", "agents/dredd.md", "agents/al-triage.md", "agents/al-knowledge-consultant.md"]
+    consumedBy: ["agents/al-reviewer.md", "agents/al-triage.md", "agents/al-knowledge-consultant.md"]
     # Missing/incompatible provider: native review, never an AL code defect.
     fallback:
       mode: "skills-mode"        # review natively via instructions + skills
@@ -97,7 +97,7 @@ external:
 plans:
   root: ".claude/plans"
 
-# Where Dredd persists its audit reports. The second work-product folder, read the
+# Where /aldc:audit persists the audit reports of al-reviewer (scope audit). The second work-product folder, read the
 # same way as plans.root and kept beside it (validate_evidence.py takes its
 # --audits-dir default from here).
 audits:
@@ -120,17 +120,23 @@ required:
     - "agents/al-architect.md"
     - "agents/al-spec-agent.md"
     - "agents/al-conductor.md"
-    - "agents/al-developer.md"
-    - "agents/al-developer-reviewer.md"
+    - "agents/al-implementer.md"
+    - "agents/al-reviewer.md"
     - "agents/al-presales.md"
-    - "agents/dredd.md"
     - "agents/al-triage.md"
     - "agents/al-knowledge-consultant.md"
 
   subagents:
-    - "agents/al-planning-subagent.md"
-    - "agents/al-review-subagent.md"
+    - "agents/al-researcher.md"
+
+  # Deprecated aliases (5.4.0), removed in 6.0.0. Each delegates to the agent above.
+  deprecatedAgents:
+    - "agents/al-developer.md"
     - "agents/al-implement-subagent.md"
+    - "agents/al-review-subagent.md"
+    - "agents/al-developer-reviewer.md"
+    - "agents/dredd.md"
+    - "agents/al-planning-subagent.md"
 
   workflows:
     - "skills/al-spec-create/SKILL.md"

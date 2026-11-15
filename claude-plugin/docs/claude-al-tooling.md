@@ -58,9 +58,9 @@ failure. Confirm the candidate directory as well as the plugin name/version.
 `/aldc:<role>` loads instructions into the existing main conversation. Reading an
 agent file does not apply its frontmatter as host permissions. For the agent's
 explicit tool list use `claude --agent aldc:<agent-id>` or genuine host delegation,
-and inspect the resulting tools. Planning and both review roles have no shell,
-file-writing or delegation grant. Dredd retains its pre-existing report-writing
-grant; its report path remains a behavioral limit, not a filesystem sandbox.
+and inspect the resulting tools. `al-researcher` and `al-reviewer` (all three scopes) have no shell,
+file-writing or delegation grant. Since 5.4.0 the audit scope returns its report and
+`/aldc:audit` saves it under `audits.root`, so no reviewer keeps a write grant.
 
 Plugin-agent `mcpServers`, `hooks` and `permissionMode` fields are ignored by Claude.
 Do not use those fields to claim a boundary. Session-wide settings and any parent
@@ -91,8 +91,8 @@ have different names; the shipped community aliases do not identify this server.
 
 | Roles | Additional official AL tools |
 | --- | --- |
-| Architect, Spec, Planning, Presales, Agent Builder, both reviewers, Dredd, Triage | `al_symbolsearch`, `al_getdiagnostics`, `al_getpackagedependencies` |
-| Developer, Implementer | The query set plus `al_compile`, `al_build`, `al_downloadsymbols` |
+| Architect, Spec, Researcher, Presales, Agent Builder, Reviewer, Triage | `al_symbolsearch`, `al_getdiagnostics`, `al_getpackagedependencies` |
+| Implementer (modes `direct` and `phase`) | The query set plus `al_compile`, `al_build`, `al_downloadsymbols` |
 | Conductor | None; delegate to the appropriate role |
 
 There is no `mcp__al__*` grant. Publishing, login and logout are not granted;
@@ -209,9 +209,9 @@ references. Static packaging tests do not satisfy this host smoke test.
 
 - Reuse the already enabled companion; confirm a single active `.al` provider.
 - From Architect or Spec, resolve a real definition and dependency symbol.
-- From a foreground Planning subagent, resolve an App/Test reference. Inspect its
+- From a foreground `al-researcher` subagent, resolve an App/Test reference. Inspect its
   effective tools and confirm there is no shell, write or delegation access.
-- From Developer, compile the authorized App/Test fixture through the discovered
+- From `al-implementer`, compile the authorized App/Test fixture through the discovered
   official MCP and retain the result; reviewers must not receive compile, restore,
   publish or authentication tools. Do not run forbidden operations to test absence.
 - In a compatible sandbox, separately validate one bounded profile and one

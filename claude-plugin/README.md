@@ -20,7 +20,8 @@ From a clone, register this directory as a local marketplace:
 /plugin install aldc@aldc-marketplace
 ```
 
-Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 13 agents,
+Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 16 agents
+(10 core agents and 6 deprecated aliases),
 9 role entry skills, 10 workflow skills and
 16 knowledge skills, all prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local
@@ -44,7 +45,7 @@ required. It copies the path-scoped AL rules to `.claude/rules/`, seeds
 claude-plugin/
 ├── .claude-plugin/plugin.json      # manifest (MCP servers, userConfig)
 ├── .claude-plugin/marketplace.json # marketplace entry
-├── agents/                         # 13 agent contracts
+├── agents/                         # 10 agent contracts + 6 deprecated aliases
 ├── skills/<role>/                  # 9 short role entry skills
 ├── skills/<workflow>/              # 10 explicit workflow skills
 ├── skills/skill-*/                 # 16 knowledge skills
@@ -87,10 +88,33 @@ of connection: a server that is not loaded is `unavailable`, never simulated.
 
 The Microsoft AL MCP is optional and separately configured under user/project
 alias `al`; see [setup and role grants](docs/claude-al-tooling.md). ALDC grants
-its query operations explicitly and compilation/build/restore only to Developer
-and Implementer. It does not start that server or grant publish/authentication.
+its query operations explicitly and compilation/build/restore only to
+`al-implementer`. It does not start that server or grant publish/authentication.
 Optional BC29 profiling/snapshot proxies are granted only to Triage after explicit
 connection setup; see the same guide for capture scope and runtime acceptance.
+
+## Renamed in 5.4.0
+
+Overlapping agents were merged; each old name stays as a deprecated alias until
+6.0.0. An alias keeps its old `aldc:<name>` and the new agent's tools, and tells the
+model to read the new contract and act in the fixed mode below. Entry skills keep
+their names (`/aldc:develop`, `/aldc:review`, `/aldc:audit`, `/aldc:conduct`).
+
+| Old agent | New agent and mode |
+|---|---|
+| `al-developer` | `al-implementer`, mode `direct` |
+| `al-implement-subagent` | `al-implementer`, mode `phase` |
+| `al-developer-reviewer` | `al-reviewer`, scope `increment` |
+| `al-review-subagent` | `al-reviewer`, scope `phase` |
+| `dredd` | `al-reviewer`, scope `audit` |
+| `al-planning-subagent` | `al-researcher` |
+
+Behaviour changes: `al-reviewer` has no write or shell tool in any scope, so
+`/aldc:audit` computes the changed-file list with `git diff` and saves the returned
+Audit-Report under `.claude/audits/` itself; `/aldc:review` passes the changed-file
+list the same way. Report `skill.id` values (`al-review-subagent`,
+`al-developer-reviewer`, `dredd`) are unchanged. Update any caller that launches an
+old name; the aliases are removed in 6.0.0.
 
 ## Requirements
 

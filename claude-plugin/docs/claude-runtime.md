@@ -52,7 +52,7 @@ Claude Code has no such button, so the gate is the role's to keep.
   `unavailable`; never simulate it, rename another tool as it, or claim its result.
 - Diagnostics are not a fresh compile, and a compile is not an executed test. Record
   what did not run as `not-run` or `unavailable`.
-- Compile, build and symbol download belong to Developer and Implementer (official AL
+- Compile, build and symbol download belong to `al-implementer` (official AL
   MCP alias `al`, or an installed ALTool/AL-Go runner through `Bash`). Publishing,
   BC authentication, debugging sessions and running tests against Business Central are
   human or CI steps unless `aldc.yaml -> testing.runner` names a runner.
@@ -65,7 +65,7 @@ Claude Code has no such button, so the gate is the role's to keep.
 | Item | Location |
 |---|---|
 | Requirement artifacts, memory | `.claude/plans/` (`aldc.yaml -> plans.root`) |
-| Dredd audit reports | `.claude/audits/` (`aldc.yaml -> audits.root`) |
+| Audit reports (`al-reviewer` scope `audit`, saved by `/aldc:audit`) | `.claude/audits/` (`aldc.yaml -> audits.root`) |
 | Templates | `${CLAUDE_PLUGIN_ROOT}/docs/templates/` |
 | Skills | `Skill` tool (`aldc:<skill>`), or read `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md` |
 | AL rules | `${CLAUDE_PLUGIN_ROOT}/rules/`; `/aldc:al-initialize` copies them to `.claude/rules/` |
@@ -76,7 +76,7 @@ Claude Code has no such button, so the gate is the role's to keep.
 
 | Term | Meaning here |
 |---|---|
-| `@al-<role>`, `@dredd` | The role `aldc:al-<role>` / `aldc:dredd`; entry skills `/aldc:architect`, `/aldc:spec`, `/aldc:conduct`, `/aldc:develop`, `/aldc:review`, `/aldc:triage`, `/aldc:presales`, `/aldc:agent-builder`, `/aldc:audit` |
+| `@al-<role>` | The role `aldc:al-<role>`; entry skills `/aldc:architect`, `/aldc:spec`, `/aldc:conduct`, `/aldc:develop`, `/aldc:review`, `/aldc:triage`, `/aldc:presales`, `/aldc:agent-builder`, `/aldc:audit` |
 | handoff | A delegation or a recommendation to the user, under the gate rules above |
 | `<Name from $ARGUMENTS>` | Take it from the skill arguments; ask with `AskUserQuestion` when missing |
 | `.instructions.md` | The matching rule in `${CLAUDE_PLUGIN_ROOT}/rules/` |
