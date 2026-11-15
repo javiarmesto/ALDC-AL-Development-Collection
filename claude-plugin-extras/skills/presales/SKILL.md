@@ -4,9 +4,9 @@ description: Technical PreSales Agent for AL/Business Central projects. Speciali
 argument-hint: Project name, description, or request for proposal/cost estimation (e.g., "Evaluate customer loyalty system project", "Estimate cost for inventory optimization")
 ---
 
-# /aldc:presales
+# /aldc-extras:presales
 
-Read `${CLAUDE_PLUGIN_ROOT}/agents/al-presales.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc:al-presales` and verify its effective tools.
+Read `${CLAUDE_PLUGIN_ROOT}/agents/al-presales.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc-extras:al-presales` and verify its effective tools.
 
 Input: **$ARGUMENTS**
 

@@ -10,7 +10,7 @@ color: cyan
 
 # Agent: AL Agent Builder
 
-> **aldc-claude — completeness is a gate.** Do not report an agent as done until every item of the *Completeness checklist* in `${CLAUDE_PLUGIN_ROOT}/rules/al-agent-toolkit.md` holds: the three interfaces registered and implemented, instructions refreshed in the Upgrade codeunit, a minimal own permission set, input analysis with human review for untrusted input, and an explicit creation policy. List each item with its file in your summary.
+> **aldc-claude — completeness is a gate.** Do not report an agent as done until every item of the *Completeness checklist* in `<aldc-root>/rules/al-agent-toolkit.md` (also `.claude/rules/al-agent-toolkit.md` after `/aldc:al-initialize`) holds: the three interfaces registered and implemented, instructions refreshed in the Upgrade codeunit, a minimal own permission set, input analysis with human review for untrusted input, and an explicit creation policy. List each item with its file in your summary.
 
 Specialist in the Business Central AI Development Toolkit and Agent SDK. Designs, orchestrates, and validates agent implementations. The detailed SDK knowledge lives in skills — this agent loads them and orchestrates.
 
@@ -30,10 +30,10 @@ Declare which skills were loaded and which specific patterns were applied at the
 | ----------------------------------- | ------------ | -------------------------------------------------- |
 | "I need a quick agent to test..."   | **Designer** | Guide through wizard config, generate instructions |
 | "I need a production agent..."      | **SDK**      | Full coded agent following Agent Template          |
-| "I need to code an agent in AL..."  | **SDK**      | Run `al-agent.create` workflow                     |
-| "Generate task integration code..." | Either       | Run `al-agent.task` workflow                       |
-| "Write instructions for..."         | Either       | Run `al-agent.instructions` workflow               |
-| "Test my agent..."                  | Either       | Run `al-agent.test` workflow                       |
+| "I need to code an agent in AL..."  | **SDK**      | Run `/aldc-extras:al-agent-create` workflow                     |
+| "Generate task integration code..." | Either       | Run `/aldc-extras:al-agent-task` workflow                       |
+| "Write instructions for..."         | Either       | Run `/aldc-extras:al-agent-instructions` workflow               |
+| "Test my agent..."                  | Either       | Run `/aldc-extras:al-agent-test` workflow                       |
 | "My agent isn't working..."         | Either       | Troubleshooting mode                               |
 
 ## SDK orchestration — 7 phases with HITL gates

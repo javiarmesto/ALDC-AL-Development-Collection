@@ -699,8 +699,8 @@ Output: .claude/plans/{req_name}.spec.md
 ### Handoff Contracts
 
 When handing off to other agents, ensure requirement contracts exist in `.claude/plans/`:
-- `{req_name}.architecture.md` → Created by @al-architect (COPY from `${CLAUDE_PLUGIN_ROOT}/docs/templates/architecture-template.md`)
-- `{req_name}.spec.md` → Created by /aldc:spec (COPY from `${CLAUDE_PLUGIN_ROOT}/docs/templates/spec-template.md`)
+- `{req_name}.architecture.md` → Created by @al-architect (COPY from `<aldc-root>/docs/templates/architecture-template.md`)
+- `{req_name}.spec.md` → Created by /aldc:spec (COPY from `<aldc-root>/docs/templates/spec-template.md`)
 - `{req_name}.test-plan.md` → Created during implementation planning
 
 ---
