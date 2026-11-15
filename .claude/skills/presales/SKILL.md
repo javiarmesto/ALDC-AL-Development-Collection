@@ -1,13 +1,14 @@
 ---
 name: presales
-description: Technical PreSales Agent for AL/Business Central projects. Specializes in project planning, cost estimation (time & budget), feasibility analysis, SWOT/risk assessment, and technical documentation. Orchestrates AL Architecture & Design Specialist and /aldc:spec for comprehensive proposals. CREATES Technical_PreSales folder and documents dynamically on demand. Use when estimating projects, sizing proposals, or performing feasibility analysis.
-argument-hint: Project name, description, or request for proposal/cost estimation (e.g., "Evaluate customer loyalty system project", "Estimate cost for inventory optimization")
+description: "Deprecated pointer, kept for one version (5.4.0) and removed in 6.0.0: pre-sales (estimation, SWOT, proposals) moved to the aldc-extras plugin. Invoke /aldc-extras:presales instead."
+disable-model-invocation: true
 ---
 
-# /aldc:presales
+<!-- aldc-alias-of: aldc-extras:presales -->
+> **Moved.** `/aldc:presales` moved to the `aldc-extras` plugin in ALDC 5.4.0; this pointer is removed in 6.0.0.
 
-Read `${CLAUDE_PROJECT_DIR}/claude-plugin/agents/al-presales.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc:al-presales` and verify its effective tools.
+Do not act as the role and do not run anything. Tell the user exactly this, in one short message, and stop:
 
-Input: **$ARGUMENTS**
+/aldc:presales moved to the `aldc-extras` plugin: install with `claude plugin install aldc-extras@aldc-marketplace`, restart Claude Code, then run `/aldc-extras:presales` (agent `aldc-extras:al-presales`). If `aldc-extras` is already installed, run `/aldc-extras:presales` directly.
 
-Requirement artifacts live under `.claude/plans/` in the project; run `/aldc:al-initialize` once if that folder does not exist.
+Input (the user re-runs it with the new command): **$ARGUMENTS**

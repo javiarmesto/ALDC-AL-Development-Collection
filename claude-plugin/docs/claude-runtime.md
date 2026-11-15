@@ -76,7 +76,7 @@ Claude Code has no such button, so the gate is the role's to keep.
 
 | Term | Meaning here |
 |---|---|
-| `@al-<role>` | The role `aldc:al-<role>`; entry skills `/aldc:architect`, `/aldc:spec`, `/aldc:conduct`, `/aldc:develop`, `/aldc:review`, `/aldc:triage`, `/aldc:presales`, `/aldc:agent-builder`, `/aldc:audit` |
+| `@al-<role>` | The role `aldc:al-<role>`; entry skills `/aldc:architect`, `/aldc:spec`, `/aldc:conduct`, `/aldc:develop`, `/aldc:review`, `/aldc:triage`, `/aldc:audit`; `@al-presales` and `@al-agent-builder` are `aldc-extras:` roles (optional plugin) |
 | handoff | A delegation or a recommendation to the user, under the gate rules above |
 | `<Name from $ARGUMENTS>` | Take it from the skill arguments; ask with `AskUserQuestion` when missing |
 | `.instructions.md` | The matching rule in `${CLAUDE_PLUGIN_ROOT}/rules/` |

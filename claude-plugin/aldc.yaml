@@ -122,7 +122,6 @@ required:
     - "agents/al-conductor.md"
     - "agents/al-implementer.md"
     - "agents/al-reviewer.md"
-    - "agents/al-presales.md"
     - "agents/al-triage.md"
     - "agents/al-knowledge-consultant.md"
 
@@ -163,7 +162,6 @@ required:
       - "skills/skill-migrate/SKILL.md"
       - "skills/skill-pages/SKILL.md"
       - "skills/skill-translate/SKILL.md"
-      - "skills/skill-estimation/SKILL.md"
 
   # Path-scoped AL rules (the Copilot surface calls them instructions).
   instructions:
@@ -185,19 +183,12 @@ required:
     - "docs/templates/delivery-template.md"
     - "docs/templates/skill-template.md"
 
+# Pre-sales and agent building (al-presales, al-agent-builder, the al-agent-* workflows, skill-estimation
+# and skill-agent-*) ship in the optional aldc-extras plugin since 5.4.0. The al-agent-toolkit rule stays
+# here: the implementer and reviewer apply it to apps that extend Agent Metadata Provider.
 optional:
-  agents:
-    - "agents/al-agent-builder.md"
   skills:
-    - "skills/skill-agent-instructions/SKILL.md"
-    - "skills/skill-agent-task-patterns/SKILL.md"
-    - "skills/skill-agent-toolkit/SKILL.md"
     - "skills/skill-contribution-assistant/SKILL.md"
-  workflows:
-    - "skills/al-agent-create/SKILL.md"
-    - "skills/al-agent-task/SKILL.md"
-    - "skills/al-agent-instructions/SKILL.md"
-    - "skills/al-agent-test/SKILL.md"
   instructions:
     - "rules/al-agent-toolkit.md"
 

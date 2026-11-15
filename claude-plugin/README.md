@@ -20,12 +20,29 @@ From a clone, register this directory as a local marketplace:
 /plugin install aldc@aldc-marketplace
 ```
 
-Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 16 agents
-(10 core agents and 6 deprecated aliases),
-9 role entry skills, 9 workflow skills (plus the deprecated
-`al-spec-create` alias) and 16 knowledge skills, all prefixed `aldc:`. Plugin loading,
+Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 14 agents
+(8 core agents and 6 deprecated aliases),
+7 role entry skills (plus the `presales` and `agent-builder` pointers), 5 workflow
+skills (plus the deprecated `al-spec-create` alias) and 12 knowledge skills, all
+prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local
 verification; installation certifies none of them.
+
+## Optional: aldc-extras
+
+Pre-sales (`al-presales`, `skill-estimation`) and Business Central agent building
+(`al-agent-builder`, the `al-agent-*` workflows and the `skill-agent-*` skills) moved in
+5.4.0 to the optional `aldc-extras` plugin of the same marketplace, which requires this one:
+
+```
+/plugin install aldc-extras@aldc-marketplace
+```
+
+`/aldc:presales` and `/aldc:agent-builder` stay for one version as pointers that say
+so and stop; they are removed in 6.0.0. The `al-agent-toolkit` rule stays in this
+plugin: the implementer and reviewer apply it (and `review.agent-sdk`) to any app that
+extends `Agent Metadata Provider`, with or without `aldc-extras`. From a clone, install
+`aldc-extras` from the repository-root marketplace (`/plugin marketplace add .`).
 
 ## First-time setup
 
@@ -45,10 +62,10 @@ required. It copies the path-scoped AL rules to `.claude/rules/`, seeds
 claude-plugin/
 ├── .claude-plugin/plugin.json      # manifest (MCP servers, userConfig)
 ├── .claude-plugin/marketplace.json # marketplace entry
-├── agents/                         # 10 agent contracts + 6 deprecated aliases
-├── skills/<role>/                  # 9 short role entry skills
-├── skills/<workflow>/              # 9 explicit workflow skills + 1 deprecated alias
-├── skills/skill-*/                 # 16 knowledge skills
+├── agents/                         # 8 agent contracts + 6 deprecated aliases
+├── skills/<role>/                  # 7 short role entry skills + 2 pointers to aldc-extras
+├── skills/<workflow>/              # 5 explicit workflow skills + 1 deprecated alias
+├── skills/skill-*/                 # 12 knowledge skills
 ├── rules/                          # 9 path-scoped AL rules
 ├── docs/claude-runtime.md          # binding runtime rules on this surface
 ├── docs/claude-al-tooling.md       # LSP/MCP bindings and role grants
@@ -68,7 +85,7 @@ claude-plugin/
 |---|---|---|
 | SessionStart | `session-context.js` | Routing, autonomy mode, test runner, missing rules/BCQuality warnings |
 | SessionStart | `tools/bcquality/precondition_hook.sh` | BCQuality precondition check |
-| PreToolUse (Agent/Task) | `agent-brief.js` | Foreground ALDC subagents; appends AL rules, autonomy, BCQuality candidates, Standard Flow |
+| PreToolUse (Agent/Task) | `agent-brief.js` | Foreground ALDC (and `aldc-extras`) subagents; appends AL rules, autonomy, BCQuality candidates, Standard Flow |
 | PreToolUse (reads, writes, MCP) | `flow-scout.js` | Blocks once an event subscriber to a publisher nobody investigated |
 | PreToolUse (SendMessage) | `send-guard.js` | Blocks continuing a subagent by message while a plan is open |
 | PostToolUse (Write/Edit) | `artifact-gate.js` | Checks review reports and subscriber comments |

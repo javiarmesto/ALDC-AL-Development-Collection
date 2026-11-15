@@ -9,13 +9,13 @@ Rules that apply whenever AL code related to the AI Development Toolkit or Agent
 
 ## Knowledge sources
 
-For detailed content, load the corresponding skill:
+For detailed content, load the corresponding skill. Since 5.4.0 they ship in the optional `aldc-extras` plugin; when it is not installed, record the skill as `unavailable` and apply the rules and the *Completeness checklist* below, which are enough to implement and review.
 
-| Skill                          | When                                                                     |
-| ------------------------------ | ------------------------------------------------------------------------ |
-| `skill-agent-toolkit`          | SDK architecture, 3 interfaces, Setup Codeunit, ConfigurationDialog, Install/Upgrade, project structure |
-| `skill-agent-task-patterns`    | Public API, Agent Task Builder, attachments, multi-turn, session detection, API availability per runtime |
-| `skill-agent-instructions`     | Authoring `InstructionsV1.txt` (RGI framework + keywords)                |
+| Skill                                      | When                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| `aldc-extras:skill-agent-toolkit`          | SDK architecture, 3 interfaces, Setup Codeunit, ConfigurationDialog, Install/Upgrade, project structure |
+| `aldc-extras:skill-agent-task-patterns`    | Public API, Agent Task Builder, attachments, multi-turn, session detection, API availability per runtime |
+| `aldc-extras:skill-agent-instructions`     | Authoring `InstructionsV1.txt` (RGI framework + keywords)                |
 
 ## Non-negotiable rules
 
@@ -75,7 +75,7 @@ app/
     └── TaskExecution/
 ```
 
-Details on each folder and complete examples in `skill-agent-toolkit`.
+Details on each folder and complete examples in `aldc-extras:skill-agent-toolkit` (optional plugin).
 
 ## Completeness checklist (aldc-claude, binding)
 

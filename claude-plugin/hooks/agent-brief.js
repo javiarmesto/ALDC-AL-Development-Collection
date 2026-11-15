@@ -9,12 +9,13 @@
 // 4. Hands BCQuality candidate articles to reviewers (apply or justify) and to Architect/Spec. These are an
 //    ALDC keyword match, never a BCQuality provider execution: design roles consult bcquality:al-knowledge when
 //    it is installed and record the candidates only as a manual selection (review of 31 Oct 2026, H1-H3).
-// Other subagent types are left untouched.
+// Other subagent types are left untouched. aldc-extras roles (5.4.0) are ALDC subagents too: the core
+// briefs them, so the agent builder gets the AL rules and al-agent-toolkit whether or not it is installed.
 const runtime = require('./aldc-runtime');
 
 const MARKER = '<!-- aldc-rules -->';
 // Current agent names only; a deprecated alias is resolved to its agent first (canonicalAgent).
-const CODE_ROLES = /^aldc:(al-implementer|al-reviewer|al-researcher|al-triage|al-agent-builder)$/;
+const CODE_ROLES = /^(aldc:(al-implementer|al-reviewer|al-researcher|al-triage)|aldc-extras:al-agent-builder)$/;
 const REVIEWERS = /^aldc:al-reviewer$/;
 // The planner is left out: its contract forbids probing BCQuality during planning.
 const DESIGNERS = /^aldc:(al-architect|al-spec-agent)$/;
@@ -23,14 +24,14 @@ const AGENT_SDK = /agent\s*sdk|IAgent(Factory|Metadata|TaskExecution)|agent\s*to
 
 function brief(payload) {
   const input = payload?.tool_input;
-  if (!input || typeof input.subagent_type !== 'string' || !input.subagent_type.startsWith('aldc:')) return null;
+  if (!input || typeof input.subagent_type !== 'string' || !/^aldc(-extras)?:/.test(input.subagent_type)) return null;
   const extra = [];
   const prompt = String(input.prompt || '');
   const role = runtime.canonicalAgent(input.subagent_type);
   // Checked by the rules' own headings, not by the marker: in the evals the conductor
   // wrote the marker followed by its own one-line paraphrase of the rules.
   if (CODE_ROLES.test(role)) {
-    const agentApp = AGENT_SDK.test(prompt) || role === 'aldc:al-agent-builder' || runtime.alSource(payload.cwd).includes('"agent metadata provider"');
+    const agentApp = AGENT_SDK.test(prompt) || role === 'aldc-extras:al-agent-builder' || runtime.alSource(payload.cwd).includes('"agent metadata provider"');
     const rules = runtime.rulesBrief({ includeAgentToolkit: agentApp });
     const headings = rules.match(/^# .+$/gm) || [];
     if (rules && !headings.every((h) => prompt.includes(h.trim()))) extra.push(`${MARKER}\n## ALDC AL rules (binding; injected by the plugin because rule auto-apply does not reach subagents)\n\n${rules}`);

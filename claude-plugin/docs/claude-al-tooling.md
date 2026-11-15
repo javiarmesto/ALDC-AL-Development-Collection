@@ -91,7 +91,7 @@ have different names; the shipped community aliases do not identify this server.
 
 | Roles | Additional official AL tools |
 | --- | --- |
-| Architect, Spec, Researcher, Presales, Agent Builder, Reviewer, Triage | `al_symbolsearch`, `al_getdiagnostics`, `al_getpackagedependencies` |
+| Architect, Spec, Researcher, Reviewer, Triage (and the `aldc-extras` Presales and Agent Builder) | `al_symbolsearch`, `al_getdiagnostics`, `al_getpackagedependencies` |
 | Implementer (modes `direct` and `phase`) | The query set plus `al_compile`, `al_build`, `al_downloadsymbols` |
 | Conductor | None; delegate to the appropriate role |
 

@@ -20,9 +20,12 @@ CLAUDE.md is not auto-loaded into a subagent.
 | `/aldc:develop` | `aldc:al-implementer` (mode `direct`) | `${CLAUDE_PLUGIN_ROOT}/agents/al-implementer.md` |
 | `/aldc:review` | `aldc:al-reviewer` (scope `increment`) | `${CLAUDE_PLUGIN_ROOT}/agents/al-reviewer.md` |
 | `/aldc:triage` | `aldc:al-triage` | `${CLAUDE_PLUGIN_ROOT}/agents/al-triage.md` |
-| `/aldc:presales` | `aldc:al-presales` | `${CLAUDE_PLUGIN_ROOT}/agents/al-presales.md` |
-| `/aldc:agent-builder` | `aldc:al-agent-builder` | `${CLAUDE_PLUGIN_ROOT}/agents/al-agent-builder.md` |
 | `/aldc:audit` | `aldc:al-reviewer` (scope `audit`) | `${CLAUDE_PLUGIN_ROOT}/agents/al-reviewer.md` |
+
+`/aldc:presales` and `/aldc:agent-builder` are pointers (5.4.0, removed in 6.0.0): pre-sales
+and agent building moved to the optional `aldc-extras` plugin (`/aldc-extras:presales`,
+`/aldc-extras:agent-builder`, the `al-agent-*` workflows and the estimation and agent SDK
+skills). The `al-agent-toolkit` rule stays here, because the implementer and reviewer apply it.
 
 Two agents have no entry skill and run only as subagents, launched with the Agent tool;
 `al-implementer` and `al-reviewer` also run as the Conductor's phase subagents:
@@ -35,7 +38,7 @@ Two agents have no entry skill and run only as subagents, launched with the Agen
 
 ## Deprecated agent aliases (5.4.0, removed in 6.0.0)
 
-Ten core agents plus six aliases kept only for external callers. Each alias has the
+Eight core agents plus six aliases kept only for external callers. Each alias has the
 old name and the new agent's tools, and tells the model to read the new contract
 and act in a fixed mode. The plugin itself (entry skills, Conductor, hooks) launches
 only the new names.
@@ -68,10 +71,6 @@ Explicitly invoked; `disable-model-invocation: true` keeps the model from firing
 | `/aldc:al-memory-create` | `skills/al-memory-create/SKILL.md` |
 | `/aldc:al-context-create` | `skills/al-context-create/SKILL.md` |
 | `/aldc:al-initialize` | `skills/al-initialize/SKILL.md` |
-| `/aldc:al-agent-create` | `skills/al-agent-create/SKILL.md` |
-| `/aldc:al-agent-task` | `skills/al-agent-task/SKILL.md` |
-| `/aldc:al-agent-instructions` | `skills/al-agent-instructions/SKILL.md` |
-| `/aldc:al-agent-test` | `skills/al-agent-test/SKILL.md` |
 
 `/aldc:al-spec-create` is a deprecated alias of the `/aldc:spec` entry skill (5.4.0,
 removed in 6.0.0): it reads `skills/spec/SKILL.md` and adds a deprecation line.
@@ -81,7 +80,8 @@ removed in 6.0.0): it reads `skills/spec/SKILL.md` and adds a deprecation line.
 Nine path-scoped AL rules live in `rules/`. `/aldc:al-initialize` copies them to the
 project's `.claude/rules/` for auto-application in the main session. Subagents do not
 get path-scoped rules; the plugin's `PreToolUse` hook appends the eight always-on rules
-(nine with `al-agent-toolkit` for agent apps) to every code-touching ALDC subagent.
+(nine with `al-agent-toolkit` for agent apps) to every code-touching ALDC subagent,
+including `aldc-extras:al-agent-builder` when that plugin is installed.
 
 ## Plans and audits
 
