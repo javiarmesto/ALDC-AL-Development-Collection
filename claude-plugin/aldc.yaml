@@ -1,6 +1,7 @@
 # ALDC — Claude Code plugin configuration.
-# Maintained in this plugin (see SURFACE.md). /aldc:al-initialize seeds it into a project
-# as aldc.yaml; from then on the project's copy is the one that applies.
+# Maintained in this plugin (see SURFACE.md). Hooks and tools read it when the project has
+# no aldc.yaml of its own; a project aldc.yaml takes precedence (/aldc:al-initialize does
+# not copy this file).
 #
 # Work products live under .claude/ in a Claude Code deployment: requirement artifacts
 # in .claude/plans (plans.root) and Dredd's audit reports in .claude/audits (audits.root).
