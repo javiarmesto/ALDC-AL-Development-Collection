@@ -65,7 +65,7 @@ Claude Code has no such button, so the gate is the role's to keep.
 | Item | Location |
 |---|---|
 | Requirement artifacts, memory | `.claude/plans/` (`aldc.yaml -> plans.root`) |
-| Dredd audit reports | `aldc.yaml -> audits.root` |
+| Dredd audit reports | `.claude/audits/` (`aldc.yaml -> audits.root`) |
 | Templates | `${CLAUDE_PLUGIN_ROOT}/docs/templates/` |
 | Skills | `Skill` tool (`aldc:<skill>`), or read `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md` |
 | AL rules | `${CLAUDE_PLUGIN_ROOT}/rules/`; `/aldc:al-initialize` copies them to `.claude/rules/` |
