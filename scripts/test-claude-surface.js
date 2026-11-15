@@ -428,3 +428,131 @@ test('5.4.0: Claude audit reports live under .claude/audits in the plugin, its s
   assert.strictEqual(auditsRootFor(repo, 'codex'), '.agents/audits');
   assert.strictEqual(auditsRootFor(repo, 'copilot-cli'), '.github/audits');
 });
+
+// ─── 5.4.0: pre-sales and agent building moved to the optional aldc-extras plugin ───────────
+const EXTRAS = path.resolve(PLUGIN, '..', 'claude-plugin-extras');
+const MOVED = {
+  agents: ['al-presales', 'al-agent-builder'],
+  skills: ['presales', 'agent-builder', 'al-agent-create', 'al-agent-instructions', 'al-agent-task', 'al-agent-test',
+    'skill-estimation', 'skill-agent-instructions', 'skill-agent-task-patterns', 'skill-agent-toolkit'],
+};
+const POINTERS = { presales: 'al-presales', 'agent-builder': 'al-agent-builder' };
+const textFiles = (root) => require(path.join(PLUGIN, 'scripts', 'package-provenance')).walk(root)
+  .filter((p) => /\.(md|js|json|ya?ml|txt|sh|py)$/.test(p) && p !== 'provenance.json');
+
+test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both plugins are in the marketplace', () => {
+  for (const a of MOVED.agents) {
+    assert.ok(fs.existsSync(path.join(EXTRAS, 'agents', a + '.md')), 'extras agent ' + a);
+    assert.ok(!fs.existsSync(path.join(AGENTS_DIR, a + '.md')), 'core no longer ships agent ' + a);
+    assert.strictEqual(front(path.join(EXTRAS, 'agents', a + '.md')).data.name, a);
+  }
+  for (const s of MOVED.skills) {
+    assert.ok(fs.existsSync(path.join(EXTRAS, 'skills', s, 'SKILL.md')), 'extras skill ' + s);
+    if (!POINTERS[s]) assert.ok(!fs.existsSync(path.join(PLUGIN, 'skills', s)), 'core no longer ships skill ' + s);
+  }
+  // The Agent SDK rule stays in the core: the implementer and reviewer apply it without aldc-extras.
+  assert.ok(fs.existsSync(path.join(PLUGIN, 'rules', 'al-agent-toolkit.md')));
+  assert.ok(!fs.existsSync(path.join(EXTRAS, 'rules')), 'extras ships no copy of the core rules');
+  const manifest = JSON.parse(fs.readFileSync(path.join(EXTRAS, '.claude-plugin', 'plugin.json'), 'utf8'));
+  assert.strictEqual(manifest.name, 'aldc-extras');
+  assert.strictEqual(manifest.version, '5.4.0');
+  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^5.4.0' }]);
+  const coreManifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'plugin.json'), 'utf8'));
+  assert.strictEqual(coreManifest.version, '5.4.0');
+  const market = JSON.parse(fs.readFileSync(path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json'), 'utf8'));
+  const entry = (n) => market.plugins.find((p) => p.name === n);
+  assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras']);
+  assert.strictEqual(entry('aldc').source, './claude-plugin');
+  assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
+  for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.4.0', n + ' version');
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '5.4.0');
+});
+
+test('5.4.0: /aldc:presales and /aldc:agent-builder are pointers that name the install command and stop', () => {
+  for (const [s, agent] of Object.entries(POINTERS)) {
+    const p = front(path.join(PLUGIN, 'skills', s, 'SKILL.md'));
+    assert.strictEqual(p.data.name, s);
+    assert.strictEqual(p.data['disable-model-invocation'], 'true', s + ' stays explicit-only');
+    assert.match(p.text, new RegExp('<!-- aldc-alias-of: aldc-extras:' + s + ' -->'), s + ': marker');
+    assert.ok(p.text.includes('moved to the `aldc-extras` plugin: install with `claude plugin install aldc-extras@aldc-marketplace`'), s + ': install line');
+    assert.ok(p.text.includes('`/aldc-extras:' + s + '`') && p.text.includes('aldc-extras:' + agent), s + ': new names');
+    assert.match(p.text, /and stop/);
+    assert.match(p.text, /removed in 6\.0\.0/);
+    assert.doesNotMatch(p.text, /\$\{CLAUDE_PLUGIN_ROOT\}/, s + ' reads no contract');
+  }
+});
+
+test('5.4.0: core and extras name only files they ship; extras reach the core through <aldc-root>', () => {
+  const ref = /\$\{CLAUDE_PLUGIN_ROOT\}\/([\w./-]*[\w-])/g;
+  for (const rel of textFiles(PLUGIN)) {
+    const text = fs.readFileSync(path.join(PLUGIN, rel), 'utf8');
+    for (const [, p] of text.matchAll(ref)) {
+      assert.ok(!MOVED.agents.some((a) => p === 'agents/' + a + '.md'), rel + ' reads moved ' + p);
+      assert.ok(!MOVED.skills.some((s) => !POINTERS[s] && p.startsWith('skills/' + s + '/')), rel + ' reads moved ' + p);
+    }
+    // Core launchers never route to the moved agents under the core prefix.
+    assert.doesNotMatch(text, /aldc:al-(presales|agent-builder)\b/, rel + ' launches a moved agent as aldc:');
+  }
+  for (const rel of textFiles(EXTRAS)) {
+    const text = fs.readFileSync(path.join(EXTRAS, rel), 'utf8');
+    for (const [, p] of text.matchAll(ref)) {
+      if (/[<{*]/.test(p)) continue;
+      assert.ok(fs.existsSync(path.join(EXTRAS, ...p.split('/'))), `extras ${rel} names \${CLAUDE_PLUGIN_ROOT}/${p}, which it does not ship: write <aldc-root>/${p}`);
+    }
+    for (const [, p] of text.matchAll(/<aldc-root>\/([\w./-]*[\w-])/g)) {
+      assert.ok(fs.existsSync(path.join(PLUGIN, ...p.split('/'))), `extras ${rel}: <aldc-root>/${p} exists in the core`);
+    }
+  }
+  for (const rel of ['agents/al-presales.md', 'agents/al-agent-builder.md', 'skills/presales/SKILL.md', 'skills/agent-builder/SKILL.md']) {
+    assert.ok(fs.readFileSync(path.join(EXTRAS, rel), 'utf8').includes('${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md'), rel + ' reads the extras runtime pointer');
+  }
+  assert.ok(fs.readFileSync(path.join(EXTRAS, 'docs', 'claude-runtime.md'), 'utf8').includes('<aldc-root>/docs/claude-runtime.md'), 'extras runtime points to the core runtime');
+});
+
+test('5.4.0: the core briefs aldc-extras:al-agent-builder with the Agent SDK rule; a core reviewer still gets it without extras', () => {
+  const cwd = project();
+  const builder = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc-extras:al-agent-builder', prompt: 'Build', run_in_background: true } }).hookSpecificOutput.updatedInput;
+  assert.strictEqual(builder.run_in_background, false);
+  assert.match(builder.prompt, /Completeness checklist/);
+  assert.match(builder.prompt, /# AL Testing — Micro Rules/);
+  const presales = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc-extras:al-presales', prompt: 'Estimate', run_in_background: true } }).hookSpecificOutput.updatedInput;
+  assert.strictEqual(presales.run_in_background, false);
+  assert.doesNotMatch(presales.prompt, /aldc-rules/, 'pre-sales writes no AL: no rules');
+  const old = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-agent-builder', prompt: 'x' } }).hookSpecificOutput.updatedInput;
+  assert.strictEqual(old.prompt, 'x', 'the old core name gets no code brief');
+  const reviewer = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'Review the agent SDK app' } }).hookSpecificOutput.updatedInput.prompt;
+  assert.match(reviewer, /Completeness checklist/);
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'skills', 'skill-al-review-pipeline', 'SKILL.md'), 'utf8'), /\$\{CLAUDE_PLUGIN_ROOT\}\/rules\/al-agent-toolkit\.md/);
+});
+
+test('5.4.0: the aldc-extras SessionStart hook states the core root or asks to install aldc', () => {
+  const hook = require(path.join(EXTRAS, 'hooks', 'core-root.js'));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-home-'));
+  assert.strictEqual(hook.coreRoot(home), PLUGIN, 'a clone finds claude-plugin beside it');
+  const lone = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-extras-'));
+  const missing = hook.context(home, lone);
+  assert.match(missing.systemMessage, /claude plugin install aldc@aldc-marketplace/);
+  fs.mkdirSync(path.join(home, '.claude', 'plugins'), { recursive: true });
+  fs.writeFileSync(path.join(home, '.claude', 'plugins', 'installed_plugins.json'), JSON.stringify({ plugins: { 'aldc@aldc-marketplace': [{ installPath: PLUGIN }] } }));
+  const found = hook.context(home, lone);
+  assert.ok(!found.systemMessage);
+  assert.ok(found.hookSpecificOutput.additionalContext.includes('aldc core root is ' + PLUGIN));
+  // Plugin cache layout: <marketplace>/aldc-extras/<v> beside <marketplace>/aldc/<v>; the newest aldc wins.
+  const cache = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-cache-'));
+  for (const v of ['5.3.0', '5.4.0']) {
+    fs.mkdirSync(path.join(cache, 'aldc', v, 'docs'), { recursive: true });
+    fs.mkdirSync(path.join(cache, 'aldc', v, '.claude-plugin'), { recursive: true });
+    fs.writeFileSync(path.join(cache, 'aldc', v, 'docs', 'claude-runtime.md'), '# runtime\n');
+    fs.writeFileSync(path.join(cache, 'aldc', v, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'aldc', version: v }));
+  }
+  fs.mkdirSync(path.join(cache, 'aldc-extras', '5.4.0'), { recursive: true });
+  const emptyHome = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-home-'));
+  assert.strictEqual(hook.coreRoot(emptyHome, path.join(cache, 'aldc-extras', '5.4.0')), path.join(cache, 'aldc', '5.4.0'));
+  const hooks = JSON.parse(fs.readFileSync(path.join(EXTRAS, 'hooks', 'hooks.json'), 'utf8')).hooks;
+  assert.deepStrictEqual(Object.keys(hooks), ['SessionStart'], 'extras adds no tool hooks; the core ones apply');
+});
+
+test('5.4.0: both Claude plugins verify against their own provenance lock', () => {
+  const { verify } = require(path.join(PLUGIN, 'scripts', 'package-provenance'));
+  for (const root of [PLUGIN, EXTRAS]) assert.doesNotThrow(() => verify(root), root);
+});

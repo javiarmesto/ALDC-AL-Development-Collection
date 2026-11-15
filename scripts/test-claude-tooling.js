@@ -9,7 +9,9 @@ const { split } = require('./generation-utils');
 const { initialize } = require('./init-plugin');
 const root = path.resolve(__dirname, '..');
 const files = build().files;
-const tools = id => split(files.get(`agents/${id}.md`)).data.tools.split(/,\s*/);
+// 5.4.0: al-presales and al-agent-builder ship in the optional aldc-extras plugin; their grants are checked there.
+const agentText = id => files.get(`agents/${id}.md`) ?? fs.readFileSync(path.join(root, 'claude-plugin-extras', 'agents', `${id}.md`), 'utf8');
+const tools = id => split(agentText(id)).data.tools.split(/,\s*/);
 
 test('Claude specialists can request LSP while research agents cannot write or delegate', () => {
   for (const { id } of AGENTS) {
@@ -63,7 +65,7 @@ test('official AL MCP writes belong only to implementation, never a wildcard', (
     if (['al-developer', 'al-implement-subagent', 'al-implementer'].includes(id)) expected.push(...writes.map(n => `mcp__al__${n}`));
     assert.deepEqual(names.filter(n => n.startsWith('mcp__al__')).sort(), expected.sort(), id);
     for (const field of ['hooks', 'mcpServers', 'permissionMode']) {
-      assert.equal(split(files.get(`agents/${id}.md`)).data[field], undefined, `${id}: unsupported ${field}`);
+      assert.equal(split(agentText(id)).data[field], undefined, `${id}: unsupported ${field}`);
     }
   }
 });

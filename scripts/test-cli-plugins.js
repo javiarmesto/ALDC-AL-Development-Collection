@@ -81,6 +81,8 @@ for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.m
 // The mapping table names the Copilot surface it maps, so the check is on the body
 // the preamble introduces — which also exercises the strip on every real file.
 for (const rel of [...AGENTS.map(a => `agents/${a.id}.md`), ...WORKFLOWS.map(w => `skills/${workflowSkillName(w)}/SKILL.md`)]) {
+  // 5.4.0: the maintained Claude core no longer ships pre-sales and agent building (claude-plugin-extras/).
+  if (maintainedClaude && !pluginFiles.has(rel)) continue;
   const body = stripAdapterPreamble(split(pluginFiles.get(rel)).body);
   check(!/^\s*>/.test(body), `claude-plugin/${rel}: the adapter preamble strips cleanly`);
   check(!body.includes('${input:'), `claude-plugin/${rel}: no Copilot input variable survives the adapter`);
