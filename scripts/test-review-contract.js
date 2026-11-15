@@ -15,7 +15,10 @@ const surfaces=[['agents','.agent.md','../skills/skill-al-review-pipeline/SKILL.
  ['plugins/aldc-codex/skills/aldc/references/agents','.md','.agents/skills/aldc/references/skills/skill-al-review-pipeline/GUIDE.md']];
 for(const [dir,ext,skill] of surfaces){
  if(!fs.existsSync(path.join(root,dir)))continue;
- for(const name of ['al-review-subagent','al-developer-reviewer','dredd']){
+ // Since 5.4.0 the Claude surface merges the three reviewers into al-reviewer; the old names are
+ // deprecated aliases that delegate to it (checked in scripts/test-claude-surface.js).
+ const claude=dir==='claude-plugin/agents'||dir==='.claude/agents';
+ for(const name of claude?['al-reviewer']:['al-review-subagent','al-developer-reviewer','dredd']){
   const rel=path.posix.join(dir,name+ext),file=path.join(root,rel),body=fs.readFileSync(file,'utf8');
   assert.ok(body.includes(skill),file+' must reach its bundled procedure');
   const guideRel=resolveRef(rel,skill);

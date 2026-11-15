@@ -79,7 +79,7 @@ test('session-context: avisa si la BCQuality instalada no trae al-knowledge', ()
 });
 
 test('agent-brief: subagente ALDC en primer plano, con todas las reglas y el modo autónomo', () => {
-  const out = run('agent-brief.js', { cwd: project(), tool_input: { subagent_type: 'aldc:al-implement-subagent', prompt: 'Phase 2', run_in_background: true } }, { ALDC_GATES: 'pre-approved' });
+  const out = run('agent-brief.js', { cwd: project(), tool_input: { subagent_type: 'aldc:al-implementer', prompt: 'Phase 2', run_in_background: true } }, { ALDC_GATES: 'pre-approved' });
   const u = out.hookSpecificOutput.updatedInput;
   assert.strictEqual(u.run_in_background, false);
   for (const r of RULES) {
@@ -92,8 +92,8 @@ test('agent-brief: subagente ALDC en primer plano, con todas las reglas y el mod
 
 test('agent-brief: no duplica reglas que ya van completas y no toca otros agentes', () => {
   const cwd = project();
-  const first = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
-  const second = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: first } }).hookSpecificOutput.updatedInput.prompt;
+  const first = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
+  const second = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: first } }).hookSpecificOutput.updatedInput.prompt;
   assert.strictEqual((second.match(/# AL Testing — Micro Rules/g) || []).length, 1);
   assert.strictEqual(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'Explore', prompt: 'x' } }), null);
 });
@@ -101,7 +101,7 @@ test('agent-brief: no duplica reglas que ya van completas y no toca otros agente
 test('agent-brief: la regla del SDK de agentes va cuando el proyecto extiende Agent Metadata Provider', () => {
   const cwd = project();
   fs.writeFileSync(path.join(cwd, 'app', 'src', 'A.EnumExt.al'), 'enumextension 50101 "A" extends "Agent Metadata Provider" { }');
-  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
+  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
   assert.match(p, /Completeness checklist/);
 });
 
@@ -130,7 +130,7 @@ test('agent-brief: Architect y Spec reciben candidatos manuales etiquetados, con
   assert.match(withSkill, /consult `bcquality:al-knowledge` with the Skill tool/);
   assert.match(withSkill, /verbatim/);
   assert.match(withSkill, /only loads instructions and runs nothing/);
-  for (const role of ['aldc:al-planning-subagent', 'aldc:al-implement-subagent']) {
+  for (const role of ['aldc:al-researcher', 'aldc:al-implementer']) {
     const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: 'Lead Score on Contact' } }, env).hookSpecificOutput.updatedInput.prompt;
     assert.doesNotMatch(p, /## BCQuality (candidates|knowledge)/, role);
   }
@@ -141,7 +141,7 @@ test('agent-brief: la selección del revisor se declara coincidencia de ALDC, no
   const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
   fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
   fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify]\n---\n# Avoid redundant Modify\n');
-  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: 'Review phase 1' } }, { BCQUALITY_HOME: bcq }).hookSpecificOutput.updatedInput.prompt;
+  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'Review phase 1' } }, { BCQUALITY_HOME: bcq }).hookSpecificOutput.updatedInput.prompt;
   assert.match(p, /## BCQuality selection \(ALDC keyword match .*not a BCQuality provider execution\)/);
 });
 
@@ -152,7 +152,7 @@ test('agent-brief: external.bcquality.enabled false means no BCQuality articles 
   fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
   fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify, lead-score]\n---\n# Avoid redundant Modify\n');
   const env = { BCQUALITY_HOME: bcq };
-  for (const role of ['aldc:al-architect', 'aldc:al-spec-agent', 'aldc:al-planning-subagent', 'aldc:al-review-subagent']) {
+  for (const role of ['aldc:al-architect', 'aldc:al-spec-agent', 'aldc:al-researcher', 'aldc:al-reviewer']) {
     const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: 'Lead Score on Contact' } }, env).hookSpecificOutput.updatedInput.prompt;
     assert.doesNotMatch(p, /## BCQuality (knowledge|selection)/, role);
     assert.doesNotMatch(p, /modify\.md/, role);
@@ -265,4 +265,81 @@ test('stop-guard: un informe final PARTIAL no cierra el plan; blocked.md sí', (
   assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }, { ALDC_GATES: 'pre-approved' }).decision, 'block');
   fs.writeFileSync(path.join(plan, 'blocked.md'), 'usage limit: phases 7-8 left');
   assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }, { ALDC_GATES: 'pre-approved' }), null);
+});
+
+// ─── 5.4.0: merged agents and their deprecated aliases ─────────────────────────────────────
+const PLUGIN = path.resolve(HOOKS, '..');
+const AGENTS_DIR = path.join(PLUGIN, 'agents');
+const ALIASES = {
+  'al-developer': ['al-implementer', 'direct'], 'al-implement-subagent': ['al-implementer', 'phase'],
+  'al-review-subagent': ['al-reviewer', 'phase'], 'al-developer-reviewer': ['al-reviewer', 'increment'],
+  dredd: ['al-reviewer', 'audit'], 'al-planning-subagent': ['al-researcher', undefined],
+};
+const OLD_NAMES = Object.keys(ALIASES).join('|');
+const front = (file) => {
+  const text = fs.readFileSync(file, 'utf8');
+  const head = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1];
+  const data = Object.fromEntries(head.split(/\r?\n/).map((l) => { const i = l.indexOf(':'); return [l.slice(0, i), l.slice(i + 1).trim()]; }));
+  return { text, data };
+};
+
+test('5.4.0: Conductor, entry skills and hooks launch only the new agent names', () => {
+  const launchers = [
+    'agents/al-conductor.md', 'skills/conduct/SKILL.md', 'skills/develop/SKILL.md', 'skills/review/SKILL.md', 'skills/audit/SKILL.md',
+    ...fs.readdirSync(HOOKS).filter((f) => f.endsWith('.js')).map((f) => 'hooks/' + f),
+  ];
+  for (const rel of launchers) {
+    const text = fs.readFileSync(path.join(PLUGIN, rel), 'utf8');
+    // Report identifiers (skill.id) keep the old spellings; launching by an old name does not.
+    assert.doesNotMatch(text, new RegExp(`aldc:(${OLD_NAMES})\\b`), rel + ' launches an alias');
+    assert.doesNotMatch(text, new RegExp(`agents/(${OLD_NAMES})\\.md`), rel + ' reads an alias contract');
+    if (rel.startsWith('hooks/')) assert.doesNotMatch(text, new RegExp(`\\b(${OLD_NAMES})\\b`), rel + ' names a deprecated agent');
+  }
+  const named = (rel, ...names) => names.forEach((n) => assert.match(fs.readFileSync(path.join(PLUGIN, rel), 'utf8'), new RegExp(`aldc:${n}\\b`), rel + ' -> ' + n));
+  named('skills/conduct/SKILL.md', 'al-researcher', 'al-implementer', 'al-reviewer');
+  named('agents/al-conductor.md', 'al-researcher', 'al-implementer', 'al-reviewer');
+  named('skills/develop/SKILL.md', 'al-implementer');
+  named('skills/review/SKILL.md', 'al-reviewer');
+  named('skills/audit/SKILL.md', 'al-reviewer');
+});
+
+test('5.4.0: every deprecated alias points to an existing, non-alias agent with the same tools', () => {
+  const aliasFiles = fs.readdirSync(AGENTS_DIR).filter((f) => /aldc-alias-of:/.test(fs.readFileSync(path.join(AGENTS_DIR, f), 'utf8')));
+  assert.deepStrictEqual(aliasFiles.map((f) => f.replace(/\.md$/, '')).sort(), Object.keys(ALIASES).sort());
+  for (const [name, [target, mode]] of Object.entries(ALIASES)) {
+    const alias = front(path.join(AGENTS_DIR, name + '.md'));
+    const targetFile = path.join(AGENTS_DIR, target + '.md');
+    assert.ok(fs.existsSync(targetFile), name + ': target ' + target + ' exists');
+    const real = front(targetFile);
+    assert.doesNotMatch(real.text, /aldc-alias-of:/, target + ' is not itself an alias');
+    assert.strictEqual(alias.data.name, name);
+    assert.strictEqual(real.data.name, target);
+    assert.strictEqual(alias.data.tools, real.data.tools, name + ': same tools as ' + target);
+    assert.match(alias.text, new RegExp('<!-- aldc-alias-of: ' + target + (mode ? ' mode=' + mode : '') + ' -->'), name + ': marker');
+    assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/agents/' + target + '.md'), name + ': reads the target contract');
+    assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md'), name + ': runtime doc');
+    if (mode) assert.ok(alias.text.includes('`' + mode + '`'), name + ': fixed mode ' + mode);
+    assert.match(alias.data.description, /^Deprecated alias of /);
+    assert.match(alias.text, /removed in 6\.0\.0/);
+  }
+  // The modes and scopes the aliases fix are the ones the merged contracts define.
+  const impl = fs.readFileSync(path.join(AGENTS_DIR, 'al-implementer.md'), 'utf8');
+  for (const m of ['phase', 'direct']) assert.match(impl, new RegExp('## Mode `' + m + '`'));
+  const rev = fs.readFileSync(path.join(AGENTS_DIR, 'al-reviewer.md'), 'utf8');
+  for (const s of ['phase', 'increment', 'audit']) assert.ok(rev.includes('`' + s + '`'), 'reviewer scope ' + s);
+  assert.doesNotMatch(front(path.join(AGENTS_DIR, 'al-reviewer.md')).data.tools, /\b(Write|Edit|Bash|Task|Agent)\b/, 'reviewer stays read-only in every scope');
+});
+
+test('5.4.0: an external launch by an old name gets the same brief as the new name', () => {
+  const cwd = project();
+  const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
+  fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
+  fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify]\n---\n# Avoid redundant Modify\n');
+  const env = { BCQUALITY_HOME: bcq };
+  for (const [name, [target]] of Object.entries(ALIASES)) {
+    const brief = (type) => run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:' + type, prompt: 'Review phase 1' } }, env).hookSpecificOutput.updatedInput.prompt;
+    assert.strictEqual(brief(name), brief(target), name);
+  }
+  assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:dredd', prompt: 'x' } }, env).hookSpecificOutput.updatedInput.prompt, /## BCQuality selection/);
+  assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-developer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt, /Standard Flow: before subscribing/);
 });
