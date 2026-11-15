@@ -34,11 +34,27 @@ Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-co
 - {Function/procedure name}
 - {Event subscriber signature}
 
+**Verification (what was checked, and how):**
+| Check | Result | Evidence |
+|-------|--------|----------|
+| Compilation (App, Test) | {passed / failed / not-run} | {validator or compiler output, per project} |
+| Code analyzers | {n errors, n warnings / not-run} | {source} |
+| Tests executed | {n passed of n / not-run: reason} | {test runner output, environment} |
+| Review | {verdict per phase} | `<plan>-review-phase-N.json` |
+
+Write `not-run` with its reason for anything you did not execute. Never write "passing" for tests that did not run.
+
+**Not verified:** {everything the client should not assume: tests not executed, behaviour not exercised in a real company, integrations not called, assumptions that were not checked}
+
+**Decisions taken without a human:** (from `decisions.md`; omit in `human` mode when every gate was approved by the user)
+- {D-id}: {decision} — {why}
+
+**Open risks:** {security checks with status `finding`, BCQuality articles `dismissed`, recommendations not applied, and any process gap recorded in a phase}
+
 **Test Coverage:**
 - Total test codeunits: {count}
 - Total test procedures: {count}
-- All tests passing: ✅
-- AL-Go structure: ✅
+- AL-Go structure: {✅ / ❌}
 
 (Omit the test coverage block if no tests were generated.)
 
@@ -80,4 +96,5 @@ Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-co
 - One report per plan, written at the end.
 - Reference phase-complete files for detail rather than duplicating their content.
 - Skills summary aggregates phase reports; do not invent skills that did not appear in any phase.
+- Fill *Verification*, *Not verified*, *Decisions taken without a human* and *Open risks* from evidence, never from intent.
 - Do not add sections beyond the ones above.

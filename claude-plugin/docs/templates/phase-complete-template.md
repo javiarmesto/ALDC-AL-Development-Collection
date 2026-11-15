@@ -53,11 +53,27 @@ Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-ph
 - 📋 Criteria: {met}/{declared} met · {unmet} unmet{ · ⚠️ {house-rules-unmet} house rule(s)} (omit when the review returned no `review.criteria`)
 - Raw report: `<plans.root>/<plan>/<plan>-bcquality-phase-<N>.json`
 
+(Render the consultation visibly: "🔎 BCQuality consulted (SHA `<sha>`) → configured provider returned [skills-run] → N findings with citations"; when `bcquality.outcome` is `not-applicable`, write instead "🔎 BCQuality not consulted (unavailable) → reviewed via ALDC native checks + instructions".)
+
+**Build and test evidence:**
+- Build validator: {result cited from `aldc-verify:al-build-validator` | not-run}
+- Tests executed: {runner output, n passed of n | not-run: reason}
+- Review JSON: `<plans.root>/<plan>/<plan>-review-phase-<N>.json`
+- Verdict discrepancy / open process gap: {only when one was recorded; omit otherwise}
+
+**Code Review:** {the full review rendered from the Review-Report JSON with `code-review-template.md`}
+
 **Review Status:** {APPROVED / APPROVED with minor recommendations / NEEDS_REVISION}
 
 **Git Commit Message:**
 
-{Following git-commit conventions: `fix/feat/chore/test/refactor: short description (max 50 chars)` + optional body wrapping at 72 chars.}
+{In a plain-text code block, following git-commit conventions:}
+
+~~~
+fix/feat/chore/test/refactor: Short description (max 50 characters)
+
+{Optional body explaining what and why, wrapping at 72 chars}
+~~~
 ```
 
 ---

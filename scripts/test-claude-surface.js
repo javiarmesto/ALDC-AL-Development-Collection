@@ -343,3 +343,48 @@ test('5.4.0: an external launch by an old name gets the same brief as the new na
   assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:dredd', prompt: 'x' } }, env).hookSpecificOutput.updatedInput.prompt, /## BCQuality selection/);
   assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-developer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt, /Standard Flow: before subscribing/);
 });
+
+// ─── 5.4.0: the slimmed Conductor keeps every gate, hard stop and artifact path ─────────────
+test('5.4.0: Conductor gates, hard stops and artifact paths stay reachable; templates are read on demand', () => {
+  const conductor = fs.readFileSync(path.join(AGENTS_DIR, 'al-conductor.md'), 'utf8');
+  const template = (n) => fs.readFileSync(path.join(PLUGIN, 'docs', 'templates', n), 'utf8');
+  for (const phrase of [
+    '🚨 HARD GATE — PLAN APPROVAL', 'STOP and WAIT for explicit user approval. DO NOT start implementation until user confirms',
+    '🚨 HARD GATE — PHASE 1 ARTIFACTS PERSISTED', 'Showing the plan in chat is NOT enough',
+    '🚨 HARD GATE — IMPLEMENTATION START', '🚨 HARD GATE — PHASE COMMIT',
+    'You MUST NOT invoke al-implementer for next phase until user confirms',
+    '**⛔ TDD ENFORCEMENT**', 'Zero tests = phase FAILED',
+    'Review subagent MUST run after EVERY phase', 'NEVER skip review',
+    'Review completeness gate', 'cannot become approval from zero findings',
+    '🚨 MANDATORY memory.md update at completion', '🚨 CRITICAL PAUSE POINTS',
+    '⛔ User requests stop', '⛔ Critical review failure', '⛔ 3+ consecutive review failures',
+    '⛔ Architecture mismatch', '⛔ Missing dependencies', '⛔ Test infrastructure failure',
+    '### PAUSE and Confirm When:', '### Escalate to User When:', 'Human Validation Gates 🚨',
+    // pre-approved, foreground delegation and the honest final report
+    'stay hard stops in both modes', 'Git commits run only when `autonomy.commit: true`',
+    'Never call `AskUserQuestion` and never end the turn to wait', 'run_in_background: false',
+    'Never continue a subagent with `SendMessage`', 'A phase does not close while `review.security` is missing',
+    '*Verification*, *Not verified*, *Decisions taken without a human* and *Open risks*',
+  ]) assert.ok(conductor.includes(phrase), 'conductor: ' + phrase);
+  for (const artifact of [
+    '.claude/plans/<task-name>/<task-name>-plan.md', '.claude/plans/<task-name>/<task-name>-phase-1-complete.md',
+    '.claude/plans/<task-name>/<task-name>-phase-<N>-complete.md', '.claude/plans/<task-name>/<task-name>-review-phase-<N>.json',
+    '.claude/plans/<task-name>/<task-name>-bcquality-phase-<N>.json', '.claude/plans/<task-name>/<task-name>-complete.md',
+    '.claude/plans/<task-name>/decisions.md', '.claude/plans/<task-name>/blocked.md', '.claude/plans/memory.md',
+    '.claude/plans/<req>/<req>.bcq-criteria.json', '{req_name}.spec.md', '{req_name}.architecture.md', '{req_name}.test-plan.md',
+  ]) assert.ok(conductor.includes(artifact), 'conductor artifact: ' + artifact);
+  // One source per artifact format: the conductor reads the template at the step that writes it.
+  for (const n of ['plan-template.md', 'phase-complete-template.md', 'plan-complete-template.md', 'test-plan-template.md', 'code-review-template.md']) {
+    assert.ok(conductor.includes('${CLAUDE_PLUGIN_ROOT}/docs/templates/' + n), 'conductor reads ' + n);
+  }
+  assert.doesNotMatch(conductor, /_style_guide>|must NOT read them/, 'no inline copy of the templates and no ban on reading them');
+  assert.doesNotMatch(conductor, /micro-rules inline/, 'the AL rules come from agent-brief.js, not from the conductor');
+  const complete = template('plan-complete-template.md');
+  for (const h of ['**Verification (what was checked, and how):**', '**Not verified:**', '**Decisions taken without a human:**', '**Open risks:**', 'Never write "passing" for tests that did not run'])
+    assert.ok(complete.includes(h), 'plan-complete template: ' + h);
+  assert.doesNotMatch(complete, /All tests passing: ✅/, 'the final report never pre-fills passing tests');
+  assert.ok(template('plan-template.md').includes('**Mini-design:**'), 'plan template carries the Mini-design');
+  const phase = template('phase-complete-template.md');
+  for (const h of ['**BCQuality Evidence:**', '**Build and test evidence:**', '**Git Commit Message:**', 'never the configured pin as proof'])
+    assert.ok(phase.includes(h), 'phase-complete template: ' + h);
+});
