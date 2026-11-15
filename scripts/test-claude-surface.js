@@ -409,3 +409,22 @@ test('5.4.0: /aldc:spec is the one specification entry and al-spec-create a depr
     assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /al-spec-create|al-spec\.create/, kind + '/' + f + ' routes to the deprecated spec workflow');
   }
 });
+
+test('5.4.0: Claude audit reports live under .claude/audits in the plugin, its skills and its normalizer', () => {
+  const { auditsRootFor, plansRootFor } = require('./plugin-runtime');
+  const repo = path.resolve(PLUGIN, '..');
+  // auditsRootFor('claude') in the shared plugin-runtime.js still says .github/audits. No generator calls it
+  // for Claude, and changing the script re-hashes the CLI and Codex provenance, so it waits for a release
+  // that regenerates those surfaces.
+  assert.strictEqual(plansRootFor(repo, 'claude'), '.claude/plans');
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'aldc.yaml'), 'utf8'), /^audits:\r?\n\s+root:\s*"\.claude\/audits"/m);
+  assert.ok(fs.readFileSync(path.join(PLUGIN, 'skills', 'audit', 'SKILL.md'), 'utf8').includes('.claude/audits/'));
+  // A Claude project has no aldc.yaml of its own (init.js seeds none): the plugin's normalizer defaults to this surface.
+  const { readConfig } = require(path.join(PLUGIN, 'tools', 'bcquality', 'config.js'));
+  const bare = readConfig(fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-noyaml-')));
+  assert.strictEqual(bare.plans.root, '.claude/plans');
+  assert.strictEqual(bare.audits.root, '.claude/audits');
+  // The other surfaces keep their roots.
+  assert.strictEqual(auditsRootFor(repo, 'codex'), '.agents/audits');
+  assert.strictEqual(auditsRootFor(repo, 'copilot-cli'), '.github/audits');
+});

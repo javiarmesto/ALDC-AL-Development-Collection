@@ -67,13 +67,15 @@ function readConfig(workspace, configName = 'aldc.yaml') {
   // Claude Code deployment relocates them to .claude/plans through this knob.
   const pl = data.plans ?? {};
   if (typeof pl !== 'object' || Array.isArray(pl)) throw Error('plans must be an object');
-  const plansRoot = string(pl.root, '.github/plans', 'plans.root', true);
+  // Claude Code copy: init.js seeds no project aldc.yaml, so the defaults are this surface's
+  // roots (claude-plugin/aldc.yaml); the shared tools/bcquality/config.js keeps .github/.
+  const plansRoot = string(pl.root, '.claude/plans', 'plans.root', true);
   // Dredd's audit reports are the other work product, and move with their surface the
   // same way. validate_evidence.py takes its --audits-dir default from here rather than
   // hard-coding the folder, so relocating it does not leave the validator looking elsewhere.
   const au = data.audits ?? {};
   if (typeof au !== 'object' || Array.isArray(au)) throw Error('audits must be an object');
-  const auditsRoot = string(au.root, '.github/audits', 'audits.root', true);
+  const auditsRoot = string(au.root, '.claude/audits', 'audits.root', true);
   const relative = (v, field) => {
     if (path.isAbsolute(v) || v.split(/[\\/]/).includes('..')) throw Error(`${field}: expected a relative path inside the workspace`);
     return v.split('\\').join('/').replace(/\/+$/, '');

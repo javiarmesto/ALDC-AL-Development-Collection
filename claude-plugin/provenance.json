@@ -226,7 +226,7 @@
     "templates/memory-template.md": "5111889cdc8b0ddc6921cf1f7229f0b3b15085f94fa7c8d512b5a84d2c6c47f4",
     "tools/aldc-validate/index.js": "71498f849997a926879ee728f3d2f2964ab00d0a4dbe26baea60eeeef8cf0553",
     "tools/aldc-validate/package.json": "a5446551001b8d5738441e4781a960e85770e9f708a3ac9fd97e1e5da61e806e",
-    "tools/bcquality/config.js": "521191d9fc36a161c84a3ff6d3b2f152255c995bb6e1a41b87e03d7cde057a4a",
+    "tools/bcquality/config.js": "fdd3b4ba6b0b0748dd71a0deee1a3bee7658cfa6895c4d3c2f3373eba7b0acb1",
     "tools/bcquality/index-state.js": "ee32b1a8bd7a8a3e08de2a607265954636acebbcc99686c771b883f9c08b9d28",
     "tools/bcquality/install.ps1": "8fbdd9b80b235400bfabd4e58db9ed9e2019ad323f715de48bf6e0bd78490dd2",
     "tools/bcquality/install.sh": "55c842e4a7aec2dd5da065211bfa061f4e8c12e1504fcaace362269b45663374",
