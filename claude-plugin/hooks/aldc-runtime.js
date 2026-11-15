@@ -232,4 +232,17 @@ function pluginInstalled(prefix) {
   return Object.keys(data.plugins || data).some((k) => k.startsWith(prefix + '@'));
 }
 
-module.exports = { testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
+/**
+ * Resolve a deprecated agent alias (5.4.0, removed in 6.0.0) to the agent it delegates to.
+ * The alias file names its target in an `<!-- aldc-alias-of: <agent> [mode=<m>] -->` line, so
+ * hooks keep one table of current names and still brief an external caller that uses an old one.
+ * Returns `aldc:<agent>`; anything that is not an alias comes back unchanged.
+ */
+function canonicalAgent(subagentType) {
+  const m = /^aldc:([a-z0-9-]+)$/.exec(String(subagentType || ''));
+  if (!m) return subagentType;
+  const alias = /<!--\s*aldc-alias-of:\s*([a-z0-9-]+)(?:\s+mode=([a-z-]+))?\s*-->/.exec(read(path.join(PLUGIN_ROOT, 'agents', m[1] + '.md')) || '');
+  return alias ? 'aldc:' + alias[1] : subagentType;
+}
+
+module.exports = { canonicalAgent, testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };

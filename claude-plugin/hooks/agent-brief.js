@@ -13,11 +13,12 @@
 const runtime = require('./aldc-runtime');
 
 const MARKER = '<!-- aldc-rules -->';
-const CODE_ROLES = /^aldc:(al-implement-subagent|al-review-subagent|al-developer-reviewer|al-developer|al-planning-subagent|al-triage|dredd|al-agent-builder)$/;
-const REVIEWERS = /^aldc:(al-review-subagent|al-developer-reviewer|dredd)$/;
+// Current agent names only; a deprecated alias is resolved to its agent first (canonicalAgent).
+const CODE_ROLES = /^aldc:(al-implementer|al-reviewer|al-researcher|al-triage|al-agent-builder)$/;
+const REVIEWERS = /^aldc:al-reviewer$/;
 // The planner is left out: its contract forbids probing BCQuality during planning.
 const DESIGNERS = /^aldc:(al-architect|al-spec-agent)$/;
-const FLOW_ROLES = /^aldc:(al-planning-subagent|al-implement-subagent|al-developer)$/;
+const FLOW_ROLES = /^aldc:(al-researcher|al-implementer)$/;
 const AGENT_SDK = /agent\s*sdk|IAgent(Factory|Metadata|TaskExecution)|agent\s*toolkit|al-agent-builder/i;
 
 function brief(payload) {
@@ -25,16 +26,17 @@ function brief(payload) {
   if (!input || typeof input.subagent_type !== 'string' || !input.subagent_type.startsWith('aldc:')) return null;
   const extra = [];
   const prompt = String(input.prompt || '');
+  const role = runtime.canonicalAgent(input.subagent_type);
   // Checked by the rules' own headings, not by the marker: in the evals the conductor
   // wrote the marker followed by its own one-line paraphrase of the rules.
-  if (CODE_ROLES.test(input.subagent_type)) {
-    const agentApp = AGENT_SDK.test(prompt) || input.subagent_type === 'aldc:al-agent-builder' || runtime.alSource(payload.cwd).includes('"agent metadata provider"');
+  if (CODE_ROLES.test(role)) {
+    const agentApp = AGENT_SDK.test(prompt) || role === 'aldc:al-agent-builder' || runtime.alSource(payload.cwd).includes('"agent metadata provider"');
     const rules = runtime.rulesBrief({ includeAgentToolkit: agentApp });
     const headings = rules.match(/^# .+$/gm) || [];
     if (rules && !headings.every((h) => prompt.includes(h.trim()))) extra.push(`${MARKER}\n## ALDC AL rules (binding; injected by the plugin because rule auto-apply does not reach subagents)\n\n${rules}`);
   }
   // M8: hand the reviewer the relevant BCQuality articles and the apply-or-justify rule.
-  if (REVIEWERS.test(input.subagent_type) && !prompt.includes('## BCQuality selection')) {
+  if (REVIEWERS.test(role) && !prompt.includes('## BCQuality selection')) {
     const sel = runtime.bcqualitySelection(payload.cwd, prompt);
     if (sel && sel.articles.length) extra.push('## BCQuality selection (ALDC keyword match on ' + sel.scope + '; not a BCQuality provider execution)\n\n' +
       sel.articles.map((a) => '- ' + sel.root + '/' + a.path + ' (' + a.domain + '): ' + a.title).join('\n') +
@@ -44,7 +46,7 @@ function brief(payload) {
     else if (sel) extra.push('## BCQuality selection\n\nNo BCQuality article matched this app. Review natively and still fill review.security (rules/al-security.md).');
   }
   // Design roles: the real route is bcquality:al-knowledge; the keyword list is only a labelled manual fallback.
-  if (DESIGNERS.test(input.subagent_type) && !prompt.includes('## BCQuality candidates')) {
+  if (DESIGNERS.test(role) && !prompt.includes('## BCQuality candidates')) {
     const sel = runtime.bcqualitySelection(payload.cwd, prompt, 10);
     if (sel && sel.articles.length) {
       const prov = runtime.bcqualityProvenance(sel.root);
@@ -60,7 +62,7 @@ function brief(payload) {
     }
   }
   // M9: investigate the standard flow before hooking into it.
-  if (FLOW_ROLES.test(input.subagent_type) && !prompt.includes('Standard Flow'))
+  if (FLOW_ROLES.test(role) && !prompt.includes('Standard Flow'))
     extra.push('Standard Flow: before subscribing to a Base Application publisher, list its events in execution order from its symbols or source, and choose the event that runs after everything your logic depends on (amounts, discounts, status changes, inserts, posting). Planner: report it in the Standard Flow section. Implementer: write a one-line comment above each such subscriber saying why that event.');
   const mode = runtime.autonomy(payload.cwd);
   if (mode.gates === 'pre-approved' && !prompt.includes('ALDC autonomy: pre-approved'))

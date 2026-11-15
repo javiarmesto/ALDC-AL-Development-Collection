@@ -227,7 +227,7 @@ File naming: `sales-posting-error-diagnosis.md`, `slow-customer-list-diagnosis.m
 1. Design fix addressing **root cause** (never symptoms only)
 2. Consider edge cases and side effects
 3. **PAUSE — present diagnosis and proposed fix to user for approval**
-4. After approval: handoff implementation to `al-developer` (simple) or via `al-conductor` TDD cycle (complex refactor)
+4. After approval: handoff implementation to `al-implementer` (simple) or via `al-conductor` TDD cycle (complex refactor)
 5. After fix: run tests, re-profile if performance issue, verify regression scenarios
 
 Clean up: remove debugging artifacts, breakpoints, and temporary logging from code.
@@ -241,7 +241,7 @@ Clean up: remove debugging artifacts, breakpoints, and temporary logging from co
 
 ## Constraints
 
-- This skill covers **diagnosis and root cause analysis only** — code changes are implemented by `al-developer` or via `al-conductor`
+- This skill covers **diagnosis and root cause analysis only** — code changes are implemented by `al-implementer` or via `al-conductor`
 - **NEVER** guess solutions without evidence from debugging tools
 - **NEVER** skip Step 4 (diagnosis document) for non-trivial issues (>5 min investigation)
 - **NEVER** proceed to fix without user approval (Step 5 HITL gate)

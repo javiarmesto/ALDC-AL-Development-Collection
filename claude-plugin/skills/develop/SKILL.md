@@ -6,7 +6,7 @@ argument-hint: Implementation task, bug fix, or feature to code (e.g., "Add emai
 
 # /aldc:develop
 
-Read `${CLAUDE_PLUGIN_ROOT}/agents/al-developer.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc:al-developer` and verify its effective tools.
+Read `${CLAUDE_PLUGIN_ROOT}/agents/al-implementer.md` in full and act as that agent in mode `direct` for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc:al-implementer` and verify its effective tools.
 
 Input: **$ARGUMENTS**
 

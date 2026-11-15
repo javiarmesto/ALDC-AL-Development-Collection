@@ -86,7 +86,7 @@ Knowledge consultation through `al-knowledge` is allowed by the design guidance;
 use native file retrieval when authorized helper execution is unavailable. Define
 downstream review criteria that cite BCQuality knowledge paths — read path, per
 [the design guidance](${CLAUDE_PLUGIN_ROOT}/docs/templates/bcquality-design-guidance.md) — and leave
-actual code review to Reviewer/Dredd.
+actual code review to `al-reviewer`.
 **Knowledge consultations (Claude Code).** When `bcquality:al-knowledge` is installed and you run in the main session, consult it per domain through the `aldc:al-knowledge-consultant` subagent (Agent tool, foreground; several domains may run in parallel): write each question into the selection record first, pass it verbatim, and copy the returned `response` object into `responses[].response` exactly as returned, with its `invocation`: do not drop, summarize or reshape it (an entry without `response` is invalid, and so is an `al-knowledge` selection built on it). Then validate as the consumer before selecting references and record `validation: {status, by: "consumer", checks}`: `response.question` byte-identical to your question, the schema keys present, and every reference path existing under the reported `pluginRoot` and listed in `articlesRead` (`validation.by: consumer`). When you run as a subagent you cannot launch it (subagents do not nest): invoke the skill yourself and finish the consultation, or record the domain as manual with that reason. Record `executor: "subagent:al-knowledge-consultant"` only for a consultant you actually launched in this run whose output is that tool call's result; reading its instructions and following them yourself is `main-session`. Do not consult BCQuality any other way when the consultant is available.
 
 Do not approve your own spec or start implementation.
@@ -206,7 +206,7 @@ Draft/Pending until the human approves this version; preserve applicable existin
 approval, and mark materially changed portions for renewed approval.
 
 After human approval and the applicable multi-spec joint consistency review,
-continue to `al-conductor` for MEDIUM/HIGH or `al-developer`
+continue to `al-conductor` for MEDIUM/HIGH or `al-implementer` (`/aldc:develop`)
 for LOW, carrying the spec/architecture paths and verification limits. A handoff
 button or role selection is not proof of approval. If a host cannot switch/delegate,
 provide the same paths and next role without claiming a delegated run occurred.

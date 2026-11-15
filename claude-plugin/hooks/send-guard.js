@@ -15,8 +15,8 @@ function guard(payload) {
   if (!state.start || !pendingPlans(payload.cwd, state.start).length) return null;
   return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason:
     'ALDC: an ALDC plan is in progress. Do not continue a subagent with SendMessage: it runs asynchronously and can be cut ' +
-    'off before it reports. Launch a new foreground Agent call instead (subagent_type "aldc:al-implement-subagent" for an ' +
-    'implementation phase or revision, "aldc:al-review-subagent" for a review), with the full brief: phase objective, the ' +
+    'off before it reports. Launch a new foreground Agent call instead (subagent_type "aldc:al-implementer" for an ' +
+    'implementation phase or revision, "aldc:al-reviewer" for a review), with the full brief: phase objective, the ' +
     'files and previous report it needs, and the review findings to fix. Wait for its result in this turn.' } };
 }
 

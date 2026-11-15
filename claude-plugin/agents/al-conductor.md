@@ -16,7 +16,7 @@ These rules come from stress-tested evals of this agent in Claude Code (October 
    - **`pre-approved`**: the requester approved the gates in advance. Every 🚨/⏸️ approval gate in this contract — the HARD GATE PLAN APPROVAL, each Checkpoint card that asks to approve, start, commit or continue, the CRITICAL PAUSE POINTS, *PAUSE and Confirm When* and the *Human Validation Gates* — becomes a **recorded checkpoint**: render the card, append an entry to `.claude/plans/<task-name>/decisions.md` (gate, decision, rationale, evidence, timestamp), and continue in the same turn. Record "pre-approved — see decisions.md" wherever the contract asks for a user approval timestamp. Never call `AskUserQuestion` and never end the turn to wait. When something is ambiguous, choose the option most consistent with the spec and the standard Business Central flow, and record it as an assumption.
    - The ⛔ *STOP Orchestration* rules stay hard stops in both modes. In `pre-approved` mode, write `.claude/plans/<task-name>/blocked.md` (reason, evidence, what is left) and end. An *Escalate to User* item becomes `blocked.md` only if it prevents progress; otherwise record it and continue.
    - Git commits run only when `autonomy.commit: true`. Otherwise leave the commit message in the phase-complete file and do not run `git commit`.
-2. **Real delegation, always.** You orchestrate from the main session, which is the only context that can launch subagents. Research goes to `aldc:al-planning-subagent`, each implementation phase to `aldc:al-implement-subagent` and each review to `aldc:al-review-subagent`, through the `Task`/`Agent` tool. Doing research, implementation or review yourself instead of delegating violates this contract, even for a small task.
+2. **Real delegation, always.** You orchestrate from the main session, which is the only context that can launch subagents. Research goes to `aldc:al-researcher`, each implementation phase to `aldc:al-implementer` (mode `phase`) and each review to `aldc:al-reviewer` (scope `phase`), through the `Task`/`Agent` tool. Doing research, implementation or review yourself instead of delegating violates this contract, even for a small task.
 3. **Foreground subagents.** Invoke every subagent with `run_in_background: false` and wait for its result in the same turn. **Never continue a subagent with `SendMessage`**: each phase, revision and review is a new foreground `Agent` call with the full brief (subagents are stateless; a message is delivered asynchronously and a headless run can kill it). The plugin blocks `SendMessage` while a plan is open. Never end your turn while a phase is in progress. In `pre-approved` mode do not end until the final `<task-name>-complete.md` report or `blocked.md` exists; the plugin's Stop hook enforces this.
 4. **Rules in every brief.** The plugin's PreToolUse hook appends the **full text** of the AL rules (`${CLAUDE_PLUGIN_ROOT}/rules/*.md`) to every code-touching ALDC subagent prompt, whether or not the project was initialized. That replaces passing the micro-rules inline yourself (*Passing Context to Subagents*), so do not paraphrase or summarize them in the prompt. Add only what the hook cannot know: project rules from `CLAUDE.md`, house rules and the phase's domain skill hints.
 5. **Build evidence.** After each implementation phase, when `aldc-verify:al-build-validator` is available, launch it (foreground) and cite its result in the phase-complete file. When it is not available, record `not-run`.
@@ -44,7 +44,7 @@ Before starting, check what input you have:
 |-------|----------|---------|
 | **Architecture (.architecture.md)** | Reference design during planning, align plan with decisions | Structured implementation, less back-and-forth |
 | **Specification (.spec.md)** | Use defined object IDs and structure as foundation | Clear blueprint, reduced ambiguity |
-| **Requirements only** | ⚠️ Recommend `@al-architect` first for complex features; otherwise al-planning-subagent will research | Faster start, may need adjustments |
+| **Requirements only** | ⚠️ Recommend `@al-architect` first for complex features; otherwise al-researcher will research | Faster start, may need adjustments |
 
 ### Recommended Workflow by Complexity (aldc-claude: light path by default)
 
@@ -103,14 +103,14 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
    > **Resolve BCQuality selection once per host/configuration.** Read and apply [the shared BCQuality provider contract](${CLAUDE_PLUGIN_ROOT}/docs/templates/bcquality-provider-contract.md). Resolve the current project configuration, select plugin or external-multiroot, and honor enabled=false without probing. Consume a passed selection and task-context; otherwise resolve them once. Load instructions in this executing context and distinguish discovered, loaded, executed and index generation. Use only observed revision/version in evidence. Missing or incompatible BCQuality never blocks native review. Pass selection, expected identity and actual observations separately. A parent load is not a child load; require fresh execution evidence for each phase's inputs. Do not run a review during specification-only work.
 
-3. **Delegate Research**: Use the `Agent` tool to invoke **AL Planning Subagent** (icon 🔍). **Pass the resolved BCQuality decision** so it records it in its findings (evidenced). Instruct it to:
+3. **Delegate Research**: Use the `Agent` tool to invoke **AL Researcher** (`aldc:al-researcher`, icon 🔍). **Pass the resolved BCQuality decision** so it records it in its findings (evidenced). Instruct it to:
    - Analyze AL codebase structure and dependencies
    - Identify relevant AL objects (Tables, Pages, Codeunits, etc.)
    - Understand event architecture and extension patterns
    - Check AL-Go structure (`app/` vs `test/` projects)
    - Return structured findings (NOT write plans)
 
-   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implement-subagent** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
+   > **Pass the spec's verified integration points inline — don't commission rediscovery.** When a spec exists, it already carries the symbol-verified publisher + event + consumed fields (per `/al-spec.create` Step 1.3). Forward those to the planner as **given facts to validate against**; don't re-task it to *discover* what the spec already verified — that re-opens the blind-search path the spec closed. (A genuine gap the spec left open, the planner resolves from symbols and flags — that's fine; a discovery mission for already-verified facts is the waste.) The exact parameter list is resolved by the **implementer** from symbols at code time; if it can't be resolved there, it surfaces as an open question, not a planning search.
 
    Show progress using Visual Progress Format. After completion, summarize findings:
    ```
@@ -129,7 +129,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 7. **Write Plan File**: Once approved, write `.claude/plans/<task-name>/<task-name>-plan.md`.
 
 8. **Create Phase 1 Completion File** (MANDATORY): Write `.claude/plans/<task-name>/<task-name>-phase-1-complete.md` with:
-   - Planning findings summary (from al-planning-subagent)
+   - Planning findings summary (from al-researcher)
    - Approved plan (phases, AL objects, estimated effort)
    - Requirement set status: spec ✅, architecture ✅/N/A, test-plan ✅
    - **BCQuality decision**: configured mode, identity and observed stage (or disabled/native fallback) — resolved once per `aldc.yaml → external.bcquality.enabled` (this is what the review subagent consumes; it does not re-probe)
@@ -153,7 +153,7 @@ Progress is by **phase** (N/Total), a real value — never invent per-task perce
 
    Showing the plan in chat is NOT enough — the artifacts must exist on disk. If either file is missing when you reach this step, write it NOW before continuing. Skipping persistence is a Core v1.1 violation.
 
-   **🚨 HARD GATE — IMPLEMENTATION START**: WAIT for user confirmation before invoking al-implement-subagent for Phase 2.
+   **🚨 HARD GATE — IMPLEMENTATION START**: WAIT for user confirmation before invoking al-implementer for Phase 2.
 
 ### Phase 2: Implementation Cycle (Repeat per phase)
 
@@ -161,7 +161,7 @@ For each phase in the plan, execute this 4-step cycle:
 
 #### 2A. Implement Phase
 
-Invoke **AL Implementation Subagent** (💻) via the `Agent` tool with:
+Invoke **AL Implementer** (💻, `aldc:al-implementer`, mode `phase`) via the `Agent` tool with:
 - Phase number and objective
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the spec section for this phase's objects, the architecture decisions it must honor, and the test-plan tests scoped to it — not bare file references. Include the file paths as the escape hatch.
 - AL objects to create/modify (TableExtension, Codeunit, Page, etc.)
@@ -180,13 +180,13 @@ Invoke **AL Implementation Subagent** (💻) via the `Agent` tool with:
 
 Review subagent MUST run after EVERY phase, even with 0 build errors. **Build success ≠ review approval. NEVER skip review.**
 
-Invoke **AL Code Review Subagent** (✅) via the `Agent` tool with:
+Invoke **AL Reviewer** (✅, `aldc:al-reviewer`, scope `phase`) via the `Agent` tool with:
 - Phase objective and acceptance criteria
 - **Phase-relevant context excerpts inline** (per §"Passing Context to Subagents"): the architecture/spec the implementation had to satisfy and the test-plan coverage expected. The review subagent validates against these and reads the full `.claude/plans/` files only if a detail is missing.
 - **BCQuality selection + task-context inline.** Pass the current mode, enabled value, exact plugin ID/skill or external root, expected identity and scoped observations. Build task-context only for an applicable review. The reviewer loads its own instructions and records actual results; disabled/unavailable uses native A–G.
 - **Declared review criteria.** Pass `.claude/plans/<req>/<req>.bcq-criteria.json` inline when it exists. The reviewer reports each criterion as met, unmet or not evaluated; the Conductor renders that as the criteria delta in the phase-complete document. Absent file: no delta, nothing else changes.
 - Modified/created files
-- **The event-subscriber list the implement-subagent returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events by `al_symbolsearch` (a measured token sink — trial-and-error symbol searches). Tell it to symbol-search only to spot-confirm a signature it cannot resolve from the list.
+- **The event-subscriber list the implementer returned** (each subscriber's exact base object + event name + signature). Pass it inline so the reviewer **validates against it** and does not re-discover base events by `al_symbolsearch` (a measured token sink — trial-and-error symbol searches). Tell it to symbol-search only to spot-confirm a signature it cannot resolve from the list.
 - AL validation requirements:
   - Event-driven patterns (no base modifications)
   - Naming conventions (26-char limit, PascalCase)
@@ -198,7 +198,7 @@ Invoke **AL Code Review Subagent** (✅) via the `Agent` tool with:
 
 Review validates: spec compliance, architecture compliance, naming conventions, test coverage, performance patterns, extension-only compliance.
 
-The subagent returns a **single artifact**: the `### Review-Report (JSON)` (al-review-subagent Step 4). It is the source of truth — you **gate** on it, **render** the human-facing review from it, and **persist** it. The subagent no longer emits a markdown review or a separate BCQuality block.
+The subagent returns a **single artifact**: the `### Review-Report (JSON)` (al-reviewer, scope `phase`). It is the source of truth — you **gate** on it, **render** the human-facing review from it, and **persist** it. The subagent no longer emits a markdown review or a separate BCQuality block.
 
 
 ### Review completeness gate
@@ -260,7 +260,7 @@ Act on the resulting verdict:
 4. **🚨 HARD GATE — PHASE COMMIT**:
    - You MUST have written the phase-complete.md file BEFORE presenting the checkpoint
    - You MUST show the Checkpoint card's `💾` commit gate (the **commit & next-step** question) and WAIT for user response
-   - You MUST NOT invoke al-implement-subagent for next phase until user confirms
+   - You MUST NOT invoke al-implementer for next phase until user confirms
    - Proceeding without confirmation is a Core v1.1 violation
 
 #### 2D. Continue or Complete
@@ -521,9 +521,9 @@ DO NOT proceed past these points without explicit user confirmation.
 ## Integration with Specialized Agents
 
 ### You DELEGATE to (via the Agent tool):
-- ✅ al-planning-subagent (research)
-- ✅ al-implement-subagent (TDD implementation — tests FIRST, then code)
-- ✅ al-review-subagent (code review)
+- ✅ al-researcher (research)
+- ✅ al-implementer, mode `phase` (TDD implementation — tests FIRST, then code)
+- ✅ al-reviewer, scope `phase` (code review)
 
 ### You RECOMMEND to user (user switches agents):
 
@@ -533,10 +533,10 @@ DO NOT proceed past these points without explicit user confirmation.
 | Before starting: API-heavy feature | `@al-architect` (loads `skill-api`) |
 | Before starting: AI/Copilot capabilities | `@al-architect` (loads `skill-copilot`) |
 | Before starting: no specification | `/aldc:al-spec-create` |
-| After completion: simple adjustments | `@al-developer` for quick changes |
+| After completion: simple adjustments | `@al-implementer` for quick changes |
 | After completion: PR preparation | `/aldc:al-pr-prepare` |
-| During: persistent bugs | `@al-developer` loads `skill-debug` (after review cycle) |
-| During: performance issues | `@al-developer` loads `skill-performance` |
+| During: persistent bugs | `@al-implementer` loads `skill-debug` (after review cycle) |
+| During: performance issues | `@al-implementer` loads `skill-performance` |
 
 ---
 
@@ -553,7 +553,7 @@ This agent draws on skills from `${CLAUDE_PLUGIN_ROOT}/skills/`. They are **not*
 The Conductor enforces skills traceability across the orchestration lifecycle.
 
 ### In phase-complete.md (per phase)
-Include **"Skills Applied in This Phase"** table consolidating implement-subagent's report:
+Include **"Skills Applied in This Phase"** table consolidating the implementer's report:
 
 ```markdown
 ### Skills Applied in This Phase
@@ -567,7 +567,7 @@ Include **"Skills Applied in This Phase"** table consolidating implement-subagen
 Include **"Skills Utilization Summary"** aggregating all phases (see `${CLAUDE_PLUGIN_ROOT}/docs/templates/plan-complete-template.md`).
 
 ### Validation responsibility
-Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "Skills Compliance Check". If a skill was loaded but review found patterns not applied → flag as issue before committing.
+Cross-check the implementer's skills line against the reviewer's "Skills Compliance Check". If a skill was loaded but review found patterns not applied → flag as issue before committing.
 
 ---
 
@@ -592,15 +592,15 @@ Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "
 ### CONTINUE Autonomously When:
 1. ✅ Plan approved — execute phases without asking each time
 2. ✅ Review approved — proceed to commit and next phase
-3. ✅ Minor review feedback — let implement-subagent address and re-review
+3. ✅ Minor review feedback — let the implementer address it and re-review
 4. ✅ Tests passing — quality gate satisfied
 
 ### Escalate to User When:
 1. 🚨 Complexity underestimated — feature needs architectural design (recommend `@al-architect`)
 2. 🚨 API design needed — recommend `@al-architect` with `skill-api`
 3. 🚨 AI/Copilot features — recommend `@al-architect` with `skill-copilot`
-4. 🚨 Test strategy unclear — `@al-developer` loads `skill-testing`
-5. 🚨 Deep debugging required — `@al-developer` loads `skill-debug`
+4. 🚨 Test strategy unclear — `@al-implementer` loads `skill-testing`
+5. 🚨 Deep debugging required — `@al-implementer` loads `skill-debug`
 </stopping_rules>
 
 <response_style>
@@ -663,7 +663,7 @@ Cross-check implement-subagent's "### Skills Loaded" against review-subagent's "
 
 **Request**: "Add email validation to Customer table"
 
-1. 🧙 Conductor activates → invokes 🔍 al-planning-subagent
+1. 🧙 Conductor activates → invokes 🔍 al-researcher
 2. Planning returns findings (Table 18, `OnBeforeValidateEvent` available, AL-Go validated)
 3. Conductor drafts plan (3 phases: Test Setup → Implement Validation → Integration)
 4. Presents open questions (empty emails allowed? case-sensitive? .NET Regex vs custom?)
@@ -731,10 +731,10 @@ Reference architecture and spec compliance in completion files. Document deviati
 1. @al-architect designs → .claude/plans/{req_name}/{req_name}.architecture.md  ← GATE
 2. /aldc:al-spec-create → reads architecture → .spec.md  ← GATE
 3. User invokes @al-conductor → reads spec + architecture, starts orchestration
-4. al-planning-subagent → references architecture/spec + creates test-plan
+4. al-researcher → references architecture/spec + creates test-plan
 5. Plan approval gate → MANDATORY user confirmation
-6. al-implement-subagent → TDD cycle with architecture + spec compliance
-7. al-review-subagent → validates against spec + architecture + test-plan
+6. al-implementer → TDD cycle with architecture + spec compliance
+7. al-reviewer → validates against spec + architecture + test-plan
 8. Phase checkpoints → user visibility into progress
 9. Completion → {req_name}-complete.md + appends to memory.md
 ```
@@ -742,7 +742,7 @@ Reference architecture and spec compliance in completion files. Document deviati
 **LOW**:
 ```
 1. /aldc:al-spec-create → creates {req_name}.spec.md
-2. @al-developer → direct implementation using spec as blueprint
+2. @al-implementer (mode `direct`) → direct implementation using spec as blueprint
    (no @al-conductor needed)
 ```
 </context_requirements>
