@@ -51,7 +51,7 @@ function gate(payload) {
   if (/-review-phase-\d+(-r\d+)?\.json$/i.test(file)) {
     const p = reviewProblems(text);
     if (p.length) return { decision: 'block', reason: `ALDC process gate (${file.split(/[\\/]/).pop()}): ${p.join('; ')}. ` +
-      'Send the reviewer back for just the missing part (a new foreground aldc:al-review-subagent call) and persist its JSON verbatim; do not fill it in yourself.' };
+      'Send the reviewer back for just the missing part (a new foreground aldc:al-reviewer call, scope phase) and persist its JSON verbatim; do not fill it in yourself.' };
   } else if (/\.al$/i.test(file)) {
     const p = subscriberProblems(text);
     if (p.length) return { decision: 'block', reason: `ALDC: ${file.split(/[\\/]/).pop()} has [EventSubscriber] without a one-line comment above it (${p.join(', ')}). ` +

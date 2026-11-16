@@ -68,6 +68,7 @@
     "CHANGELOG.md",
     "plugin.json",
     "claude-plugin/",
+    "claude-plugin-extras/",
     "copilot-cli-plugin/",
     "plugins/aldc-codex/"
   ],

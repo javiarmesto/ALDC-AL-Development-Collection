@@ -60,7 +60,7 @@ function bcqualityInstalled() {
   return Object.keys(data.plugins || data).some((k) => /^bcquality@/.test(k));
 }
 
-/** The plugin's AL rules, without frontmatter or adapter banner, for inline injection. */
+/** The plugin's AL rules, without frontmatter (or a leading blockquote in an older copy), for inline injection. */
 function rulesBrief({ includeAgentToolkit = false } = {}) {
   const dir = path.join(PLUGIN_ROOT, 'rules');
   let names = [];
@@ -68,7 +68,7 @@ function rulesBrief({ includeAgentToolkit = false } = {}) {
   if (!includeAgentToolkit) names = names.filter((n) => n !== 'al-agent-toolkit.md');
   return names.map((n) => (read(path.join(dir, n)) || '')
     .replace(/^---[\s\S]*?---\s*/, '')
-    .replace(/^(>.*\r?\n)+\s*/m, '')
+    .replace(/^(>.*\r?\n)+\s*/, '')
     .trim()).filter(Boolean).join('\n\n');
 }
 
@@ -232,4 +232,17 @@ function pluginInstalled(prefix) {
   return Object.keys(data.plugins || data).some((k) => k.startsWith(prefix + '@'));
 }
 
-module.exports = { testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
+/**
+ * Resolve a deprecated agent alias (5.4.0, removed in 6.0.0) to the agent it delegates to.
+ * The alias file names its target in an `<!-- aldc-alias-of: <agent> [mode=<m>] -->` line, so
+ * hooks keep one table of current names and still brief an external caller that uses an old one.
+ * Returns `aldc:<agent>`; anything that is not an alias comes back unchanged.
+ */
+function canonicalAgent(subagentType) {
+  const m = /^aldc:([a-z0-9-]+)$/.exec(String(subagentType || ''));
+  if (!m) return subagentType;
+  const alias = /<!--\s*aldc-alias-of:\s*([a-z0-9-]+)(?:\s+mode=([a-z-]+))?\s*-->/.exec(read(path.join(PLUGIN_ROOT, 'agents', m[1] + '.md')) || '');
+  return alias ? 'aldc:' + alias[1] : subagentType;
+}
+
+module.exports = { canonicalAgent, testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };

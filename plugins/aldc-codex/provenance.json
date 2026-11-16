@@ -43,7 +43,7 @@
     "instructions/al-performance.instructions.md": "1db9c2e08bfec26a63990e1c05229f7ed15fb2fa92e6b65ab2b8eb40c1fdf1df",
     "instructions/al-security.instructions.md": "c45a0528af3c6d2b4ff00c35a6f76bafee27854310dc0d184fb8134d99fb624b",
     "instructions/al-testing.instructions.md": "ab88c39c39d2bd0bbdd00e4224b050004e8d587d7e381a1e5b0d075b985be0c3",
-    "package.json": "b56c8343bf932acf37a6a23409e5a3bb45ede2ebe2448bb5ffb5247b2ce4d891",
+    "package.json": "0750829a53a223c60926c45eabc35273422a5101248a19a0b43d60aa8999ad57",
     "scripts/codex-al-adapter.js": "892534d0c70c7b5db37af5064a4ce24557a38b3a05148f23a46cb712dd98a9f5",
     "scripts/codex-al-tooling.md": "c1f0b2f8d40282d3747e945bbb40a77145337d7cdace619e07cf031484b867ae",
     "scripts/codex-mcp-setup.md": "cc47c002db298b845f5be29d359bafe424d5215539cffd888eb3ce590f44117b",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * ALDC Core Validator v1.1
- * Validates repository compliance against ALDC Core Spec v1.1.
+ * ALDC Core Validator v1.2
+ * Validates repository compliance against ALDC Core Spec v1.2.
  *
  * Checks:
  *   1. aldc.yaml exists and parses correctly
@@ -309,7 +309,7 @@ if (entrypoint && !fileExists(entrypoint)) {
 // ─── Report ──────────────────────────────────────────────────────
 function report() {
   console.log("\n╔══════════════════════════════════════════╗");
-  console.log("║     ALDC Core Validator v1.1             ║");
+  console.log("║     ALDC Core Validator v1.2             ║");
   console.log("╚══════════════════════════════════════════╝\n");
 
   if (S.info.length) {
@@ -330,7 +330,7 @@ function report() {
 
   const total = S.errors.length + S.warnings.length;
   if (S.errors.length === 0) {
-    console.log(`✅ ALDC Core v1.1 COMPLIANT (${S.warnings.length} warning(s))`);
+    console.log(`✅ ALDC Core v1.2 COMPLIANT (${S.warnings.length} warning(s))`);
   } else {
     console.log(`❌ NOT COMPLIANT — ${S.errors.length} error(s), ${S.warnings.length} warning(s)`);
   }

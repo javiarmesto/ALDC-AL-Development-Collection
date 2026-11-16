@@ -10,3 +10,5 @@ regenerated from the Copilot contracts by `scripts/sync-plugin-support.js`.
 - After editing any file here, refresh the payload hashes: `node scripts/relock-claude-surface.js`.
 - Improvements that apply to every surface are ported back to the canonical contracts
   (`agents/*.agent.md`, `instructions/`, `skills/`) over time.
+- The optional `aldc-extras` plugin (`claude-plugin-extras/`, 5.4.0) is maintained the same way;
+  the relock script and the Claude surface tests cover both plugins.

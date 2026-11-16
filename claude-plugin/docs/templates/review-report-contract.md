@@ -1,7 +1,9 @@
 # AL review report contract
 
-Used by AL Code Review Subagent and AL Developer Reviewer. Dredd retains its
-Audit-Report and advisory gate, using the same coverage/evidence discipline.
+Used by `al-reviewer` in scopes `phase` (Conductor) and `increment` (`/aldc:review`).
+Scope `audit` keeps its Audit-Report and advisory gate, using the same
+coverage/evidence discipline. The `skill.id` values below identify the scope and
+stay unchanged since 5.4.0; they are not agent names.
 Load the shared review pipeline before issuing a report. A reported skill name
 is metadata, not proof that instructions were read or executed.
 

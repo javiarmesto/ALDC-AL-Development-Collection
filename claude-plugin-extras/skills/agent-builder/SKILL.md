@@ -1,0 +1,12 @@
+---
+name: agent-builder
+description: Agent Toolkit Builder — specialist in designing and coding Business Central agents using the AI Development Toolkit and Agent SDK. Follows the official Agent Template project structure. Handles both Designer (no-code) and SDK (pro-code) paths. Use when building BC agents or agent SDK integrations.
+---
+
+# /aldc-extras:agent-builder
+
+Read `${CLAUDE_PLUGIN_ROOT}/agents/al-agent-builder.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc-extras:al-agent-builder` and verify its effective tools.
+
+Input: **$ARGUMENTS**
+
+Requirement artifacts live under `.claude/plans/` in the project; run `/aldc:al-initialize` once if that folder does not exist.

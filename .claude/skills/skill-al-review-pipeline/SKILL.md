@@ -1,6 +1,6 @@
 ---
 name: skill-al-review-pipeline
-description: Review an AL increment or audit scope using the configured BCQuality provider and evidence-based native coverage. Shared by Developer Reviewer, Conductor review and Dredd; does not implement fixes or run builds.
+description: Review an AL increment or audit scope using the configured BCQuality provider and evidence-based native coverage. Shared by every scope of al-reviewer (phase, increment, audit); does not implement fixes or run builds.
 ---
 # AL review pipeline
 
@@ -122,7 +122,7 @@ When the app extends `Agent Metadata Provider`, also fill `review.agent-sdk` fro
 ## Return an honest result
 
 Use [the shared review report](${CLAUDE_PROJECT_DIR}/claude-plugin/docs/templates/review-report-contract.md)
-for direct/Conductor reviews; Dredd keeps its advisory Audit-Report format.
+for the `phase` and `increment` scopes; the `audit` scope keeps its advisory Audit-Report format.
 In either format include a compact coverage list with domain/check, status,
 source and evidence/reason, plus the provider identity and independent index state.
 Keep original provider sub-results intact; coverage is the caller's summary.

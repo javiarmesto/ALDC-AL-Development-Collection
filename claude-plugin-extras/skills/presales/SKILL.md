@@ -1,0 +1,13 @@
+---
+name: presales
+description: Technical PreSales Agent for AL/Business Central projects. Specializes in project planning, cost estimation (time & budget), feasibility analysis, SWOT/risk assessment, and technical documentation. Orchestrates AL Architecture & Design Specialist and /aldc:spec for comprehensive proposals. CREATES Technical_PreSales folder and documents dynamically on demand. Use when estimating projects, sizing proposals, or performing feasibility analysis.
+argument-hint: Project name, description, or request for proposal/cost estimation (e.g., "Evaluate customer loyalty system project", "Estimate cost for inventory optimization")
+---
+
+# /aldc-extras:presales
+
+Read `${CLAUDE_PLUGIN_ROOT}/agents/al-presales.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc-extras:al-presales` and verify its effective tools.
+
+Input: **$ARGUMENTS**
+
+Requirement artifacts live under `.claude/plans/` in the project; run `/aldc:al-initialize` once if that folder does not exist.

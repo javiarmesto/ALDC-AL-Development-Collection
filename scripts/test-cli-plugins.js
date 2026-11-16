@@ -81,6 +81,8 @@ for (const rel of [...AGENTS.map(a => `agents/${a.id}.agent.md`), ...WORKFLOWS.m
 // The mapping table names the Copilot surface it maps, so the check is on the body
 // the preamble introduces — which also exercises the strip on every real file.
 for (const rel of [...AGENTS.map(a => `agents/${a.id}.md`), ...WORKFLOWS.map(w => `skills/${workflowSkillName(w)}/SKILL.md`)]) {
+  // 5.4.0: the maintained Claude core no longer ships pre-sales and agent building (claude-plugin-extras/).
+  if (maintainedClaude && !pluginFiles.has(rel)) continue;
   const body = stripAdapterPreamble(split(pluginFiles.get(rel)).body);
   check(!/^\s*>/.test(body), `claude-plugin/${rel}: the adapter preamble strips cleanly`);
   check(!body.includes('${input:'), `claude-plugin/${rel}: no Copilot input variable survives the adapter`);
@@ -95,6 +97,7 @@ check(crypto.createHash('sha256').update(canonicalConductor).digest('hex').lengt
 check(maintainedClaude ? conductor.data.model === undefined : conductor.data.model === 'haiku',
   maintainedClaude ? 'Maintained Claude Conductor inherits the session model' : 'Claude Conductor model unchanged');
 check(!conductor.data.tools.includes('mcp__'), 'Conductor does not acquire AL MCP execution');
+if (maintainedClaude) check(read('claude-plugin/docs/claude-runtime.md').includes('${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md'), 'Claude runtime doc links the shared role/evidence contract');
 for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {
   const agent = split(read('claude-plugin/agents/' + file));
   // The knowledge consultant never touches AL: it only runs one BCQuality consultation (read-only, no MCP).
@@ -102,7 +105,9 @@ for (const file of fs.readdirSync(path.join(ROOT, 'claude-plugin/agents'))) {
     check(agent.data.tools.split(',').map((t) => t.trim()).sort().join(',') === 'Glob,Grep,Read,Skill', `${file}: read-only consultant tools`);
     continue;
   }
-  check(agent.body.includes('${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md'), `${file}: contract is directly reachable`);
+  // Maintained surface: each agent links the runtime doc, which links the shared contract.
+  const entry = maintainedClaude ? '${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md' : '${CLAUDE_PLUGIN_ROOT}/skills/skill-migrate/references/cli-al-tools.md';
+  check(agent.body.includes(entry), `${file}: contract is directly reachable`);
   if (file === 'al-conductor.md') continue;
   for (const server of ['al-symbols-mcp', 'context7', 'microsoft-docs']) {
     check(agent.data.tools.includes(`mcp__plugin_aldc_${server}__*`) && agent.data.tools.includes(`mcp__${server}__*`), `${file}: plugin and workspace MCP allowlists`);

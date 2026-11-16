@@ -9,13 +9,16 @@ const { split } = require('./generation-utils');
 const { initialize } = require('./init-plugin');
 const root = path.resolve(__dirname, '..');
 const files = build().files;
-const tools = id => split(files.get(`agents/${id}.md`)).data.tools.split(/,\s*/);
+// 5.4.0: al-presales and al-agent-builder ship in the optional aldc-extras plugin; their grants are checked there.
+const agentText = id => files.get(`agents/${id}.md`) ?? fs.readFileSync(path.join(root, 'claude-plugin-extras', 'agents', `${id}.md`), 'utf8');
+const tools = id => split(agentText(id)).data.tools.split(/,\s*/);
 
 test('Claude specialists can request LSP while research agents cannot write or delegate', () => {
   for (const { id } of AGENTS) {
     assert.equal(tools(id).includes('LSP'), id !== 'al-conductor', id);
   }
-  for (const id of ['al-planning-subagent', 'al-review-subagent', 'al-developer-reviewer']) {
+  // 5.4.0: al-researcher and al-reviewer (every scope, audit included) are read-only; the old names are aliases.
+  for (const id of ['al-planning-subagent', 'al-review-subagent', 'al-developer-reviewer', 'dredd', 'al-researcher', 'al-reviewer']) {
     for (const forbidden of ['Write', 'Edit', 'Bash', 'Task', 'Agent']) {
       assert.ok(!tools(id).includes(forbidden), `${id}: ${forbidden}`);
     }
@@ -56,13 +59,13 @@ test('Claude initialization, update, verification and rollback preserve provider
 test('official AL MCP writes belong only to implementation, never a wildcard', () => {
   const queries = ['al_symbolsearch', 'al_getdiagnostics', 'al_getpackagedependencies'];
   const writes = ['al_compile', 'al_build', 'al_downloadsymbols'];
-  for (const { id } of AGENTS) {
+  for (const id of [...AGENTS.map((a) => a.id), 'al-implementer', 'al-reviewer', 'al-researcher']) {
     const names = tools(id);
     const expected = id === 'al-conductor' ? [] : queries.map(n => `mcp__al__${n}`);
-    if (['al-developer', 'al-implement-subagent'].includes(id)) expected.push(...writes.map(n => `mcp__al__${n}`));
+    if (['al-developer', 'al-implement-subagent', 'al-implementer'].includes(id)) expected.push(...writes.map(n => `mcp__al__${n}`));
     assert.deepEqual(names.filter(n => n.startsWith('mcp__al__')).sort(), expected.sort(), id);
     for (const field of ['hooks', 'mcpServers', 'permissionMode']) {
-      assert.equal(split(files.get(`agents/${id}.md`)).data[field], undefined, `${id}: unsupported ${field}`);
+      assert.equal(split(agentText(id)).data[field], undefined, `${id}: unsupported ${field}`);
     }
   }
 });

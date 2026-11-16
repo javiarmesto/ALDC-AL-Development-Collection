@@ -79,7 +79,7 @@ test('session-context: avisa si la BCQuality instalada no trae al-knowledge', ()
 });
 
 test('agent-brief: subagente ALDC en primer plano, con todas las reglas y el modo autónomo', () => {
-  const out = run('agent-brief.js', { cwd: project(), tool_input: { subagent_type: 'aldc:al-implement-subagent', prompt: 'Phase 2', run_in_background: true } }, { ALDC_GATES: 'pre-approved' });
+  const out = run('agent-brief.js', { cwd: project(), tool_input: { subagent_type: 'aldc:al-implementer', prompt: 'Phase 2', run_in_background: true } }, { ALDC_GATES: 'pre-approved' });
   const u = out.hookSpecificOutput.updatedInput;
   assert.strictEqual(u.run_in_background, false);
   for (const r of RULES) {
@@ -92,8 +92,8 @@ test('agent-brief: subagente ALDC en primer plano, con todas las reglas y el mod
 
 test('agent-brief: no duplica reglas que ya van completas y no toca otros agentes', () => {
   const cwd = project();
-  const first = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
-  const second = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: first } }).hookSpecificOutput.updatedInput.prompt;
+  const first = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
+  const second = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: first } }).hookSpecificOutput.updatedInput.prompt;
   assert.strictEqual((second.match(/# AL Testing — Micro Rules/g) || []).length, 1);
   assert.strictEqual(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'Explore', prompt: 'x' } }), null);
 });
@@ -101,7 +101,7 @@ test('agent-brief: no duplica reglas que ya van completas y no toca otros agente
 test('agent-brief: la regla del SDK de agentes va cuando el proyecto extiende Agent Metadata Provider', () => {
   const cwd = project();
   fs.writeFileSync(path.join(cwd, 'app', 'src', 'A.EnumExt.al'), 'enumextension 50101 "A" extends "Agent Metadata Provider" { }');
-  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
+  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt;
   assert.match(p, /Completeness checklist/);
 });
 
@@ -130,7 +130,7 @@ test('agent-brief: Architect y Spec reciben candidatos manuales etiquetados, con
   assert.match(withSkill, /consult `bcquality:al-knowledge` with the Skill tool/);
   assert.match(withSkill, /verbatim/);
   assert.match(withSkill, /only loads instructions and runs nothing/);
-  for (const role of ['aldc:al-planning-subagent', 'aldc:al-implement-subagent']) {
+  for (const role of ['aldc:al-researcher', 'aldc:al-implementer']) {
     const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: 'Lead Score on Contact' } }, env).hookSpecificOutput.updatedInput.prompt;
     assert.doesNotMatch(p, /## BCQuality (candidates|knowledge)/, role);
   }
@@ -141,7 +141,7 @@ test('agent-brief: la selección del revisor se declara coincidencia de ALDC, no
   const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
   fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
   fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify]\n---\n# Avoid redundant Modify\n');
-  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-review-subagent', prompt: 'Review phase 1' } }, { BCQUALITY_HOME: bcq }).hookSpecificOutput.updatedInput.prompt;
+  const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'Review phase 1' } }, { BCQUALITY_HOME: bcq }).hookSpecificOutput.updatedInput.prompt;
   assert.match(p, /## BCQuality selection \(ALDC keyword match .*not a BCQuality provider execution\)/);
 });
 
@@ -152,7 +152,7 @@ test('agent-brief: external.bcquality.enabled false means no BCQuality articles 
   fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
   fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify, lead-score]\n---\n# Avoid redundant Modify\n');
   const env = { BCQUALITY_HOME: bcq };
-  for (const role of ['aldc:al-architect', 'aldc:al-spec-agent', 'aldc:al-planning-subagent', 'aldc:al-review-subagent']) {
+  for (const role of ['aldc:al-architect', 'aldc:al-spec-agent', 'aldc:al-researcher', 'aldc:al-reviewer']) {
     const p = run('agent-brief.js', { cwd, tool_input: { subagent_type: role, prompt: 'Lead Score on Contact' } }, env).hookSpecificOutput.updatedInput.prompt;
     assert.doesNotMatch(p, /## BCQuality (knowledge|selection)/, role);
     assert.doesNotMatch(p, /modify\.md/, role);
@@ -265,4 +265,298 @@ test('stop-guard: un informe final PARTIAL no cierra el plan; blocked.md sí', (
   assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }, { ALDC_GATES: 'pre-approved' }).decision, 'block');
   fs.writeFileSync(path.join(plan, 'blocked.md'), 'usage limit: phases 7-8 left');
   assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }, { ALDC_GATES: 'pre-approved' }), null);
+});
+
+// ─── 5.4.0: merged agents and their deprecated aliases ─────────────────────────────────────
+const PLUGIN = path.resolve(HOOKS, '..');
+const AGENTS_DIR = path.join(PLUGIN, 'agents');
+const ALIASES = {
+  'al-developer': ['al-implementer', 'direct'], 'al-implement-subagent': ['al-implementer', 'phase'],
+  'al-review-subagent': ['al-reviewer', 'phase'], 'al-developer-reviewer': ['al-reviewer', 'increment'],
+  dredd: ['al-reviewer', 'audit'], 'al-planning-subagent': ['al-researcher', undefined],
+};
+const OLD_NAMES = Object.keys(ALIASES).join('|');
+const front = (file) => {
+  const text = fs.readFileSync(file, 'utf8');
+  const head = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1];
+  const data = Object.fromEntries(head.split(/\r?\n/).map((l) => { const i = l.indexOf(':'); return [l.slice(0, i), l.slice(i + 1).trim()]; }));
+  return { text, data };
+};
+
+test('5.4.0: Conductor, entry skills and hooks launch only the new agent names', () => {
+  const launchers = [
+    'agents/al-conductor.md', 'skills/conduct/SKILL.md', 'skills/develop/SKILL.md', 'skills/review/SKILL.md', 'skills/audit/SKILL.md',
+    ...fs.readdirSync(HOOKS).filter((f) => f.endsWith('.js')).map((f) => 'hooks/' + f),
+  ];
+  for (const rel of launchers) {
+    const text = fs.readFileSync(path.join(PLUGIN, rel), 'utf8');
+    // Report identifiers (skill.id) keep the old spellings; launching by an old name does not.
+    assert.doesNotMatch(text, new RegExp(`aldc:(${OLD_NAMES})\\b`), rel + ' launches an alias');
+    assert.doesNotMatch(text, new RegExp(`agents/(${OLD_NAMES})\\.md`), rel + ' reads an alias contract');
+    if (rel.startsWith('hooks/')) assert.doesNotMatch(text, new RegExp(`\\b(${OLD_NAMES})\\b`), rel + ' names a deprecated agent');
+  }
+  const named = (rel, ...names) => names.forEach((n) => assert.match(fs.readFileSync(path.join(PLUGIN, rel), 'utf8'), new RegExp(`aldc:${n}\\b`), rel + ' -> ' + n));
+  named('skills/conduct/SKILL.md', 'al-researcher', 'al-implementer', 'al-reviewer');
+  named('agents/al-conductor.md', 'al-researcher', 'al-implementer', 'al-reviewer');
+  named('skills/develop/SKILL.md', 'al-implementer');
+  named('skills/review/SKILL.md', 'al-reviewer');
+  named('skills/audit/SKILL.md', 'al-reviewer');
+});
+
+test('5.4.0: every deprecated alias points to an existing, non-alias agent with the same tools', () => {
+  const aliasFiles = fs.readdirSync(AGENTS_DIR).filter((f) => /aldc-alias-of:/.test(fs.readFileSync(path.join(AGENTS_DIR, f), 'utf8')));
+  assert.deepStrictEqual(aliasFiles.map((f) => f.replace(/\.md$/, '')).sort(), Object.keys(ALIASES).sort());
+  for (const [name, [target, mode]] of Object.entries(ALIASES)) {
+    const alias = front(path.join(AGENTS_DIR, name + '.md'));
+    const targetFile = path.join(AGENTS_DIR, target + '.md');
+    assert.ok(fs.existsSync(targetFile), name + ': target ' + target + ' exists');
+    const real = front(targetFile);
+    assert.doesNotMatch(real.text, /aldc-alias-of:/, target + ' is not itself an alias');
+    assert.strictEqual(alias.data.name, name);
+    assert.strictEqual(real.data.name, target);
+    assert.strictEqual(alias.data.tools, real.data.tools, name + ': same tools as ' + target);
+    assert.match(alias.text, new RegExp('<!-- aldc-alias-of: ' + target + (mode ? ' mode=' + mode : '') + ' -->'), name + ': marker');
+    assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/agents/' + target + '.md'), name + ': reads the target contract');
+    assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md'), name + ': runtime doc');
+    if (mode) assert.ok(alias.text.includes('`' + mode + '`'), name + ': fixed mode ' + mode);
+    assert.match(alias.data.description, /^Deprecated alias of /);
+    assert.match(alias.text, /removed in 6\.0\.0/);
+  }
+  // The modes and scopes the aliases fix are the ones the merged contracts define.
+  const impl = fs.readFileSync(path.join(AGENTS_DIR, 'al-implementer.md'), 'utf8');
+  for (const m of ['phase', 'direct']) assert.match(impl, new RegExp('## Mode `' + m + '`'));
+  const rev = fs.readFileSync(path.join(AGENTS_DIR, 'al-reviewer.md'), 'utf8');
+  for (const s of ['phase', 'increment', 'audit']) assert.ok(rev.includes('`' + s + '`'), 'reviewer scope ' + s);
+  assert.doesNotMatch(front(path.join(AGENTS_DIR, 'al-reviewer.md')).data.tools, /\b(Write|Edit|Bash|Task|Agent)\b/, 'reviewer stays read-only in every scope');
+});
+
+test('5.4.0: an external launch by an old name gets the same brief as the new name', () => {
+  const cwd = project();
+  const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
+  fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
+  fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify]\n---\n# Avoid redundant Modify\n');
+  const env = { BCQUALITY_HOME: bcq };
+  for (const [name, [target]] of Object.entries(ALIASES)) {
+    const brief = (type) => run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:' + type, prompt: 'Review phase 1' } }, env).hookSpecificOutput.updatedInput.prompt;
+    assert.strictEqual(brief(name), brief(target), name);
+  }
+  assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:dredd', prompt: 'x' } }, env).hookSpecificOutput.updatedInput.prompt, /## BCQuality selection/);
+  assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-developer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt, /Standard Flow: before subscribing/);
+});
+
+// ─── 5.4.0: the slimmed Conductor keeps every gate, hard stop and artifact path ─────────────
+test('5.4.0: Conductor gates, hard stops and artifact paths stay reachable; templates are read on demand', () => {
+  const conductor = fs.readFileSync(path.join(AGENTS_DIR, 'al-conductor.md'), 'utf8');
+  const template = (n) => fs.readFileSync(path.join(PLUGIN, 'docs', 'templates', n), 'utf8');
+  for (const phrase of [
+    '🚨 HARD GATE — PLAN APPROVAL', 'STOP and WAIT for explicit user approval. DO NOT start implementation until user confirms',
+    '🚨 HARD GATE — PHASE 1 ARTIFACTS PERSISTED', 'Showing the plan in chat is NOT enough',
+    '🚨 HARD GATE — IMPLEMENTATION START', '🚨 HARD GATE — PHASE COMMIT',
+    'You MUST NOT invoke al-implementer for next phase until user confirms',
+    '**⛔ TDD ENFORCEMENT**', 'Zero tests = phase FAILED',
+    'Review subagent MUST run after EVERY phase', 'NEVER skip review',
+    'Review completeness gate', 'cannot become approval from zero findings',
+    '🚨 MANDATORY memory.md update at completion', '🚨 CRITICAL PAUSE POINTS',
+    '⛔ User requests stop', '⛔ Critical review failure', '⛔ 3+ consecutive review failures',
+    '⛔ Architecture mismatch', '⛔ Missing dependencies', '⛔ Test infrastructure failure',
+    '### PAUSE and Confirm When:', '### Escalate to User When:', 'Human Validation Gates 🚨',
+    // pre-approved, foreground delegation and the honest final report
+    'stay hard stops in both modes', 'Git commits run only when `autonomy.commit: true`',
+    'Never call `AskUserQuestion` and never end the turn to wait', 'run_in_background: false',
+    'Never continue a subagent with `SendMessage`', 'A phase does not close while `review.security` is missing',
+    '*Verification*, *Not verified*, *Decisions taken without a human* and *Open risks*',
+  ]) assert.ok(conductor.includes(phrase), 'conductor: ' + phrase);
+  for (const artifact of [
+    '.claude/plans/<task-name>/<task-name>-plan.md', '.claude/plans/<task-name>/<task-name>-phase-1-complete.md',
+    '.claude/plans/<task-name>/<task-name>-phase-<N>-complete.md', '.claude/plans/<task-name>/<task-name>-review-phase-<N>.json',
+    '.claude/plans/<task-name>/<task-name>-bcquality-phase-<N>.json', '.claude/plans/<task-name>/<task-name>-complete.md',
+    '.claude/plans/<task-name>/decisions.md', '.claude/plans/<task-name>/blocked.md', '.claude/plans/memory.md',
+    '.claude/plans/<req>/<req>.bcq-criteria.json', '{req_name}.spec.md', '{req_name}.architecture.md', '{req_name}.test-plan.md',
+  ]) assert.ok(conductor.includes(artifact), 'conductor artifact: ' + artifact);
+  // One source per artifact format: the conductor reads the template at the step that writes it.
+  for (const n of ['plan-template.md', 'phase-complete-template.md', 'plan-complete-template.md', 'test-plan-template.md', 'code-review-template.md']) {
+    assert.ok(conductor.includes('${CLAUDE_PLUGIN_ROOT}/docs/templates/' + n), 'conductor reads ' + n);
+  }
+  assert.doesNotMatch(conductor, /_style_guide>|must NOT read them/, 'no inline copy of the templates and no ban on reading them');
+  assert.doesNotMatch(conductor, /micro-rules inline/, 'the AL rules come from agent-brief.js, not from the conductor');
+  const complete = template('plan-complete-template.md');
+  for (const h of ['**Verification (what was checked, and how):**', '**Not verified:**', '**Decisions taken without a human:**', '**Open risks:**', 'Never write "passing" for tests that did not run'])
+    assert.ok(complete.includes(h), 'plan-complete template: ' + h);
+  assert.doesNotMatch(complete, /All tests passing: ✅/, 'the final report never pre-fills passing tests');
+  assert.ok(template('plan-template.md').includes('**Mini-design:**'), 'plan template carries the Mini-design');
+  const phase = template('phase-complete-template.md');
+  for (const h of ['**BCQuality Evidence:**', '**Build and test evidence:**', '**Git Commit Message:**', 'never the configured pin as proof'])
+    assert.ok(phase.includes(h), 'phase-complete template: ' + h);
+});
+
+test('5.4.0: /aldc:spec is the one specification entry and al-spec-create a deprecated alias of it', () => {
+  const alias = front(path.join(PLUGIN, 'skills', 'al-spec-create', 'SKILL.md'));
+  assert.strictEqual(alias.data.name, 'al-spec-create');
+  assert.strictEqual(alias.data['disable-model-invocation'], 'true', 'the alias stays explicit-only');
+  assert.match(alias.data.description, /^"?Deprecated alias of \/aldc:spec/);
+  assert.match(alias.text, /<!-- aldc-alias-of: spec -->/);
+  assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/skills/spec/SKILL.md'), 'alias reads the entry skill');
+  assert.ok(alias.text.includes('](${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md)'), 'alias still resolves the single role contract');
+  assert.match(alias.text, /removed in 6\.0\.0/);
+  const spec = fs.readFileSync(path.join(PLUGIN, 'skills', 'spec', 'SKILL.md'), 'utf8');
+  assert.ok(spec.includes('${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md'), 'entry reads the Spec contract');
+  assert.match(spec, /SPEC-ID/, 'entry carries the multi-spec handoff the workflow had');
+  // Nothing in the plugin routes to the alias any more.
+  const dirs = [['agents', AGENTS_DIR], ['skills', path.join(PLUGIN, 'skills')]];
+  for (const [kind, dir] of dirs) for (const f of fs.readdirSync(dir)) {
+    const file = kind === 'agents' ? path.join(dir, f) : path.join(dir, f, 'SKILL.md');
+    if (!fs.existsSync(file) || f === 'al-spec-create' || f === 'spec') continue;
+    assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /al-spec-create|al-spec\.create/, kind + '/' + f + ' routes to the deprecated spec workflow');
+  }
+});
+
+test('5.4.0: Claude audit reports live under .claude/audits in the plugin, its skills and its normalizer', () => {
+  const { auditsRootFor, plansRootFor } = require('./plugin-runtime');
+  const repo = path.resolve(PLUGIN, '..');
+  // auditsRootFor('claude') in the shared plugin-runtime.js still says .github/audits. No generator calls it
+  // for Claude, and changing the script re-hashes the CLI and Codex provenance, so it waits for a release
+  // that regenerates those surfaces.
+  assert.strictEqual(plansRootFor(repo, 'claude'), '.claude/plans');
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'aldc.yaml'), 'utf8'), /^audits:\r?\n\s+root:\s*"\.claude\/audits"/m);
+  assert.ok(fs.readFileSync(path.join(PLUGIN, 'skills', 'audit', 'SKILL.md'), 'utf8').includes('.claude/audits/'));
+  // A Claude project has no aldc.yaml of its own (init.js seeds none): the plugin's normalizer defaults to this surface.
+  const { readConfig } = require(path.join(PLUGIN, 'tools', 'bcquality', 'config.js'));
+  const bare = readConfig(fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-noyaml-')));
+  assert.strictEqual(bare.plans.root, '.claude/plans');
+  assert.strictEqual(bare.audits.root, '.claude/audits');
+  // The other surfaces keep their roots.
+  assert.strictEqual(auditsRootFor(repo, 'codex'), '.agents/audits');
+  assert.strictEqual(auditsRootFor(repo, 'copilot-cli'), '.github/audits');
+});
+
+// ─── 5.4.0: pre-sales and agent building moved to the optional aldc-extras plugin ───────────
+const EXTRAS = path.resolve(PLUGIN, '..', 'claude-plugin-extras');
+const MOVED = {
+  agents: ['al-presales', 'al-agent-builder'],
+  skills: ['presales', 'agent-builder', 'al-agent-create', 'al-agent-instructions', 'al-agent-task', 'al-agent-test',
+    'skill-estimation', 'skill-agent-instructions', 'skill-agent-task-patterns', 'skill-agent-toolkit'],
+};
+const POINTERS = { presales: 'al-presales', 'agent-builder': 'al-agent-builder' };
+const textFiles = (root) => require(path.join(PLUGIN, 'scripts', 'package-provenance')).walk(root)
+  .filter((p) => /\.(md|js|json|ya?ml|txt|sh|py)$/.test(p) && p !== 'provenance.json');
+
+test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both plugins are in the marketplace', () => {
+  for (const a of MOVED.agents) {
+    assert.ok(fs.existsSync(path.join(EXTRAS, 'agents', a + '.md')), 'extras agent ' + a);
+    assert.ok(!fs.existsSync(path.join(AGENTS_DIR, a + '.md')), 'core no longer ships agent ' + a);
+    assert.strictEqual(front(path.join(EXTRAS, 'agents', a + '.md')).data.name, a);
+  }
+  for (const s of MOVED.skills) {
+    assert.ok(fs.existsSync(path.join(EXTRAS, 'skills', s, 'SKILL.md')), 'extras skill ' + s);
+    if (!POINTERS[s]) assert.ok(!fs.existsSync(path.join(PLUGIN, 'skills', s)), 'core no longer ships skill ' + s);
+  }
+  // The Agent SDK rule stays in the core: the implementer and reviewer apply it without aldc-extras.
+  assert.ok(fs.existsSync(path.join(PLUGIN, 'rules', 'al-agent-toolkit.md')));
+  assert.ok(!fs.existsSync(path.join(EXTRAS, 'rules')), 'extras ships no copy of the core rules');
+  const manifest = JSON.parse(fs.readFileSync(path.join(EXTRAS, '.claude-plugin', 'plugin.json'), 'utf8'));
+  assert.strictEqual(manifest.name, 'aldc-extras');
+  assert.strictEqual(manifest.version, '5.4.0');
+  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^5.4.0' }]);
+  const coreManifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'plugin.json'), 'utf8'));
+  assert.strictEqual(coreManifest.version, '5.4.0');
+  // The root marketplace is repository-only; the npm package does not ship it.
+  const rootMarket = path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json');
+  if (fs.existsSync(rootMarket)) {
+    const market = JSON.parse(fs.readFileSync(rootMarket, 'utf8'));
+    const entry = (n) => market.plugins.find((p) => p.name === n);
+    assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras']);
+    assert.strictEqual(entry('aldc').source, './claude-plugin');
+    assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
+    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.4.0', n + ' version');
+  }
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '5.4.0');
+});
+
+test('5.4.0: /aldc:presales and /aldc:agent-builder are pointers that name the install command and stop', () => {
+  for (const [s, agent] of Object.entries(POINTERS)) {
+    const p = front(path.join(PLUGIN, 'skills', s, 'SKILL.md'));
+    assert.strictEqual(p.data.name, s);
+    assert.strictEqual(p.data['disable-model-invocation'], 'true', s + ' stays explicit-only');
+    assert.match(p.text, new RegExp('<!-- aldc-alias-of: aldc-extras:' + s + ' -->'), s + ': marker');
+    assert.ok(p.text.includes('moved to the `aldc-extras` plugin: install with `claude plugin install aldc-extras@aldc-marketplace`'), s + ': install line');
+    assert.ok(p.text.includes('`/aldc-extras:' + s + '`') && p.text.includes('aldc-extras:' + agent), s + ': new names');
+    assert.match(p.text, /and stop/);
+    assert.match(p.text, /removed in 6\.0\.0/);
+    assert.doesNotMatch(p.text, /\$\{CLAUDE_PLUGIN_ROOT\}/, s + ' reads no contract');
+  }
+});
+
+test('5.4.0: core and extras name only files they ship; extras reach the core through <aldc-root>', () => {
+  const ref = /\$\{CLAUDE_PLUGIN_ROOT\}\/([\w./-]*[\w-])/g;
+  for (const rel of textFiles(PLUGIN)) {
+    const text = fs.readFileSync(path.join(PLUGIN, rel), 'utf8');
+    for (const [, p] of text.matchAll(ref)) {
+      assert.ok(!MOVED.agents.some((a) => p === 'agents/' + a + '.md'), rel + ' reads moved ' + p);
+      assert.ok(!MOVED.skills.some((s) => !POINTERS[s] && p.startsWith('skills/' + s + '/')), rel + ' reads moved ' + p);
+    }
+    // Core launchers never route to the moved agents under the core prefix.
+    assert.doesNotMatch(text, /aldc:al-(presales|agent-builder)\b/, rel + ' launches a moved agent as aldc:');
+  }
+  for (const rel of textFiles(EXTRAS)) {
+    const text = fs.readFileSync(path.join(EXTRAS, rel), 'utf8');
+    for (const [, p] of text.matchAll(ref)) {
+      if (/[<{*]/.test(p)) continue;
+      assert.ok(fs.existsSync(path.join(EXTRAS, ...p.split('/'))), `extras ${rel} names \${CLAUDE_PLUGIN_ROOT}/${p}, which it does not ship: write <aldc-root>/${p}`);
+    }
+    for (const [, p] of text.matchAll(/<aldc-root>\/([\w./-]*[\w-])/g)) {
+      assert.ok(fs.existsSync(path.join(PLUGIN, ...p.split('/'))), `extras ${rel}: <aldc-root>/${p} exists in the core`);
+    }
+  }
+  for (const rel of ['agents/al-presales.md', 'agents/al-agent-builder.md', 'skills/presales/SKILL.md', 'skills/agent-builder/SKILL.md']) {
+    assert.ok(fs.readFileSync(path.join(EXTRAS, rel), 'utf8').includes('${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md'), rel + ' reads the extras runtime pointer');
+  }
+  assert.ok(fs.readFileSync(path.join(EXTRAS, 'docs', 'claude-runtime.md'), 'utf8').includes('<aldc-root>/docs/claude-runtime.md'), 'extras runtime points to the core runtime');
+});
+
+test('5.4.0: the core briefs aldc-extras:al-agent-builder with the Agent SDK rule; a core reviewer still gets it without extras', () => {
+  const cwd = project();
+  const builder = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc-extras:al-agent-builder', prompt: 'Build', run_in_background: true } }).hookSpecificOutput.updatedInput;
+  assert.strictEqual(builder.run_in_background, false);
+  assert.match(builder.prompt, /Completeness checklist/);
+  assert.match(builder.prompt, /# AL Testing — Micro Rules/);
+  const presales = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc-extras:al-presales', prompt: 'Estimate', run_in_background: true } }).hookSpecificOutput.updatedInput;
+  assert.strictEqual(presales.run_in_background, false);
+  assert.doesNotMatch(presales.prompt, /aldc-rules/, 'pre-sales writes no AL: no rules');
+  const old = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-agent-builder', prompt: 'x' } }).hookSpecificOutput.updatedInput;
+  assert.strictEqual(old.prompt, 'x', 'the old core name gets no code brief');
+  const reviewer = run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-reviewer', prompt: 'Review the agent SDK app' } }).hookSpecificOutput.updatedInput.prompt;
+  assert.match(reviewer, /Completeness checklist/);
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'skills', 'skill-al-review-pipeline', 'SKILL.md'), 'utf8'), /\$\{CLAUDE_PLUGIN_ROOT\}\/rules\/al-agent-toolkit\.md/);
+});
+
+test('5.4.0: the aldc-extras SessionStart hook states the core root or asks to install aldc', () => {
+  const hook = require(path.join(EXTRAS, 'hooks', 'core-root.js'));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-home-'));
+  assert.strictEqual(hook.coreRoot(home), PLUGIN, 'a clone finds claude-plugin beside it');
+  const lone = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-extras-'));
+  const missing = hook.context(home, lone);
+  assert.match(missing.systemMessage, /claude plugin install aldc@aldc-marketplace/);
+  fs.mkdirSync(path.join(home, '.claude', 'plugins'), { recursive: true });
+  fs.writeFileSync(path.join(home, '.claude', 'plugins', 'installed_plugins.json'), JSON.stringify({ plugins: { 'aldc@aldc-marketplace': [{ installPath: PLUGIN }] } }));
+  const found = hook.context(home, lone);
+  assert.ok(!found.systemMessage);
+  assert.ok(found.hookSpecificOutput.additionalContext.includes('aldc core root is ' + PLUGIN));
+  // Plugin cache layout: <marketplace>/aldc-extras/<v> beside <marketplace>/aldc/<v>; the newest aldc wins.
+  const cache = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-cache-'));
+  for (const v of ['5.3.0', '5.4.0']) {
+    fs.mkdirSync(path.join(cache, 'aldc', v, 'docs'), { recursive: true });
+    fs.mkdirSync(path.join(cache, 'aldc', v, '.claude-plugin'), { recursive: true });
+    fs.writeFileSync(path.join(cache, 'aldc', v, 'docs', 'claude-runtime.md'), '# runtime\n');
+    fs.writeFileSync(path.join(cache, 'aldc', v, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'aldc', version: v }));
+  }
+  fs.mkdirSync(path.join(cache, 'aldc-extras', '5.4.0'), { recursive: true });
+  const emptyHome = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-home-'));
+  assert.strictEqual(hook.coreRoot(emptyHome, path.join(cache, 'aldc-extras', '5.4.0')), path.join(cache, 'aldc', '5.4.0'));
+  const hooks = JSON.parse(fs.readFileSync(path.join(EXTRAS, 'hooks', 'hooks.json'), 'utf8')).hooks;
+  assert.deepStrictEqual(Object.keys(hooks), ['SessionStart'], 'extras adds no tool hooks; the core ones apply');
+});
+
+test('5.4.0: both Claude plugins verify against their own provenance lock', () => {
+  const { verify } = require(path.join(PLUGIN, 'scripts', 'package-provenance'));
+  for (const root of [PLUGIN, EXTRAS]) assert.doesNotThrow(() => verify(root), root);
 });

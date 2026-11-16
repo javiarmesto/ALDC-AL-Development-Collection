@@ -9,6 +9,14 @@ Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-pl
 
 {Brief TL;DR — what, how, why. 1-3 sentences.}
 
+**Mini-design:** (only when there is no `.architecture.md`; omit otherwise)
+- Data model: {tables, extensions, key fields}
+- Objects and ID ranges: {...}
+- Standard Flow hooks: {publisher → event, and why that event}
+- API/MCP surface and its write scope: {...}
+- Permission sets per role: {...}
+- Out of scope: {what is deliberately left out}
+
 **AL Context:**
 - Base Objects: {Standard BC objects involved}
 - Extension Pattern: {TableExtension, PageExtension, EventSubscriber, etc.}

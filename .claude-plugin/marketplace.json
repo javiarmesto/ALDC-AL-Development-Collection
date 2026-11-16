@@ -12,7 +12,13 @@
       "name": "aldc",
       "source": "./claude-plugin",
       "description": "AL agents (incl. on-demand triage + dredd audit) + TDD subagents, skills, and workflows for BC extension development with TDD, BCQuality-cited review, event-driven architecture, and HITL gates.",
-      "version": "5.3.0"
+      "version": "5.4.0"
+    },
+    {
+      "name": "aldc-extras",
+      "source": "./claude-plugin-extras",
+      "description": "Optional ALDC roles: technical pre-sales (estimation, SWOT, proposals) and Business Central agent building (Agent SDK). Requires aldc.",
+      "version": "5.4.0"
     }
   ]
 }

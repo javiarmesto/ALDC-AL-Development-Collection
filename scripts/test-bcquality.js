@@ -285,7 +285,13 @@ try {
   for (const base of ['claude-plugin','copilot-cli-plugin','plugins/aldc-codex']) {
     const codex=base.includes('codex');
     const tool=codex ? 'skills/aldc/scripts/bcquality/config.js':'tools/bcquality/config.js';
-    assert.equal(fs.readFileSync(path.join(root,base,tool),'utf8'),fs.readFileSync(path.join(root,'tools/bcquality/config.js'),'utf8'));
+    let copy=fs.readFileSync(path.join(root,base,tool),'utf8');
+    // The maintained Claude copy differs only in its default roots (.claude/ instead of .github/).
+    if (base==='claude-plugin') copy=copy.split('\n')
+      .filter(l=>!l.includes('// Claude Code copy:') && !l.includes('roots (claude-plugin/aldc.yaml)')).join('\n')
+      .replace("'.claude/plans', 'plans.root'","'.github/plans', 'plans.root'")
+      .replace("'.claude/audits', 'audits.root'","'.github/audits', 'audits.root'");
+    assert.equal(copy,fs.readFileSync(path.join(root,'tools/bcquality/config.js'),'utf8'));
     const contract=codex?'skills/aldc/references/templates/bcquality-provider-contract.md':'docs/templates/bcquality-provider-contract.md';
     assert.equal(fs.readFileSync(path.join(root,base,contract),'utf8'),fs.readFileSync(path.join(root,'docs/templates/bcquality-provider-contract.md'),'utf8'));
   }
