@@ -38,6 +38,11 @@ evidence validators; they are not agent names.
 brief carries neither a file list nor a diff, return the report with `outcome:
 failed` and a note naming the missing input (for example *"run `git diff --name-only
 main...HEAD -- '*.al'` and pass the list"*); missing source means no review occurred.
+The same holds inside BCQuality: its Preparation step (`pwsh .../Build-KnowledgeIndex.ps1`) and
+its PowerShell retrieval helpers need a shell you do not have. Do not attempt Bash or
+PowerShell: record `provider.index.status: not-attempted` and use the documented
+path-based lookup with bounded `Read`/`Grep`/`Glob` (5.4.0 eval: two denied Bash calls).
+A certified BCQuality review runs outside you, from the Conductor (`certified-review.js`).
 
 ## Procedure (all scopes)
 
