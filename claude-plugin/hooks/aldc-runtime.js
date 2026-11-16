@@ -10,6 +10,9 @@ const GATES = ['human', 'pre-approved'];
 
 const read = (p) => { try { return fs.readFileSync(p, 'utf8'); } catch { return null; } };
 const readJson = (p) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } };
+/** Claude Code's user config: CLAUDE_CONFIG_DIR when set (isolated runs), else ~/.claude. */
+const configDir = () => process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
+const pluginsDir = () => path.join(configDir(), 'plugins');
 
 /** Value of `<block>:` → `<key>:` in a simple two-level YAML file (comments and quotes stripped). */
 function yamlValue(text, block, key) {
@@ -54,7 +57,7 @@ function plansRoot(cwd) {
 
 /** Whether the bcquality plugin is installed for this user (installed_plugins.json). */
 function bcqualityInstalled() {
-  const file = path.join(os.homedir(), '.claude', 'plugins', 'installed_plugins.json');
+  const file = path.join(pluginsDir(), 'installed_plugins.json');
   const data = readJson(file);
   if (!data) return null;
   return Object.keys(data.plugins || data).some((k) => /^bcquality@/.test(k));
@@ -97,9 +100,9 @@ function readStdin() {
  *  skill's made the reviewer distrust the selection and skip the provider (evals Oct 2026). */
 function bcqualityRoot() {
   if (process.env.BCQUALITY_HOME && fs.existsSync(process.env.BCQUALITY_HOME)) return process.env.BCQUALITY_HOME;
-  const data = readJson(path.join(os.homedir(), '.claude', 'plugins', 'installed_plugins.json'));
+  const data = readJson(path.join(pluginsDir(), 'installed_plugins.json'));
   const entry = Object.entries(data?.plugins || {}).find(([k]) => /^bcquality@/.test(k));
-  const market = entry && readJson(path.join(os.homedir(), '.claude', 'plugins', 'known_marketplaces.json'))?.[entry[0].split('@')[1]];
+  const market = entry && readJson(path.join(pluginsDir(), 'known_marketplaces.json'))?.[entry[0].split('@')[1]];
   const dir = market?.source?.source === 'directory' ? (market.installLocation || market.source.path) : null;
   if (dir && fs.existsSync(path.join(dir, 'skills', 'al-code-review', 'SKILL.md'))) return dir;
   const install = Array.isArray(entry?.[1]) ? entry[1][0]?.installPath : entry?.[1]?.installPath;
@@ -114,7 +117,7 @@ function bcqualityProvenance(root) {
   let rootSource = 'cache';
   if (process.env.BCQUALITY_HOME && norm(process.env.BCQUALITY_HOME) === norm(root)) rootSource = 'env';
   else {
-    const markets = readJson(path.join(os.homedir(), '.claude', 'plugins', 'known_marketplaces.json')) || {};
+    const markets = readJson(path.join(pluginsDir(), 'known_marketplaces.json')) || {};
     if (Object.values(markets).some((m) => m?.source?.source === 'directory' && norm(m.installLocation || m.source.path) === norm(root))) rootSource = 'directory-marketplace';
   }
   const manifest = readJson(path.join(root, 'plugin.json')) || readJson(path.join(root, '.claude-plugin', 'plugin.json'));
@@ -227,9 +230,20 @@ function bcqualitySelection(cwd, brief, max = 15) {
 
 /** Whether a plugin id prefix is installed for this user (installed_plugins.json). */
 function pluginInstalled(prefix) {
-  const data = readJson(path.join(os.homedir(), '.claude', 'plugins', 'installed_plugins.json'));
+  const data = readJson(path.join(pluginsDir(), 'installed_plugins.json'));
   if (!data) return null;
   return Object.keys(data.plugins || data).some((k) => k.startsWith(prefix + '@'));
+}
+
+/**
+ * Installed ids of a plugin (`<name>@<marketplace>`) that user settings do not disable. Installation does
+ * not certify loading (phase 0, spike D), but two enabled copies of one plugin run every hook twice.
+ */
+function enabledPluginIds(name) {
+  const data = readJson(path.join(pluginsDir(), 'installed_plugins.json'));
+  if (!data) return null;
+  const enabled = readJson(path.join(configDir(), 'settings.json'))?.enabledPlugins || {};
+  return Object.keys(data.plugins || data).filter((k) => k.startsWith(name + '@') && enabled[k] !== false);
 }
 
 /**
@@ -245,4 +259,4 @@ function canonicalAgent(subagentType) {
   return alias ? 'aldc:' + alias[1] : subagentType;
 }
 
-module.exports = { canonicalAgent, testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
+module.exports = { canonicalAgent, testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, enabledPluginIds, configDir, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };

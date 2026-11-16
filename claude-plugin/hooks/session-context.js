@@ -47,8 +47,13 @@ function warnings(cwd, mode = runtime.autonomy(cwd)) {
     out.push(`BCQuality plugin is not installed: reviews run with ALDC native checks only and design roles get no articles. To install it: ${BCQ_INSTALL.join(', then ')}, and restart Claude Code.`);
   else if (runtime.bcqualityRoot() && !runtime.bcqualitySkill('al-knowledge'))
     out.push(`The installed BCQuality (${runtime.bcqualityProvenance(runtime.bcqualityRoot()).version || 'unknown version'}) has no al-knowledge skill: Architect and Spec can only use a manual article selection. Update to the official plugin (1.9.0 or later): ${BCQ_INSTALL.join(', then ')}.`);
-  if (runtime.pluginInstalled('aldc-verify') === false)
-    out.push('aldc-verify is not installed: ALDC has no compile/analyzer evidence for its phases (it relies on aldc-verify instead of duplicating it). Install it for verified builds.');
+  // 5.5.0: aldc-verify and bcquality are declared dependencies, but an install can end in exit 0 without them
+  // (phase 0, spike D), so the session still checks and names the fix.
+  const verify = runtime.enabledPluginIds('aldc-verify');
+  if (verify && !verify.length)
+    out.push('aldc-verify is not installed or is disabled, although aldc requires it: ALDC has no compile/analyzer evidence for its phases. Reinstall with `claude plugin install aldc@aldc-marketplace` (it brings aldc-verify), then restart Claude Code.');
+  else if (verify && verify.length > 1)
+    out.push(`aldc-verify is enabled ${verify.length} times (${verify.join(', ')}): every compile gate runs twice. Keep aldc-verify@aldc-marketplace and uninstall the others (e.g. \`claude plugin uninstall ${verify.find((id) => id !== 'aldc-verify@aldc-marketplace') || verify[1]}\`).`);
   return out;
 }
 function gateText(mode) {
