@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const runtime = require('./aldc-runtime');
+const evidence = require('./evidence');
 
 const MAX_BLOCKS = 3;
 
@@ -36,6 +37,28 @@ function pendingPlans(cwd, since) {
   return out;
 }
 
+/** Final reports written in this session whose claims the evidence does not support (5.5.0, brake 1). */
+function unsupportedReports(cwd, since) {
+  const root = runtime.plansRoot(cwd);
+  let dirs = [];
+  try { dirs = fs.readdirSync(root, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => path.join(root, d.name)); } catch { return []; }
+  const out = [];
+  for (const dir of dirs) {
+    let files; try { files = fs.readdirSync(dir); } catch { continue; }
+    if (files.includes('blocked.md')) continue;
+    for (const f of files.filter((n) => /-complete\.md$/.test(n) && !/-phase-\d+-complete\.md$/.test(n))) {
+      const full = path.join(dir, f);
+      // 2 s tolerance: file times and Date.now() tick at different resolutions on Windows.
+      if (since && fs.statSync(full).mtimeMs < since - 2000) continue;
+      // Brake 2 is only required where it can run: BCQuality installed and not disabled for the project.
+      const requireReview = !!runtime.bcqualityRoot() && !runtime.bcqualityDisabled(cwd);
+      const problems = evidence.finalReportProblems(cwd, runtime.read(full) || '', { requireReview });
+      if (problems.length) out.push({ report: path.relative(cwd, full).split(path.sep).join('/'), problems });
+    }
+  }
+  return out;
+}
+
 function guard(payload) {
   if (!payload?.cwd || runtime.autonomy(payload.cwd).gates !== 'pre-approved') return null;
   const file = runtime.sessionFile(payload.session_id);
@@ -43,7 +66,16 @@ function guard(payload) {
   if (!state.start) return null; // only plans this session started are guarded
   if ((state.blocks || 0) >= MAX_BLOCKS) return null;
   const pending = pendingPlans(payload.cwd, state.start);
-  if (!pending.length) return null;
+  if (!pending.length) {
+    const reports = unsupportedReports(payload.cwd, state.start);
+    if (!reports.length) return null;
+    state.blocks = (state.blocks || 0) + 1;
+    runtime.writeState(file, state);
+    return { decision: 'block', reason:
+      'ALDC (pre-approved): the final report says more than the evidence shows. ' +
+      reports.map((r) => `${r.report}: ${r.problems.join(' ')}`).join(' | ') +
+      ' Fix the cause and update the report. If it cannot be fixed, say so in the report or write blocked.md with the reason, then stop.' };
+  }
   state.blocks = (state.blocks || 0) + 1;
   runtime.writeState(file, state);
   const list = pending.map((p) => `${p.name} (phase files done: ${p.done}${p.planned ? `, phases in plan: ${p.planned}` : ''})`).join('; ');
@@ -57,4 +89,4 @@ if (require.main === module) {
   try { const out = guard(runtime.readStdin()); if (out) console.log(JSON.stringify(out)); }
   catch { /* never trap the session because of the hook itself */ }
 }
-module.exports = { guard, pendingPlans };
+module.exports = { guard, pendingPlans, unsupportedReports };
