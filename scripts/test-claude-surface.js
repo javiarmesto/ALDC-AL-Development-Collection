@@ -459,12 +459,16 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both 
   assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^5.4.0' }]);
   const coreManifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'plugin.json'), 'utf8'));
   assert.strictEqual(coreManifest.version, '5.4.0');
-  const market = JSON.parse(fs.readFileSync(path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json'), 'utf8'));
-  const entry = (n) => market.plugins.find((p) => p.name === n);
-  assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras']);
-  assert.strictEqual(entry('aldc').source, './claude-plugin');
-  assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
-  for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.4.0', n + ' version');
+  // The root marketplace is repository-only; the npm package does not ship it.
+  const rootMarket = path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json');
+  if (fs.existsSync(rootMarket)) {
+    const market = JSON.parse(fs.readFileSync(rootMarket, 'utf8'));
+    const entry = (n) => market.plugins.find((p) => p.name === n);
+    assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras']);
+    assert.strictEqual(entry('aldc').source, './claude-plugin');
+    assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
+    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.4.0', n + ' version');
+  }
   assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '5.4.0');
 });
 
