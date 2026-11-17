@@ -148,7 +148,8 @@ if (exists('packages/foundation')) {
 if (exists('claude-plugin/agents')) {
   for (const f of listFiles('agents', '.agent.md')) {
     const name = path.basename(f, '.agent.md');
-    if (!exists(`claude-plugin/agents/${name}.md`))
+    // 5.4.0: presales and agent building moved to the optional aldc-extras plugin.
+    if (!exists(`claude-plugin/agents/${name}.md`) && !exists(`claude-plugin-extras/agents/${name}.md`))
       errors.push(`Plugin sin contraparte para el agente: ${name}`);
   }
 }
