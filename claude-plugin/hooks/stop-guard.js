@@ -9,8 +9,26 @@ const fs = require('fs');
 const path = require('path');
 const runtime = require('./aldc-runtime');
 const evidence = require('./evidence');
+const tickets = require('../tools/tickets/tickets');
 
 const MAX_BLOCKS = 3;
+
+const isFinalReport = (dir, f) => /-complete\.md$/.test(f) && !/-phase-\d+-complete\.md$/.test(f)
+  && !/\bPARTIAL\b|NOT complete|\bincomplete\b/i.test((runtime.read(path.join(dir, f)) || '').slice(0, 2000));
+
+/** A requirement on the ticket path that this session touched and that is not closed. */
+function ticketPlan(dir, files, since) {
+  if (files.includes('blocked.md') || files.some((f) => isFinalReport(dir, f))) return null;
+  const tdir = path.join(dir, 'tickets');
+  let names = []; try { names = fs.readdirSync(tdir).filter((n) => /^T-\d+(\.result)?\.md$/i.test(n)); } catch { return null; }
+  const ticketFiles = names.filter((n) => !/\.result\.md$/i.test(n));
+  if (!ticketFiles.length) return null;
+  const touched = Math.max(...names.map((n) => fs.statSync(path.join(tdir, n)).mtimeMs));
+  if (since && touched < since) return null;
+  const status = ticketFiles.map((n) => (tickets.parseFrontmatter(runtime.read(path.join(tdir, n))) || {}).status);
+  const open = ticketFiles.filter((n, i) => !['done', 'blocked'].includes(status[i])).map((n) => n.replace(/\.md$/i, ''));
+  return { name: path.basename(dir), tickets: ticketFiles.length, done: status.filter((s) => s === 'done').length, open };
+}
 
 function pendingPlans(cwd, since) {
   const root = runtime.plansRoot(cwd);
@@ -19,13 +37,17 @@ function pendingPlans(cwd, since) {
   const out = [];
   for (const dir of dirs) {
     let files; try { files = fs.readdirSync(dir); } catch { continue; }
+    if (files.includes('tickets')) { // 5.5.0 ticket path: the ticket graph says what is left
+      const t = ticketPlan(dir, files, since);
+      if (t) out.push(t);
+      continue;
+    }
     const tracked = files.filter((f) => /-plan\.md$|-phase-\d+-complete\.md$/.test(f));
     if (!tracked.length) continue;
     // Final report: <task>-complete.md per the contract (also accept <task>-plan-complete.md).
     // A final report that declares itself partial is not a closed plan (19-oct p4: "PARTIAL (6 of 8 phases)");
     // the legitimate way out of an unfinished plan is blocked.md.
-    const isFinal = (f) => /-complete\.md$/.test(f) && !/-phase-\d+-complete\.md$/.test(f)
-      && !/\bPARTIAL\b|NOT complete|\bincomplete\b/i.test((runtime.read(path.join(dir, f)) || '').slice(0, 2000));
+    const isFinal = (f) => isFinalReport(dir, f);
     if (files.some((f) => isFinal(f) || f === 'blocked.md')) continue;
     const touched = Math.max(...tracked.map((f) => fs.statSync(path.join(dir, f)).mtimeMs));
     if (since && touched < since) continue;
@@ -78,10 +100,15 @@ function guard(payload) {
   }
   state.blocks = (state.blocks || 0) + 1;
   runtime.writeState(file, state);
-  const list = pending.map((p) => `${p.name} (phase files done: ${p.done}${p.planned ? `, phases in plan: ${p.planned}` : ''})`).join('; ');
+  const list = pending.map((p) => p.tickets
+    ? `${p.name} (tickets done: ${p.done}/${p.tickets}${p.open.length ? `, open: ${p.open.join(', ')}` : ', final report missing'})`
+    : `${p.name} (phase files done: ${p.done}${p.planned ? `, phases in plan: ${p.planned}` : ''})`).join('; ');
+  const onTickets = pending.some((p) => p.tickets);
   return { decision: 'block', reason:
-    `ALDC (pre-approved): the plan is not finished: ${list}. Continue with the next pending phase now ` +
-    '(implement → review → phase-complete file) until the final <task-name>-complete.md report is written. ' +
+    `ALDC (pre-approved): the plan is not finished: ${list}. ` +
+    (onTickets
+      ? 'Run tickets.js status <req> and continue with the next ticket (implement → review → T-NN.result.md → set done) until the final <task-name>-complete.md report is written. '
+      : 'Continue with the next pending phase now (implement → review → phase-complete file) until the final <task-name>-complete.md report is written. ') +
     'If a ⛔ hard stop applies, write blocked.md in that plan folder with the reason and what is left, then stop.' };
 }
 
