@@ -78,6 +78,19 @@ in one fenced block headed `### Review-Report (JSON)`, with the `skill.id` and
 `tickets/T-NN.review.json` when the brief is a ticket, whose `acceptance` criteria are the
 ones to check; both are checked by the plugin's `artifact-gate` hook), so `review.security` and every
 article of the *BCQuality selection* in `review.bcquality.articles` must be present.
+
+**Final review of a ticketed requirement (5.5.0, parallel).** The brief says `final`. It gives the
+diff of `aldc/<req>` against its base, the file list, every criterion of `tickets/criteria.md`,
+the integration build and test evidence, and the certified BCQuality verdict.
+- Use scope `phase` with `review.phase: {plan: "<req>", number: "final"}`.
+- Your axis is the specification: check each `AC-NN` against the integrated code, and
+  report it in `review.criteria` as met, unmet or not evaluated.
+- Also check how the tickets fit together, since each was built without seeing the others:
+  duplicated helpers, missing permission entries, and IDs or names that clash.
+- The standards axis is the certified review. Cite its verdict, and do not repeat its leaves.
+  If the brief says it did not run, do the BCQuality part as for a phase.
+
+The Conductor persists your report as `<req>-review-final.json`.
 A partial/failed review never becomes approval; the human gate is always retained.
 
 ## Audit-Report (scope `audit`)

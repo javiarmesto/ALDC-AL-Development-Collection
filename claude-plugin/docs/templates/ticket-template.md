@@ -20,11 +20,14 @@ Frontmatter (a small YAML subset: scalars, `[a, b]` lists or `- item` lines):
 - depends_on: ticket ids that must be `done` first. Keep it short; most tickets depend on one or none.
 - mode: `afk` when it needs no human decision; `hitl` when it does (say which in Scope).
 - object_ids: ID ranges reserved for this ticket, disjoint from every other ticket and
-  inside an app.json `idRanges` entry. Test objects take their range from the test app.
+  inside an app.json `idRanges` entry. Include a range of the test app for its test
+  objects, for example [71200-71209, 71300-71309]. integrate.js refuses any object
+  outside these ranges.
 - acceptance: AC-NN ids from tickets/criteria.md that this ticket closes.
 - bcq: BCQuality knowledge paths from <req>.bcq-criteria.json that apply to its objects.
-- shared_files: files other tickets also touch (permission sets, app.json, XLF). The
-  ticket adds its own entries and leaves the rest of the file alone.
+- shared_files: paths of files other tickets also touch (permission sets, app.json, XLF),
+  including ones that do not exist yet. A ticket built in a worktree never edits them: it
+  reports the entries it needs, and the integration step applies them.
 -->
 
 ## Scope
