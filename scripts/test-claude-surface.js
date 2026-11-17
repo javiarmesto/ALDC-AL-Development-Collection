@@ -738,3 +738,41 @@ test('5.5.0: the tickets skill, tool and templates ship with the plugin and the 
   const d = tickets.parseFrontmatter(fs.readFileSync(path.join(PLUGIN, 'docs', 'templates', 'ticket-template.md'), 'utf8'));
   assert.deepStrictEqual([d.id, d.mode, d.status, d.acceptance], ['T-01', 'afk', 'ready', ['AC-01']]);
 });
+
+// ── 5.5.0 (factory phase 4): worktrees, parallel waves and the final review ──
+test('5.5.0: artifact-gate checks the final review of a ticketed requirement', () => {
+  const cwd = project();
+  const dir = path.join(cwd, '.claude', 'plans', 'feat');
+  fs.mkdirSync(dir, { recursive: true });
+  const f = path.join(dir, 'feat-review-final.json');
+  fs.writeFileSync(f, JSON.stringify({ review: { bcquality: { outcome: 'not-applicable' } } }));
+  const out = run('artifact-gate.js', { cwd, tool_name: 'Write', tool_input: { file_path: f } });
+  assert.strictEqual(out.decision, 'block');
+  assert.match(out.reason, /feat-review-final\.json.*review\.security lacks/);
+});
+
+test('5.5.0: session-context names the ticket worktrees a dead session left behind', () => {
+  const cwd = project();
+  const g = (...a) => spawnSync('git', a, { cwd, encoding: 'utf8' });
+  g('init', '-q'); fs.writeFileSync(path.join(cwd, 'README.md'), 'x');
+  g('add', 'README.md'); g('-c', 'user.name=t', '-c', 'user.email=t@l', 'commit', '-qm', 'base');
+  g('worktree', 'add', '-q', path.join(cwd, '.claude', 'worktrees', 'agent-x'), '-b', 'worktree-agent-x');
+  const t = path.join(cwd, '.claude', 'plans', 'loyalty', 'tickets');
+  fs.mkdirSync(t, { recursive: true });
+  writeTicket(t, 'T-01', 'in-progress');
+  const ctx = run('session-context.js', { cwd, session_id: sid() }).hookSpecificOutput.additionalContext;
+  assert.match(ctx, /requirement loyalty is in progress on tickets/);
+  assert.match(ctx, /removes the 1 ticket worktree\(s\) left behind \(integrate\.js cleanup\)/);
+});
+
+test('5.5.0: the conductor builds tickets in parallel worktrees and integrates them with integrate.js', () => {
+  assert.ok(fs.existsSync(path.join(PLUGIN, 'tools', 'tickets', 'integrate.js')));
+  const conductor = fs.readFileSync(path.join(PLUGIN, 'agents', 'al-conductor.md'), 'utf8');
+  for (const re of [/isolation: "worktree"/, /integrate\.js"/, /`I prepare <req>`/, /`T wave <req>`/, /<req>-review-final\.json/, /al-go --no-review/, /You never run git yourself/])
+    assert.match(conductor, re);
+  const implementer = fs.readFileSync(path.join(PLUGIN, 'agents', 'al-implementer.md'), 'utf8');
+  assert.match(implementer, /### Shared File Entries/);
+  assert.match(implementer, /Do not run git/);
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'agents', 'al-reviewer.md'), 'utf8'), /number: "final"/);
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'aldc.yaml'), 'utf8'), /^tickets:\r?\n {2}parallel: 3\r?$/m);
+});

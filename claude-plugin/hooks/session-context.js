@@ -68,12 +68,19 @@ function testText(runner) {
   return `ALDC tests: run \`${runner.command}\` from the project root after each phase compiles (from ${runner.source}); pass its PASS/FAIL output to the reviewer and record it in the phase file and the final Verification table.\n`;
 }
 /** 5.5.0: requirements left open on the ticket path, so a new session resumes instead of restarting. */
+/** Agent worktrees a dead session left behind (5.5.0): their tickets are rebuilt on resume. */
+function leftover(cwd) {
+  try { return require('../tools/tickets/integrate').agentWorktrees(cwd).length; } catch { return 0; }
+}
+
 function resumeText(cwd) {
   let open = [];
   try { open = require('./stop-guard').pendingPlans(cwd, 0).filter((p) => p.tickets); } catch { return ''; }
+  const worktrees = open.length ? leftover(cwd) : 0;
   return open.map((p) => `ALDC: requirement ${p.name} is in progress on tickets (${p.done}/${p.tickets} done` +
     `${p.open.length ? `, open: ${p.open.join(', ')}` : ', final report missing'}). To continue it, run /aldc:conduct ${p.name}: ` +
-    'it resumes from the ticket files and does not redo research, the cut or done tickets.\n').join('');
+    'it resumes from the ticket files and does not redo research, the cut or done tickets' +
+    (worktrees ? `; it also removes the ${worktrees} ticket worktree(s) left behind (integrate.js cleanup)` : '') + '.\n').join('');
 }
 
 function context(payload, pluginRoot = path.resolve(__dirname, '..')) {
