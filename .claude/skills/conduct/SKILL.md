@@ -10,4 +10,6 @@ Read `${CLAUDE_PROJECT_DIR}/claude-plugin/agents/al-conductor.md` in full and ac
 
 Input: **$ARGUMENTS**
 
+**Resume first.** If `.claude/plans/<req>/tickets/` exists for this requirement, run `node "${CLAUDE_PROJECT_DIR}/claude-plugin/tools/tickets/tickets.js" status <req> --project .` and continue from what it reports (Conductor rule 12). New requirements follow the Conductor's *Ticket path*.
+
 Requirement artifacts live under `.claude/plans/` in the project; run `/aldc:al-initialize` once if that folder does not exist.
