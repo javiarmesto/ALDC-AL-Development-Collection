@@ -98,7 +98,7 @@ claude-plugin/
 | PreToolUse (reads, writes, MCP) | `flow-scout.js` | Blocks once an event subscriber to a publisher nobody investigated |
 | PreToolUse (SendMessage) | `send-guard.js` | Blocks continuing a subagent by message while a plan is open |
 | PostToolUse (Write/Edit) | `artifact-gate.js` | Checks review reports and subscriber comments |
-| Stop | `stop-guard.js` | In `pre-approved` mode, stops a session ending with a plan half done, or with a final report the evidence does not back (`hooks/evidence.js`: red or stale aldc-verify compile, tests reported as passed without a runner, tables without tabledata in a permission set) |
+| Stop | `stop-guard.js` | In `pre-approved` mode, stops a session ending with a plan half done (on the ticket path, any ticket not `done` or `blocked`), or with a final report the evidence does not back (`hooks/evidence.js`: red or stale aldc-verify compile, tests reported as passed without a runner, tables without tabledata in a permission set) |
 
 ## AL language tooling
 
@@ -118,6 +118,18 @@ its query operations explicitly and compilation/build/restore only to
 `al-implementer`. It does not start that server or grant publish/authentication.
 Optional BC29 profiling/snapshot proxies are granted only to Triage after explicit
 connection setup; see the same guide for capture scope and runtime acceptance.
+
+## Tickets and resumable work (5.5.0)
+
+New requirements are cut into tickets rather than phases. `/aldc:tickets <req>` cuts the approved spec into vertical tickets under `.claude/plans/<req>/tickets/T-NN.md`. Each ticket has its dependencies, its own object ID range and the acceptance criteria it closes. `tools/tickets/tickets.js` checks the cut deterministically, without a model:
+
+- the dependency graph has no cycles;
+- ID ranges do not overlap and sit inside `app.json`;
+- every criterion in `tickets/criteria.md` is covered.
+
+The same tool gives the next ticket to build. `/aldc:conduct <req>` builds one ticket at a time, each with a new implementer, and writes `T-NN.result.md` for each. Research is saved in `research.md`.
+
+When a session stops partway, the next one is told at start which requirement is unfinished. Running `/aldc:conduct <req>` again picks up from the files: it does not repeat the research, the cut or tickets already done. Plans started by phases in 5.4.0 still finish by phases.
 
 ## Renamed in 5.4.0
 
