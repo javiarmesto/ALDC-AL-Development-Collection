@@ -22,12 +22,15 @@ const DESIGNERS = /^aldc:(al-architect|al-spec-agent)$/;
 const FLOW_ROLES = /^aldc:(al-researcher|al-implementer)$/;
 const AGENT_SDK = /agent\s*sdk|IAgent(Factory|Metadata|TaskExecution)|agent\s*toolkit|al-agent-builder/i;
 
-function brief(payload) {
-  const input = payload?.tool_input;
-  if (!input || typeof input.subagent_type !== 'string' || !/^aldc(-extras)?:/.test(input.subagent_type)) return null;
+// Briefs handed out by PreToolUse and not yet claimed by the matching SubagentStart (5.5.0).
+const PENDING_TTL_MS = 120000;
+const pendingFile = (sessionId) => runtime.sessionFile(sessionId, 'briefed');
+
+/** The context an ALDC subagent must start with. `prompt` is empty at SubagentStart (the host does not pass it). */
+function sections(subagentType, cwd, prompt) {
   const extra = [];
-  const prompt = String(input.prompt || '');
-  const role = runtime.canonicalAgent(input.subagent_type);
+  const role = runtime.canonicalAgent(subagentType);
+  const payload = { cwd };
   // Checked by the rules' own headings, not by the marker: in the evals the conductor
   // wrote the marker followed by its own one-line paraphrase of the rules.
   if (CODE_ROLES.test(role)) {
@@ -68,13 +71,52 @@ function brief(payload) {
   const mode = runtime.autonomy(payload.cwd);
   if (mode.gates === 'pre-approved' && !prompt.includes('ALDC autonomy: pre-approved'))
     extra.push('ALDC autonomy: pre-approved. Do not wait for approval and do not stop to ask: decide, state each assumption and decision in your structured output, and finish the task.');
+  return extra;
+}
+
+/** PreToolUse on Agent/Task: forces the foreground and appends the context to the prompt (keyword selection sees it). */
+function brief(payload) {
+  const input = payload?.tool_input;
+  if (!input || typeof input.subagent_type !== 'string' || !/^aldc(-extras)?:/.test(input.subagent_type)) return null;
+  const prompt = String(input.prompt || '');
+  const extra = sections(input.subagent_type, payload.cwd, prompt);
   const updated = { ...input, run_in_background: false };
   if (extra.length) updated.prompt = `${prompt}\n\n${extra.join('\n\n')}`;
+  // Leave a claim for the SubagentStart this launch will fire, so the context is not given twice.
+  if (payload.session_id) {
+    const file = pendingFile(payload.session_id);
+    const now = Date.now();
+    const pending = (runtime.readState(file).pending || []).filter((p) => now - p.at < PENDING_TTL_MS);
+    pending.push({ type: input.subagent_type, at: now });
+    runtime.writeState(file, { pending });
+  }
   return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'allow', updatedInput: updated } };
 }
 
-if (require.main === module) {
-  try { const out = brief(runtime.readStdin()); if (out) console.log(JSON.stringify(out)); }
-  catch { /* never block a delegation because of the hook itself */ }
+/**
+ * SubagentStart: the same context for ALDC subagents that no PreToolUse briefed. Phase 0 (spike A): agents a plugin
+ * workflow launches fire SubagentStart/SubagentStop but not PreToolUse on Agent, so they started without the AL rules.
+ */
+function start(payload) {
+  const type = payload?.agent_type;
+  if (typeof type !== 'string' || !/^aldc(-extras)?:/.test(type)) return null;
+  if (payload.session_id) {
+    const file = pendingFile(payload.session_id);
+    const now = Date.now();
+    const pending = (runtime.readState(file).pending || []).filter((p) => now - p.at < PENDING_TTL_MS);
+    const i = pending.findIndex((p) => p.type === type);
+    if (i >= 0) { pending.splice(i, 1); runtime.writeState(file, { pending }); return null; }
+  }
+  const extra = sections(type, payload.cwd, '');
+  if (!extra.length) return null;
+  return { hookSpecificOutput: { hookEventName: 'SubagentStart', additionalContext: extra.join('\n\n') } };
 }
-module.exports = { brief, MARKER };
+
+if (require.main === module) {
+  try {
+    const payload = runtime.readStdin();
+    const out = payload?.hook_event_name === 'SubagentStart' ? start(payload) : brief(payload);
+    if (out) console.log(JSON.stringify(out));
+  } catch { /* never block a delegation because of the hook itself */ }
+}
+module.exports = { brief, start, sections, MARKER };

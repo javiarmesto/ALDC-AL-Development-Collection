@@ -11,7 +11,7 @@ const { spawnSync } = require('child_process');
 
 const HOOKS = path.resolve(__dirname, '..', 'claude-plugin', 'hooks');
 const run = (hook, payload, env = {}) => {
-  const r = spawnSync(process.execPath, [path.join(HOOKS, hook)], { input: JSON.stringify(payload), encoding: 'utf8', env: { ...process.env, ALDC_GATES: '', ...env } });
+  const r = spawnSync(process.execPath, [path.join(HOOKS, hook)], { input: JSON.stringify(payload), encoding: 'utf8', env: { ...process.env, ALDC_GATES: '', CLAUDE_CONFIG_DIR: '', ...env } });
   assert.strictEqual(r.status, 0, r.stderr);
   return r.stdout.trim() ? JSON.parse(r.stdout) : null;
 };
@@ -23,6 +23,8 @@ const project = () => {
   return dir;
 };
 const sid = () => 'test-' + Math.random().toString(36).slice(2);
+// A Claude config with no plugins: BCQuality absent, so brake 2 is not required.
+const NO_BCQ = { CLAUDE_CONFIG_DIR: fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-nocfg-')), BCQUALITY_HOME: '' };
 const RULES = fs.readdirSync(path.resolve(HOOKS, '..', 'rules')).filter((n) => n.endsWith('.md') && n !== 'al-agent-toolkit.md');
 
 test('session-context: modo human por defecto y pre-approved con ALDC_GATES', () => {
@@ -88,6 +90,46 @@ test('agent-brief: subagente ALDC en primer plano, con todas las reglas y el mod
   }
   assert.match(u.prompt, /ALDC autonomy: pre-approved/);
   assert.match(u.prompt, /Standard Flow: before subscribing/);
+});
+
+test('5.5.0: SubagentStart briefs ALDC subagents no PreToolUse briefed (workflow agents), never twice', () => {
+  const cwd = project();
+  const session = sid();
+  const start = (type) => run('agent-brief.js', { hook_event_name: 'SubagentStart', agent_type: type, cwd, session_id: session }, { ALDC_GATES: 'pre-approved' });
+  const ctx = start('aldc:al-implementer').hookSpecificOutput;
+  assert.strictEqual(ctx.hookEventName, 'SubagentStart');
+  for (const r of RULES) assert.ok(ctx.additionalContext.includes(fs.readFileSync(path.resolve(HOOKS, '..', 'rules', r), 'utf8').match(/^# .+$/m)[0]), 'falta ' + r);
+  assert.match(ctx.additionalContext, /ALDC autonomy: pre-approved/);
+  run('agent-brief.js', { cwd, session_id: session, tool_input: { subagent_type: 'aldc:al-implementer', prompt: 'Phase 1' } });
+  assert.strictEqual(start('aldc:al-implementer'), null, 'already briefed through PreToolUse');
+  assert.ok(start('aldc:al-implementer'), 'the claim is used once');
+  assert.strictEqual(start('general-purpose'), null);
+  const hooks = JSON.parse(fs.readFileSync(path.join(HOOKS, 'hooks.json'), 'utf8')).hooks;
+  assert.ok(hooks.SubagentStart.some((h) => h.matcher === '^aldc(-extras)?:' && h.hooks.some((c) => c.command.includes('agent-brief.js'))));
+});
+
+test('5.5.0: aldc declares aldc-verify and bcquality as dependencies and the session flags a missing or doubled aldc-verify', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.resolve(HOOKS, '..', '.claude-plugin', 'plugin.json'), 'utf8'));
+  assert.deepStrictEqual(manifest.dependencies.map((d) => d.name), ['aldc-verify', 'bcquality']);
+  assert.strictEqual(manifest.dependencies.find((d) => d.name === 'bcquality').marketplace, 'bcquality');
+  const rootMarket = path.resolve(HOOKS, '..', '..', '.claude-plugin', 'marketplace.json');
+  if (fs.existsSync(rootMarket)) {
+    const market = JSON.parse(fs.readFileSync(rootMarket, 'utf8'));
+    assert.deepStrictEqual(market.allowCrossMarketplaceDependenciesOn, ['bcquality']);
+    const aldc = market.plugins.find((p) => p.name === 'aldc');
+    assert.deepStrictEqual(aldc.dependencies, manifest.dependencies, 'repeated in the entry so a blocked install fails loudly');
+    assert.deepStrictEqual(market.plugins.find((p) => p.name === 'aldc-verify').source, { source: 'github', repo: 'javiarmesto/aldc-verify-plugin', ref: 'v0.3.0' });
+  }
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-cfg-'));
+  fs.mkdirSync(path.join(cfg, 'plugins'));
+  const installed = (ids) => fs.writeFileSync(path.join(cfg, 'plugins', 'installed_plugins.json'), JSON.stringify({ plugins: Object.fromEntries(ids.map((k) => [k, [{}]])) }));
+  const warn = () => run('session-context.js', { cwd: project(), session_id: sid() }, { CLAUDE_CONFIG_DIR: cfg }).systemMessage || '';
+  installed(['aldc@aldc-marketplace', 'bcquality@bcquality']);
+  assert.match(warn(), /aldc-verify is not installed or is disabled, although aldc requires it/);
+  installed(['aldc@aldc-marketplace', 'bcquality@bcquality', 'aldc-verify@aldc-marketplace', 'aldc-verify@aldc-verify-dev']);
+  assert.match(warn(), /aldc-verify is enabled 2 times .*claude plugin uninstall aldc-verify@aldc-verify-dev/);
+  fs.writeFileSync(path.join(cfg, 'settings.json'), JSON.stringify({ enabledPlugins: { 'aldc-verify@aldc-verify-dev': false } }));
+  assert.doesNotMatch(warn(), /aldc-verify is/);
 });
 
 test('agent-brief: no duplica reglas que ya van completas y no toca otros agentes', () => {
@@ -181,7 +223,75 @@ test('stop-guard: el informe final <task>-complete.md cierra el plan', () => {
   fs.mkdirSync(plan, { recursive: true });
   fs.writeFileSync(path.join(plan, 'feat-plan.md'), '**Phase 1: A**');
   fs.writeFileSync(path.join(plan, 'feat-complete.md'), 'done');
-  assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }, { ALDC_GATES: 'pre-approved' }), null);
+  verifyState(cwd, 'green');
+  assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }, { ALDC_GATES: 'pre-approved', ...NO_BCQ }), null);
+});
+
+// aldc-verify's gate state: one history entry `at` now + offset ms.
+const verifyState = (cwd, status, offset = 5000) => {
+  const dir = path.join(cwd, '.claude', '.aldc-verify');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'state.json'), JSON.stringify({ history: [{ at: new Date(Date.now() + offset).toISOString(), status }] }));
+};
+
+test('5.5.0: stop-guard does not let a final report close on a red or stale build, untested passes or tables without permissions', () => {
+  const cwd = project(); const s = sid();
+  run('session-context.js', { cwd, session_id: s });
+  const plan = path.join(cwd, '.claude', 'plans', 'feat');
+  fs.mkdirSync(plan, { recursive: true });
+  fs.writeFileSync(path.join(plan, 'feat-plan.md'), '**Phase 1: A**');
+  const report = path.join(plan, 'feat-complete.md');
+  const stop = () => run('stop-guard.js', { cwd, session_id: sid() === s ? s : s }, { ALDC_GATES: 'pre-approved', ...NO_BCQ });
+  const fresh = () => { const s2 = sid(); run('session-context.js', { cwd, session_id: s2 }); return () => run('stop-guard.js', { cwd, session_id: s2 }, { ALDC_GATES: 'pre-approved', ...NO_BCQ }); };
+  fs.writeFileSync(report, '| Compilation | passed |\n| Tests executed | not-run: no runner |');
+  verifyState(cwd, 'red');
+  assert.match(stop().reason, /Build: last compile: red/);
+  verifyState(cwd, 'green', -60000);
+  assert.match(fresh()().reason, /Build: AL changed at .* after the last green compile/);
+  verifyState(cwd, 'green');
+  assert.strictEqual(fresh()(), null, 'green, fresh, honest report');
+  fs.writeFileSync(report, '| Compilation | passed |\n| Tests executed | passed (12/12) |');
+  assert.match(fresh()().reason, /Tests: no test runner is configured.*passed \(12\/12\)/);
+  assert.strictEqual(run('stop-guard.js', { cwd, session_id: (() => { const s3 = sid(); run('session-context.js', { cwd, session_id: s3 }); return s3; })() }, { ALDC_GATES: 'pre-approved', ALDC_TEST_RUNNER: 'pwsh Run-Tests.ps1', ...NO_BCQ }), null, 'with a runner a pass is a claim it can back');
+  fs.writeFileSync(report, '| Tests executed | not-run |');
+  fs.writeFileSync(path.join(cwd, 'app', 'src', 'Lead.Table.al'), 'table 50100 "DR Lead" { fields { field(1; "No."; Code[20]) { } } }');
+  fs.writeFileSync(path.join(cwd, 'app', 'src', 'Perm.PermissionSet.al'), 'permissionset 50100 "DR Base" { Permissions = codeunit "Score" = X; }');
+  verifyState(cwd, 'green');
+  assert.match(fresh()().reason, /Permissions: no permission set gives tabledata access to dr lead \(app\/src\/Lead\.Table\.al\)/);
+  fs.writeFileSync(path.join(cwd, 'app', 'src', 'Perm.PermissionSet.al'), 'permissionset 50100 "DR Base" { Permissions = tabledata "DR Lead" = RIMD; }');
+  verifyState(cwd, 'green');
+  assert.strictEqual(fresh()(), null);
+  fs.rmSync(path.join(cwd, '.claude', '.aldc-verify'), { recursive: true });
+  assert.match(fresh()().reason, /no green compile evidence .*state "build: not-run"/);
+  fs.writeFileSync(report, '| Build | not-run: no AL compiler on this machine |\n| Tests executed | not-run |');
+  assert.strictEqual(fresh()(), null, 'an honest degradation closes');
+  assert.strictEqual(run('stop-guard.js', { cwd, session_id: s }), null, 'human mode never blocks');
+});
+
+test('5.5.0: with BCQuality installed, pre-approved needs a certified-review verdict for the current code', () => {
+  const cwd = project();
+  const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
+  const env = { ALDC_GATES: 'pre-approved', BCQUALITY_HOME: bcq };
+  const plan = path.join(cwd, '.claude', 'plans', 'feat');
+  fs.mkdirSync(plan, { recursive: true });
+  fs.writeFileSync(path.join(plan, 'feat-plan.md'), '**Phase 1: A**');
+  const report = path.join(plan, 'feat-complete.md');
+  const stop = () => { const s = sid(); run('session-context.js', { cwd, session_id: s }); return run('stop-guard.js', { cwd, session_id: s }, env); };
+  fs.writeFileSync(report, '| Tests executed | not-run |');
+  verifyState(cwd, 'green');
+  assert.match(stop().reason, /BCQuality: no certified review ran for this code/);
+  const audits = path.join(cwd, '.claude', 'audits');
+  fs.mkdirSync(audits, { recursive: true });
+  const verdict = (v) => fs.writeFileSync(path.join(audits, 'bcquality-certified-20261116-120000.verdict.json'), JSON.stringify({ verdict: v }));
+  verdict('certified');
+  assert.strictEqual(stop(), null);
+  verdict('not-certified');
+  assert.match(stop().reason, /verdict is not-certified .*must say "BCQuality review: not certified"/);
+  fs.writeFileSync(report, '| Tests executed | not-run |\n| BCQuality review | not certified: 2 leaves failed (bcquality-certified-20261116-120000.verdict.json) |');
+  assert.strictEqual(stop(), null);
+  const cli = path.resolve(HOOKS, '..', 'tools', 'bcquality', 'certified-review.js');
+  assert.ok(fs.existsSync(cli));
+  assert.match(fs.readFileSync(path.resolve(HOOKS, '..', 'agents', 'al-conductor.md'), 'utf8'), /certified-review\.js" --project \. --base main --detach/);
 });
 
 test('flow-scout: bloquea una vez un suscriptor a un publisher no investigado', () => {
@@ -464,7 +574,7 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both 
   if (fs.existsSync(rootMarket)) {
     const market = JSON.parse(fs.readFileSync(rootMarket, 'utf8'));
     const entry = (n) => market.plugins.find((p) => p.name === n);
-    assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras']);
+    assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras', 'aldc-verify']);
     assert.strictEqual(entry('aldc').source, './claude-plugin');
     assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
     for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.4.0', n + ' version');

@@ -6,12 +6,20 @@ This directory is maintained directly as the Claude Code edition of ALDC (see
 
 ## Installation
 
-From the plugin marketplace:
+`aldc` requires two plugins and installs them with it: **aldc-verify** (compile and
+analyzer brakes, listed in this marketplace from `javiarmesto/aldc-verify-plugin`) and
+**bcquality** (Microsoft's BCQuality, from its own marketplace). Add BCQuality's
+marketplace first, or the install stops with *"Is the bcquality marketplace added?"*:
 
 ```
+/plugin marketplace add microsoft/BCQuality
 /plugin marketplace add javiarmesto/ALDC-AL-Development-Collection
 /plugin install aldc@aldc-marketplace
 ```
+
+If you installed aldc-verify earlier from its own `aldc-verify-dev` marketplace, uninstall
+that copy (`/plugin uninstall aldc-verify@aldc-verify-dev`): with two copies every compile
+gate runs twice, and the session start warns about it.
 
 From a clone, register this directory as a local marketplace:
 
@@ -71,7 +79,7 @@ claude-plugin/
 ├── docs/claude-al-tooling.md       # LSP/MCP bindings and role grants
 ├── docs/templates/                 # requirement artifact templates
 ├── tools/                          # Context Doctor, BCQuality, validator
-├── hooks/                          # 7 hooks on 4 events (see below)
+├── hooks/                          # 7 hooks on 5 events, plus shared modules (see below)
 ├── aldc.yaml                       # toolkit root (plans.root: .claude/plans)
 ├── CLAUDE.md                       # plugin guidance
 └── README.md                       # this file
@@ -79,17 +87,18 @@ claude-plugin/
 
 ## Hooks
 
-`hooks/hooks.json` registers seven commands on four events:
+`hooks/hooks.json` registers eight commands on five events:
 
 | Event | Hook | Does |
 |---|---|---|
-| SessionStart | `session-context.js` | Routing, autonomy mode, test runner, missing rules/BCQuality warnings |
+| SessionStart | `session-context.js` | Routing, autonomy mode, test runner, missing rules/BCQuality warnings, missing or duplicated aldc-verify |
 | SessionStart | `tools/bcquality/precondition_hook.sh` | BCQuality precondition check |
 | PreToolUse (Agent/Task) | `agent-brief.js` | Foreground ALDC (and `aldc-extras`) subagents; appends AL rules, autonomy, BCQuality candidates, Standard Flow |
+| SubagentStart (`aldc:*`, `aldc-extras:*`) | `agent-brief.js` | The same context for subagents no PreToolUse briefed, such as those a workflow launches |
 | PreToolUse (reads, writes, MCP) | `flow-scout.js` | Blocks once an event subscriber to a publisher nobody investigated |
 | PreToolUse (SendMessage) | `send-guard.js` | Blocks continuing a subagent by message while a plan is open |
 | PostToolUse (Write/Edit) | `artifact-gate.js` | Checks review reports and subscriber comments |
-| Stop | `stop-guard.js` | In `pre-approved` mode, stops a session ending with a plan half done |
+| Stop | `stop-guard.js` | In `pre-approved` mode, stops a session ending with a plan half done, or with a final report the evidence does not back (`hooks/evidence.js`: red or stale aldc-verify compile, tests reported as passed without a runner, tables without tabledata in a permission set) |
 
 ## AL language tooling
 
