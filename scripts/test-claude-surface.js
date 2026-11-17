@@ -768,7 +768,7 @@ test('5.5.0: session-context names the ticket worktrees a dead session left behi
 test('5.5.0: the conductor builds tickets in parallel worktrees and integrates them with integrate.js', () => {
   assert.ok(fs.existsSync(path.join(PLUGIN, 'tools', 'tickets', 'integrate.js')));
   const conductor = fs.readFileSync(path.join(PLUGIN, 'agents', 'al-conductor.md'), 'utf8');
-  for (const re of [/isolation: "worktree"/, /integrate\.js"/, /`I prepare <req>`/, /`T wave <req>`/, /<req>-review-final\.json/, /al-go --no-review/, /You never run git yourself/])
+  for (const re of [/isolation: "worktree"/, /integrate\.js"/, /`I prepare <req>`/, /`T wave <req>`/, /<req>-review-final\.json/, /al-go --no-review/, /delivery: local/, /You never run git yourself/])
     assert.match(conductor, re);
   const implementer = fs.readFileSync(path.join(PLUGIN, 'agents', 'al-implementer.md'), 'utf8');
   assert.match(implementer, /### Shared File Entries/);

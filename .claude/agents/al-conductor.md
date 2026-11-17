@@ -136,9 +136,9 @@ The final report consolidates the `T-NN.result.md` files in place of phase files
 3. Persist its Review-Report JSON verbatim to `<req>-review-final.json` and gate on it as in 2B.
 4. Route gating findings to **one** correction `aldc:al-implementer` on `aldc/<req>`, with no isolation. Then rebuild, run `I commit`, and re-review once.
 
-**Delivery.** After the final report, run `/aldc-verify:al-go --no-review` on `aldc/<req>`. The review already ran.
-- If the repository has no `origin` remote, or `autonomy.commit` is false, stop after its verify and commit steps. Write "delivery: local, branch aldc/<req>" in the report.
-- Never merge.
+**Delivery.**
+- **With an `origin` remote and `autonomy.commit: true`:** after the final report, run `/aldc-verify:al-go --no-review` on `aldc/<req>`. The review already ran. Never merge.
+- **Otherwise:** do not run `al-go`. `integrate.js` already committed everything, and the integration build verified it. Write "delivery: local, branch aldc/<req> at <commit>" in the report.
 
 ## Phase 1: Planning
 
