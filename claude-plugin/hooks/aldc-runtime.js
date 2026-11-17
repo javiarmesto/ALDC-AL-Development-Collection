@@ -49,6 +49,18 @@ function testRunner(cwd) {
   return own ? { command: own, source: 'project aldc.yaml' } : null;
 }
 
+/** How many ticket implementers may run at once: env ALDC_PARALLEL > project aldc.yaml > plugin aldc.yaml > 3. */
+function parallel(cwd) {
+  const valid = (v) => /^\d+$/.test(String(v || '').trim()) && +v >= 1;
+  const env = (process.env.ALDC_PARALLEL || '').trim();
+  if (valid(env)) return { parallel: +env, source: 'ALDC_PARALLEL' };
+  for (const [file, source] of [[path.join(cwd || '.', 'aldc.yaml'), 'project aldc.yaml'], [path.join(PLUGIN_ROOT, 'aldc.yaml'), 'plugin aldc.yaml']]) {
+    const v = yamlValue(read(file), 'tickets', 'parallel');
+    if (valid(v)) return { parallel: +v, source };
+  }
+  return { parallel: 3, source: 'default' };
+}
+
 /** plans.root of the project, falling back to the Claude surface default. */
 function plansRoot(cwd) {
   const own = yamlValue(read(path.join(cwd, 'aldc.yaml')), 'plans', 'root');
@@ -259,4 +271,4 @@ function canonicalAgent(subagentType) {
   return alias ? 'aldc:' + alias[1] : subagentType;
 }
 
-module.exports = { canonicalAgent, testRunner, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, enabledPluginIds, configDir, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
+module.exports = { canonicalAgent, testRunner, parallel, readState, writeState, bcqualityDisabled, bcqualityRoot, bcqualityProvenance, bcqualitySkill, bcqualityArticles, bcqualitySelection, alSource, briefFiles, pluginInstalled, enabledPluginIds, configDir, PLUGIN_ROOT, autonomy, plansRoot, bcqualityInstalled, rulesBrief, sessionFile, readStdin, yamlValue, read };
