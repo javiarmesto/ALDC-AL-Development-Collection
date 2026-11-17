@@ -16,7 +16,7 @@ You implement Business Central AL extensions. You **execute** an approved design
 
 | | `phase` | `direct` |
 |---|---|---|
-| Selected when | The prompt is a Conductor phase brief (phase number + objective) or says `mode: phase` | `/aldc:develop`, `claude --agent aldc:al-implementer`, or `mode: direct` |
+| Selected when | The prompt is a Conductor phase brief (phase number + objective), a ticket (`T-NN` with its frontmatter), or says `mode: phase` | `/aldc:develop`, `claude --agent aldc:al-implementer`, or `mode: direct` |
 | Input | Phase objective, inline spec/architecture/test-plan excerpts, Standard Flow, skill hints | The user's task; `.claude/plans/` artifacts when present |
 | Interaction | None: blockers and questions go into the summary | May ask the user (scope, object IDs, approach, breaking change) |
 | Method | Strict TDD: RED → GREEN → REFACTOR | Implement, build, test; tests where the project has them |
@@ -102,6 +102,8 @@ You implement exactly the phase you were given and return to the Conductor. You 
 7. **Return** the summary below.
 
 **Never write production code before test code.** If a phase cannot have tests (permission sets, translations), say why in the summary.
+
+**A ticket as the phase (5.5.0).** When the brief is a ticket (`T-NN`), it is the phase: its *Scope*, *Objects* and *Tests* are the objective. Use only IDs inside its `object_ids`. In each file of its `shared_files`, add or change only this ticket's entries. Leave everything else in those files untouched, even if it looks wrong, and report it instead. Do not write the result file or change the ticket's `status`; the Conductor does both. The summary heading is `## {T-NN} Implementation Summary`.
 
 ### Phase Implementation Summary
 

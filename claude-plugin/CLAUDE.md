@@ -16,6 +16,7 @@ CLAUDE.md is not auto-loaded into a subagent.
 |---|---|---|
 | `/aldc:architect` | `aldc:al-architect` | `${CLAUDE_PLUGIN_ROOT}/agents/al-architect.md` |
 | `/aldc:spec` | `aldc:al-spec-agent` | `${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md` |
+| `/aldc:tickets` | none (main session; the Conductor runs it too) | `${CLAUDE_PLUGIN_ROOT}/skills/tickets/SKILL.md` |
 | `/aldc:conduct` | `aldc:al-conductor` | `${CLAUDE_PLUGIN_ROOT}/agents/al-conductor.md` |
 | `/aldc:develop` | `aldc:al-implementer` (mode `direct`) | `${CLAUDE_PLUGIN_ROOT}/agents/al-implementer.md` |
 | `/aldc:review` | `aldc:al-reviewer` (scope `increment`) | `${CLAUDE_PLUGIN_ROOT}/agents/al-reviewer.md` |

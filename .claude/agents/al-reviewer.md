@@ -74,8 +74,9 @@ A certified BCQuality review runs outside you, from the Conductor (`certified-re
 Return [the Review-Report JSON](${CLAUDE_PROJECT_DIR}/claude-plugin/docs/templates/review-report-contract.md)
 in one fenced block headed `### Review-Report (JSON)`, with the `skill.id` and
 `review.phase` from the scope table. The schema is that contract's, unchanged. In
-`phase` scope the Conductor renders and persists it (`<task>-review-phase-<N>.json`,
-checked by the plugin's `artifact-gate` hook), so `review.security` and every
+`phase` scope the Conductor renders and persists it (`<task>-review-phase-<N>.json`, or
+`tickets/T-NN.review.json` when the brief is a ticket, whose `acceptance` criteria are the
+ones to check; both are checked by the plugin's `artifact-gate` hook), so `review.security` and every
 article of the *BCQuality selection* in `review.bcquality.articles` must be present.
 A partial/failed review never becomes approval; the human gate is always retained.
 

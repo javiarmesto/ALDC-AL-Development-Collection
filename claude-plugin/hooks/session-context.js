@@ -67,6 +67,15 @@ function testText(runner) {
   if (!runner) return 'ALDC tests: no test runner configured (aldc.yaml testing.runner); tests are compiled, not executed. Report them as not-run.\n';
   return `ALDC tests: run \`${runner.command}\` from the project root after each phase compiles (from ${runner.source}); pass its PASS/FAIL output to the reviewer and record it in the phase file and the final Verification table.\n`;
 }
+/** 5.5.0: requirements left open on the ticket path, so a new session resumes instead of restarting. */
+function resumeText(cwd) {
+  let open = [];
+  try { open = require('./stop-guard').pendingPlans(cwd, 0).filter((p) => p.tickets); } catch { return ''; }
+  return open.map((p) => `ALDC: requirement ${p.name} is in progress on tickets (${p.done}/${p.tickets} done` +
+    `${p.open.length ? `, open: ${p.open.join(', ')}` : ', final report missing'}). To continue it, run /aldc:conduct ${p.name}: ` +
+    'it resumes from the ticket files and does not redo research, the cut or done tickets.\n').join('');
+}
+
 function context(payload, pluginRoot = path.resolve(__dirname, '..')) {
   if (typeof payload?.cwd !== 'string' || !payload.cwd) return null;
   const cwd = payload.cwd;
@@ -74,7 +83,7 @@ function context(payload, pluginRoot = path.resolve(__dirname, '..')) {
   runtime.writeState(runtime.sessionFile(payload.session_id), { cwd, start: Date.now() });
   const warn = warnings(cwd).map((w) => `⚠️ ALDC: ${w}\n`).join('');
   return { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext:
-    fs.readFileSync(path.join(pluginRoot,'project-guidance.md'),'utf8') + gateText(runtime.autonomy(cwd)) + testText(runtime.testRunner(cwd)) + warn + offerText() + waitText() +
+    fs.readFileSync(path.join(pluginRoot,'project-guidance.md'),'utf8') + gateText(runtime.autonomy(cwd)) + testText(runtime.testRunner(cwd)) + resumeText(cwd) + warn + offerText() + waitText() +
     `Read the terminal tool contract at ${path.join(pluginRoot,'skills/skill-migrate/references/cli-al-tools.md')}. Plugin root: ${pluginRoot}. Initialization is an explicit user action.\n` },
     ...(warn ? { systemMessage: warn.trim() } : {}) };
 }
@@ -82,4 +91,4 @@ if (require.main === module) {
   try { const result = context(runtime.readStdin()); if (result) console.log(JSON.stringify(result)); }
   catch { /* Malformed hook input is not an AL capability failure. */ }
 }
-module.exports = { context, hasApp, warnings };
+module.exports = { context, hasApp, warnings, resumeText };

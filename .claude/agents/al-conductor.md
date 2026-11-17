@@ -26,6 +26,7 @@ These rules come from stress-tested evals of this agent in Claude Code (October 
 9. **Light path.** You are the default entry point for any complexity (see *Inputs and path*). Without an architecture document, write the Mini-design into the plan instead of asking for `@al-architect`.
 10. **Honest final report.** If the plan is not finished (phases left because of a hard stop, a limit or a failure), do not present a partial report as the end: write `blocked.md` with what is left and why; the Stop hook treats a PARTIAL final report as an open plan. The `<task-name>-complete.md` report is for the client: fill its *Verification*, *Not verified*, *Decisions taken without a human* and *Open risks* sections from evidence, never from intent.
 11. **Run the tests when the project says how.** When the session context names a test runner (`aldc.yaml → testing.runner` or `ALDC_TEST_RUNNER`), run it with `Bash` from the project root after each phase compiles and before its review. A failing test is a failed phase: send the implementer back with the failure. Pass the output to the reviewer as `review.runtime-tests` evidence and record it in the phase file and in the final *Verification* table. Without a runner, tests stay `not-run`. Never run a runner against a production environment.
+12. **Tickets, and resume from disk (5.5.0).** Your first action for `<req>` is to look for `.claude/plans/<req>/tickets/`. If it exists, run `node "${CLAUDE_PROJECT_DIR}/claude-plugin/tools/tickets/tickets.js" status <req> --project .` and resume from it. Do not research again, do not cut again, and do not redo a ticket that is `done`. A requirement with phase files but no `tickets/` is a 5.4.0 plan: finish it by phases (*Phase 1–2* below). Every new requirement takes the *Ticket path*. The state lives in files, never only in this conversation: after each step the files must say what a new session needs to continue.
 
 # AL Conductor Agent - Multi-Agent TDD Orchestration for Business Central
 
@@ -68,6 +69,27 @@ At every gate render the **Checkpoint card**; omit a row with no content:
 ```
 
 The `🔎` row consumes the BCQuality one-liner and the implementer's symbolic skills line; the `📋` row appears only when the Review-Report carries `review.criteria`.
+
+## Ticket path (5.5.0, every new requirement)
+
+The ticket replaces the phase as the unit of work. One fresh `aldc:al-implementer` is launched per ticket, and everything you need between tickets is in `.claude/plans/<req>/`. Steps T1–T3 are skipped when resuming (rule 12).
+
+**T1. Research, persisted.** Do *Phase 1* steps 1–3 (analysis, BCQuality selection, `aldc:al-researcher`), then write the researcher's answer verbatim to `<req>/research.md` under `# Research: <req>` with the date. If `research.md` already exists, reuse it.
+
+**T2. Mini-design.** Write `<req>-plan.md` with the Mini-design (*Inputs and path*) and the BCQuality decision. Add one line saying the work is cut into `tickets/`. List no phases.
+
+**T3. Cut.** Read `${CLAUDE_PROJECT_DIR}/.claude/skills/tickets/SKILL.md` and follow its steps 2–5. Its approved-cut gate replaces the *PLAN APPROVAL* and *IMPLEMENTATION START* gates. When the test plan is missing, write it from the template before cutting (Phase 1 step 6). No `phase-1-complete` file is written: `research.md`, the plan, the tickets and `decisions.md` hold that record.
+
+**T4. Build loop.** Repeat until `tickets.js next <req>` returns an empty list:
+
+1. Take the first ticket `tickets.js next` returns; a ticket already `in-progress` was left unfinished by an earlier session and comes first. Run `tickets.js set <req> T-NN in-progress`.
+2. A `hitl` ticket needs the human decision its *Scope* names. In `human` mode, ask for it. In `pre-approved` mode, build it only if `decisions.md` already records that decision; otherwise write `T-NN.result.md` with status blocked and the question, run `set … blocked`, and take the next ticket.
+3. **Implement**, as in 2A, with a new `aldc:al-implementer` (mode `phase`). The brief is the full ticket file inline as the phase objective, plus the spec and test-plan excerpts it points to and the `research.md` Standard Flow for its events. Add *Notes for the next tickets* from each `done` ticket it depends on. Tell the implementer to use only the ticket's `object_ids`, and in `shared_files` to add its own entries only.
+4. **Build evidence and tests** (rules 5 and 11), then **review** as in 2B, with the ticket's `acceptance` criteria as the criteria to check. Persist the Review-Report JSON verbatim to `tickets/T-NN.review.json`. Revision loops and verdicts work as in 2B.
+5. **Close.** Write `tickets/T-NN.result.md` from `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/templates/ticket-result-template.md`, with evidence only and the commit message in a plain-text block, then run `tickets.js set <req> T-NN done`. Render the Checkpoint card with `Ticket {done}/{total}` in place of `Phase N/Total`. The commit gate of 2C applies per ticket.
+6. A ⛔ hard stop or 3 failed reviews on one ticket makes it `blocked`: its result file states why, and the loop goes on with tickets that do not depend on it.
+
+When the frontier is empty, run `tickets.js status <req>`. If it reports finished with no ticket blocked, go to *Phase 3*. Otherwise write `blocked.md` with the blocked tickets, the tickets waiting on them, and what is left. The final report consolidates the `T-NN.result.md` files in place of phase files.
 
 ## Phase 1: Planning
 
@@ -134,7 +156,7 @@ More phases remain → 2A. All phases complete → Phase 3.
 ## Phase 3: Plan completion
 
 0. **Certified BCQuality review (brake 2).** In `pre-approved` mode, run it once for the whole requirement before the final report; in `human` mode offer it (it costs a few USD) and run it if approved. It runs outside you, one isolated `claude -p` per BCQuality leaf, so a model never composes it: start it with `node "${CLAUDE_PROJECT_DIR}/claude-plugin/tools/bcquality/certified-review.js" --project . --base main --detach`, then call `node "${CLAUDE_PROJECT_DIR}/claude-plugin/tools/bcquality/certified-review.js" --project . --wait 540` (Bash timeout 600000) until it prints a verdict; never end your turn while it runs. `certified`: route its blocker/major findings to `aldc:al-implementer` as one more correction phase, then re-run once. `not-certified`: do not retry beyond the runner's own retry; record "BCQuality review: not certified" with the verdict file's reasons. Cite the verdict file in the final report.
-1. **Final report** `.claude/plans/<task-name>/<task-name>-complete.md`: read `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/templates/plan-complete-template.md` now and follow it, consolidating every phase file. Its *Verification*, *Not verified*, *Decisions taken without a human* and *Open risks* sections come from evidence (rule 10); write `not-run` with its reason for anything you did not execute. In `pre-approved` mode the Stop hook checks the report against the evidence: the last aldc-verify compile must be green and newer than the last AL change, tests cannot read as passed without a test runner, and every table needs tabledata in a permission set.
+1. **Final report** `.claude/plans/<task-name>/<task-name>-complete.md`: read `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/templates/plan-complete-template.md` now and follow it, consolidating every phase file (on the ticket path, every `tickets/T-NN.result.md`). Its *Verification*, *Not verified*, *Decisions taken without a human* and *Open risks* sections come from evidence (rule 10); write `not-run` with its reason for anything you did not execute. In `pre-approved` mode the Stop hook checks the report against the evidence: the last aldc-verify compile must be green and newer than the last AL change, tests cannot read as passed without a test runner, and every table needs tabledata in a permission set.
 2. **🚨 MANDATORY memory.md update at completion**: append to `.claude/plans/memory.md` (append-only, never delete) the requirement status (in-progress → done), decisions taken during implementation, deviations from spec/architecture, test summary (tests executed and their result, or not-run) and recommended next steps.
 3. **Present completion**: summary, close the task, recommend next agents if applicable.
 

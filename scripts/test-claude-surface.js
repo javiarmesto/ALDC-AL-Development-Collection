@@ -670,3 +670,71 @@ test('5.4.0: both Claude plugins verify against their own provenance lock', () =
   const { verify } = require(path.join(PLUGIN, 'scripts', 'package-provenance'));
   for (const root of [PLUGIN, EXTRAS]) assert.doesNotThrow(() => verify(root), root);
 });
+
+// ── 5.5.0 (factory phase 3): tickets and resumable state ────────────────────
+const writeTicket = (dir, id, status, deps = '[]') => fs.writeFileSync(path.join(dir, `${id}.md`),
+  `---\nid: ${id}\ntitle: ${id}\ndepends_on: ${deps}\nmode: afk\nobject_ids: [50100-50109]\nacceptance: [AC-01]\nstatus: ${status}\n---\nScope.\n`);
+
+test('5.5.0: stop-guard counts open tickets on the ticket path and lets a finished cut close with its final report', () => {
+  const cwd = project(); const s = sid();
+  run('session-context.js', { cwd, session_id: s });
+  const req = path.join(cwd, '.claude', 'plans', 'feat');
+  const t = path.join(req, 'tickets');
+  fs.mkdirSync(t, { recursive: true });
+  fs.writeFileSync(path.join(req, 'feat-plan.md'), '# Mini-design\nWork is cut into tickets/.');
+  writeTicket(t, 'T-01', 'done'); fs.writeFileSync(path.join(t, 'T-01.result.md'), 'r');
+  writeTicket(t, 'T-02', 'in-progress', '[T-01]');
+  writeTicket(t, 'T-03', 'blocked');
+  const env = { ALDC_GATES: 'pre-approved', ...NO_BCQ };
+  const b = run('stop-guard.js', { cwd, session_id: s }, env);
+  assert.strictEqual(b.decision, 'block');
+  assert.match(b.reason, /feat \(tickets done: 1\/3, open: T-02\)/);
+  assert.match(b.reason, /tickets\.js status/);
+  assert.doesNotMatch(b.reason, /phase files/);
+
+  // All done or blocked but no final report: still open, and it says what is missing.
+  const s2 = sid(); run('session-context.js', { cwd, session_id: s2 });
+  writeTicket(t, 'T-02', 'done', '[T-01]');
+  assert.match(run('stop-guard.js', { cwd, session_id: s2 }, env).reason, /tickets done: 2\/3, final report missing/);
+
+  // The final report closes it once the evidence agrees with it.
+  const s3 = sid(); run('session-context.js', { cwd, session_id: s3 });
+  fs.writeFileSync(path.join(req, 'feat-complete.md'), '# Done\n| Build | not-run |\nbuild: not-run (no compiler here)');
+  assert.strictEqual(run('stop-guard.js', { cwd, session_id: s3 }, env), null);
+});
+
+test('5.5.0: session-context tells a new session which ticket requirement to resume', () => {
+  const cwd = project();
+  const t = path.join(cwd, '.claude', 'plans', 'loyalty', 'tickets');
+  fs.mkdirSync(t, { recursive: true });
+  writeTicket(t, 'T-01', 'done'); fs.writeFileSync(path.join(t, 'T-01.result.md'), 'r');
+  writeTicket(t, 'T-02', 'ready', '[T-01]');
+  const ctx = run('session-context.js', { cwd, session_id: sid() }).hookSpecificOutput.additionalContext;
+  assert.match(ctx, /requirement loyalty is in progress on tickets \(1\/2 done, open: T-02\)/);
+  assert.match(ctx, /\/aldc:conduct loyalty/);
+  fs.writeFileSync(path.join(cwd, '.claude', 'plans', 'loyalty', 'blocked.md'), 'waiting for a human');
+  assert.doesNotMatch(run('session-context.js', { cwd, session_id: sid() }).hookSpecificOutput.additionalContext, /in progress on tickets/);
+});
+
+test('5.5.0: artifact-gate checks ticket reviews like phase reviews', () => {
+  const cwd = project();
+  const dir = path.join(cwd, '.claude', 'plans', 'feat', 'tickets');
+  fs.mkdirSync(dir, { recursive: true });
+  const f = path.join(dir, 'T-04.review.json');
+  fs.writeFileSync(f, JSON.stringify({ review: { bcquality: { outcome: 'not-applicable' } } }));
+  const out = run('artifact-gate.js', { cwd, tool_name: 'Write', tool_input: { file_path: f } });
+  assert.strictEqual(out.decision, 'block');
+  assert.match(out.reason, /T-04\.review\.json.*review\.security lacks/);
+});
+
+test('5.5.0: the tickets skill, tool and templates ship with the plugin and the conductor resumes from them', () => {
+  for (const p of ['skills/tickets/SKILL.md', 'tools/tickets/tickets.js', 'docs/templates/ticket-template.md', 'docs/templates/ticket-result-template.md'])
+    assert.ok(fs.existsSync(path.join(PLUGIN, p)), p);
+  const conductor = fs.readFileSync(path.join(PLUGIN, 'agents', 'al-conductor.md'), 'utf8');
+  assert.match(conductor, /## Ticket path/);
+  assert.match(conductor, /tickets\.js" status <req>/);
+  // The ticket template's own frontmatter parses and passes the field checks.
+  const tickets = require(path.join(PLUGIN, 'tools', 'tickets', 'tickets.js'));
+  const d = tickets.parseFrontmatter(fs.readFileSync(path.join(PLUGIN, 'docs', 'templates', 'ticket-template.md'), 'utf8'));
+  assert.deepStrictEqual([d.id, d.mode, d.status, d.acceptance], ['T-01', 'afk', 'ready', ['AC-01']]);
+});
