@@ -1,0 +1,32 @@
+name: Copilot setup steps
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
+      - '.config/dotnet-tools.json'
+permissions:
+  contents: read
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install pinned ALDC YAML reader
+        run: npm ci --ignore-scripts
+      - name: Restore pinned AL tools
+        run: dotnet tool restore
+      - name: Observe actual tool availability
+        run: dotnet tool run al -- --version
+      - name: Verify unchanged source fixtures
+        run: python scripts/verify-fixtures.py

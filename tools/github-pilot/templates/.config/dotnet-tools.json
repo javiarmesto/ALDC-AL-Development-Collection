@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "microsoft.dynamics.businesscentral.development.tools": {
+      "version": "18.1.43.24897",
+      "commands": ["al"]
+    }
+  }
+}
