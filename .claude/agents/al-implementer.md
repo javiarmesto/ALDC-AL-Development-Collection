@@ -105,6 +105,13 @@ You implement exactly the phase you were given and return to the Conductor. You 
 
 **A ticket as the phase (5.5.0).** When the brief is a ticket (`T-NN`), it is the phase: its *Scope*, *Objects* and *Tests* are the objective. Use only IDs inside its `object_ids`. In each file of its `shared_files`, add or change only this ticket's entries. Leave everything else in those files untouched, even if it looks wrong, and report it instead. Do not write the result file or change the ticket's `status`; the Conductor does both. The summary heading is `## {T-NN} Implementation Summary`.
 
+**A ticket in its own worktree (5.5.0, parallel).** When the brief says you run in a worktree, other tickets are being built at the same time in other worktrees.
+- **Shared files.** Do not edit any file of `shared_files`: permission sets, `app.json`, translations. Instead, list every entry this ticket needs in them under `### Shared File Entries`, as the exact lines to add. For example, `App/src/Demo.PermissionSet.al: tabledata "DR Alpha" = RIMD`. The integration step applies these entries after the merge.
+- **Git.** Do not run git. The Conductor commits and merges your work. Inside a worktree the host refuses compound git commands anyway.
+- **Paths.** Work in your current directory, the worktree, with relative paths. Never write into the main checkout path. Plan files stay readable at the absolute paths the brief gives.
+- **Compiling.** Compile with `/aldc-verify:al-verify --l1` from the worktree. Symbols come from the main checkout. When you stop, aldc-verify ≥ 0.3.1 compiles your worktree and blocks you while it is red.
+- **Tests.** Tests that need Business Central run later, in the integration step. Report them as `not-run`.
+
 ### Phase Implementation Summary
 
 ```markdown
@@ -123,6 +130,9 @@ You implement exactly the phase you were given and return to the Conductor. You 
 
 ### Build Status
 - Errors: {N} · Warnings: {N} · Evidence: {executed tool/runner | not-run}
+
+### Shared File Entries
+- {file}: {exact line to add}   (ticket in a worktree only; "none" when there are none)
 
 ### Issues / Notes
 - {deviations from spec/architecture, blockers, open questions for the Conductor}

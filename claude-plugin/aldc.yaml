@@ -46,6 +46,12 @@ autonomy:
 testing:
   runner: ""
 
+# aldc-claude 5.5.0: the ticket path. parallel caps how many ticket implementers run at
+# once, each in its own git worktree; 1 builds the tickets one after another. Override per
+# run with ALDC_PARALLEL.
+tickets:
+  parallel: 3
+
 # External citable knowledge base: an audit/citation layer for al-reviewer (phase,
 # increment and audit scopes) and Triage (al-code-review), and design knowledge for Architect, Spec and Conductor through
 # al-knowledge-consultant (al-knowledge). Does NOT replace instructions or skills.
