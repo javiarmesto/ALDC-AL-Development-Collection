@@ -4,7 +4,7 @@
   "generator": "maintained claude surface (see claude-plugin-extras/README.md)",
   "sources": {},
   "outputs": {
-    ".claude-plugin/plugin.json": "88518b2420559fae4d8f188c07dfc15a4b7b26c37793fd14fe7d86f5e57ad504",
+    ".claude-plugin/plugin.json": "d0fc14c23e97def6e772f8667d567391b85a8f79343a58e382e1f27830cfa3d5",
     "README.md": "11a355cf022621eb51d8776c47dac70517fc065add95c3926e8aec1fceadce89",
     "agents/al-agent-builder.md": "aef6e85032e5b1c837b36dc5c1d9d58831581ffc51f91b772975bf6cb36d73f6",
     "agents/al-presales.md": "0363a1e034dd23d3cd3073e44b668d99bd86ff9646913828afe4b8c1c11c5b98",

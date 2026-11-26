@@ -1,5 +1,56 @@
 # ALDC Changelog
 
+## [Claude Code plugin 5.5.0] - 2026-11-26
+
+From workshop to factory on Claude Code: tickets, resumable state, parallel builds in
+git worktrees and evidence brakes. These are phases 2–4 of the factory plan. The
+`aldc` and `aldc-extras` plugins move to 5.5.0; the Copilot, CLI and Codex surfaces keep
+their own versions.
+
+### Added
+- **Brakes (#153).**
+  - `aldc` declares `aldc-verify` (`^0.4.1`) and `bcquality` (`^1.9.0`) as dependencies.
+  - In `pre-approved` mode, the Stop hook blocks a final report that the evidence does not back:
+    - a red or stale aldc-verify compile;
+    - tests reported as passed without a test runner;
+    - tables without tabledata in a permission set;
+    - a certified BCQuality review older than the last AL change.
+  - `tools/bcquality/certified-review.js` runs one isolated `claude -p` per BCQuality leaf and validates the result.
+- **Tickets and resumable work (#154).**
+  - `/aldc:tickets` cuts an approved spec into vertical tickets (`.claude/plans/<req>/tickets/T-NN.md`). The cut is checked by `tools/tickets/tickets.js`: no dependency cycles, disjoint ID ranges, every criterion covered.
+  - Research is persisted in `research.md`, and each ticket's outcome in `T-NN.result.md`.
+  - A new session resumes from those files, without redoing research, the cut or tickets already done.
+- **Parallel waves in worktrees (#155).**
+  - Independent tickets are built at once, up to `tickets.parallel` (default 3; `ALDC_PARALLEL`). Each implementer works in its own git worktree.
+  - `tools/tickets/integrate.js` does all the git work deterministically:
+    - it refuses an object outside the ticket's ID range, and any edit to a shared file;
+    - it merges each ticket with `--no-ff` into `aldc/<req>`;
+    - it removes the worktree.
+  - One integration step per wave applies the shared-file entries the tickets asked for, compiles the branch and runs the tests.
+  - One final review in two axes replaces the per-ticket reviews: the spec criteria first, then the certified BCQuality review.
+  - With an `origin` remote and `autonomy.commit: true`, `/aldc-verify:al-go` delivers the branch.
+
+### Changed
+- **Final review order.** The certified BCQuality review now runs after the spec review and its corrections. In an earlier order, a spec correction landed after the certified verdict, and the Stop hook found that verdict out of date.
+- **Audit paths.** `auditsRootFor('claude')` returns `.claude/audits`, matching the plugin's `aldc.yaml`.
+- **Marketplace.** The marketplace pins `aldc-verify` to `v0.4.1`. That version compiles the subagent's own worktree on `SubagentStop`.
+
+### Measured (clean Directions base, `pre-approved`, sonnet)
+
+| Run | Checks | Time / cost |
+|---|---|---|
+| Customer review, ticket path (5.5.0 phase 3) | 19/20 at the time; the failing check (P11) was a fixture false positive, since fixed in the eval | 15.7 min / $3.68 |
+| Session killed with 2 of 5 tickets done, then resumed | R1–R5 pass: no research, cut or done ticket redone | B: 26.2 min / $5.41 |
+| 3 independent features, parallel (cap 3) | 25/25 | 13.6 min / $3.34; build 3.1 min |
+| The same requirement, serial (cap 1) | 25/25 | 19.9 min / $4.59; build 8.3 min |
+| Parallel again, with aldc-verify 0.4.1 | 25/25; each worktree's `SubagentStop` compile is recorded | 13.6 min / $3.64 |
+| A session asked to write "tests executed: 9/9 pass" without a runner | The Stop hook blocked. The report says `not-run` and the session wrote `blocked.md` | 0.8 min / $0.42 |
+
+### Upgrade
+- Update `aldc-verify` to 0.4.1 or later.
+- 5.4.0 plans that use phases still finish by phases. New requirements take the ticket path.
+- Without git, tickets are built one at a time in the checkout.
+
 ## [5.3.0] - 2026-11-10
 
 ### Changed — workflows ship as skills instead of prompt files
