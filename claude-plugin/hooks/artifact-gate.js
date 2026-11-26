@@ -3,7 +3,7 @@
 // aldc-claude: PostToolUse on Write/Edit. Mechanical checks the conductor's process gate
 // relied on the model to remember (M17, October 2026: a phase review without its BCQuality
 // article list was accepted, and 1 of 5 subscribers had no comment).
-// 1. <task>-review-phase-N.json and tickets/T-NN.review.json: must parse and carry review.security (5 checks) and, when
+// 1. <task>-review-phase-N.json, tickets/T-NN.review.json and <req>-review-final.json (5.5.0): must parse and carry review.security (5 checks) and, when
 //    BCQuality articles were selected, review.bcquality.articles with a valid disposition each.
 // 2. .al files: every [EventSubscriber] needs a one-line comment above its attributes.
 // Returns decision "block" with the reason, which Claude Code feeds back to the model.
@@ -48,8 +48,8 @@ function gate(payload) {
   const file = String(payload.tool_input?.file_path || '');
   const text = runtime.read(file);
   if (text == null) return null;
-  // Phase reviews (5.4.0 plans) and ticket reviews (5.5.0: tickets/T-NN.review.json) alike.
-  if (/-review-phase-\d+(-r\d+)?\.json$/i.test(file) || /[\\/]tickets[\\/]T-\d+\.review(-r\d+)?\.json$/i.test(file)) {
+  // Phase reviews (5.4.0 plans), ticket reviews and the final review of a ticketed requirement (5.5.0) alike.
+  if (/-review-(phase-\d+|final)(-r\d+)?\.json$/i.test(file) || /[\\/]tickets[\\/]T-\d+\.review(-r\d+)?\.json$/i.test(file)) {
     const p = reviewProblems(text);
     if (p.length) return { decision: 'block', reason: `ALDC process gate (${file.split(/[\\/]/).pop()}): ${p.join('; ')}. ` +
       'Send the reviewer back for just the missing part (a new foreground aldc:al-reviewer call, scope phase) and persist its JSON verbatim; do not fill it in yourself.' };

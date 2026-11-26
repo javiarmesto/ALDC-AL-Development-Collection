@@ -8,6 +8,7 @@
 //
 //   node tickets.js validate <req> [--project .]   exit 0 valid, 1 problems, 3 tool failure
 //   node tickets.js next     <req> [--project .]   prints the frontier as JSON
+//   node tickets.js wave     <req> [--project .]   the frontier capped at tickets.parallel (5.5.0, phase 4)
 //   node tickets.js status   <req> [--project .]   prints a resume summary (JSON with --json)
 //   node tickets.js set      <req> <T-NN> <status> [--project .]
 const fs = require('fs');
@@ -18,7 +19,7 @@ const MODES = ['afk', 'hitl'];
 const REQUIRED = ['id', 'title', 'depends_on', 'mode', 'object_ids', 'acceptance', 'status'];
 const LISTS = ['depends_on', 'acceptance', 'bcq', 'shared_files', 'object_ids'];
 
-const { read, plansRoot } = require('../../hooks/aldc-runtime');
+const { read, plansRoot, parallel } = require('../../hooks/aldc-runtime');
 
 const ticketsDir = (project, req) => path.join(plansRoot(project), req, 'tickets');
 
@@ -179,6 +180,13 @@ function summary(project, req) {
   };
 }
 
+/** The next wave: the frontier capped at the parallel limit (aldc.yaml tickets.parallel / ALDC_PARALLEL). */
+function wave(project, req) {
+  const cap = parallel(project);
+  const frontier = summary(project, req).frontier;
+  return { parallel: cap.parallel, source: cap.source, tickets: frontier.slice(0, cap.parallel), left: Math.max(0, frontier.length - cap.parallel) };
+}
+
 function setStatus(project, req, id, status) {
   if (!STATUSES.includes(status)) throw new Error(`status must be one of ${STATUSES.join(', ')}`);
   const t = (loadTickets(project, req) || []).find((x) => (x.data.id || '').toUpperCase() === id.toUpperCase());
@@ -198,7 +206,7 @@ function main(argv) {
   const project = path.resolve(opt('--project', '.'));
   const json = flag('--json');
   const [cmd, req, ...rest] = args;
-  if (!cmd || !req) { console.error('usage: tickets.js <validate|next|status|set> <req> [T-NN status] [--project .] [--json]'); return 3; }
+  if (!cmd || !req) { console.error('usage: tickets.js <validate|next|wave|status|set> <req> [T-NN status] [--project .] [--json]'); return 3; }
   try {
     if (cmd === 'validate') {
       const r = validate(project, req);
@@ -207,6 +215,7 @@ function main(argv) {
       return r.ok ? 0 : 1;
     }
     if (cmd === 'next') { console.log(JSON.stringify(summary(project, req).frontier, null, 2)); return 0; }
+    if (cmd === 'wave') { console.log(JSON.stringify(wave(project, req), null, 2)); return 0; }
     if (cmd === 'status') {
       const s = summary(project, req);
       if (json) { console.log(JSON.stringify(s, null, 2)); return 0; }
@@ -228,4 +237,4 @@ function main(argv) {
 }
 
 if (require.main === module) process.exitCode = main(process.argv);
-module.exports = { parseFrontmatter, parseRanges, validate, summary, setStatus, plansRoot, ticketsDir, loadTickets, main };
+module.exports = { parseFrontmatter, parseRanges, validate, summary, wave, setStatus, plansRoot, ticketsDir, loadTickets, main };

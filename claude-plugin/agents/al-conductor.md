@@ -15,7 +15,7 @@ These rules come from stress-tested evals of this agent in Claude Code (October 
    - **`human`** (default): every gate below works as written.
    - **`pre-approved`**: every 🚨/⏸️ approval gate in this contract — the HARD GATE PLAN APPROVAL, each Checkpoint card that asks to approve, start, commit or continue, the CRITICAL PAUSE POINTS, *PAUSE and Confirm When* and the *Human Validation Gates* — becomes a **recorded checkpoint**: render the card, append an entry to `.claude/plans/<task-name>/decisions.md` (gate, decision, rationale, evidence, timestamp), and continue in the same turn. Record "pre-approved — see decisions.md" wherever the contract asks for a user approval timestamp. Never call `AskUserQuestion` and never end the turn to wait. When something is ambiguous, choose the option most consistent with the spec and the standard Business Central flow, and record it as an assumption.
    - The ⛔ *STOP Orchestration* rules stay hard stops in both modes. In `pre-approved` mode, write `.claude/plans/<task-name>/blocked.md` (reason, evidence, what is left) and end. An *Escalate to User* item becomes `blocked.md` only if it prevents progress; otherwise record it and continue.
-   - Git commits run only when `autonomy.commit: true`. Otherwise leave the commit message in the phase-complete file and do not run `git commit`.
+   - Git commits run only when `autonomy.commit: true`. Otherwise leave the commit message in the phase-complete file and do not run `git commit`. Exception: on the ticket path, the commits that `integrate.js` makes on ticket branches and on `aldc/<req>` are always made, because they are how the work is integrated. They never leave the machine unless `al-go` pushes them.
 2. **Real delegation, always.** You orchestrate from the main session, which is the only context that can launch subagents. Research goes to `aldc:al-researcher`, each implementation phase to `aldc:al-implementer` (mode `phase`) and each review to `aldc:al-reviewer` (scope `phase`), through the `Task`/`Agent` tool. Doing research, implementation or review yourself instead of delegating violates this contract, even for a small task.
 3. **Foreground subagents.** Invoke every subagent with `run_in_background: false` and wait for its result in the same turn. **Never continue a subagent with `SendMessage`**: each phase, revision and review is a new foreground `Agent` call with the full brief. Never end your turn while a phase is in progress. In `pre-approved` mode do not end until the final `<task-name>-complete.md` report or `blocked.md` exists; the plugin's Stop hook enforces this.
 4. **Rules in every brief.** The plugin's PreToolUse hook appends the **full text** of the AL rules (`${CLAUDE_PLUGIN_ROOT}/rules/*.md`) to every code-touching ALDC subagent prompt, so do not pass, paraphrase or summarize them yourself. Add only what the hook cannot know: project rules from `CLAUDE.md`, house rules and the phase's domain skill hints.
@@ -26,7 +26,7 @@ These rules come from stress-tested evals of this agent in Claude Code (October 
 9. **Light path.** You are the default entry point for any complexity (see *Inputs and path*). Without an architecture document, write the Mini-design into the plan instead of asking for `@al-architect`.
 10. **Honest final report.** If the plan is not finished (phases left because of a hard stop, a limit or a failure), do not present a partial report as the end: write `blocked.md` with what is left and why; the Stop hook treats a PARTIAL final report as an open plan. The `<task-name>-complete.md` report is for the client: fill its *Verification*, *Not verified*, *Decisions taken without a human* and *Open risks* sections from evidence, never from intent.
 11. **Run the tests when the project says how.** When the session context names a test runner (`aldc.yaml → testing.runner` or `ALDC_TEST_RUNNER`), run it with `Bash` from the project root after each phase compiles and before its review. A failing test is a failed phase: send the implementer back with the failure. Pass the output to the reviewer as `review.runtime-tests` evidence and record it in the phase file and in the final *Verification* table. Without a runner, tests stay `not-run`. Never run a runner against a production environment.
-12. **Tickets, and resume from disk (5.5.0).** Your first action for `<req>` is to look for `.claude/plans/<req>/tickets/`. If it exists, run `node "${CLAUDE_PLUGIN_ROOT}/tools/tickets/tickets.js" status <req> --project .` and resume from it. Do not research again, do not cut again, and do not redo a ticket that is `done`. A requirement with phase files but no `tickets/` is a 5.4.0 plan: finish it by phases (*Phase 1–2* below). Every new requirement takes the *Ticket path*. The state lives in files, never only in this conversation: after each step the files must say what a new session needs to continue.
+12. **Tickets, and resume from disk (5.5.0).** Your first action for `<req>` is to look for `.claude/plans/<req>/tickets/`. If it exists, run `node "${CLAUDE_PLUGIN_ROOT}/tools/tickets/tickets.js" status <req> --project .` and resume from it, starting at *T4* step 0. Do not research again, do not cut again, and do not redo a ticket that is `done`. A requirement with phase files but no `tickets/` is a 5.4.0 plan: finish it by phases (*Phase 1–2* below). Every new requirement takes the *Ticket path*. The state lives in files, never only in this conversation: after each step the files must say what a new session needs to continue.
 
 # AL Conductor Agent - Multi-Agent TDD Orchestration for Business Central
 
@@ -72,7 +72,14 @@ The `🔎` row consumes the BCQuality one-liner and the implementer's symbolic s
 
 ## Ticket path (5.5.0, every new requirement)
 
-The ticket replaces the phase as the unit of work. One fresh `aldc:al-implementer` is launched per ticket, and everything you need between tickets is in `.claude/plans/<req>/`. Steps T1–T3 are skipped when resuming (rule 12).
+The ticket replaces the phase as the unit of work:
+- One fresh `aldc:al-implementer` is launched per ticket, in its own git worktree.
+- Independent tickets are built at the same time.
+- A deterministic tool merges each ticket into the branch `aldc/<req>`.
+- One final review checks the whole requirement.
+- Everything you need between tickets is in `.claude/plans/<req>/`.
+
+Steps T1–T3 are skipped when resuming (rule 12).
 
 **T1. Research, persisted.** Do *Phase 1* steps 1–3 (analysis, BCQuality selection, `aldc:al-researcher`), then write the researcher's answer verbatim to `<req>/research.md` under `# Research: <req>` with the date. If `research.md` already exists, reuse it.
 
@@ -80,16 +87,58 @@ The ticket replaces the phase as the unit of work. One fresh `aldc:al-implemente
 
 **T3. Cut.** Read `${CLAUDE_PLUGIN_ROOT}/skills/tickets/SKILL.md` and follow its steps 2–5. Its approved-cut gate replaces the *PLAN APPROVAL* and *IMPLEMENTATION START* gates. When the test plan is missing, write it from the template before cutting (Phase 1 step 6). No `phase-1-complete` file is written: `research.md`, the plan, the tickets and `decisions.md` hold that record.
 
-**T4. Build loop.** Repeat until `tickets.js next <req>` returns an empty list:
+**T4. Build in waves (5.5.0, worktrees).** `T` below is `node "${CLAUDE_PLUGIN_ROOT}/tools/tickets/tickets.js"` and `I` is `node "${CLAUDE_PLUGIN_ROOT}/tools/tickets/integrate.js"`. Every command runs from the main checkout with `--project .`. You never run git yourself: `I` does all of it. If the project is not a git repository, `I prepare` fails; then build the tickets one by one in this checkout, without `isolation`, and with *2B* review per ticket, as in 5.4.0 phases.
 
-1. Take the first ticket `tickets.js next` returns; a ticket already `in-progress` was left unfinished by an earlier session and comes first. Run `tickets.js set <req> T-NN in-progress`.
-2. A `hitl` ticket needs the human decision its *Scope* names. In `human` mode, ask for it. In `pre-approved` mode, build it only if `decisions.md` already records that decision; otherwise write `T-NN.result.md` with status blocked and the question, run `set … blocked`, and take the next ticket.
-3. **Implement**, as in 2A, with a new `aldc:al-implementer` (mode `phase`). The brief is the full ticket file inline as the phase objective, plus the spec and test-plan excerpts it points to and the `research.md` Standard Flow for its events. Add *Notes for the next tickets* from each `done` ticket it depends on. Tell the implementer to use only the ticket's `object_ids`, and in `shared_files` to add its own entries only.
-4. **Build evidence and tests** (rules 5 and 11), then **review** as in 2B, with the ticket's `acceptance` criteria as the criteria to check. Persist the Review-Report JSON verbatim to `tickets/T-NN.review.json`. Revision loops and verdicts work as in 2B.
-5. **Close.** Write `tickets/T-NN.result.md` from `${CLAUDE_PLUGIN_ROOT}/docs/templates/ticket-result-template.md`, with evidence only and the commit message in a plain-text block, then run `tickets.js set <req> T-NN done`. Render the Checkpoint card with `Ticket {done}/{total}` in place of `Phase N/Total`. The commit gate of 2C applies per ticket.
-6. A ⛔ hard stop or 3 failed reviews on one ticket makes it `blocked`: its result file states why, and the loop goes on with tickets that do not depend on it.
+0. **Prepare.**
+   - Run `I prepare <req>`. It switches the main checkout to `aldc/<req>`, created from the current branch, and records the base in `integration.json`.
+   - When resuming, run `I cleanup <req>` first. It removes the worktrees a dead session left behind. Then run `T set <req> T-NN ready` for every `in-progress` ticket: its work in that worktree is gone and it is rebuilt.
+1. **Pick the wave.** `T wave <req>` returns the frontier, capped at `tickets.parallel` (`aldc.yaml`, or `ALDC_PARALLEL`; 1 means one ticket at a time). Handle `hitl` tickets as before:
+   - In `human` mode, ask for the decision.
+   - In `pre-approved` mode, build the ticket only if `decisions.md` records the decision. Otherwise write a blocked `T-NN.result.md` with the question and set the ticket `blocked`.
+   Then set every ticket of the wave `in-progress`.
+2. **Implement in parallel.** In **one message**, make one `Agent` call per ticket, all with `subagent_type: "aldc:al-implementer"`, `isolation: "worktree"` and `run_in_background: false`. Each brief carries:
+   - the full ticket file inline;
+   - the spec and test-plan excerpts the ticket points to;
+   - the `research.md` Standard Flow for its events;
+   - the *Notes for the next tickets* of the `done` tickets it depends on;
+   - the absolute path of `.claude/plans/<req>/`;
+   - this line: *"You run in a worktree, in parallel with other tickets. Use only the ticket's `object_ids`, do not edit `shared_files`, list their entries under Shared File Entries, and do not run git."*
+   Each `Agent` result carries `worktreePath` and `worktreeBranch`. Freno 1 (aldc-verify ≥ 0.3.1, `SubagentStop`) has already compiled each worktree. Keep each implementer's summary for step 5.
+3. **Integrate, one ticket at a time.** For each ticket of the wave, run `I ticket <req> T-NN --worktree <worktreePath>`:
+   - `merged`: the ticket's files are committed on its branch and merged with `--no-ff` into `aldc/<req>`. The worktree is removed. `tickets/T-NN.integration.json` records the files and object IDs.
+   - `refused` (an ID outside `object_ids`, or a shared file edited), `conflict` or `empty`: run `I discard <req> --worktree <worktreePath>` and set the ticket back to `ready`. Its next brief states the problem. On the second failure of the same ticket, set it `blocked`.
+4. **Integration step**, on `aldc/<req>` in the main checkout:
+   - If any implementer listed *Shared File Entries*, launch one `aldc:al-implementer` (mode `phase`, **no** `isolation`). Its brief is those entries, verbatim, as its only objective.
+   - Then do the build evidence on the main checkout (rule 5) and run the tests (rule 11). Tests run here, in series, because there is a single Business Central.
+   - A red build or a failing test goes back to one implementer on `aldc/<req>`, with no isolation, at most 2 rounds. After that, set the wave's tickets `blocked` with the evidence.
+   - When the step is green, run `I commit <req> --message "chore(<req>): integrate <T-NN, …>"`.
+5. **Close each ticket of the wave.**
+   - Write `tickets/T-NN.result.md` from `${CLAUDE_PLUGIN_ROOT}/docs/templates/ticket-result-template.md`, with evidence only: the implementer's summary, the integration record, and the integration build and test results.
+   - Run `T set <req> T-NN done`.
+   - Render the Checkpoint card with `Wave {n} · Tickets {done}/{total}`. There is no per-ticket review and no per-ticket commit gate; the merge commits are made by `I`.
+   - Back to step 1 until `T wave` returns no tickets.
 
-When the frontier is empty, run `tickets.js status <req>`. If it reports finished with no ticket blocked, go to *Phase 3*. Otherwise write `blocked.md` with the blocked tickets, the tickets waiting on them, and what is left. The final report consolidates the `T-NN.result.md` files in place of phase files.
+When `T wave` returns nothing, run `T status <req>`.
+- **Finished with no ticket blocked:** do the *Final review* below, then *Phase 3*.
+- **Otherwise:** write `blocked.md` with the blocked tickets, the tickets waiting on them, and what is left.
+
+The final report consolidates the `T-NN.result.md` files in place of phase files.
+
+**Final review, two axes.** It replaces the per-ticket reviews.
+1. **Standards.** Run the certified BCQuality review (*Phase 3* step 0) against the base recorded in `integration.json` (`--base <base>`).
+2. **Spec.** Launch one `aldc:al-reviewer` with this brief:
+   - `final`;
+   - the output of `I status <req>`;
+   - the changed-file list, which you compute with `git diff --name-only <baseCommit>..aldc/<req>`;
+   - every criterion in `tickets/criteria.md`, as the criteria to check;
+   - the build and test evidence from the integration step;
+   - the certified verdict.
+3. Persist its Review-Report JSON verbatim to `<req>-review-final.json` and gate on it as in 2B.
+4. Route gating findings to **one** correction `aldc:al-implementer` on `aldc/<req>`, with no isolation. Then rebuild, run `I commit`, and re-review once.
+
+**Delivery.**
+- **With an `origin` remote and `autonomy.commit: true`:** after the final report, run `/aldc-verify:al-go --no-review` on `aldc/<req>`. The review already ran. Never merge.
+- **Otherwise:** do not run `al-go`. `integrate.js` already committed everything, and the integration build verified it. Write "delivery: local, branch aldc/<req> at <commit>" in the report.
 
 ## Phase 1: Planning
 
@@ -155,7 +204,7 @@ More phases remain → 2A. All phases complete → Phase 3.
 
 ## Phase 3: Plan completion
 
-0. **Certified BCQuality review (brake 2).** In `pre-approved` mode, run it once for the whole requirement before the final report; in `human` mode offer it (it costs a few USD) and run it if approved. It runs outside you, one isolated `claude -p` per BCQuality leaf, so a model never composes it: start it with `node "${CLAUDE_PLUGIN_ROOT}/tools/bcquality/certified-review.js" --project . --base main --detach`, then call `node "${CLAUDE_PLUGIN_ROOT}/tools/bcquality/certified-review.js" --project . --wait 540` (Bash timeout 600000) until it prints a verdict; never end your turn while it runs. `certified`: route its blocker/major findings to `aldc:al-implementer` as one more correction phase, then re-run once. `not-certified`: do not retry beyond the runner's own retry; record "BCQuality review: not certified" with the verdict file's reasons. Cite the verdict file in the final report.
+0. **Certified BCQuality review (brake 2).** In `pre-approved` mode, run it once for the whole requirement before the final report; in `human` mode offer it (it costs a few USD) and run it if approved. It runs outside you, one isolated `claude -p` per BCQuality leaf, so a model never composes it: start it with `node "${CLAUDE_PLUGIN_ROOT}/tools/bcquality/certified-review.js" --project . --base main --detach` (on the ticket path, `--base` is the `baseCommit` in `integration.json`), then call `node "${CLAUDE_PLUGIN_ROOT}/tools/bcquality/certified-review.js" --project . --wait 540` (Bash timeout 600000) until it prints a verdict; never end your turn while it runs. `certified`: route its blocker/major findings to `aldc:al-implementer` as one more correction phase, then re-run once. `not-certified`: do not retry beyond the runner's own retry; record "BCQuality review: not certified" with the verdict file's reasons. Cite the verdict file in the final report.
 1. **Final report** `.claude/plans/<task-name>/<task-name>-complete.md`: read `${CLAUDE_PLUGIN_ROOT}/docs/templates/plan-complete-template.md` now and follow it, consolidating every phase file (on the ticket path, every `tickets/T-NN.result.md`). Its *Verification*, *Not verified*, *Decisions taken without a human* and *Open risks* sections come from evidence (rule 10); write `not-run` with its reason for anything you did not execute. In `pre-approved` mode the Stop hook checks the report against the evidence: the last aldc-verify compile must be green and newer than the last AL change, tests cannot read as passed without a test runner, and every table needs tabledata in a permission set.
 2. **🚨 MANDATORY memory.md update at completion**: append to `.claude/plans/memory.md` (append-only, never delete) the requirement status (in-progress → done), decisions taken during implementation, deviations from spec/architecture, test summary (tests executed and their result, or not-run) and recommended next steps.
 3. **Present completion**: summary, close the task, recommend next agents if applicable.

@@ -6,7 +6,11 @@ review closes, before `tickets.js set <req> T-NN done`. A new session resumes fr
 files, so state facts and evidence only; nothing here may depend on the conversation.
 -->
 
-**Status:** {done | blocked} · **Date:** {ISO timestamp} · **Review:** {APPROVED | NEEDS_REVISION -> fixed | blocked}
+**Status:** {done | blocked} · **Date:** {ISO timestamp} · **Wave:** {n} · **Integration:** {merged <merge commit> into aldc/<req> | refused/conflict -> rebuilt | blocked}
+
+<!-- The per-ticket review was removed in 5.5.0: the final review covers the whole requirement.
+Phase-path plans and the no-git fallback still record a review here. -->
+**Review:** {final review | APPROVED | NEEDS_REVISION -> fixed | blocked}
 
 ## What changed
 
@@ -20,9 +24,11 @@ Event subscribers: {base object + event + why this point in the Standard Flow, o
 
 | Check | Result | Source |
 |---|---|---|
-| Build (aldc-verify) | {green / red / not-run (reason)} | {al-build-validator summary or state.json entry time} |
+| Build in the worktree (freno 1) | {green / blocked N times -> green / not-run} | {SubagentStop message from aldc-verify} |
+| Integration | {merged / refused: reason} | `{T-NN}.integration.json` |
+| Build after integration | {green / red / not-run (reason)} | {al-build-validator summary on aldc/<req>} |
 | Tests | {executed: X/Y pass / not-run (no test runner)} | {runner output or "compiled only"} |
-| Review | {verdict, gating findings} | `{T-NN}.review.json` |
+| Shared file entries | {applied in the integration step / none} | {files} |
 
 ## Acceptance
 

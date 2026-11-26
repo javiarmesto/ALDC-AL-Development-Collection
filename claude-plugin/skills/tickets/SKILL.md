@@ -32,7 +32,12 @@ Write `<req>/tickets/T-NN.md` from `${CLAUDE_PLUGIN_ROOT}/docs/templates/ticket-
 - **Small.** One implementer must finish it in one context window: as a guide, at most about 6 AL objects plus their tests. Split anything larger.
 - **Few dependencies.** Make a ticket depend on another only when it uses an object that ticket creates. The data model a feature needs goes into its first ticket, not into a "setup" ticket on its own.
 - **IDs.** Reserve each ticket a range inside an `app.json` `idRanges` entry, with no overlap with any other ticket. Use the spec's IDs when it gives them.
-- **Shared files.** List the permission sets, `app.json` and XLF files that several tickets touch under `shared_files`. Each ticket adds its own entries only.
+  - Give the ticket a range in **every** app it touches, test app included. For example `[71200-71209, 71300-71309]`.
+  - At integration, an object whose ID falls outside the ticket's ranges is refused.
+- **Shared files.** List under `shared_files` the permission sets, `app.json` and XLF files that several tickets touch, with their paths.
+  - Tickets built in parallel never edit these files. Each ticket reports the entries it needs, and the integration step applies them.
+  - A shared file that does not exist yet, such as the extension's permission set, also goes in `shared_files`. The integration step creates it the first time a ticket asks for an entry in it.
+- **Independent where possible.** Tickets with no `depends_on` path between them are built at the same time, each in its own worktree. Two such tickets must not change the same file outside `shared_files`. If they would, make one depend on the other.
 - **`mode`.** Use `hitl` only for a decision the spec leaves to a human, and name that decision in *Scope*. Everything else is `afk`.
 - **`status: ready`** for every ticket.
 

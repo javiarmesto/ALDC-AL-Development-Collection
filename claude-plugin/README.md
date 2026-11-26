@@ -129,6 +129,21 @@ New requirements are cut into tickets rather than phases. `/aldc:tickets <req>` 
 
 The same tool gives the next ticket to build. `/aldc:conduct <req>` builds one ticket at a time, each with a new implementer, and writes `T-NN.result.md` for each. Research is saved in `research.md`.
 
+### Building tickets in parallel
+
+Tickets that do not depend on each other are built at the same time. Up to `tickets.parallel` run at once (default 3; set it in `aldc.yaml` or `ALDC_PARALLEL`). Each implementer works in its own git worktree, created with `isolation: worktree`.
+
+- **Compile brake.** aldc-verify ≥ 0.3.1 compiles each worktree when its implementer stops.
+- **Integration.** `tools/tickets/integrate.js` does all the git work, deterministically:
+  - it refuses a ticket that uses an object ID outside its range or edits a shared file;
+  - it commits the ticket's files on its branch and merges them into `aldc/<req>`;
+  - it removes the worktree.
+- **Integration step.** After each wave, one implementer applies the entries the tickets need in shared files (permission sets, `app.json`, XLF). Then the branch is compiled and the tests run, in series, because there is one Business Central.
+- **Review.** There is no review per ticket. One final review has two axes: the certified BCQuality review, and the spec criteria checked against the integrated branch.
+- **Delivery.** `/aldc-verify:al-go` delivers the branch. It runs locally only when the repository has no remote.
+
+Without git, tickets are built one at a time in the checkout.
+
 When a session stops partway, the next one is told at start which requirement is unfinished. Running `/aldc:conduct <req>` again picks up from the files: it does not repeat the research, the cut or tickets already done. Plans started by phases in 5.4.0 still finish by phases.
 
 ## Renamed in 5.4.0
