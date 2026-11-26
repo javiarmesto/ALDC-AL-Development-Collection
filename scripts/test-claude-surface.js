@@ -523,10 +523,9 @@ test('5.4.0: /aldc:spec is the one specification entry and al-spec-create a depr
 test('5.4.0: Claude audit reports live under .claude/audits in the plugin, its skills and its normalizer', () => {
   const { auditsRootFor, plansRootFor } = require('./plugin-runtime');
   const repo = path.resolve(PLUGIN, '..');
-  // auditsRootFor('claude') in the shared plugin-runtime.js still says .github/audits. No generator calls it
-  // for Claude, and changing the script re-hashes the CLI and Codex provenance, so it waits for a release
-  // that regenerates those surfaces.
+  // 5.5.0: the shared plugin-runtime.js agrees with the plugin's aldc.yaml.
   assert.strictEqual(plansRootFor(repo, 'claude'), '.claude/plans');
+  assert.strictEqual(auditsRootFor(repo, 'claude'), '.claude/audits');
   assert.match(fs.readFileSync(path.join(PLUGIN, 'aldc.yaml'), 'utf8'), /^audits:\r?\n\s+root:\s*"\.claude\/audits"/m);
   assert.ok(fs.readFileSync(path.join(PLUGIN, 'skills', 'audit', 'SKILL.md'), 'utf8').includes('.claude/audits/'));
   // A Claude project has no aldc.yaml of its own (init.js seeds none): the plugin's normalizer defaults to this surface.
