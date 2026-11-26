@@ -87,8 +87,10 @@ the integration build and test evidence, and the certified BCQuality verdict.
   report it in `review.criteria` as met, unmet or not evaluated.
 - Also check how the tickets fit together, since each was built without seeing the others:
   duplicated helpers, missing permission entries, and IDs or names that clash.
-- The standards axis is the certified review. Cite its verdict, and do not repeat its leaves.
-  If the brief says it did not run, do the BCQuality part as for a phase.
+- The standards axis is the certified review, and it runs after you. Do not repeat its leaves.
+  In `review.bcquality.articles`, give each selected article `not-applicable`, with the reason
+  "covered by the certified review of the integrated branch". The exception is an article that
+  bears on a criterion: assess that one yourself.
 
 The Conductor persists your report as `<req>-review-final.json`.
 A partial/failed review never becomes approval; the human gate is always retained.
