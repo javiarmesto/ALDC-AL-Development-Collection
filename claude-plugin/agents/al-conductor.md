@@ -68,7 +68,7 @@ At every gate render the **Checkpoint card**; omit a row with no content:
 💾 {next-step question}   (or ⏸️ revise)
 ```
 
-The `🔎` row consumes the BCQuality one-liner and the implementer's symbolic skills line; the `✅` and `📋` rows appear once the final review has run.
+The `🔎` row consumes the BCQuality one-liner and the implementer's symbolic skills line; the `✅` and `📋` rows appear once the final review has run, and the `📋` row only when the Review-Report carries `review.criteria` (the criteria delta).
 
 ## Research and cut
 
