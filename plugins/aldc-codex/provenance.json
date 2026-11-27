@@ -43,7 +43,7 @@
     "instructions/al-performance.instructions.md": "1db9c2e08bfec26a63990e1c05229f7ed15fb2fa92e6b65ab2b8eb40c1fdf1df",
     "instructions/al-security.instructions.md": "c45a0528af3c6d2b4ff00c35a6f76bafee27854310dc0d184fb8134d99fb624b",
     "instructions/al-testing.instructions.md": "ab88c39c39d2bd0bbdd00e4224b050004e8d587d7e381a1e5b0d075b985be0c3",
-    "package.json": "78dca28c69002312c0e2e1037d4cb4077e9edab0ab4c64e71e78f529c2896d55",
+    "package.json": "b811caa3b65c0fad0a1522269eeb41ccc1aa49215b69ba208a2490637225c402",
     "scripts/codex-al-adapter.js": "892534d0c70c7b5db37af5064a4ce24557a38b3a05148f23a46cb712dd98a9f5",
     "scripts/codex-al-tooling.md": "c1f0b2f8d40282d3747e945bbb40a77145337d7cdace619e07cf031484b867ae",
     "scripts/codex-mcp-setup.md": "cc47c002db298b845f5be29d359bafe424d5215539cffd888eb3ce590f44117b",
@@ -51,8 +51,8 @@
     "scripts/init-plugin.js": "a674d880f00890f74d8805d8328f538d37ddfa9e59f082a4f0add742855f27db",
     "scripts/install-transaction.js": "4ca7ff19486bca5fa1e20bd781b3105ac271692d9ba0cc7be23a28f8b190fcab",
     "scripts/package-provenance.js": "1346cb6d522ce0310b4a6469d9b7779a8bedbad498168126ab888a371e257ec3",
-    "scripts/plugin-runtime.js": "28a094fff70667be0f2834018e4df8fbbbbac3b16b7e04c4b228455312cde89a",
-    "scripts/sync-codex.js": "52569c77ac2daa79cfcc9904fd38e297eac90fbd9a1726b42f049b042cd33328",
+    "scripts/plugin-runtime.js": "6bc39184bf7041483a991751106bc1f8afced557987d7652a7849a77f5f8dd77",
+    "scripts/sync-codex.js": "ea4fdbefb4683ffc60d0c0ed5fd3ff6b818976a82d56a143ce6503699d1e0d1c",
     "skills/al-agent-create/SKILL.md": "b8bb13c47e7bcda6d4b705cf581393d1d6ffdd925fa4f50aba9cc860f91a0ef1",
     "skills/al-agent-instructions/SKILL.md": "d320f5c05af898498f56d8bc34a1038f5c2ee5cca806cabff37494c8862d40a9",
     "skills/al-agent-task/SKILL.md": "ff7c1e01e695139503ec345b0ab47ac80b679108502fffa844d73a6caabad381",
@@ -106,7 +106,10 @@
     "tools/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "tools/bcquality/validate_evidence.py": "10c02f21042b30b8ad7b24a6f38005e64baadcd1a1020472768dc7f7dddaaff7",
     "tools/context-doctor/README.md": "1bb4fe5d33b20ba50e9c06461697e41709d31361077787773a84740aabe7b264",
-    "tools/context-doctor/aldc_context_doctor.py": "2c16a78462f29fcbabd0770111a615087a9de9f3fb3570f77984353e91c030cb"
+    "tools/context-doctor/aldc_context_doctor.py": "2c16a78462f29fcbabd0770111a615087a9de9f3fb3570f77984353e91c030cb",
+    "tools/tickets/integrate.js": "3266e4fe34ce52a7273e8440dffce841aadbde27c11b7ac624c8ad578b6c1e7b",
+    "tools/tickets/lib.js": "82c532b6f3f725fa28d8d1b252750aea940ea3c37b5821edf8b132df51f316a8",
+    "tools/tickets/tickets.js": "9ea08d9dc530f14f8c8937c47a8c04c3bc08fe178859efb8a1e53bc19ace1d8f"
   },
   "outputs": {
     ".codex-plugin/plugin.json": "3123d8655ba3878942f26d3a39169487f8cea70a76cf20b7d8bd3daf5ecdf80b",
@@ -233,6 +236,9 @@
     "skills/aldc/scripts/bcquality/precondition_hook.ps1": "0e72ff91e78798452ee3f414a844c11e614aae4f44d79521ce40a33e57ab7640",
     "skills/aldc/scripts/bcquality/precondition_hook.sh": "36bac27b78826fa731c4bf25d27c81ac58f18f1c3d5a3b8ca7eaa28d903ccfae",
     "skills/aldc/scripts/bcquality/validate_evidence.py": "10c02f21042b30b8ad7b24a6f38005e64baadcd1a1020472768dc7f7dddaaff7",
+    "skills/aldc/scripts/tickets/integrate.js": "3266e4fe34ce52a7273e8440dffce841aadbde27c11b7ac624c8ad578b6c1e7b",
+    "skills/aldc/scripts/tickets/lib.js": "82c532b6f3f725fa28d8d1b252750aea940ea3c37b5821edf8b132df51f316a8",
+    "skills/aldc/scripts/tickets/tickets.js": "9ea08d9dc530f14f8c8937c47a8c04c3bc08fe178859efb8a1e53bc19ace1d8f",
     "surface.json": "31833b78cc32654fe53a34f0281cd6d2e534aed0029217ce31ff7f22b17aede8",
     "templates/memory-template.md": "5111889cdc8b0ddc6921cf1f7229f0b3b15085f94fa7c8d512b5a84d2c6c47f4"
   }

@@ -21,6 +21,10 @@ function support(surface, rootDir = ROOT) {
     const dest = surface === 'codex' ? 'skills/aldc/scripts/' + rel : 'tools/' + rel;
     files.set(dest, fs.readFileSync(path.join(rootDir, 'tools', rel), 'utf8'));
   }
+  // Host-neutral ticket tools: tools/tickets/lib.js resolves plans.root from this surface's aldc.yaml.
+  for (const rel of ['tickets/lib.js', 'tickets/tickets.js', 'tickets/integrate.js']) {
+    files.set((surface === 'codex' ? 'skills/aldc/scripts/' : 'tools/') + rel, fs.readFileSync(path.join(rootDir, 'tools', rel), 'utf8'));
+  }
   for (const name of ['install-transaction.js', 'package-provenance.js']) files.set(`scripts/${name}`, fs.readFileSync(path.join(rootDir, 'scripts', name), 'utf8'));
   files.set('scripts/init.js', fs.readFileSync(path.join(rootDir, 'scripts/init-plugin.js'), 'utf8'));
   const plansRoot = plansRootFor(rootDir, surface);
