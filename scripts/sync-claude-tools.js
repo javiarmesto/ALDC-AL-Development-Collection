@@ -9,7 +9,10 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const TOOLS = { 'tools/tickets': ['lib.js', 'tickets.js', 'integrate.js'] };
+const TOOLS = {
+  'tools/tickets': ['lib.js', 'tickets.js', 'integrate.js'],
+  'tools/factory': ['factory.js', 'crew.json', 'hosts/claude.js', 'hosts/fake.js'],
+};
 
 function sync(check = false) {
   let drift = 0;

@@ -112,8 +112,8 @@
     ".claude-plugin/plugin.json": "1ff649e96fe2ff4925ae9aaf7ff09f26dce67e2c805164bdfcaba29777670488",
     ".mcp.json": "085c9a97ebd647d44dd6dc6f82c3cc79a57afcf53438f4d0251d7054bcb4522b",
     "CLAUDE.md": "60b3010a5403cfce8fb4f85944405baf382fa5b9cedeb6e44f31ca2aa6cca7a9",
-    "README.md": "156f9e120cec18637271d086574408c536a70481f9a8dcbfe918ef4526e00c75",
-    "SURFACE.md": "985119d71d6e99add7e73099a524d84438cdb5d7105bf48f17cb8626f4b17b3b",
+    "README.md": "ad45bba3bf02650f6566e0482a846d14849a8aec136a14f161ba2e12a6e4eb8c",
+    "SURFACE.md": "42cf5c8f6bad74534fc19b2a4b5ef9243f736eda7ad07d6bbebf7136c142de12",
     "agents/al-architect.md": "dbff35c61bca8d2591f58203292caf8382afb9d3334f41a254ded5b44b3460d8",
     "agents/al-conductor.md": "c623c97870604ebdfac8de40785339e094d2550e2f72acd6f4b00334756b143a",
     "agents/al-developer-reviewer.md": "df996269c67bb9f9351097ec2481debfeb8799b49a9eea2e38298d06d6ce53d7",
@@ -225,7 +225,11 @@
     "tools/bcquality/validate_evidence.py": "10c02f21042b30b8ad7b24a6f38005e64baadcd1a1020472768dc7f7dddaaff7",
     "tools/context-doctor/README.md": "1bb4fe5d33b20ba50e9c06461697e41709d31361077787773a84740aabe7b264",
     "tools/context-doctor/aldc_context_doctor.py": "2c16a78462f29fcbabd0770111a615087a9de9f3fb3570f77984353e91c030cb",
-    "tools/tickets/integrate.js": "3266e4fe34ce52a7273e8440dffce841aadbde27c11b7ac624c8ad578b6c1e7b",
+    "tools/factory/crew.json": "2cbbc86fea5cccf86a423750f24c010d04d45e009547d5f2e894f5195d7eeb93",
+    "tools/factory/factory.js": "23dea53690710dc6af5ec178f1dcde3f697e42dad7dc6f974edf7c95466147fb",
+    "tools/factory/hosts/claude.js": "579e91d8574a6eec905187791e1165f285a92be80aa48d4ebc6270a786c0b2f6",
+    "tools/factory/hosts/fake.js": "16e7c900427f37339613b36cae1d996562ab4d6c3d3e164c4a8ebbae6559349f",
+    "tools/tickets/integrate.js": "2c243143922ae70369caa6dc96cbd2302f8ad61308f2c502489f96d0eeefb511",
     "tools/tickets/lib.js": "82c532b6f3f725fa28d8d1b252750aea940ea3c37b5821edf8b132df51f316a8",
     "tools/tickets/tickets.js": "9ea08d9dc530f14f8c8937c47a8c04c3bc08fe178859efb8a1e53bc19ace1d8f"
   }
