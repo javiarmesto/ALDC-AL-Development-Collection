@@ -159,7 +159,10 @@ function integrateTicket(project, req, id, worktree) {
   // Commit on the worktree branch, file by file (never add -A).
   if (files.length) {
     for (const { file, deleted } of files) git(worktree, deleted ? ['rm', '--cached', '--quiet', '--', file] : ['add', '--', file]);
-    git(worktree, [...identity(worktree), 'commit', '--quiet', '-m', `${ticket.data.id}: ${ticket.data.title}`]);
+    // A file rewritten with identical content (line endings only, under autocrlf) stages nothing.
+    const staged = git(worktree, ['diff', '--cached', '--quiet'], { allowFail: true }).status !== 0;
+    if (staged) git(worktree, [...identity(worktree), 'commit', '--quiet', '-m', `${ticket.data.id}: ${ticket.data.title}`]);
+    else if (!committed.length) return save({ status: 'empty', problems: ['the worktree changes nothing once staged (identical content)'] });
   }
   const commit = out(git(worktree, ['rev-parse', 'HEAD']));
   const merge = git(project, [...identity(project), 'merge', '--no-ff', '--no-edit', '-m', `Merge ${ticket.data.id}: ${ticket.data.title}`, commit], { allowFail: true });
@@ -174,6 +177,14 @@ function integrateTicket(project, req, id, worktree) {
   state.merged = [...(state.merged || []).filter((m) => m.ticket !== ticket.data.id), { ticket: ticket.data.id, commit, merge: mergeCommit }];
   writeState(project, req, state);
   return save({ status: 'merged', commit, merge: mergeCommit, files: toCheck.map((f) => f.file), objects });
+}
+
+/** Remove a worktree and its branch without merging. */
+function discard(project, worktree) {
+  const wt = path.resolve(project, worktree);
+  const br = fs.existsSync(wt) ? currentBranch(wt) : null;
+  removeWorktree(project, wt, br);
+  return { status: 'discarded', worktree: posix(wt), branch: br };
 }
 
 function commitIntegration(project, req, message) {
@@ -225,10 +236,7 @@ function main(argv) {
     else if (cmd === 'ticket') r = integrateTicket(project, req, id, worktree);
     else if (cmd === 'discard') {
       if (!worktree) throw new Error('--worktree <path> is required');
-      const wt = path.resolve(project, worktree);
-      const br = fs.existsSync(wt) ? currentBranch(wt) : null;
-      removeWorktree(project, wt, br);
-      r = { status: 'discarded', worktree: posix(wt), branch: br };
+      r = discard(project, worktree);
     } else if (cmd === 'commit') r = commitIntegration(project, req, message);
     else if (cmd === 'cleanup') r = cleanup(project);
     else if (cmd === 'status') r = status(project, req);
@@ -239,4 +247,4 @@ function main(argv) {
 }
 
 if (require.main === module) process.exitCode = main(process.argv);
-module.exports = { prepare, integrateTicket, commitIntegration, cleanup, status, objectsIn, matchesShared, changedFiles, agentWorktrees, main };
+module.exports = { prepare, integrateTicket, discard, commitIntegration, cleanup, status, objectsIn, matchesShared, changedFiles, agentWorktrees, main };
