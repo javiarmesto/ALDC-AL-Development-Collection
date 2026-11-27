@@ -22,7 +22,7 @@ self-declaration.
 
 | | `phase` | `increment` | `audit` |
 |---|---|---|---|
-| Launched by | `aldc:al-conductor` (2B) | `/aldc:review` after `/aldc:develop` | `/aldc:audit` |
+| Launched by | `aldc:al-conductor` (final review) | `/aldc:review` after `/aldc:develop` | `/aldc:audit` |
 | Input | Phase objective, acceptance criteria, inline spec/architecture/test-plan excerpts, files, subscriber list, build/test evidence, BCQuality decision, criteria | Objective, acceptance criteria, changed files or diff, build/test evidence | The file list the caller computed (changed `*.al` vs `main` by default), or an explicit module, file set or full codebase |
 | Context | Consume the supplied excerpts; read full plan files only for a gap | Resolve objective and acceptance yourself; read architecture/spec only where present and relevant; never demand a Conductor plan | Build your own bounded context from the repository; ignore prior agent conclusions unless the user handed them over |
 | Report | Review-Report JSON | Review-Report JSON | Audit-Report JSON (advisory) |
@@ -74,9 +74,8 @@ A certified BCQuality review runs outside you, from the Conductor (`certified-re
 Return [the Review-Report JSON](${CLAUDE_PLUGIN_ROOT}/docs/templates/review-report-contract.md)
 in one fenced block headed `### Review-Report (JSON)`, with the `skill.id` and
 `review.phase` from the scope table. The schema is that contract's, unchanged. In
-`phase` scope the Conductor renders and persists it (`<task>-review-phase-<N>.json`, or
-`tickets/T-NN.review.json` when the brief is a ticket, whose `acceptance` criteria are the
-ones to check; both are checked by the plugin's `artifact-gate` hook), so `review.security` and every
+`phase` scope the Conductor renders and persists it (`<req>-review-final.json` for the final
+review, which the plugin's `artifact-gate` hook checks), so `review.security` and every
 article of the *BCQuality selection* in `review.bcquality.articles` must be present.
 
 **Final review of a ticketed requirement (5.5.0, parallel).** The brief says `final`. It gives the

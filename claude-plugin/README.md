@@ -28,10 +28,8 @@ From a clone, register this directory as a local marketplace:
 /plugin install aldc@aldc-marketplace
 ```
 
-Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 14 agents
-(8 core agents and 6 deprecated aliases),
-7 role entry skills (plus the `presales` and `agent-builder` pointers), 5 workflow
-skills (plus the deprecated `al-spec-create` alias) and 12 knowledge skills, all
+Verify with `/plugin`, the actual Agent catalog and `/`. Claude 2.1.278 removed the `/agents` wizard. You should see 8 agents,
+8 entry skills (7 roles and `/aldc:tickets`), 5 workflow skills and 12 knowledge skills, all
 prefixed `aldc:`. Plugin loading,
 tool availability and any Business Central operation still need local
 verification; installation certifies none of them.
@@ -46,8 +44,7 @@ Pre-sales (`al-presales`, `skill-estimation`) and Business Central agent buildin
 /plugin install aldc-extras@aldc-marketplace
 ```
 
-`/aldc:presales` and `/aldc:agent-builder` stay for one version as pointers that say
-so and stop; they are removed in 6.0.0. The `al-agent-toolkit` rule stays in this
+The `/aldc:presales` and `/aldc:agent-builder` pointers were removed in 6.0.0. The `al-agent-toolkit` rule stays in this
 plugin: the implementer and reviewer apply it (and `review.agent-sdk`) to any app that
 extends `Agent Metadata Provider`, with or without `aldc-extras`. From a clone, install
 `aldc-extras` from the repository-root marketplace (`/plugin marketplace add .`).
@@ -70,9 +67,9 @@ required. It copies the path-scoped AL rules to `.claude/rules/`, seeds
 claude-plugin/
 ├── .claude-plugin/plugin.json      # manifest (MCP servers, userConfig)
 ├── .claude-plugin/marketplace.json # marketplace entry
-├── agents/                         # 8 agent contracts + 6 deprecated aliases
-├── skills/<role>/                  # 7 short role entry skills + 2 pointers to aldc-extras
-├── skills/<workflow>/              # 5 explicit workflow skills + 1 deprecated alias
+├── agents/                         # 8 agent contracts
+├── skills/<role>/                  # 7 short role entry skills and /aldc:tickets
+├── skills/<workflow>/              # 5 explicit workflow skills
 ├── skills/skill-*/                 # 12 knowledge skills
 ├── rules/                          # 9 path-scoped AL rules
 ├── docs/claude-runtime.md          # binding runtime rules on this surface
@@ -144,9 +141,9 @@ Tickets that do not depend on each other are built at the same time. Up to `tick
 
 Without git, tickets are built one at a time in the checkout.
 
-When a session stops partway, the next one is told at start which requirement is unfinished. Running `/aldc:conduct <req>` again picks up from the files: it does not repeat the research, the cut or tickets already done. Plans started by phases in 5.4.0 still finish by phases.
+When a session stops partway, the next one is told at start which requirement is unfinished. Running `/aldc:conduct <req>` again picks up from the files: it does not repeat the research, the cut or tickets already done. Since 6.0.0 there is no phase path: a plan started by phases in 5.4.x is treated as research, and only the work it does not record as done is cut into tickets.
 
-## Unattended factory (5.5.0, phase 5, preview)
+## Unattended factory (6.0.0, preview)
 
 `tools/factory/factory.js <req>` takes an approved spec to an integrated, reviewed branch with no human in between. It is a dependency-free Node runner that decides the order and enforces the caps. It never calls a model itself.
 
@@ -162,12 +159,11 @@ When a session stops partway, the next one is told at start which requirement is
 node tools/factory/factory.js <req> --project . --host claude --verify "<compile command>"
 ```
 
-## Renamed in 5.4.0
+## Removed in 6.0.0
 
-Overlapping agents were merged; each old name stays as a deprecated alias until
-6.0.0. An alias keeps its old `aldc:<name>` and the new agent's tools, and tells the
-model to read the new contract and act in the fixed mode below. Entry skills keep
-their names (`/aldc:develop`, `/aldc:review`, `/aldc:audit`, `/aldc:conduct`).
+The 5.4.0 aliases are gone. A caller that launches an old name gets "agent not found";
+launch the new agent with the mode or scope below. Entry skills keep their names
+(`/aldc:develop`, `/aldc:review`, `/aldc:audit`, `/aldc:conduct`).
 
 | Old agent | New agent and mode |
 |---|---|
@@ -178,15 +174,17 @@ their names (`/aldc:develop`, `/aldc:review`, `/aldc:audit`, `/aldc:conduct`).
 | `dredd` | `al-reviewer`, scope `audit` |
 | `al-planning-subagent` | `al-researcher` |
 
-The `/aldc:al-spec-create` workflow is now a deprecated alias of `/aldc:spec`, the
-one specification entry; it reads `skills/spec/SKILL.md` and is removed in 6.0.0.
+Also removed:
+- the `/aldc:al-spec-create` workflow: use `/aldc:spec`, the one specification entry;
+- the `/aldc:presales` and `/aldc:agent-builder` pointers: install `aldc-extras`;
+- the Conductor's phase path (plan → phase N → phase-complete file → commit gate). Every
+  requirement is built by tickets, and the approved cut is the plan gate. The
+  `phase-complete-template.md` template went with it.
 
-Behaviour changes: `al-reviewer` has no write or shell tool in any scope, so
-`/aldc:audit` computes the changed-file list with `git diff` and saves the returned
-Audit-Report under `.claude/audits/` itself; `/aldc:review` passes the changed-file
-list the same way. Report `skill.id` values (`al-review-subagent`,
-`al-developer-reviewer`, `dredd`) are unchanged. Update any caller that launches an
-old name; the aliases are removed in 6.0.0.
+Report `skill.id` values (`al-review-subagent`, `al-developer-reviewer`, `dredd`) are
+unchanged: they identify report formats, not agents. `al-reviewer` has no write or shell
+tool in any scope, so `/aldc:audit` computes the changed-file list with `git diff` and
+saves the returned Audit-Report under `.claude/audits/` itself.
 
 ## Requirements
 

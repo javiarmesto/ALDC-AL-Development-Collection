@@ -25,7 +25,7 @@ Claude Code has no such button, so the gate is the role's to keep.
 
 - Mode: `ALDC_GATES` (environment) > project `aldc.yaml` > plugin `aldc.yaml` >
   `human`. The session context states it as `ALDC autonomy: <mode>`.
-- **`human` (default).** Stop at every gate (plan approval, phase checkpoints,
+- **`human` (default).** Stop at every gate (approved cut, wave checkpoints,
   handoffs). Present your output, ask with `AskUserQuestion`, and only delegate or
   route to another role after explicit approval. An ambiguous acknowledgement never
   advances a gate.
@@ -39,7 +39,7 @@ Claude Code has no such button, so the gate is the role's to keep.
 - Use the Agent tool (`Task` on older hosts) with `subagent_type: "aldc:<agent>"`.
   Carry everything the subagent needs in that one prompt.
 - Run ALDC subagents in the foreground and wait for the result in the same turn. A new
-  phase, revision or review is a new Agent call, never `SendMessage` (the plugin blocks
+  ticket, revision or review is a new Agent call, never `SendMessage` (the plugin blocks
   it while a plan is open). If the host moves a subagent to the background, continue
   when its completion notification arrives.
 - The plugin's `PreToolUse` hook adds the AL rules, the autonomy mode, BCQuality

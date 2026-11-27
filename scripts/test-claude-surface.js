@@ -413,45 +413,22 @@ test('5.4.0: Conductor, entry skills and hooks launch only the new agent names',
   named('skills/audit/SKILL.md', 'al-reviewer');
 });
 
-test('5.4.0: every deprecated alias points to an existing, non-alias agent with the same tools', () => {
-  const aliasFiles = fs.readdirSync(AGENTS_DIR).filter((f) => /aldc-alias-of:/.test(fs.readFileSync(path.join(AGENTS_DIR, f), 'utf8')));
-  assert.deepStrictEqual(aliasFiles.map((f) => f.replace(/\.md$/, '')).sort(), Object.keys(ALIASES).sort());
-  for (const [name, [target, mode]] of Object.entries(ALIASES)) {
-    const alias = front(path.join(AGENTS_DIR, name + '.md'));
-    const targetFile = path.join(AGENTS_DIR, target + '.md');
-    assert.ok(fs.existsSync(targetFile), name + ': target ' + target + ' exists');
-    const real = front(targetFile);
-    assert.doesNotMatch(real.text, /aldc-alias-of:/, target + ' is not itself an alias');
-    assert.strictEqual(alias.data.name, name);
-    assert.strictEqual(real.data.name, target);
-    assert.strictEqual(alias.data.tools, real.data.tools, name + ': same tools as ' + target);
-    assert.match(alias.text, new RegExp('<!-- aldc-alias-of: ' + target + (mode ? ' mode=' + mode : '') + ' -->'), name + ': marker');
-    assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/agents/' + target + '.md'), name + ': reads the target contract');
-    assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md'), name + ': runtime doc');
-    if (mode) assert.ok(alias.text.includes('`' + mode + '`'), name + ': fixed mode ' + mode);
-    assert.match(alias.data.description, /^Deprecated alias of /);
-    assert.match(alias.text, /removed in 6\.0\.0/);
-  }
-  // The modes and scopes the aliases fix are the ones the merged contracts define.
+test('6.0.0: the 5.4.0 aliases, the al-spec-create alias and the extras pointers are gone', () => {
+  for (const name of Object.keys(ALIASES)) assert.ok(!fs.existsSync(path.join(AGENTS_DIR, name + '.md')), 'alias removed: ' + name);
+  assert.deepStrictEqual(fs.readdirSync(AGENTS_DIR).filter((f) => /aldc-alias-of:/.test(fs.readFileSync(path.join(AGENTS_DIR, f), 'utf8'))), []);
+  for (const s of ['al-spec-create', 'presales', 'agent-builder']) assert.ok(!fs.existsSync(path.join(PLUGIN, 'skills', s)), 'skill removed: ' + s);
+  assert.deepStrictEqual(fs.readdirSync(AGENTS_DIR).map((f) => f.replace(/\.md$/, '')).sort(),
+    ['al-architect', 'al-conductor', 'al-implementer', 'al-knowledge-consultant', 'al-researcher', 'al-reviewer', 'al-spec-agent', 'al-triage']);
+  const yaml = fs.readFileSync(path.join(PLUGIN, 'aldc.yaml'), 'utf8');
+  assert.doesNotMatch(yaml, /deprecatedAgents|deprecatedWorkflows/);
+  // The modes and scopes the old names mapped to are still the ones the merged contracts define.
   const impl = fs.readFileSync(path.join(AGENTS_DIR, 'al-implementer.md'), 'utf8');
   for (const m of ['phase', 'direct']) assert.match(impl, new RegExp('## Mode `' + m + '`'));
   const rev = fs.readFileSync(path.join(AGENTS_DIR, 'al-reviewer.md'), 'utf8');
   for (const s of ['phase', 'increment', 'audit']) assert.ok(rev.includes('`' + s + '`'), 'reviewer scope ' + s);
   assert.doesNotMatch(front(path.join(AGENTS_DIR, 'al-reviewer.md')).data.tools, /\b(Write|Edit|Bash|Task|Agent)\b/, 'reviewer stays read-only in every scope');
-});
-
-test('5.4.0: an external launch by an old name gets the same brief as the new name', () => {
-  const cwd = project();
-  const bcq = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-bcq-'));
-  fs.mkdirSync(path.join(bcq, 'community', 'knowledge', 'perf'), { recursive: true });
-  fs.writeFileSync(path.join(bcq, 'community', 'knowledge', 'perf', 'modify.md'), '---\ndomain: performance\nkeywords: [contact-modify, record-modify]\n---\n# Avoid redundant Modify\n');
-  const env = { BCQUALITY_HOME: bcq };
-  for (const [name, [target]] of Object.entries(ALIASES)) {
-    const brief = (type) => run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:' + type, prompt: 'Review phase 1' } }, env).hookSpecificOutput.updatedInput.prompt;
-    assert.strictEqual(brief(name), brief(target), name);
-  }
-  assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:dredd', prompt: 'x' } }, env).hookSpecificOutput.updatedInput.prompt, /## BCQuality selection/);
-  assert.match(run('agent-brief.js', { cwd, tool_input: { subagent_type: 'aldc:al-developer', prompt: 'x' } }).hookSpecificOutput.updatedInput.prompt, /Standard Flow: before subscribing/);
+  // The Doctor finds a 6.0.0 Claude install by its spec entry skill.
+  assert.match(fs.readFileSync(path.join(PLUGIN, 'tools', 'context-doctor', 'aldc_context_doctor.py'), 'utf8'), /"claude": \[\("agents\/al-architect\.md", "skills\/spec\/SKILL\.md"\)/);
 });
 
 // ─── 5.4.0: the slimmed Conductor keeps every gate, hard stop and artifact path ─────────────
@@ -459,12 +436,10 @@ test('5.4.0: Conductor gates, hard stops and artifact paths stay reachable; temp
   const conductor = fs.readFileSync(path.join(AGENTS_DIR, 'al-conductor.md'), 'utf8');
   const template = (n) => fs.readFileSync(path.join(PLUGIN, 'docs', 'templates', n), 'utf8');
   for (const phrase of [
-    '🚨 HARD GATE — PLAN APPROVAL', 'STOP and WAIT for explicit user approval. DO NOT start implementation until user confirms',
-    '🚨 HARD GATE — PHASE 1 ARTIFACTS PERSISTED', 'Showing the plan in chat is NOT enough',
-    '🚨 HARD GATE — IMPLEMENTATION START', '🚨 HARD GATE — PHASE COMMIT',
-    'You MUST NOT invoke al-implementer for next phase until user confirms',
-    '**⛔ TDD ENFORCEMENT**', 'Zero tests = phase FAILED',
-    'Review subagent MUST run after EVERY phase', 'NEVER skip review',
+    '🚨 HARD GATE — APPROVED CUT', 'STOP and WAIT for explicit user approval. DO NOT start implementation until user confirms',
+    'showing the cut in chat is NOT enough',
+    '**⛔ TDD ENFORCEMENT**', 'Zero tests = ticket FAILED',
+    'Review is MANDATORY — NO EXCEPTIONS', 'NEVER skip review',
     'Review completeness gate', 'cannot become approval from zero findings',
     '🚨 MANDATORY memory.md update at completion', '🚨 CRITICAL PAUSE POINTS',
     '⛔ User requests stop', '⛔ Critical review failure', '⛔ 3+ consecutive review failures',
@@ -473,18 +448,21 @@ test('5.4.0: Conductor gates, hard stops and artifact paths stay reachable; temp
     // pre-approved, foreground delegation and the honest final report
     'stay hard stops in both modes', 'Git commits run only when `autonomy.commit: true`',
     'Never call `AskUserQuestion` and never end the turn to wait', 'run_in_background: false',
-    'Never continue a subagent with `SendMessage`', 'A phase does not close while `review.security` is missing',
+    'Never continue a subagent with `SendMessage`', 'The final review does not close while `review.security` is missing',
     '*Verification*, *Not verified*, *Decisions taken without a human* and *Open risks*',
   ]) assert.ok(conductor.includes(phrase), 'conductor: ' + phrase);
+  // 6.0.0: the phase path is gone; a 5.4.x phase plan is research for a new cut.
+  assert.doesNotMatch(conductor, /## Phase \d|HARD GATE — PHASE|phase-complete-template|-phase-1-complete\.md|finish it by phases/);
+  assert.match(conductor, /The phase path was removed in 6\.0\.0/);
+  assert.ok(!fs.existsSync(path.join(PLUGIN, 'docs', 'templates', 'phase-complete-template.md')), 'phase-complete template removed');
   for (const artifact of [
-    '.claude/plans/<task-name>/<task-name>-plan.md', '.claude/plans/<task-name>/<task-name>-phase-1-complete.md',
-    '.claude/plans/<task-name>/<task-name>-phase-<N>-complete.md', '.claude/plans/<task-name>/<task-name>-review-phase-<N>.json',
-    '.claude/plans/<task-name>/<task-name>-bcquality-phase-<N>.json', '.claude/plans/<task-name>/<task-name>-complete.md',
+    '.claude/plans/<task-name>/<task-name>-plan.md', '<req>-review-final.json',
+    '.claude/plans/<task-name>/<task-name>-bcquality-final.json', '.claude/plans/<task-name>/<task-name>-complete.md',
     '.claude/plans/<task-name>/decisions.md', '.claude/plans/<task-name>/blocked.md', '.claude/plans/memory.md',
     '.claude/plans/<req>/<req>.bcq-criteria.json', '{req_name}.spec.md', '{req_name}.architecture.md', '{req_name}.test-plan.md',
   ]) assert.ok(conductor.includes(artifact), 'conductor artifact: ' + artifact);
   // One source per artifact format: the conductor reads the template at the step that writes it.
-  for (const n of ['plan-template.md', 'phase-complete-template.md', 'plan-complete-template.md', 'test-plan-template.md', 'code-review-template.md']) {
+  for (const n of ['plan-template.md', 'plan-complete-template.md', 'test-plan-template.md', 'code-review-template.md', 'ticket-result-template.md']) {
     assert.ok(conductor.includes('${CLAUDE_PLUGIN_ROOT}/docs/templates/' + n), 'conductor reads ' + n);
   }
   assert.doesNotMatch(conductor, /_style_guide>|must NOT read them/, 'no inline copy of the templates and no ban on reading them');
@@ -494,20 +472,11 @@ test('5.4.0: Conductor gates, hard stops and artifact paths stay reachable; temp
     assert.ok(complete.includes(h), 'plan-complete template: ' + h);
   assert.doesNotMatch(complete, /All tests passing: ✅/, 'the final report never pre-fills passing tests');
   assert.ok(template('plan-template.md').includes('**Mini-design:**'), 'plan template carries the Mini-design');
-  const phase = template('phase-complete-template.md');
-  for (const h of ['**BCQuality Evidence:**', '**Build and test evidence:**', '**Git Commit Message:**', 'never the configured pin as proof'])
-    assert.ok(phase.includes(h), 'phase-complete template: ' + h);
+  assert.ok(complete.includes('**Tickets Completed:**') && complete.includes('<plan>-review-final.json'), 'the final report consolidates tickets and the final review');
+  assert.doesNotMatch(complete, /phase-complete|Phases Completed/, 'no phase files to consolidate since 6.0.0');
 });
 
-test('5.4.0: /aldc:spec is the one specification entry and al-spec-create a deprecated alias of it', () => {
-  const alias = front(path.join(PLUGIN, 'skills', 'al-spec-create', 'SKILL.md'));
-  assert.strictEqual(alias.data.name, 'al-spec-create');
-  assert.strictEqual(alias.data['disable-model-invocation'], 'true', 'the alias stays explicit-only');
-  assert.match(alias.data.description, /^"?Deprecated alias of \/aldc:spec/);
-  assert.match(alias.text, /<!-- aldc-alias-of: spec -->/);
-  assert.ok(alias.text.includes('${CLAUDE_PLUGIN_ROOT}/skills/spec/SKILL.md'), 'alias reads the entry skill');
-  assert.ok(alias.text.includes('](${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md)'), 'alias still resolves the single role contract');
-  assert.match(alias.text, /removed in 6\.0\.0/);
+test('6.0.0: /aldc:spec is the one specification entry; nothing routes to al-spec-create', () => {
   const spec = fs.readFileSync(path.join(PLUGIN, 'skills', 'spec', 'SKILL.md'), 'utf8');
   assert.ok(spec.includes('${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md'), 'entry reads the Spec contract');
   assert.match(spec, /SPEC-ID/, 'entry carries the multi-spec handoff the workflow had');
@@ -545,11 +514,10 @@ const MOVED = {
   skills: ['presales', 'agent-builder', 'al-agent-create', 'al-agent-instructions', 'al-agent-task', 'al-agent-test',
     'skill-estimation', 'skill-agent-instructions', 'skill-agent-task-patterns', 'skill-agent-toolkit'],
 };
-const POINTERS = { presales: 'al-presales', 'agent-builder': 'al-agent-builder' };
 const textFiles = (root) => require(path.join(PLUGIN, 'scripts', 'package-provenance')).walk(root)
   .filter((p) => /\.(md|js|json|ya?ml|txt|sh|py)$/.test(p) && p !== 'provenance.json');
 
-test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both plugins are in the marketplace', () => {
+test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^6.0.0 and both plugins are in the marketplace', () => {
   for (const a of MOVED.agents) {
     assert.ok(fs.existsSync(path.join(EXTRAS, 'agents', a + '.md')), 'extras agent ' + a);
     assert.ok(!fs.existsSync(path.join(AGENTS_DIR, a + '.md')), 'core no longer ships agent ' + a);
@@ -557,17 +525,17 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both 
   }
   for (const s of MOVED.skills) {
     assert.ok(fs.existsSync(path.join(EXTRAS, 'skills', s, 'SKILL.md')), 'extras skill ' + s);
-    if (!POINTERS[s]) assert.ok(!fs.existsSync(path.join(PLUGIN, 'skills', s)), 'core no longer ships skill ' + s);
+    assert.ok(!fs.existsSync(path.join(PLUGIN, 'skills', s)), 'core no longer ships skill ' + s);
   }
   // The Agent SDK rule stays in the core: the implementer and reviewer apply it without aldc-extras.
   assert.ok(fs.existsSync(path.join(PLUGIN, 'rules', 'al-agent-toolkit.md')));
   assert.ok(!fs.existsSync(path.join(EXTRAS, 'rules')), 'extras ships no copy of the core rules');
   const manifest = JSON.parse(fs.readFileSync(path.join(EXTRAS, '.claude-plugin', 'plugin.json'), 'utf8'));
   assert.strictEqual(manifest.name, 'aldc-extras');
-  assert.strictEqual(manifest.version, '5.5.0');
-  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^5.5.0' }]);
+  assert.strictEqual(manifest.version, '6.0.0');
+  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^6.0.0' }]);
   const coreManifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'plugin.json'), 'utf8'));
-  assert.strictEqual(coreManifest.version, '5.5.0');
+  assert.strictEqual(coreManifest.version, '6.0.0');
   // The root marketplace is repository-only; the npm package does not ship it.
   const rootMarket = path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json');
   if (fs.existsSync(rootMarket)) {
@@ -576,23 +544,9 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both 
     assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras', 'aldc-verify']);
     assert.strictEqual(entry('aldc').source, './claude-plugin');
     assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
-    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.5.0', n + ' version');
+    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '6.0.0', n + ' version');
   }
-  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '5.5.0');
-});
-
-test('5.4.0: /aldc:presales and /aldc:agent-builder are pointers that name the install command and stop', () => {
-  for (const [s, agent] of Object.entries(POINTERS)) {
-    const p = front(path.join(PLUGIN, 'skills', s, 'SKILL.md'));
-    assert.strictEqual(p.data.name, s);
-    assert.strictEqual(p.data['disable-model-invocation'], 'true', s + ' stays explicit-only');
-    assert.match(p.text, new RegExp('<!-- aldc-alias-of: aldc-extras:' + s + ' -->'), s + ': marker');
-    assert.ok(p.text.includes('moved to the `aldc-extras` plugin: install with `claude plugin install aldc-extras@aldc-marketplace`'), s + ': install line');
-    assert.ok(p.text.includes('`/aldc-extras:' + s + '`') && p.text.includes('aldc-extras:' + agent), s + ': new names');
-    assert.match(p.text, /and stop/);
-    assert.match(p.text, /removed in 6\.0\.0/);
-    assert.doesNotMatch(p.text, /\$\{CLAUDE_PLUGIN_ROOT\}/, s + ' reads no contract');
-  }
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '6.0.0');
 });
 
 test('5.4.0: core and extras name only files they ship; extras reach the core through <aldc-root>', () => {
@@ -601,7 +555,7 @@ test('5.4.0: core and extras name only files they ship; extras reach the core th
     const text = fs.readFileSync(path.join(PLUGIN, rel), 'utf8');
     for (const [, p] of text.matchAll(ref)) {
       assert.ok(!MOVED.agents.some((a) => p === 'agents/' + a + '.md'), rel + ' reads moved ' + p);
-      assert.ok(!MOVED.skills.some((s) => !POINTERS[s] && p.startsWith('skills/' + s + '/')), rel + ' reads moved ' + p);
+      assert.ok(!MOVED.skills.some((s) => p.startsWith('skills/' + s + '/')), rel + ' reads moved ' + p);
     }
     // Core launchers never route to the moved agents under the core prefix.
     assert.doesNotMatch(text, /aldc:al-(presales|agent-builder)\b/, rel + ' launches a moved agent as aldc:');
@@ -730,7 +684,7 @@ test('5.5.0: the tickets skill, tool and templates ship with the plugin and the 
   for (const p of ['skills/tickets/SKILL.md', 'tools/tickets/tickets.js', 'docs/templates/ticket-template.md', 'docs/templates/ticket-result-template.md'])
     assert.ok(fs.existsSync(path.join(PLUGIN, p)), p);
   const conductor = fs.readFileSync(path.join(PLUGIN, 'agents', 'al-conductor.md'), 'utf8');
-  assert.match(conductor, /## Ticket path/);
+  assert.match(conductor, /## Build in waves/);
   assert.match(conductor, /tickets\.js" status <req>/);
   // The ticket template's own frontmatter parses and passes the field checks.
   const tickets = require(path.join(PLUGIN, 'tools', 'tickets', 'tickets.js'));

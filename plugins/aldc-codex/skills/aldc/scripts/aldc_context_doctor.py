@@ -129,7 +129,10 @@ def inspect_layout(root, host):
                  (".github/agents/al-architect.agent.md", ".github/prompts/al-spec.create.prompt.md")],
         # Claude Code workflows are skills, not commands: a slash command there would
         # be model-invocable, and a workflow is explicit. commands/ no longer exists.
-        "claude": [("agents/al-architect.md", "skills/al-spec-create/SKILL.md"),
+        # The plugin's spec entry is skills/spec since 6.0.0; al-spec-create keeps
+        # diagnosing installations from 5.4.x and earlier.
+        "claude": [("agents/al-architect.md", "skills/spec/SKILL.md"),
+                   ("agents/al-architect.md", "skills/al-spec-create/SKILL.md"),
                    (".claude/agents/al-architect.md", ".claude/skills/al-spec-create/SKILL.md")],
         "cli": [("agents/al-architect.agent.md", "commands/al-spec-create.md")],
         "codex": [("skills/aldc/references/agents/al-architect.md", "skills/aldc/references/commands/al-spec-create.md"),

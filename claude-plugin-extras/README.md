@@ -33,8 +33,7 @@ apply it, and fill `review.agent-sdk`, to any app that extends `Agent Metadata P
 the templates, the runtime doc and the hooks. The core `agent-brief` hook also briefs
 `aldc-extras:al-agent-builder` subagents (foreground, AL rules including `al-agent-toolkit`).
 
-`/aldc:presales` and `/aldc:agent-builder` remain in `aldc` 5.4.0 as pointers to this
-plugin and are removed in 6.0.0.
+The `/aldc:presales` and `/aldc:agent-builder` pointers that `aldc` 5.4.x kept were removed in 6.0.0.
 
 ## Maintenance
 

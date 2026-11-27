@@ -1,6 +1,6 @@
 # aldc-extras runtime rules in Claude Code
 
-`aldc-extras` runs on top of the `aldc` plugin (`^5.4.0`) and has no runtime of its own.
+`aldc-extras` runs on top of the `aldc` plugin (`^6.0.0`) and has no runtime of its own.
 Every agent and workflow of this plugin points here; this page only says where the
 core lives and what differs.
 

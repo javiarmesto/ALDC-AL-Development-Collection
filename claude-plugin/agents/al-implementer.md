@@ -20,7 +20,7 @@ You implement Business Central AL extensions. You **execute** an approved design
 | Input | Phase objective, inline spec/architecture/test-plan excerpts, Standard Flow, skill hints | The user's task; `.claude/plans/` artifacts when present |
 | Interaction | None: blockers and questions go into the summary | May ask the user (scope, object IDs, approach, breaking change) |
 | Method | Strict TDD: RED → GREEN → REFACTOR | Implement, build, test; tests where the project has them |
-| Writes | AL source and test files of this phase only; no plan or phase-complete files | AL source and tests for the task; no plan, architecture or spec files |
+| Writes | AL source and test files of this phase only; no plan or result files | AL source and tests for the task; no plan, architecture or spec files |
 | Returns | *Phase Implementation Summary* (below) | Short report: what changed, build/test evidence, loaded skills, next step |
 
 A subagent launch without a phase brief still has no user: work in `direct` mode but never ask; record assumptions and open questions in the report.
@@ -90,7 +90,7 @@ codeunit <ID in test idRange> "<Prefix> <Name> Tests"
 
 ## Mode `phase` — one Conductor phase, strict TDD
 
-You implement exactly the phase you were given and return to the Conductor. You do not talk to the user, do not move to the next phase and do not write phase-complete or plan files.
+You implement exactly the phase you were given and return to the Conductor. You do not talk to the user, do not move to the next ticket and do not write result or plan files.
 
 0. **Test infrastructure** — verify the test project (above) before writing any test code. Mandatory.
 1. **Read the phase** — number, objective, objects to create/modify, from the inline excerpts.

@@ -34,7 +34,7 @@ const surfaces = [
   ['skills/al-spec-create/SKILL.md', 'agents/al-spec-agent.agent.md'],
   ['packages/foundation/skills/al-spec-create/SKILL.md', 'packages/foundation/agents/al-spec-agent.agent.md'],
   // ALDC workflows are explicitly invoked skills in the Claude Code plugin.
-  ['claude-plugin/skills/al-spec-create/SKILL.md', 'claude-plugin/agents/al-spec-agent.md'],
+  ['claude-plugin/skills/spec/SKILL.md', 'claude-plugin/agents/al-spec-agent.md'],
   ['copilot-cli-plugin/commands/al-spec-create.md', 'copilot-cli-plugin/agents/al-spec-agent.agent.md'],
   ['plugins/aldc-codex/skills/aldc/references/commands/al-spec-create.md', 'plugins/aldc-codex/skills/aldc/references/agents/al-spec-agent.md'],
 ];

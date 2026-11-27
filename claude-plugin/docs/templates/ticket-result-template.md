@@ -9,7 +9,7 @@ files, so state facts and evidence only; nothing here may depend on the conversa
 **Status:** {done | blocked} · **Date:** {ISO timestamp} · **Wave:** {n} · **Integration:** {merged <merge commit> into aldc/<req> | refused/conflict -> rebuilt | blocked}
 
 <!-- The per-ticket review was removed in 5.5.0: the final review covers the whole requirement.
-Phase-path plans and the no-git fallback still record a review here. -->
+There is no review per ticket, with git or without it. -->
 **Review:** {final review | APPROVED | NEEDS_REVISION -> fixed | blocked}
 
 ## What changed
