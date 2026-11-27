@@ -53,7 +53,7 @@
     "scripts/init-plugin.js": "a674d880f00890f74d8805d8328f538d37ddfa9e59f082a4f0add742855f27db",
     "scripts/install-transaction.js": "4ca7ff19486bca5fa1e20bd781b3105ac271692d9ba0cc7be23a28f8b190fcab",
     "scripts/package-provenance.js": "1346cb6d522ce0310b4a6469d9b7779a8bedbad498168126ab888a371e257ec3",
-    "scripts/plugin-runtime.js": "f59c86035839cffb784868f091d0266b88d579a8a3d694d23b9bed4468b0d557",
+    "scripts/plugin-runtime.js": "28a094fff70667be0f2834018e4df8fbbbbac3b16b7e04c4b228455312cde89a",
     "scripts/sync-copilot-cli.js": "035a173eec47ccc6ae55811c3ff74fd1e0d58d679df25fe69b484a72a2054e92",
     "skills/al-agent-create/SKILL.md": "b8bb13c47e7bcda6d4b705cf581393d1d6ffdd925fa4f50aba9cc860f91a0ef1",
     "skills/al-agent-instructions/SKILL.md": "d320f5c05af898498f56d8bc34a1038f5c2ee5cca806cabff37494c8862d40a9",

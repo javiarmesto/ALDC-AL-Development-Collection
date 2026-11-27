@@ -13,9 +13,9 @@
       "name": "aldc",
       "source": "./claude-plugin",
       "description": "AL agents (incl. on-demand triage + dredd audit) + TDD subagents, skills, and workflows for BC extension development with TDD, BCQuality-cited review, event-driven architecture, and HITL gates.",
-      "version": "5.4.0",
+      "version": "5.5.0",
       "dependencies": [
-        { "name": "aldc-verify" },
+        { "name": "aldc-verify", "version": "^0.4.1" },
         { "name": "bcquality", "marketplace": "bcquality", "version": "^1.9.0" }
       ]
     },
@@ -23,13 +23,13 @@
       "name": "aldc-extras",
       "source": "./claude-plugin-extras",
       "description": "Optional ALDC roles: technical pre-sales (estimation, SWOT, proposals) and Business Central agent building (Agent SDK). Requires aldc.",
-      "version": "5.4.0"
+      "version": "5.5.0"
     },
     {
       "name": "aldc-verify",
-      "source": { "source": "github", "repo": "javiarmesto/aldc-verify-plugin", "ref": "v0.3.0" },
+      "source": { "source": "github", "repo": "javiarmesto/aldc-verify-plugin", "ref": "v0.4.1" },
       "description": "Verifiable AL loop for Business Central: compiles AL and runs the analyzers when Claude or an ALDC implementer stops, and opens draft PRs behind a merge guard. Required by aldc.",
-      "version": "0.3.0"
+      "version": "0.4.1"
     }
   ]
 }

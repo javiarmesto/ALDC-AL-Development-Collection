@@ -124,17 +124,17 @@ When `T wave` returns nothing, run `T status <req>`.
 
 The final report consolidates the `T-NN.result.md` files in place of phase files.
 
-**Final review, two axes.** It replaces the per-ticket reviews.
-1. **Standards.** Run the certified BCQuality review (*Phase 3* step 0) against the base recorded in `integration.json` (`--base <base>`).
-2. **Spec.** Launch one `aldc:al-reviewer` with this brief:
+**Final review, two axes.** It replaces the per-ticket reviews. The spec axis runs first and the standards axis runs last, so that the certified verdict covers the final code. In the 5.5.0 eval the order was the other way round: a spec correction landed after the certified review, and the Stop hook found the verdict out of date.
+1. **Spec.** Launch one `aldc:al-reviewer` with this brief:
    - `final`;
    - the output of `I status <req>`;
    - the changed-file list, which you compute with `git diff --name-only <baseCommit>..aldc/<req>`;
    - every criterion in `tickets/criteria.md`, as the criteria to check;
    - the build and test evidence from the integration step;
-   - the certified verdict.
-3. Persist its Review-Report JSON verbatim to `<req>-review-final.json` and gate on it as in 2B.
-4. Route gating findings to **one** correction `aldc:al-implementer` on `aldc/<req>`, with no isolation. Then rebuild, run `I commit`, and re-review once.
+   - this line: *"The certified BCQuality review runs after you."*
+2. Persist its Review-Report JSON verbatim to `<req>-review-final.json` and gate on it as in 2B.
+3. Route gating findings to **one** correction `aldc:al-implementer` on `aldc/<req>`, with no isolation. Then rebuild, run `I commit`, and re-review once.
+4. **Standards.** Run the certified BCQuality review (*Phase 3* step 0), with `--base` set to the `baseCommit` in `integration.json`. Its own correction loop then applies: route its findings, then run `I commit` and re-run the review once. Change nothing after its last run. If anything does change, run it again.
 
 **Delivery.**
 - **With an `origin` remote and `autonomy.commit: true`:** after the final report, run `/aldc-verify:al-go --no-review` on `aldc/<req>`. The review already ran. Never merge.

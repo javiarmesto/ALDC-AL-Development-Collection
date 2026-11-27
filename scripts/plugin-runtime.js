@@ -79,10 +79,9 @@ function plansRootFor(rootDir, surface = 'claude') {
   return prefix ? canonical.replace(/^\.github\//, prefix) : canonical;
 }
 
-// Dredd's audit reports are the other work product. Only Codex relocates them: the
-// Claude Code plugin moved its plans in #104 but nothing decided the same for its
-// audits, and inventing that here would change a surface nobody asked about.
-const SURFACE_AUDITS_PREFIX = { codex: '.agents/' };
+// Audit reports are the other work product. Codex and the Claude Code plugin relocate
+// them beside their plans (the Claude plugin's aldc.yaml has said .claude/audits since 5.4.0).
+const SURFACE_AUDITS_PREFIX = { claude: '.claude/', codex: '.agents/' };
 function auditsRootFor(rootDir, surface = 'codex') {
   const cfg = yaml.load(fs.readFileSync(path.join(rootDir, 'aldc.yaml'), 'utf8')) || {};
   const canonical = cfg.audits?.root || '.github/audits';

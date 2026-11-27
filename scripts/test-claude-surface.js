@@ -118,7 +118,7 @@ test('5.5.0: aldc declares aldc-verify and bcquality as dependencies and the ses
     assert.deepStrictEqual(market.allowCrossMarketplaceDependenciesOn, ['bcquality']);
     const aldc = market.plugins.find((p) => p.name === 'aldc');
     assert.deepStrictEqual(aldc.dependencies, manifest.dependencies, 'repeated in the entry so a blocked install fails loudly');
-    assert.deepStrictEqual(market.plugins.find((p) => p.name === 'aldc-verify').source, { source: 'github', repo: 'javiarmesto/aldc-verify-plugin', ref: 'v0.3.0' });
+    assert.deepStrictEqual(market.plugins.find((p) => p.name === 'aldc-verify').source, { source: 'github', repo: 'javiarmesto/aldc-verify-plugin', ref: 'v0.4.1' });
   }
   const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-cfg-'));
   fs.mkdirSync(path.join(cfg, 'plugins'));
@@ -523,10 +523,9 @@ test('5.4.0: /aldc:spec is the one specification entry and al-spec-create a depr
 test('5.4.0: Claude audit reports live under .claude/audits in the plugin, its skills and its normalizer', () => {
   const { auditsRootFor, plansRootFor } = require('./plugin-runtime');
   const repo = path.resolve(PLUGIN, '..');
-  // auditsRootFor('claude') in the shared plugin-runtime.js still says .github/audits. No generator calls it
-  // for Claude, and changing the script re-hashes the CLI and Codex provenance, so it waits for a release
-  // that regenerates those surfaces.
+  // 5.5.0: the shared plugin-runtime.js agrees with the plugin's aldc.yaml.
   assert.strictEqual(plansRootFor(repo, 'claude'), '.claude/plans');
+  assert.strictEqual(auditsRootFor(repo, 'claude'), '.claude/audits');
   assert.match(fs.readFileSync(path.join(PLUGIN, 'aldc.yaml'), 'utf8'), /^audits:\r?\n\s+root:\s*"\.claude\/audits"/m);
   assert.ok(fs.readFileSync(path.join(PLUGIN, 'skills', 'audit', 'SKILL.md'), 'utf8').includes('.claude/audits/'));
   // A Claude project has no aldc.yaml of its own (init.js seeds none): the plugin's normalizer defaults to this surface.
@@ -565,10 +564,10 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both 
   assert.ok(!fs.existsSync(path.join(EXTRAS, 'rules')), 'extras ships no copy of the core rules');
   const manifest = JSON.parse(fs.readFileSync(path.join(EXTRAS, '.claude-plugin', 'plugin.json'), 'utf8'));
   assert.strictEqual(manifest.name, 'aldc-extras');
-  assert.strictEqual(manifest.version, '5.4.0');
-  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^5.4.0' }]);
+  assert.strictEqual(manifest.version, '5.5.0');
+  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^5.5.0' }]);
   const coreManifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'plugin.json'), 'utf8'));
-  assert.strictEqual(coreManifest.version, '5.4.0');
+  assert.strictEqual(coreManifest.version, '5.5.0');
   // The root marketplace is repository-only; the npm package does not ship it.
   const rootMarket = path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json');
   if (fs.existsSync(rootMarket)) {
@@ -577,9 +576,9 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^5.4.0 and both 
     assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras', 'aldc-verify']);
     assert.strictEqual(entry('aldc').source, './claude-plugin');
     assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
-    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.4.0', n + ' version');
+    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '5.5.0', n + ' version');
   }
-  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '5.4.0');
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '5.5.0');
 });
 
 test('5.4.0: /aldc:presales and /aldc:agent-builder are pointers that name the install command and stop', () => {
