@@ -113,7 +113,7 @@
     "tools/factory/factory.js": "ec8786a0b4660cb626d71e0788c3c1d9746da839b0d2c51f607b7c3b4ad3f7f8",
     "tools/factory/hosts/claude.js": "369f6b22b7139aae9053d9b67fa97506e09e9d8bd2e781a63baccf23563fd7cf",
     "tools/factory/hosts/fake.js": "16e7c900427f37339613b36cae1d996562ab4d6c3d3e164c4a8ebbae6559349f",
-    "tools/tickets/integrate.js": "c46ec1748d6765b4755771a959fd25e0decd600e81c52a438b2aec09b58e80cf",
+    "tools/tickets/integrate.js": "1ee78c20a8a6d55a0bc3b747e883abb1a18c5bfe55cc4a682e8d80d732363118",
     "tools/tickets/lib.js": "82c532b6f3f725fa28d8d1b252750aea940ea3c37b5821edf8b132df51f316a8",
     "tools/tickets/tickets.js": "9ea08d9dc530f14f8c8937c47a8c04c3bc08fe178859efb8a1e53bc19ace1d8f"
   },
@@ -227,7 +227,7 @@
     "tools/factory/factory.js": "ec8786a0b4660cb626d71e0788c3c1d9746da839b0d2c51f607b7c3b4ad3f7f8",
     "tools/factory/hosts/claude.js": "369f6b22b7139aae9053d9b67fa97506e09e9d8bd2e781a63baccf23563fd7cf",
     "tools/factory/hosts/fake.js": "16e7c900427f37339613b36cae1d996562ab4d6c3d3e164c4a8ebbae6559349f",
-    "tools/tickets/integrate.js": "c46ec1748d6765b4755771a959fd25e0decd600e81c52a438b2aec09b58e80cf",
+    "tools/tickets/integrate.js": "1ee78c20a8a6d55a0bc3b747e883abb1a18c5bfe55cc4a682e8d80d732363118",
     "tools/tickets/lib.js": "82c532b6f3f725fa28d8d1b252750aea940ea3c37b5821edf8b132df51f316a8",
     "tools/tickets/tickets.js": "9ea08d9dc530f14f8c8937c47a8c04c3bc08fe178859efb8a1e53bc19ace1d8f"
   }

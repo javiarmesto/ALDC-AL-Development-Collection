@@ -231,7 +231,14 @@ function agentWorktrees(project) {
 function cleanup(project) {
   const removed = agentWorktrees(project);
   for (const w of removed) removeWorktree(project, w.worktree, w.branch);
-  return { status: 'clean', removed };
+  // Folders git already forgot: a removal that hit a locked file on Windows left them behind.
+  const root = path.join(project, '.claude', 'worktrees');
+  const orphans = [];
+  for (const name of fs.existsSync(root) ? fs.readdirSync(root) : []) {
+    const dir = path.join(root, name);
+    try { fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); orphans.push(posix(dir)); } catch { /* still locked: next cleanup */ }
+  }
+  return { status: 'clean', removed, orphans };
 }
 
 function status(project, req) {
