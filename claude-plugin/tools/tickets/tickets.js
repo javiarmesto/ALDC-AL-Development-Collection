@@ -138,6 +138,17 @@ function validate(project, req) {
   const cycle = findCycle(byId);
   if (cycle) problems.push(`dependency cycle: ${cycle.join(' -> ')}`);
 
+  // A shared file has one writer, the integration step. A ticket whose only objects are permission
+  // sets, and which lists shared files, has nothing to build in its worktree (eval f6-runner).
+  for (const t of tickets) {
+    if (!(t.data.shared_files || []).length) continue;
+    const table = (/^##\s*Objects\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m.exec(fs.readFileSync(t.file, 'utf8')) || [])[1] || '';
+    const types = table.split(/\r?\n/).filter((l) => /^\s*\|/.test(l)).map((l) => l.split('|')[1].trim())
+      .filter((c) => c && !/^type$/i.test(c) && !/^:?-+:?$/.test(c));
+    if (types.length && types.every((c) => /permission\s*set/i.test(c)))
+      problems.push(`${t.name}: its only objects are permission sets in shared_files, which the integration step writes; drop the ticket and move its criteria to the tickets that need those entries`);
+  }
+
   // Object ID ranges: well formed, disjoint between tickets, inside an app.json idRanges entry.
   const apps = appRanges(project);
   const owned = [];

@@ -36,6 +36,7 @@ Write `<req>/tickets/T-NN.md` from `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/tem
   - At integration, an object whose ID falls outside the ticket's ranges is refused.
 - **Shared files.** List under `shared_files` the permission sets, `app.json` and XLF files that several tickets touch, with their paths.
   - Tickets built in parallel never edit these files. Each ticket reports the entries it needs, and the integration step applies them.
+  - A shared file has one writer, the integration step. Never cut a ticket whose only deliverable is a shared file, such as "create the permission set": give its criteria to the tickets that need those entries. `tickets.js validate` refuses a ticket whose only objects are permission sets in `shared_files`.
   - A shared file that does not exist yet, such as the extension's permission set, also goes in `shared_files`. The integration step creates it the first time a ticket asks for an entry in it.
 - **Independent where possible.** Tickets with no `depends_on` path between them are built at the same time, each in its own worktree. Two such tickets must not change the same file outside `shared_files`. If they would, make one depend on the other.
 - **`mode`.** Use `hitl` only for a decision the spec leaves to a human, and name that decision in *Scope*. Everything else is `afk`.

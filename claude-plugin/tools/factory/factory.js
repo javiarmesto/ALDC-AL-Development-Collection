@@ -129,6 +129,12 @@ async function runFactory(opts) {
     return false;
   }
   const result = (t, body) => fs.writeFileSync(t.file.replace(/\.md$/i, '.result.md'), body);
+  /** Objects inside the ticket's ID ranges that tracked AL files of the checkout already declare. */
+  function onBranch(t) {
+    const ranges = T.parseRanges(t.data.object_ids).filter(Boolean);
+    const files = (spawnSync('git', ['ls-files', '*.al'], { cwd: project, encoding: 'utf8' }).stdout || '').split(/\r?\n/).filter(Boolean);
+    return files.flatMap((file) => I.objectsIn(read(path.join(project, file))).filter((o) => ranges.some((r) => o.id >= r.from && o.id <= r.to)).map((o) => ({ ...o, file })));
+  }
   const setStatus = (id, s) => T.setStatus(project, req, id, s);
   /** Integration step for merged tickets: shared-file entries, build, tests, one commit, then close them. */
   async function finish(merged, wave) {
@@ -146,7 +152,7 @@ async function runFactory(opts) {
         `| Build after integration | ${commands.verify ? (green ? 'green' : 'red') : 'not-run (no verify command)'} | factory-run.json |`,
         `| Tests | ${commands.test ? (green ? 'pass' : 'fail') : 'not-run (no test command)'} | factory-run.json |`,
         `| Shared file entries | ${e.length ? 'applied in the integration step' : 'none'} | ${e.map((x) => x.file).join(', ') || '-'} |`, '',
-        '**Review:** final review', ''].join('\n'));
+        '**Review:** pending final review', ''].join('\n'));
       setStatus(t.data.id, green ? 'done' : 'blocked');
     }
     if (!green) throw new Blocked(`wave ${wave} does not build or pass its tests after ${caps.retries} corrections`);
@@ -240,6 +246,13 @@ async function runFactory(opts) {
           merged.push({ t, r, entries }); continue;
         }
         if (fs.existsSync(wt)) I.discard(project, wt);
+        // Nothing to integrate, but the ticket's objects are already on the branch (an earlier
+        // integration step wrote them): close it with that evidence instead of rebuilding it.
+        const present = r.status === 'empty' ? onBranch(t) : [];
+        if (present.length) {
+          result(t, `# ${t.data.id} result: ${t.data.title}\n\n**Status:** done · **Date:** ${new Date().toISOString()} · **Wave:** ${wave} · **Integration:** nothing to merge\n\nThe implementer changed nothing: the ticket's objects are already on aldc/${req} (${present.map((o) => `${o.type} ${o.id} in ${o.file}`).join(', ')}). The final review checks its criteria.\n\n**Review:** pending final review\n`);
+          setStatus(t.data.id, 'done'); note('satisfied', { ticket: t.data.id, objects: present }); continue;
+        }
         if (tries[t.data.id] > caps.retries) {
           result(t, `# ${t.data.id} result: ${t.data.title}\n\n**Status:** blocked · **Date:** ${new Date().toISOString()}\n\nIntegration failed ${tries[t.data.id]} times: ${(r.problems || r.conflicts || [r.status]).join('; ')}\n`);
           setStatus(t.data.id, 'blocked');

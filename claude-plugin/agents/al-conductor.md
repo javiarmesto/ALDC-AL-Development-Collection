@@ -113,7 +113,8 @@ Steps 1–4 are skipped when resuming (rule 12).
    **⛔ TDD ENFORCEMENT**: a ticket whose acceptance criteria call for tests and whose implementer returns code without tests is rejected: `I discard` its worktree, set it `ready`, and rebuild it with the explicit TDD instruction. **Zero tests = ticket FAILED.**
 3. **Integrate, one ticket at a time.** For each ticket of the wave, run `I ticket <req> T-NN --worktree <worktreePath>`:
    - `merged`: the ticket's files are committed on its branch and merged with `--no-ff` into `aldc/<req>`. The worktree is removed. `tickets/T-NN.integration.json` records the files, the object IDs and the worktree's compile-gate evidence.
-   - `refused` (an ID outside `object_ids`, or a shared file edited), `conflict` or `empty`: run `I discard <req> --worktree <worktreePath>` and set the ticket back to `ready`. Its next brief states the problem. On the second failure of the same ticket, set it `blocked`.
+   - `empty`, and the ticket's objects are already on `aldc/<req>` because an earlier integration step wrote them: run `I discard`, write its `T-NN.result.md` with that evidence and set it `done`. Do not rebuild it.
+   - `refused` (an ID outside `object_ids`, or a shared file edited), `conflict`, or any other `empty`: run `I discard <req> --worktree <worktreePath>` and set the ticket back to `ready`. Its next brief states the problem. On the second failure of the same ticket, set it `blocked`.
 4. **Integration step**, on `aldc/<req>` in the main checkout:
    - If any implementer listed *Shared File Entries*, launch one `aldc:al-implementer` (mode `phase`, **no** `isolation`). Its brief is those entries, verbatim, as its only objective.
    - Then do the build evidence on the main checkout (rule 5) and run the tests (rule 11). Tests run here, in series, because there is a single Business Central.

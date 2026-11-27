@@ -114,6 +114,31 @@ test('the retro proposes only: a tracked file it edits is put back, and a blocke
   assert.match(fs.readFileSync(path.join(dir, 'retro.md'), 'utf8'), /record the T-02 decision/);
 });
 
+test('an empty ticket whose objects are already on the branch is closed, not rebuilt; the cut refuses a permission-set-only ticket', async () => {
+  const { root, dir } = project();
+  const plans = '.github/plans/demo';
+  const s = script((c) => {
+    if (c.role === 'cutter') return { files: {
+      [`${plans}/tickets/criteria.md`]: '- AC-01: one\n- AC-02: two\n- AC-03: three\n',
+      [`${plans}/tickets/T-01.md`]: ticket('T-01'), [`${plans}/tickets/T-02.md`]: ticket('T-02'),
+      [`${plans}/tickets/T-03.md`]: ticket('T-03').replace('depends_on: []', 'depends_on: [T-01, T-02]'),
+    } };
+    // The integration step of wave 1 already writes T-03's object; its implementer then has nothing to do.
+    if (c.role === 'integrator') return { files: { [PERMS]: 'permissionset 50149 "Demo"\n{\n}\n', 'App/src/Late.Codeunit.al': 'codeunit 50120 "Late"\n{\n}\n' } };
+    if (c.role === 'implementer' && c.ticket === 'T-03') return { text: 'Nothing to change.' };
+    return null;
+  });
+  const { run, calls } = await factory(root, s);
+  assert.strictEqual(run.outcome, 'finished', run.reason);
+  assert.strictEqual(calls.filter((c) => c.ticket === 'T-03').length, 1, 'not rebuilt');
+  assert.deepStrictEqual(run.steps.find((x) => x.kind === 'satisfied').objects.map((o) => o.id), [50120]);
+  assert.match(fs.readFileSync(path.join(dir, 'tickets', 'T-03.result.md'), 'utf8'), /already on aldc\/demo \(codeunit 50120/);
+  assert.match(fs.readFileSync(path.join(dir, 'tickets', 'T-01.result.md'), 'utf8'), /\*\*Review:\*\* pending final review/);
+  // The validator refuses the cut that caused it: a ticket whose only objects are shared permission sets.
+  fs.appendFileSync(path.join(dir, 'tickets', 'T-03.md'), '\n## Objects\n\n| Type | ID | Name | New / extends |\n|---|---|---|---|\n| PermissionSet | 50121 | Demo | new |\n');
+  assert.match(T.validate(root, 'demo').problems.join('\n'), /T-03\.md: its only objects are permission sets in shared_files/);
+});
+
 test('a ticket refused at integration is discarded and rebuilt; it blocks after the retries', async () => {
   const { root } = project();
   const out = script((c) => (c.role === 'implementer' && c.ticket === 'T-02' && c.attempt === 1
