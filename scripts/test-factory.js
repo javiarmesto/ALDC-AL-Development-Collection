@@ -188,7 +188,7 @@ test('claude host: one claude -p per role, agent, budget, plugin dirs, and the p
     setImmediate(() => { child.stdout.emit('data', JSON.stringify({ result: 'done', total_cost_usd: 0.42, session_id: 's1', is_error: false })); child.emit('close', 0); });
     return child;
   };
-  const host = require('../tools/factory/hosts/claude').create({ spawn, model: 'sonnet', pluginDirs: ['/p/aldc', '/p/verify'] });
+  const host = require('../tools/factory/hosts/claude').create({ spawn, model: 'sonnet', pluginDirs: ['/p/aldc', '/p/verify'], mode: 'agent' });
   const res = await host.run({ role: 'implementer', agent: 'aldc:al-implementer', prompt: 'build T-01', cwd: '/repo/.claude/worktrees/x', project: '/repo', budget: 3, timeoutMs: 1000 });
   assert.deepStrictEqual([res.ok, res.cost, res.text, res.session], [true, 0.42, 'done', 's1']);
   const a = seen[0].args;
@@ -202,4 +202,10 @@ test('claude host: one claude -p per role, agent, budget, plugin dirs, and the p
   // The main checkout needs no --add-dir; a role with no agent runs a plain prompt.
   await host.run({ role: 'reporter', agent: null, prompt: 'report', cwd: '/repo', project: '/repo' });
   assert.ok(!seen[1].args.includes('--agent') && !seen[1].args.includes('--add-dir'));
+  // Default mode: the agent runs as a foreground subagent, so the plugin's subagent hooks apply.
+  const d = require('../tools/factory/hosts/claude').create({ spawn });
+  await d.run({ role: 'implementer', agent: 'aldc:al-implementer', prompt: 'build T-02', cwd: '/repo', project: '/repo' });
+  assert.ok(!seen[2].args.includes('--agent'));
+  assert.match(seen[2].args[1], /launch the subagent `aldc:al-implementer` in the foreground/);
+  assert.match(seen[2].args[1], /--- brief ---\nbuild T-02\n--- end of brief ---/);
 });

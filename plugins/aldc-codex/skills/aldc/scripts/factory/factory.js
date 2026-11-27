@@ -48,7 +48,7 @@ function gating(report) {
 // ── Prompts (host-neutral: the agent's own contract does the rest) ────────────────────
 const P = {
   researcher: (req, dir) => `Research for requirement ${req}. Read the approved spec ${path.join(dir, `${req}.spec.md`)}${fs.existsSync(path.join(dir, `${req}.architecture.md`)) ? ' and its architecture' : ''}. Return structured findings (AL objects, dependencies, event architecture with its Standard Flow, test project structure), not a plan.`,
-  cutter: (req) => `Run the ALDC tickets workflow for requirement ${req} in pre-approved mode: write tickets/criteria.md and the tickets, and loop on tickets.js validate until it passes. Record the approved-cut gate in decisions.md. Do not build anything.`,
+  cutter: (req) => `Run the ALDC tickets workflow for requirement ${req} (on Claude Code: /aldc:tickets ${req}) in pre-approved mode: write tickets/criteria.md and the tickets, and loop on tickets.js validate until it passes. Record the approved-cut gate in decisions.md. Do not build anything.`,
   implementer: (req, dir, ticket) => [
     `You build one ticket of requirement ${req}, in pre-approved mode. You run in a git worktree, in parallel with other tickets.`,
     `Use only the ticket's object_ids, do not edit its shared_files (list the entries you need under "### Shared File Entries"), and do not run git.`,

@@ -10,6 +10,11 @@
 //   pluginDirs  ALDC_FACTORY_PLUGIN_DIRS   path-delimited list passed as --plugin-dir (for evals)
 //   settings    ALDC_FACTORY_SETTINGS      JSON string or file passed as --settings
 //   bin         ALDC_FACTORY_CLAUDE        the claude executable (default: claude)
+//   mode        ALDC_FACTORY_AGENT_MODE    "delegate" (default) or "agent"
+// By default, a role with an agent runs as a foreground subagent of the subsession ("delegate").
+// The plugin's SubagentStart brief (AL rules, autonomy, Standard Flow) and the SubagentStop
+// compile gate then apply exactly as under the Conductor. "agent" makes the agent the main
+// thread instead (--agent): this is cheaper, but those two subagent hooks do not fire.
 // The permission mode is bypassPermissions: the factory runs unattended, the guard hook of
 // aldc-verify still denies merges, force pushes and pushes to the default branch.
 const { spawn } = require('child_process');
@@ -21,10 +26,17 @@ function create(options = {}) {
   const settings = options.settings || process.env.ALDC_FACTORY_SETTINGS || null;
   const bin = options.bin || process.env.ALDC_FACTORY_CLAUDE || 'claude';
   const spawnImpl = options.spawn || spawn;
+  const mode = options.mode || process.env.ALDC_FACTORY_AGENT_MODE || 'delegate';
+  const delegated = (call) => [
+    'Use the Agent tool once: launch the subagent `' + call.agent + '` in the foreground (run_in_background: false) with the brief between the markers, verbatim, and wait for it.',
+    'Do not do its work yourself. When it returns, answer with its final message verbatim, including every ### section and JSON block, and nothing else.',
+    '', '--- brief ---', call.prompt, '--- end of brief ---',
+  ].join('\n');
 
   function argsFor(call) {
-    const args = ['-p', call.prompt, '--model', model, '--output-format', 'json', '--permission-mode', 'bypassPermissions'];
-    if (call.agent) args.push('--agent', call.agent);
+    const prompt = call.agent && mode === 'delegate' ? delegated(call) : call.prompt;
+    const args = ['-p', prompt, '--model', model, '--output-format', 'json', '--permission-mode', 'bypassPermissions'];
+    if (call.agent && mode === 'agent') args.push('--agent', call.agent);
     if (call.budget) args.push('--max-budget-usd', String(Math.max(0.05, +call.budget.toFixed(2))));
     for (const d of pluginDirs) args.push('--plugin-dir', d);
     if (settings) args.push('--settings', settings);
@@ -35,7 +47,7 @@ function create(options = {}) {
 
   return {
     name: 'claude',
-    describe: () => ({ name: 'claude', model, subsessions: 'claude -p', pluginDirs }),
+    describe: () => ({ name: 'claude', model, mode, subsessions: 'claude -p', pluginDirs }),
     argsFor,
     run(call) {
       return new Promise((resolve) => {
