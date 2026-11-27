@@ -10,7 +10,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const TOOLS = {
-  'tools/tickets': ['lib.js', 'tickets.js', 'integrate.js'],
+  'tools/tickets': ['lib.js', 'tickets.js', 'integrate.js', 'trace.js'],
   'tools/factory': ['factory.js', 'crew.json', 'hosts/claude.js', 'hosts/fake.js'],
 };
 

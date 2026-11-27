@@ -154,3 +154,44 @@ test('each surface resolves plans.root from its own aldc.yaml, and a project ald
   fs.writeFileSync(path.join(project, 'aldc.yaml'), 'plans:\n  root: "work/plans"\n');
   assert.strictEqual(lib('.agents/plans').plansRoot(project), path.join(project, 'work', 'plans'));
 });
+
+// ── Requirement traceability (trace.js) ──────────────────────────────────────
+const trace = require(path.join(__dirname, '..', 'claude-plugin', 'tools', 'tickets', 'trace.js'));
+const POINTS = (rows) => '# Spec\n\n### Requirement points\n\n| REQ | What was asked | Source | Acceptance |\n| --- | --- | --- | --- |\n' + rows.map((r) => `| ${r.join(' | ')} |`).join('\n') + '\n';
+
+test('trace: a spec without Requirement points is not traceable and does not block the cut', () => {
+  const p = goodCut();
+  assert.strictEqual(trace.check(p.root, 'demo').traceable, false);
+  assert.strictEqual(tickets.validate(p.root, 'demo').ok, true);
+});
+
+test('trace: a requirement point with no criterion stops the cut; one named only in criteria.md counts', () => {
+  const p = goodCut();
+  const spec = path.join(p.root, '.claude', 'plans', 'demo', 'demo.spec.md');
+  fs.writeFileSync(spec, POINTS([['REQ-01', 'Email by default', 'issue #4', 'AC-01'], ['REQ-02', 'Rating note up to 100', 'DRF 3.2', ''], ['REQ-03', 'Vendor card', 'DRF 3.3', 'AC-09']]));
+  const v = tickets.validate(p.root, 'demo');
+  assert.strictEqual(v.ok, false);
+  assert.ok(v.problems.includes('trace: REQ-02 has no acceptance criterion: nothing will check that it was delivered'));
+  assert.ok(v.problems.includes('trace: REQ-03 names AC-09, which is not in tickets/criteria.md'));
+  // criteria.md can carry the link instead of the spec table.
+  fs.writeFileSync(spec, POINTS([['REQ-01', 'Email by default', 'issue #4', 'AC-01'], ['REQ-02', 'Rating note up to 100', 'DRF 3.2', '']]));
+  fs.writeFileSync(path.join(p.dir, 'criteria.md'), '- AC-01: email (REQ-01)\n- AC-02: note stored (REQ-02)\n- AC-03: unchanged behaviour\n');
+  const c = trace.check(p.root, 'demo');
+  assert.strictEqual(c.ok, true, c.problems.join('; '));
+  assert.deepStrictEqual(c.derived, ['AC-03']);
+});
+
+test('trace: the matrix gives one verdict per point from the review and the test evidence', () => {
+  const p = goodCut();
+  const plans = path.join(p.root, '.claude', 'plans', 'demo');
+  fs.writeFileSync(path.join(plans, 'demo.spec.md'), POINTS([['REQ-01', 'a', 's', 'AC-01'], ['REQ-02', 'b', 's', 'AC-02'], ['REQ-03', 'c', 's', 'AC-03']]));
+  fs.appendFileSync(path.join(p.dir, 'T-01.md'), '\n## Tests\n\n| Test | Criterion | Given / When / Then |\n|---|---|---|\n| EmailDefault | AC-01 | x |\n');
+  assert.strictEqual(trace.matrix(p.root, 'demo').rows[0].verdict, 'pending review');
+  fs.writeFileSync(path.join(plans, 'demo-review-final.json'), JSON.stringify({ review: { criteria: { declared: ['AC-01', 'AC-02', 'AC-03'], met: ['AC-01', 'AC-03'], unmet: ['AC-02'], 'not-evaluated': [] } } }));
+  let m = trace.matrix(p.root, 'demo');
+  assert.deepStrictEqual(m.rows.map((r) => r.verdict), ['met, not executed', 'unmet', 'met by review only']);
+  fs.writeFileSync(path.join(plans, 'factory-run.json'), JSON.stringify({ runs: [{ steps: [{ kind: 'test', result: 'pass' }] }] }));
+  m = trace.matrix(p.root, 'demo');
+  assert.strictEqual(m.rows[0].verdict, 'met, executed');
+  assert.match(fs.readFileSync(path.join(plans, 'traceability.md'), 'utf8'), /\| REQ-02 \| b \| s \| AC-02 \| unmet \| T-02 \| 0 \| \*\*unmet\*\* \|/);
+});

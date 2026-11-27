@@ -45,6 +45,11 @@ Use this template verbatim when writing `<plans.root>/<plan-name>/<plan-name>-co
 
 Write `not-run` with its reason for anything you did not execute. Never write "passing" for tests that did not run.
 
+**Requirement coverage:** (from `traceability.md`; omit when the spec has no Requirement points)
+| REQ | What was asked | Criteria | Verdict |
+|-----|----------------|----------|---------|
+| REQ-01 | {as asked} | {AC-01} | {met, executed / met, not executed / met by review only / not evaluated / unmet / not covered} |
+
 **Not verified:** {everything the client should not assume: tests not executed, behaviour not exercised in a real company, integrations not called, assumptions that were not checked}
 
 **Decisions taken without a human:** (from `decisions.md`; omit in `human` mode when every gate was approved by the user)

@@ -14,6 +14,11 @@ keep their own versions.
   - `tools/tickets/` and `tools/factory/` are canonical at the repository root and ship on every surface.
   - Measured on `follow-up-basics`: three consecutive runs from the approved spec to the reviewed branch, 8/8 checks each, $4.63–4.91 and 11.6–12.9 min per run.
 - **Retro on close.** Every run that launched a role ends with a retro role, finished or blocked. It writes `retro.md` with proposals for rules, skills, `crew.json` and `memory.md`, and never applies them: the runner puts back any tracked file it changed.
+- **Requirement traceability.** The spec template has a *Requirement points* table: each thing the requester asked for (`REQ-NN`, with its source in the issue, DRF or requirement document) names the acceptance criteria that prove it.
+  - `tools/tickets/trace.js check` runs inside `tickets.js validate`: a requirement point with no criterion stops the cut.
+  - `trace.js matrix` writes `traceability.md` at the end, with one verdict per point from the final review and the test evidence: met and executed, met but not executed, met by review only, not evaluated, unmet or not covered.
+  - The factory blocks on an unmet or uncovered point; the Conductor sends it to one correction or to `blocked.md`. The final report carries the table under *Requirement coverage*.
+  - Specs without the table are reported as not traceable and are not blocked.
 - **Trigger by issue label.** `templates/github/aldc-factory.yml`: labelling an issue `aldc-factory` runs the factory for the issue's `req:` line on a GitHub-hosted runner and opens a draft PR from `aldc/<req>`. It installs the Claude Code CLI and the plugins itself rather than wrapping the runner in `claude-code-action`. Not yet run on GitHub.
 
 ### Removed

@@ -34,6 +34,7 @@ Write `<req>/tickets/T-NN.md` from `${CLAUDE_PROJECT_DIR}/claude-plugin/docs/tem
 - **IDs.** Reserve each ticket a range inside an `app.json` `idRanges` entry, with no overlap with any other ticket. Use the spec's IDs when it gives them.
   - Give the ticket a range in **every** app it touches, test app included. For example `[71200-71209, 71300-71309]`.
   - At integration, an object whose ID falls outside the ticket's ranges is refused.
+- **Criteria name their requirement.** In `tickets/criteria.md`, write each AC line with the requirement points it proves, e.g. `- AC-03: ... (REQ-02)`. `tickets.js validate` runs `trace.js check`: a requirement point of the spec with no criterion stops the cut.
 - **Shared files.** List under `shared_files` the permission sets, `app.json` and XLF files that several tickets touch, with their paths.
   - Tickets built in parallel never edit these files. Each ticket reports the entries it needs, and the integration step applies them.
   - A shared file has one writer, the integration step. Never cut a ticket whose only deliverable is a shared file, such as "create the permission set": give its criteria to the tickets that need those entries. `tickets.js validate` refuses a ticket whose only objects are permission sets in `shared_files`.

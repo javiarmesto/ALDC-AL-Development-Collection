@@ -17,6 +17,7 @@ const { spawnSync } = require('child_process');
 const T = require('../tickets/tickets');
 const I = require('../tickets/integrate');
 const { plansRoot } = require('../tickets/lib');
+const TR = require('../tickets/trace');
 
 class Blocked extends Error {}
 
@@ -66,7 +67,7 @@ const P = {
     `Changed files:`, ...files.map((f) => `- ${f}`), '', `Criteria to check (tickets/criteria.md):`, criteria || '(missing)',
     '', `Plan files: ${dir}. Return the Review-Report JSON block.`,
   ].join('\n'),
-  reporter: (req, dir) => `This requirement was built by the ALDC factory runner (tools/factory/factory.js), not by the Conductor: attribute each step to the runner and the crew role that ran it, as factory-run.json records. Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json and the review files in ${dir}. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
+  reporter: (req, dir) => `This requirement was built by the ALDC factory runner (tools/factory/factory.js), not by the Conductor: attribute each step to the runner and the crew role that ran it, as factory-run.json records. Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json, the review files and traceability.md (when present: copy its table under Requirement coverage) in ${dir}. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
   retro: (req, dir, outcome) => [
     `Retrospective of the factory run of requirement ${req} (outcome: ${outcome}). Read ${path.join(dir, 'factory-run.json')} (the last run), blocked.md if present, the tickets/T-NN.result.md files and the review files in ${dir}.`,
     `Write ${path.join(dir, 'retro.md')} (replace it if it exists) with: what cost the most and why; retries, refusals and corrections with their cause; and concrete proposals to change rules, skills, crew.json or memory.md, each with the evidence that supports it.`,
@@ -284,6 +285,13 @@ async function runFactory(opts) {
       const c = shell('certified', commands.certified.replaceAll('{base}', base || 'main'));
       note('certified', { result: c.ok ? 'certified' : 'not-certified' });
     } else note('certified', { result: 'not-run', reason: 'no certified command for this host' });
+    // 5b. Requirement traceability: one verdict per requirement point (trace.js, no model).
+    const tm = TR.matrix(project, req);
+    if (tm.traceable) {
+      note('trace', { counts: tm.counts, execution: tm.execution });
+      const unmet = tm.rows.filter((r) => ['unmet', 'not covered'].includes(r.verdict)).map((r) => r.req);
+      if (unmet.length) throw new Blocked(`requirement points not delivered: ${unmet.join(', ')} (traceability.md)`);
+    } else note('trace', { result: 'not-traceable', reason: tm.note });
     // 6. Final report, written by a role from the files.
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) await step('reporter', { prompt: P.reporter(req, dir) });
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) throw new Blocked('the reporter wrote no final report');

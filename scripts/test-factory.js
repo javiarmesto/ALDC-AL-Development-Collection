@@ -139,6 +139,22 @@ test('an empty ticket whose objects are already on the branch is closed, not reb
   assert.match(T.validate(root, 'demo').problems.join('\n'), /T-03\.md: its only objects are permission sets in shared_files/);
 });
 
+test('requirement traceability: the run writes traceability.md and blocks on a requirement point the review finds unmet', async () => {
+  const { root, dir } = project();
+  fs.appendFileSync(path.join(dir, 'demo.spec.md'), '\n### Requirement points\n\n| REQ | What was asked | Source | Acceptance |\n| --- | --- | --- | --- |\n| REQ-01 | one | issue #1 | AC-01 |\n| REQ-02 | two | issue #1 | AC-02 |\n| REQ-03 | three | issue #1 | AC-03 |\n');
+  const review = (unmet) => `### Review-Report (JSON)\n\n\`\`\`json\n${JSON.stringify({ review: { verdict: 'APPROVED', security: {}, criteria: { declared: ['AC-01', 'AC-02', 'AC-03'], met: ['AC-01', 'AC-03', ...(unmet ? [] : ['AC-02'])], unmet: unmet ? ['AC-02'] : [], 'not-evaluated': [] } }, findings: [] })}\n\`\`\`\n`;
+  const blocked = await factory(root, script((c) => (c.role === 'spec-reviewer' ? { text: review(true) } : null)));
+  assert.strictEqual(blocked.run.outcome, 'blocked');
+  assert.match(blocked.run.reason, /requirement points not delivered: REQ-02/);
+  assert.match(fs.readFileSync(path.join(dir, 'traceability.md'), 'utf8'), /\| REQ-02 \| two \|.*\*\*unmet\*\*/);
+  const { root: r2, dir: d2 } = project();
+  fs.appendFileSync(path.join(d2, 'demo.spec.md'), '\n### Requirement points\n\n| REQ | What was asked | Source | Acceptance |\n| --- | --- | --- | --- |\n| REQ-01 | one | issue #1 | AC-01, AC-02, AC-03 |\n');
+  const ok = await factory(r2, script((c) => (c.role === 'spec-reviewer' ? { text: review(false) } : null)));
+  assert.strictEqual(ok.run.outcome, 'finished', ok.run.reason);
+  assert.deepStrictEqual(ok.run.steps.find((x) => x.kind === 'trace').counts, { 'met by review only': 1 });
+  assert.match(ok.calls.find((c) => c.role === 'reporter').prompt, /traceability\.md/);
+});
+
 test('a ticket refused at integration is discarded and rebuilt; it blocks after the retries', async () => {
   const { root } = project();
   const out = script((c) => (c.role === 'implementer' && c.ticket === 'T-02' && c.attempt === 1

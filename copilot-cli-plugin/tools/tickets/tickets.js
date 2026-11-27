@@ -170,7 +170,10 @@ function validate(project, req) {
     for (const c of criteria) if (!cited.has(c)) problems.push(`${c} is closed by no ticket`);
     for (const t of tickets) for (const a of t.data.acceptance || []) if (!criteria.includes(a.toUpperCase())) problems.push(`${t.name}: cites ${a}, which is not in criteria.md`);
   }
-  return { ok: !problems.length, problems, tickets: tickets.length };
+  // Requirement traceability: every requirement point of the spec has a criterion (trace.js).
+  const trace = require('./trace').check(project, req);
+  for (const p of trace.problems) problems.push(`trace: ${p}`);
+  return { ok: !problems.length, problems, tickets: tickets.length, traceable: trace.traceable };
 }
 
 function summary(project, req) {
@@ -248,5 +251,6 @@ function main(argv) {
   } catch (e) { console.error(`tickets: ${e.message}`); return 3; }
 }
 
-if (require.main === module) process.exitCode = main(process.argv);
+// Exports first: trace.js requires this module while it runs as a program.
 module.exports = { parseFrontmatter, parseRanges, validate, summary, wave, setStatus, plansRoot, ticketsDir, loadTickets, main };
+if (require.main === module) process.exitCode = main(process.argv);
