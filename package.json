@@ -58,6 +58,8 @@
     "tools/bc-agents/",
     "tools/bcquality/",
     "tools/claude-hooks/",
+    "tools/tickets/",
+    "tools/factory/",
     "docs/",
     "aldc.yaml",
     "aldc.code-workspace",
