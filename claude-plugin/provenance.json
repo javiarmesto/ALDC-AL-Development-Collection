@@ -226,10 +226,10 @@
     "tools/context-doctor/README.md": "1bb4fe5d33b20ba50e9c06461697e41709d31361077787773a84740aabe7b264",
     "tools/context-doctor/aldc_context_doctor.py": "2c16a78462f29fcbabd0770111a615087a9de9f3fb3570f77984353e91c030cb",
     "tools/factory/crew.json": "2cbbc86fea5cccf86a423750f24c010d04d45e009547d5f2e894f5195d7eeb93",
-    "tools/factory/factory.js": "c71c9e02226a00b6383b49eb3f240fe09422bc8927a1516580d4c7b5c2049813",
+    "tools/factory/factory.js": "ec8786a0b4660cb626d71e0788c3c1d9746da839b0d2c51f607b7c3b4ad3f7f8",
     "tools/factory/hosts/claude.js": "369f6b22b7139aae9053d9b67fa97506e09e9d8bd2e781a63baccf23563fd7cf",
     "tools/factory/hosts/fake.js": "16e7c900427f37339613b36cae1d996562ab4d6c3d3e164c4a8ebbae6559349f",
-    "tools/tickets/integrate.js": "2c243143922ae70369caa6dc96cbd2302f8ad61308f2c502489f96d0eeefb511",
+    "tools/tickets/integrate.js": "c46ec1748d6765b4755771a959fd25e0decd600e81c52a438b2aec09b58e80cf",
     "tools/tickets/lib.js": "82c532b6f3f725fa28d8d1b252750aea940ea3c37b5821edf8b132df51f316a8",
     "tools/tickets/tickets.js": "9ea08d9dc530f14f8c8937c47a8c04c3bc08fe178859efb8a1e53bc19ace1d8f"
   }

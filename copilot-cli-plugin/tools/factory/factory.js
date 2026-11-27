@@ -208,7 +208,10 @@ async function runFactory(opts) {
       // Integrate one at a time.
       const merged = [];
       for (const { t, wt, res } of outs) {
-        const r = res.ok ? I.integrateTicket(project, req, t.data.id, wt) : { status: 'failed', problems: [`the implementer exited ${res.exit}`] };
+        let r;
+        try { r = res.ok ? I.integrateTicket(project, req, t.data.id, wt) : { status: 'failed', problems: [`the implementer exited ${res.exit}`] }; }
+        catch (e) { r = { status: 'failed', problems: [`integrate.js: ${e.message}`] }; }   // a tool failure costs this ticket a try, not the run
+        if (r.leftover) note('leftover', { ticket: t.data.id, worktree: r.leftover });
         note('integrate', { ticket: t.data.id, status: r.status, problems: r.problems, conflicts: r.conflicts });
         if (r.status === 'merged') {
           const entries = sharedEntries(res.text);

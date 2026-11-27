@@ -123,11 +123,27 @@ function check(worktree, ticket, files) {
   return { problems, objects };
 }
 
+/** Remove a worktree and its branch. On Windows a process that just left the folder can still
+ * hold a file for a moment (EPERM): retry, and if the folder still stays, report it as left over
+ * instead of failing the integration (git forgets it either way; cleanup removes it later). */
 function removeWorktree(project, worktree, branch) {
   git(project, ['worktree', 'remove', '--force', worktree], { allowFail: true });
-  if (fs.existsSync(worktree)) fs.rmSync(worktree, { recursive: true, force: true });
+  let leftover = null;
+  if (fs.existsSync(worktree)) {
+    try { fs.rmSync(worktree, { recursive: true, force: true, maxRetries: 10, retryDelay: 400 }); }
+    catch (e) { leftover = `${posix(worktree)} (${e.code || e.message})`; }
+  }
   git(project, ['worktree', 'prune'], { allowFail: true });
   if (branch && !branch.startsWith('aldc/')) git(project, ['branch', '-D', branch], { allowFail: true });
+  return leftover;
+}
+
+/** The compile gate's own record inside a worktree (aldc-verify state), kept before the worktree goes. */
+function gateEvidence(worktree) {
+  try {
+    const s = JSON.parse(fs.readFileSync(path.join(worktree, '.claude', '.aldc-verify', 'state.json'), 'utf8'));
+    return { lastGreen: !!s.lastGreen, history: (s.history || []).slice(-8) };
+  } catch { return null; }
 }
 
 function findTicket(project, req, id) {
@@ -172,11 +188,12 @@ function integrateTicket(project, req, id, worktree) {
     return save({ status: 'conflict', commit, conflicts, detail: (merge.stderr || merge.stdout || '').trim().slice(0, 2000), files: files.map((f) => f.file) });
   }
   const mergeCommit = out(git(project, ['rev-parse', 'HEAD']));
-  removeWorktree(project, worktree, wtBranch);
+  const gate = gateEvidence(worktree);
+  const leftover = removeWorktree(project, worktree, wtBranch);
   const state = readState(project, req) || { req, branch, merged: [] };
   state.merged = [...(state.merged || []).filter((m) => m.ticket !== ticket.data.id), { ticket: ticket.data.id, commit, merge: mergeCommit }];
   writeState(project, req, state);
-  return save({ status: 'merged', commit, merge: mergeCommit, files: toCheck.map((f) => f.file), objects });
+  return save({ status: 'merged', commit, merge: mergeCommit, files: toCheck.map((f) => f.file), objects, gate, ...(leftover ? { leftover } : {}) });
 }
 
 /** Remove a worktree and its branch without merging. */
