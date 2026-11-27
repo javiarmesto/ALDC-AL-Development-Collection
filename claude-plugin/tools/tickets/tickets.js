@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
-// aldc-claude 5.5.0 (factory phase 3): deterministic ticket graph for a requirement.
+// ALDC 5.5.0 (factory phase 3): deterministic ticket graph for a requirement. Host-neutral:
+// the same file ships on every surface (tools/tickets/lib.js resolves plans.root).
 // Tickets live in <plans.root>/<req>/tickets/T-NN.md with a small YAML frontmatter
 // (docs/templates/ticket-template.md). The model cuts the spec into tickets; this tool,
 // not the model, checks the cut and decides what runs next, so any new session can resume
@@ -19,7 +20,7 @@ const MODES = ['afk', 'hitl'];
 const REQUIRED = ['id', 'title', 'depends_on', 'mode', 'object_ids', 'acceptance', 'status'];
 const LISTS = ['depends_on', 'acceptance', 'bcq', 'shared_files', 'object_ids'];
 
-const { read, plansRoot, parallel } = require('../../hooks/aldc-runtime');
+const { read, plansRoot, parallel } = require('./lib');
 
 const ticketsDir = (project, req) => path.join(plansRoot(project), req, 'tickets');
 

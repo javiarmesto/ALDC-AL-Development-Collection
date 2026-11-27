@@ -146,6 +146,20 @@ Without git, tickets are built one at a time in the checkout.
 
 When a session stops partway, the next one is told at start which requirement is unfinished. Running `/aldc:conduct <req>` again picks up from the files: it does not repeat the research, the cut or tickets already done. Plans started by phases in 5.4.0 still finish by phases.
 
+## Unattended factory (5.5.0, phase 5, preview)
+
+`tools/factory/factory.js <req>` takes an approved spec to an integrated, reviewed branch with no human in between. It is a dependency-free Node runner that decides the order and enforces the caps. It never calls a model itself.
+
+- **Roles as subsessions.** Every piece of judgement is one subsession of a crew role, run through a host adapter (`tools/factory/hosts/`). The roles are researcher, ticket cutter, one implementer per ticket in its own worktree, integrator, spec reviewer and reporter. With the `claude` adapter, each role is one `claude -p` run, with the plugin's hooks active inside it.
+- **Caps outside the model.** The run has a total budget, a time limit and retries per ticket, set in `crew.json` or with `--budget`, `--hours` and `--parallel`. When a cap is hit, the runner writes `blocked.md` and stops.
+- **Log.** `factory-run.json` records every step with its cost.
+- **Resuming.** Running the factory again resumes from the files.
+- **Other hosts.** The `fake` adapter runs the whole flow in tests, with no model. The copilot and codex adapters share the same contract and come later.
+
+```
+node tools/factory/factory.js <req> --project . --host claude --verify "<compile command>"
+```
+
 ## Renamed in 5.4.0
 
 Overlapping agents were merged; each old name stays as a deprecated alias until

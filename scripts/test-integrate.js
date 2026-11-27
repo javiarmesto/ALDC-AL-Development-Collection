@@ -1,5 +1,5 @@
 'use strict';
-// Tests for claude-plugin/tools/tickets/integrate.js (factory phase 4). Real git, no model calls.
+// Tests for tools/tickets/integrate.js, run through its Claude Code copy (factory phase 4). Real git, no model calls.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -144,7 +144,12 @@ test('cleanup removes agent worktrees a dead session left; discard removes one',
   assert.strictEqual(integrate.status(root, 'demo').leftover.length, 2);
   const d = JSON.parse(run(root, 'discard', 'demo', '--worktree', a).stdout);
   assert.strictEqual(d.status, 'discarded'); assert.ok(!fs.existsSync(a));
-  assert.strictEqual(integrate.cleanup(root).removed.length, 1);
+  // A folder git no longer knows (a removal that hit a locked file) is swept too.
+  fs.mkdirSync(path.join(root, '.claude', 'worktrees', 'orphan', 'App'), { recursive: true });
+  const c = integrate.cleanup(root);
+  assert.strictEqual(c.removed.length, 1);
+  assert.ok(c.orphans.some((o) => o.endsWith('/orphan')));
+  assert.ok(!fs.existsSync(path.join(root, '.claude', 'worktrees', 'orphan')));
   assert.deepStrictEqual(integrate.status(root, 'demo').leftover, []);
   assert.strictEqual(git(root, 'branch', '--list', 'worktree-agent-*'), '');
 });

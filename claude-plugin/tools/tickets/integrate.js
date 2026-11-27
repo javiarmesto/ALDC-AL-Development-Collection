@@ -123,11 +123,27 @@ function check(worktree, ticket, files) {
   return { problems, objects };
 }
 
+/** Remove a worktree and its branch. On Windows a process that just left the folder can still
+ * hold a file for a moment (EPERM): retry, and if the folder still stays, report it as left over
+ * instead of failing the integration (git forgets it either way; cleanup removes it later). */
 function removeWorktree(project, worktree, branch) {
   git(project, ['worktree', 'remove', '--force', worktree], { allowFail: true });
-  if (fs.existsSync(worktree)) fs.rmSync(worktree, { recursive: true, force: true });
+  let leftover = null;
+  if (fs.existsSync(worktree)) {
+    try { fs.rmSync(worktree, { recursive: true, force: true, maxRetries: 10, retryDelay: 400 }); }
+    catch (e) { leftover = `${posix(worktree)} (${e.code || e.message})`; }
+  }
   git(project, ['worktree', 'prune'], { allowFail: true });
   if (branch && !branch.startsWith('aldc/')) git(project, ['branch', '-D', branch], { allowFail: true });
+  return leftover;
+}
+
+/** The compile gate's own record inside a worktree (aldc-verify state), kept before the worktree goes. */
+function gateEvidence(worktree) {
+  try {
+    const s = JSON.parse(fs.readFileSync(path.join(worktree, '.claude', '.aldc-verify', 'state.json'), 'utf8'));
+    return { lastGreen: !!s.lastGreen, history: (s.history || []).slice(-8) };
+  } catch { return null; }
 }
 
 function findTicket(project, req, id) {
@@ -159,7 +175,10 @@ function integrateTicket(project, req, id, worktree) {
   // Commit on the worktree branch, file by file (never add -A).
   if (files.length) {
     for (const { file, deleted } of files) git(worktree, deleted ? ['rm', '--cached', '--quiet', '--', file] : ['add', '--', file]);
-    git(worktree, [...identity(worktree), 'commit', '--quiet', '-m', `${ticket.data.id}: ${ticket.data.title}`]);
+    // A file rewritten with identical content (line endings only, under autocrlf) stages nothing.
+    const staged = git(worktree, ['diff', '--cached', '--quiet'], { allowFail: true }).status !== 0;
+    if (staged) git(worktree, [...identity(worktree), 'commit', '--quiet', '-m', `${ticket.data.id}: ${ticket.data.title}`]);
+    else if (!committed.length) return save({ status: 'empty', problems: ['the worktree changes nothing once staged (identical content)'] });
   }
   const commit = out(git(worktree, ['rev-parse', 'HEAD']));
   const merge = git(project, [...identity(project), 'merge', '--no-ff', '--no-edit', '-m', `Merge ${ticket.data.id}: ${ticket.data.title}`, commit], { allowFail: true });
@@ -169,11 +188,20 @@ function integrateTicket(project, req, id, worktree) {
     return save({ status: 'conflict', commit, conflicts, detail: (merge.stderr || merge.stdout || '').trim().slice(0, 2000), files: files.map((f) => f.file) });
   }
   const mergeCommit = out(git(project, ['rev-parse', 'HEAD']));
-  removeWorktree(project, worktree, wtBranch);
+  const gate = gateEvidence(worktree);
+  const leftover = removeWorktree(project, worktree, wtBranch);
   const state = readState(project, req) || { req, branch, merged: [] };
   state.merged = [...(state.merged || []).filter((m) => m.ticket !== ticket.data.id), { ticket: ticket.data.id, commit, merge: mergeCommit }];
   writeState(project, req, state);
-  return save({ status: 'merged', commit, merge: mergeCommit, files: toCheck.map((f) => f.file), objects });
+  return save({ status: 'merged', commit, merge: mergeCommit, files: toCheck.map((f) => f.file), objects, gate, ...(leftover ? { leftover } : {}) });
+}
+
+/** Remove a worktree and its branch without merging. */
+function discard(project, worktree) {
+  const wt = path.resolve(project, worktree);
+  const br = fs.existsSync(wt) ? currentBranch(wt) : null;
+  removeWorktree(project, wt, br);
+  return { status: 'discarded', worktree: posix(wt), branch: br };
 }
 
 function commitIntegration(project, req, message) {
@@ -203,7 +231,14 @@ function agentWorktrees(project) {
 function cleanup(project) {
   const removed = agentWorktrees(project);
   for (const w of removed) removeWorktree(project, w.worktree, w.branch);
-  return { status: 'clean', removed };
+  // Folders git already forgot: a removal that hit a locked file on Windows left them behind.
+  const root = path.join(project, '.claude', 'worktrees');
+  const orphans = [];
+  for (const name of fs.existsSync(root) ? fs.readdirSync(root) : []) {
+    const dir = path.join(root, name);
+    try { fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); orphans.push(posix(dir)); } catch { /* still locked: next cleanup */ }
+  }
+  return { status: 'clean', removed, orphans };
 }
 
 function status(project, req) {
@@ -225,10 +260,7 @@ function main(argv) {
     else if (cmd === 'ticket') r = integrateTicket(project, req, id, worktree);
     else if (cmd === 'discard') {
       if (!worktree) throw new Error('--worktree <path> is required');
-      const wt = path.resolve(project, worktree);
-      const br = fs.existsSync(wt) ? currentBranch(wt) : null;
-      removeWorktree(project, wt, br);
-      r = { status: 'discarded', worktree: posix(wt), branch: br };
+      r = discard(project, worktree);
     } else if (cmd === 'commit') r = commitIntegration(project, req, message);
     else if (cmd === 'cleanup') r = cleanup(project);
     else if (cmd === 'status') r = status(project, req);
@@ -239,4 +271,4 @@ function main(argv) {
 }
 
 if (require.main === module) process.exitCode = main(process.argv);
-module.exports = { prepare, integrateTicket, commitIntegration, cleanup, status, objectsIn, matchesShared, changedFiles, agentWorktrees, main };
+module.exports = { prepare, integrateTicket, discard, commitIntegration, cleanup, status, objectsIn, matchesShared, changedFiles, agentWorktrees, main };

@@ -1,5 +1,5 @@
 'use strict';
-// Tests for claude-plugin/tools/tickets/tickets.js (factory phase 3). No model calls.
+// Tests for tools/tickets/tickets.js, run through its Claude Code copy (.claude/plans) (factory phase 3). No model calls.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -135,4 +135,22 @@ test('CLI: exit codes and the resume summary', () => {
   ticket(p.dir, 'T-04', { object_ids: '[50100-50101]' });
   assert.strictEqual(run('validate', 'demo').status, 1);
   assert.strictEqual(run('bogus', 'demo').status, 3);
+});
+
+test('each surface resolves plans.root from its own aldc.yaml, and a project aldc.yaml wins', () => {
+  const lib = (surface) => {
+    // A copy of lib.js under a fake surface root with that surface's aldc.yaml.
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-surface-'));
+    if (surface) fs.writeFileSync(path.join(root, 'aldc.yaml'), `plans:\n  root: "${surface}"\n`);
+    const dir = path.join(root, 'skills', 'aldc', 'scripts', 'tickets');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.copyFileSync(path.join(__dirname, '..', 'tools', 'tickets', 'lib.js'), path.join(dir, 'lib.js'));
+    return require(path.join(dir, 'lib.js'));
+  };
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'aldc-project-'));
+  assert.strictEqual(lib('.agents/plans').plansRoot(project), path.join(project, '.agents', 'plans'));
+  assert.strictEqual(require(path.join(__dirname, '..', 'claude-plugin', 'tools', 'tickets', 'lib.js')).plansRoot(project), path.join(project, '.claude', 'plans'));
+  assert.strictEqual(require(path.join(__dirname, '..', 'tools', 'tickets', 'lib.js')).plansRoot(project), path.join(project, '.github', 'plans'));
+  fs.writeFileSync(path.join(project, 'aldc.yaml'), 'plans:\n  root: "work/plans"\n');
+  assert.strictEqual(lib('.agents/plans').plansRoot(project), path.join(project, 'work', 'plans'));
 });
