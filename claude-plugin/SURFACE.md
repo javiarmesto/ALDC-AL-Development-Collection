@@ -12,3 +12,6 @@ regenerated from the Copilot contracts by `scripts/sync-plugin-support.js`.
   (`agents/*.agent.md`, `instructions/`, `skills/`) over time.
 - The optional `aldc-extras` plugin (`claude-plugin-extras/`, 5.4.0) is maintained the same way;
   the relock script and the Claude surface tests cover both plugins.
+- `tools/tickets/` (5.5.0) is the exception: its host-neutral `lib.js`, `tickets.js` and `integrate.js`
+  are canonical under the repository root `tools/tickets/` and copied in verbatim by
+  `node scripts/sync-claude-tools.js` (`--check` runs in `npm test`). Edit the root copy, never this one.

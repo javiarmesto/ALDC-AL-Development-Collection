@@ -1,5 +1,5 @@
 'use strict';
-// Tests for claude-plugin/tools/tickets/integrate.js (factory phase 4). Real git, no model calls.
+// Tests for tools/tickets/integrate.js, run through its Claude Code copy (factory phase 4). Real git, no model calls.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
