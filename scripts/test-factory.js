@@ -53,6 +53,7 @@ function script(tweak = () => null) {
       case 'integrator': return { cost: 0.2, files: { [PERMS]: `permissionset 50149 "Demo"\n{\n    // ${call.prompt.split('\n').filter((l) => l.startsWith('- ')).length} entries\n}\n` } };
       case 'spec-reviewer': return { cost: 0.4, text: REVIEW() };
       case 'reporter': return { cost: 0.1, files: { [`${plans}/demo-complete.md`]: '# Done\n' } };
+      case 'retro': return { files: { [`${plans}/retro.md`]: '# Retro\n\n- Proposal: none.\n' } };
       default: return {};
     }
   };
@@ -64,7 +65,7 @@ test('from an approved spec to a reviewed branch: research, cut, one parallel wa
   const { root, dir } = project();
   const { run, calls } = await factory(root, script());
   assert.strictEqual(run.outcome, 'finished', run.reason);
-  assert.deepStrictEqual(calls.map((c) => c.role).filter((r, i, a) => a.indexOf(r) === i), ['researcher', 'cutter', 'implementer', 'integrator', 'spec-reviewer', 'reporter']);
+  assert.deepStrictEqual(calls.map((c) => c.role).filter((r, i, a) => a.indexOf(r) === i), ['researcher', 'cutter', 'implementer', 'integrator', 'spec-reviewer', 'reporter', 'retro']);
   // The three implementers ran at the same time, each in its own worktree.
   const impl = calls.filter((c) => c.role === 'implementer');
   assert.strictEqual(impl.length, 3);
@@ -86,6 +87,31 @@ test('from an approved spec to a reviewed branch: research, cut, one parallel wa
   assert.strictEqual(log.runs.at(-1).outcome, 'finished');
   assert.strictEqual(log.runs.at(-1).cost, 2.7);
   assert.ok(log.runs.at(-1).steps.some((s) => s.kind === 'certified' && s.result === 'not-run'));
+  // The retro ran last, after the outcome was saved, and wrote its proposals.
+  const last = log.runs.at(-1).steps.at(-1);
+  assert.strictEqual(last.kind, 'retro');
+  assert.strictEqual(last.result, 'written');
+  assert.ok(fs.existsSync(path.join(dir, 'retro.md')));
+  assert.match(calls.find((c) => c.role === 'reporter').prompt, /not by the Conductor/);
+});
+
+test('the retro proposes only: a tracked file it edits is put back, and a blocked run gets one too', async () => {
+  const { root, dir } = project();
+  const s = script((c) => {
+    if (c.role === 'cutter') return { files: {
+      '.github/plans/demo/tickets/criteria.md': '- AC-01: one\n- AC-02: two\n- AC-03: three\n',
+      '.github/plans/demo/tickets/T-01.md': ticket('T-01'), '.github/plans/demo/tickets/T-02.md': ticket('T-02', 'hitl'), '.github/plans/demo/tickets/T-03.md': ticket('T-03'),
+    } };
+    if (c.role === 'retro') { assert.match(c.prompt, /outcome: blocked/); return { files: { 'App/app.json': '{"tampered":true}' }, text: 'Proposal: record the T-02 decision earlier.' }; }
+    return null;
+  });
+  const { run } = await factory(root, s);
+  assert.strictEqual(run.outcome, 'blocked');
+  const r = run.steps.find((x) => x.kind === 'retro');
+  assert.strictEqual(r.result, 'written');
+  assert.deepStrictEqual(r.reverted, ['App/app.json']);
+  assert.match(fs.readFileSync(path.join(root, 'App', 'app.json'), 'utf8'), /idRanges/);
+  assert.match(fs.readFileSync(path.join(dir, 'retro.md'), 'utf8'), /record the T-02 decision/);
 });
 
 test('a ticket refused at integration is discarded and rebuilt; it blocks after the retries', async () => {

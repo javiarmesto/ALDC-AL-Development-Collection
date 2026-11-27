@@ -66,7 +66,12 @@ const P = {
     `Changed files:`, ...files.map((f) => `- ${f}`), '', `Criteria to check (tickets/criteria.md):`, criteria || '(missing)',
     '', `Plan files: ${dir}. Return the Review-Report JSON block.`,
   ].join('\n'),
-  reporter: (req, dir) => `Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json and the review files in ${dir}. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
+  reporter: (req, dir) => `This requirement was built by the ALDC factory runner (tools/factory/factory.js), not by the Conductor: attribute each step to the runner and the crew role that ran it, as factory-run.json records. Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json and the review files in ${dir}. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
+  retro: (req, dir, outcome) => [
+    `Retrospective of the factory run of requirement ${req} (outcome: ${outcome}). Read ${path.join(dir, 'factory-run.json')} (the last run), blocked.md if present, the tickets/T-NN.result.md files and the review files in ${dir}.`,
+    `Write ${path.join(dir, 'retro.md')} (replace it if it exists) with: what cost the most and why; retries, refusals and corrections with their cause; and concrete proposals to change rules, skills, crew.json or memory.md, each with the evidence that supports it.`,
+    'Propose only: do not edit any other file, and do not run git.',
+  ].join('\n'),
 };
 
 // ── The run ───────────────────────────────────────────────────────────────────────
@@ -145,6 +150,22 @@ async function runFactory(opts) {
       setStatus(t.data.id, green ? 'done' : 'blocked');
     }
     if (!green) throw new Blocked(`wave ${wave} does not build or pass its tests after ${caps.retries} corrections`);
+  }
+
+  /** Retro on close: proposals in retro.md, never applied. It never changes the outcome. */
+  async function retro() {
+    if (!run.steps.some((x) => x.kind === 'role')) return note('retro', { result: 'not-run', reason: 'no role ran in this run' });
+    const porcelain = () => (spawnSync('git', ['status', '--porcelain'], { cwd: project, encoding: 'utf8' }).stdout || '').split(/\r?\n/).filter(Boolean);
+    const before = new Set(porcelain());
+    const file = path.join(dir, 'retro.md');
+    try {
+      const res = await step('retro', { prompt: P.retro(req, dir, run.outcome) });
+      if (!fs.existsSync(file) && res.text) fs.writeFileSync(file, `# Retro: ${req}\n\n${run.id}\n\n${res.text}\n`);
+      // A retro proposes; anything it changed in tracked files is put back.
+      const touched = porcelain().filter((l) => !before.has(l) && /^ ?M /.test(l)).map((l) => l.slice(3));
+      for (const t of touched) spawnSync('git', ['checkout', '--', t], { cwd: project });
+      note('retro', { result: fs.existsSync(file) ? 'written' : 'missing', ...(touched.length ? { reverted: touched } : {}) });
+    } catch (e) { note('retro', { result: 'not-run', reason: e.message }); }
   }
 
   try {
@@ -253,13 +274,16 @@ async function runFactory(opts) {
     // 6. Final report, written by a role from the files.
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) await step('reporter', { prompt: P.reporter(req, dir) });
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) throw new Blocked('the reporter wrote no final report');
-    run.outcome = 'finished';
+    run.outcome = 'finished'; save();
+    await retro();
   } catch (e) {
     if (!(e instanceof Blocked)) { run.outcome = 'failure'; run.error = e.message; save(); throw e; }
     run.outcome = 'blocked'; run.reason = e.message;
     const s = T.summary(project, req);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, 'blocked.md'), `# blocked: ${req}\n\n${new Date().toISOString()} · factory run ${run.id} · host ${host.name}\n\n**Reason:** ${e.message}\n\n**Left:** ${s.total ? `${s.done.length}/${s.total} tickets done; ready ${s.ready.join(', ') || 'none'}; blocked ${s.blocked.join(', ') || 'none'}` : 'nothing cut yet'}.\n\nRun the factory again once the cause is fixed: it resumes from these files.\n`);
+    save();
+    await retro();
   } finally {
     run.seconds = Math.round((Date.now() - started) / 1000); run.cost = +spent().toFixed(4); save();
   }

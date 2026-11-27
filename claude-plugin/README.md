@@ -150,10 +150,12 @@ When a session stops partway, the next one is told at start which requirement is
 
 `tools/factory/factory.js <req>` takes an approved spec to an integrated, reviewed branch with no human in between. It is a dependency-free Node runner that decides the order and enforces the caps. It never calls a model itself.
 
-- **Roles as subsessions.** Every piece of judgement is one subsession of a crew role, run through a host adapter (`tools/factory/hosts/`). The roles are researcher, ticket cutter, one implementer per ticket in its own worktree, integrator, spec reviewer and reporter. With the `claude` adapter, each role is one `claude -p` run, with the plugin's hooks active inside it.
+- **Roles as subsessions.** Every piece of judgement is one subsession of a crew role, run through a host adapter (`tools/factory/hosts/`). The roles are researcher, ticket cutter, one implementer per ticket in its own worktree, integrator, spec reviewer, reporter and retro. With the `claude` adapter, each role is one `claude -p` run, with the plugin's hooks active inside it.
 - **Caps outside the model.** The run has a total budget, a time limit and retries per ticket, set in `crew.json` or with `--budget`, `--hours` and `--parallel`. When a cap is hit, the runner writes `blocked.md` and stops.
 - **Log.** `factory-run.json` records every step with its cost.
 - **Resuming.** Running the factory again resumes from the files.
+- **Retro on close.** Every run that launched a role ends with a retro role, finished or blocked. It reads `factory-run.json`, the results and the reviews, and writes `retro.md` with proposals for rules, skills, `crew.json` and `memory.md`. It never applies them: the runner puts back any tracked file the retro changed, and the retro never changes the outcome.
+- **Trigger by issue label.** `templates/github/aldc-factory.yml` is a GitHub workflow to copy into your project. Labelling an issue `aldc-factory` runs the factory for the `req: <name>` the issue body gives, on a GitHub-hosted runner, and opens a draft PR from `aldc/<req>`. The approved spec must already be committed. The workflow installs the Claude Code CLI and the plugins itself instead of using `claude-code-action`, because the runner already starts one `claude -p` per role. The compile and test commands come from repository variables; without them, the run reports the build and the tests as not-run.
 - **Other hosts.** The `fake` adapter runs the whole flow in tests, with no model. The copilot and codex adapters share the same contract and come later.
 
 ```
