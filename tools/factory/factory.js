@@ -9,7 +9,7 @@
 // <plans.root>/<req>/: a dead run is resumed by running the factory again.
 //
 //   node factory.js <req> [--project .] [--host claude] [--crew crew.json] [--budget 15] [--hours 2]
-//                        [--parallel N] [--verify "<cmd>"] [--test "<cmd>"] [--certified "<cmd>"]
+//                        [--parallel N] [--verify "<cmd>"] [--test "<cmd>"] [--certified "<cmd>"] [--request <file>]
 // Exit 0 finished, 1 blocked (blocked.md says why), 3 tool failure.
 const fs = require('fs');
 const path = require('path');
@@ -40,6 +40,13 @@ function reviewReport(text) {
   try { return JSON.parse(m[1]); } catch { return null; }
 }
 
+/** The Validation-Report JSON block of a validator's answer, parsed; null when absent or invalid. */
+function validationReport(text) {
+  const m = String(text || '').match(/###\s*Validation-Report \(JSON\)[\s\S]*?```(?:json)?\s*\n([\s\S]*?)```/i);
+  if (!m) return null;
+  try { const v = JSON.parse(m[1]); return Array.isArray(v.requirements) ? v : null; } catch { return null; }
+}
+
 /** Gating findings by the review contract's predicate: blocker or major, actionable. */
 function gating(report) {
   const r = report?.review ? report : report?.['Review-Report'] || report || {};
@@ -67,7 +74,18 @@ const P = {
     `Changed files:`, ...files.map((f) => `- ${f}`), '', `Criteria to check (tickets/criteria.md):`, criteria || '(missing)',
     '', `Plan files: ${dir}. Return the Review-Report JSON block.`,
   ].join('\n'),
-  reporter: (req, dir) => `This requirement was built by the ALDC factory runner (tools/factory/factory.js), not by the Conductor: attribute each step to the runner and the crew role that ran it, as factory-run.json records. Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json, the review files and traceability.md (when present: copy its table under Requirement coverage) in ${dir}. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
+  validator: (req, dir, request) => [
+    'scope: validate',
+    `Validate requirement ${req} against the original request. The build and the final review are done.`,
+    `- Original request: ${request || 'none saved; use the documents the Source column of the spec\'s Requirement points cites'}`,
+    `- Spec with the Requirement points table: ${path.join(dir, `${req}.spec.md`)}`,
+    `- Criteria: ${path.join(dir, 'tickets', 'criteria.md')}`,
+    `- Final review: ${path.join(dir, `${req}-review-final.json`)}`,
+    `- Traceability: ${path.join(dir, 'traceability.md')}`,
+    '- Code: the app and test folders of this project.',
+    'Return the Validation-Report JSON block.',
+  ].join('\n'),
+  reporter: (req, dir) => `This requirement was built by the ALDC factory runner (tools/factory/factory.js), not by the Conductor: attribute each step to the runner and the crew role that ran it, as factory-run.json records. Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json, the review files, traceability.md and ${req}-validation.json in ${dir}. Under Requirement coverage, give one row per REQ with the traceability verdict and the validation verdict; list every partial, not covered and manual only point under Not verified with its missing part. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
   retro: (req, dir, outcome) => [
     `Retrospective of the factory run of requirement ${req} (outcome: ${outcome}). Read ${path.join(dir, 'factory-run.json')} (the last run), blocked.md if present, the tickets/T-NN.result.md files and the review files in ${dir}.`,
     `Write ${path.join(dir, 'retro.md')} (replace it if it exists) with: what cost the most and why; retries, refusals and corrections with their cause; and concrete proposals to change rules, skills, crew.json or memory.md, each with the evidence that supports it.`,
@@ -281,10 +299,6 @@ async function runFactory(opts) {
       if (!(await greenOrFix('review correction'))) throw new Blocked('the review correction does not build');
       note('commit', I.commitIntegration(project, req, `fix(${req}): final review findings`));
     }
-    if (commands.certified) {
-      const c = shell('certified', commands.certified.replaceAll('{base}', base || 'main'));
-      note('certified', { result: c.ok ? 'certified' : 'not-certified' });
-    } else note('certified', { result: 'not-run', reason: 'no certified command for this host' });
     // 5b. Requirement traceability: one verdict per requirement point (trace.js, no model).
     const tm = TR.matrix(project, req);
     if (tm.traceable) {
@@ -292,6 +306,28 @@ async function runFactory(opts) {
       const unmet = tm.rows.filter((r) => ['unmet', 'not covered'].includes(r.verdict)).map((r) => r.req);
       if (unmet.length) throw new Blocked(`requirement points not delivered: ${unmet.join(', ')} (traceability.md)`);
     } else note('trace', { result: 'not-traceable', reason: tm.note });
+    // 5c. Validation against the original request (a model judges what trace.js cannot): a
+    // contradiction gets one correction, then the validation runs once more.
+    const request = opts.request ? path.resolve(project, opts.request) : [path.join(dir, 'request.md')].find((p) => fs.existsSync(p)) || null;
+    const validationFile = path.join(dir, `${req}-validation.json`);
+    for (let i = 0; i < 2; i++) {
+      const res = await step('validator', { prompt: P.validator(req, dir, request), attempt: i + 1 });
+      const v = validationReport(res.text);
+      if (!v) throw new Blocked('the validation returned no Validation-Report JSON');
+      fs.writeFileSync(validationFile, JSON.stringify(v, null, 2) + '\n');
+      const bad = (v.requirements || []).filter((r) => r.verdict === 'contradicted');
+      note('validation', { summary: v.summary || null, contradicted: bad.map((r) => r.req) });
+      if (!bad.length) break;
+      if (i === 1) throw new Blocked(`the delivered work still contradicts the request after one correction: ${bad.map((r) => r.req).join(', ')} (${path.basename(validationFile)})`);
+      await step('integrator', { prompt: P.fix(req, bad.map((r) => `- ${r.req}: ${r.fix?.change || r.missing || 'contradicts the request'}${r.fix?.file ? ` (${r.fix.file})` : ''}`).join('\n')) });
+      if (!(await greenOrFix('validation correction'))) throw new Blocked('the validation correction does not build');
+      note('commit', I.commitIntegration(project, req, `fix(${req}): match the request (validation)`));
+    }
+    // 5d. Standards axis last, so the certified verdict covers the final code.
+    if (commands.certified) {
+      const c = shell('certified', commands.certified.replaceAll('{base}', base || 'main'));
+      note('certified', { result: c.ok ? 'certified' : 'not-certified' });
+    } else note('certified', { result: 'not-run', reason: 'no certified command for this host' });
     // 6. Final report, written by a role from the files.
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) await step('reporter', { prompt: P.reporter(req, dir) });
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) throw new Blocked('the reporter wrote no final report');
@@ -316,7 +352,7 @@ async function main(argv) {
   const opt = (name, d) => { const i = args.indexOf(name); if (i === -1) return d; const v = args[i + 1]; args.splice(i, 2); return v; };
   const project = opt('--project', '.'), hostName = opt('--host', 'claude'), crewFile = opt('--crew');
   const budget = opt('--budget'), hours = opt('--hours'), parallel = opt('--parallel');
-  const verify = opt('--verify'), test = opt('--test'), certified = opt('--certified');
+  const verify = opt('--verify'), test = opt('--test'), certified = opt('--certified'), request = opt('--request');
   const [req] = args;
   if (!req) { console.error('usage: factory.js <req> [--project .] [--host claude|fake] [--crew crew.json] [--budget USD] [--hours H] [--parallel N] [--verify cmd] [--test cmd] [--certified cmd]'); return 3; }
   let host;
@@ -326,11 +362,11 @@ async function main(argv) {
   if (budget) caps.budgetUsd = +budget;
   if (hours) caps.hours = +hours;
   try {
-    const run = await runFactory({ project, req, host, crew: crewFile ? JSON.parse(fs.readFileSync(crewFile, 'utf8')) : undefined, caps, parallel, verify, test, certified });
+    const run = await runFactory({ project, req, host, crew: crewFile ? JSON.parse(fs.readFileSync(crewFile, 'utf8')) : undefined, caps, parallel, verify, test, certified, request });
     console.log(JSON.stringify({ outcome: run.outcome, reason: run.reason, cost: run.cost, seconds: run.seconds, steps: run.steps.length }));
     return run.outcome === 'finished' ? 0 : 1;
   } catch (e) { console.error(`factory: ${e.message}`); return 3; }
 }
 
 if (require.main === module) main(process.argv).then((code) => { process.exitCode = code; });
-module.exports = { runFactory, sharedEntries, reviewReport, gating, Blocked, main };
+module.exports = { runFactory, sharedEntries, reviewReport, validationReport, gating, Blocked, main };

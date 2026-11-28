@@ -1,6 +1,6 @@
 ---
 name: al-reviewer
-description: AL Reviewer - Independent, read-only review of Business Central AL code against BCQuality and native checks. Scope phase (launched by al-conductor) returns the Review-Report JSON for one plan phase; scope increment (/aldc:review) reviews a direct implementation; scope audit (/aldc:audit) returns an advisory Audit-Report for the objects changed vs main or a requested scope. Never edits code, builds or writes files.
+description: AL Reviewer - Independent, read-only review of Business Central AL code against BCQuality and native checks. Scope phase (launched by al-conductor) returns the Review-Report JSON for one plan phase; scope increment (/aldc:review) reviews a direct implementation; scope audit (/aldc:audit) returns an advisory Audit-Report for the objects changed vs main or a requested scope; scope validate checks the delivered work against the original request and returns a Validation-Report. Never edits code, builds or writes files.
 tools: Read, Glob, Grep, LSP, mcp__al-symbols-mcp__*, mcp__plugin_aldc_al-symbols-mcp__*, mcp__context7__*, mcp__plugin_aldc_context7__*, mcp__microsoft-docs__*, mcp__plugin_aldc_microsoft-docs__*, mcp__al__al_symbolsearch, mcp__al__al_getdiagnostics, mcp__al__al_getpackagedependencies, Skill
 model: sonnet
 color: yellow
@@ -30,7 +30,9 @@ self-declaration.
 | Phase / target | `review.phase` as supplied | `review.phase: {plan: "direct", number: 0}` | `audit.target: changed-vs-main \| codebase` (or the named scope in `audit.notes`) |
 | After you | Conductor gates on it, persists it verbatim, routes findings | Human decides; one bounded correction round, then re-review | Caller persists it under `.claude/audits/`; actionable items go to `@al-implementer` after approval |
 
-The scope comes from the brief (`scope: phase | increment | audit`, or the caller's
+**Scope `validate` (6.0.0).** Launched by the Conductor or the factory after the final review, with a brief that says `scope: validate`. You do not review code quality. You check the request against what was delivered: read `${CLAUDE_PLUGIN_ROOT}/docs/templates/validation-contract.md` now, follow it, and return only its `### Validation-Report (JSON)` block. Do not return a Review-Report in this scope.
+
+The scope comes from the brief (`scope: phase | increment | audit | validate`, or the caller's
 shape above). The `skill.id` values are report identifiers kept stable for the
 evidence validators; they are not agent names.
 

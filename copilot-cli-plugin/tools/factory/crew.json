@@ -1,11 +1,12 @@
 {
-  "$comment": "ALDC factory crew (5.5.0, phase 5). Each role runs as its own subsession through a host adapter (tools/factory/hosts/<host>.js). agent maps the role to that host's agent; null runs a plain prompt. budget is USD per call, timeoutMin minutes per call. caps bound the whole run. verify and test are shell commands run from the project root (null = not-run); certified is the certified BCQuality review command ({base} is replaced by the integration base commit).",
+  "$comment": "ALDC factory crew (6.0.0). Each role runs as its own subsession through a host adapter (tools/factory/hosts/<host>.js). agent maps the role to that host's agent; null runs a plain prompt. budget is USD per call, timeoutMin minutes per call. caps bound the whole run. verify and test are shell commands run from the project root (null = not-run); certified is the certified BCQuality review command ({base} is replaced by the integration base commit).",
   "roles": {
     "researcher":    { "agent": { "claude": "aldc:al-researcher" },  "budget": 2,   "timeoutMin": 25 },
     "cutter":        { "agent": { "claude": null },                  "budget": 2,   "timeoutMin": 25 },
     "implementer":   { "agent": { "claude": "aldc:al-implementer" }, "budget": 3,   "timeoutMin": 30 },
     "integrator":    { "agent": { "claude": "aldc:al-implementer" }, "budget": 2,   "timeoutMin": 25 },
     "spec-reviewer": { "agent": { "claude": "aldc:al-reviewer" },    "budget": 2,   "timeoutMin": 25 },
+    "validator":     { "agent": { "claude": "aldc:al-reviewer" },    "budget": 1.5, "timeoutMin": 20 },
     "reporter":      { "agent": { "claude": null },                  "budget": 1,   "timeoutMin": 15 },
     "retro":         { "agent": { "claude": null },                  "budget": 0.5, "timeoutMin": 10 }
   },

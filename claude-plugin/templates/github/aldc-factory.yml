@@ -67,6 +67,9 @@ jobs:
             exit 1
           fi
           echo "name=$req" >> "$GITHUB_OUTPUT"
+          # The issue body is the original request the validation checks the delivery against.
+          mkdir -p ".claude/plans/$req"
+          [ -f ".claude/plans/$req/request.md" ] || printf '# Request: issue #%s\n\n%s\n' "${{ github.event.issue.number }}" "$BODY" > ".claude/plans/$req/request.md"
 
       - name: Claude Code and the ALDC plugins
         run: |

@@ -19,6 +19,10 @@ keep their own versions.
   - `trace.js matrix` writes `traceability.md` at the end, with one verdict per point from the final review and the test evidence: met and executed, met but not executed, met by review only, not evaluated, unmet or not covered.
   - The factory blocks on an unmet or uncovered point; the Conductor sends it to one correction or to `blocked.md`. The final report carries the table under *Requirement coverage*.
   - Specs without the table are reported as not traceable and are not blocked.
+- **Validation against the request.** A new reviewer scope, `validate` (`docs/templates/validation-contract.md`), checks the spec, the criteria and the code against the original request, not only against the spec. It returns a verdict per `REQ-NN`: covered, partial, contradicted, not covered or manual only.
+  - The factory runs it as the `validator` crew role, after the trace matrix and before the certified review. A contradiction gets one correction and one more validation, then blocks. The other verdicts go to the final report.
+  - The Conductor runs the same step. The issue-label workflow saves the issue body as `<req>/request.md`, the validation's source of truth.
+  - In a real eval it found a requirement point with no criterion and a permission set name that contradicted the request. That name came out wrong in 2 of 4 runs that had scored 10/10.
 - **Trigger by issue label.** `templates/github/aldc-factory.yml`: labelling an issue `aldc-factory` runs the factory for the issue's `req:` line on a GitHub-hosted runner and opens a draft PR from `aldc/<req>`. It installs the Claude Code CLI and the plugins itself rather than wrapping the runner in `claude-code-action`. Not yet run on GitHub.
 
 ### Removed
