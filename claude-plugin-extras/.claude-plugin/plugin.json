@@ -1,7 +1,7 @@
 {
   "name": "aldc-extras",
   "displayName": "ALDC Extras for Claude Code",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Optional ALDC roles for Microsoft Dynamics 365 Business Central: technical pre-sales (estimation, SWOT, proposals) and Business Central agent building (Agent SDK / AI Development Toolkit). Requires the aldc plugin.",
   "author": {
     "name": "javiarmesto",
@@ -20,9 +20,6 @@
     "AI Development Toolkit"
   ],
   "dependencies": [
-    {
-      "name": "aldc",
-      "version": "^6.0.0"
-    }
+    { "name": "aldc" }
   ]
 }

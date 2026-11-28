@@ -108,8 +108,8 @@
     "tools/context-doctor/aldc_context_doctor.py": "8792be3dd86d3716c5fe08afc6477e21bed90f4855828046f1b11e5915660d5a"
   },
   "outputs": {
-    ".claude-plugin/marketplace.json": "c7b04d2259f6c7ab7e4ff20e516bb7601a67bf6a7a93e73086ab2f2a2c348144",
-    ".claude-plugin/plugin.json": "2ccc5cc23d28cea1ff80ff0228e197764611945bc7bcffd91e99555988288692",
+    ".claude-plugin/marketplace.json": "359b85ce6bb3c34b0fa009bc30cb214f7e598bbcb9bcc7534acba784bd04db28",
+    ".claude-plugin/plugin.json": "0805c2158d2c59b91e034c63baaaddecc90f5342b60400f4c52eb380f0adea3d",
     ".mcp.json": "085c9a97ebd647d44dd6dc6f82c3cc79a57afcf53438f4d0251d7054bcb4522b",
     "CLAUDE.md": "0f9f41140675e3ee5c6791f9318e0f59bf0df6b700a698571835f1a11dc4591a",
     "README.md": "80643dd6e928335ca9c893ebb0351f297d74e862d4d77b366073d667f7a1ab72",

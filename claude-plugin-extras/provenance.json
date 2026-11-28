@@ -4,11 +4,11 @@
   "generator": "maintained claude surface (see claude-plugin-extras/README.md)",
   "sources": {},
   "outputs": {
-    ".claude-plugin/plugin.json": "317d34d49245957f6c54491a702fb66b7a3aad71f1d2a4e1c692c73cd885f341",
+    ".claude-plugin/plugin.json": "0cf45757eb6269abd201dda40c1a8abca904224334317d1f0f6b0dd4439989b8",
     "README.md": "b55b85753d1c7d2562621dda29fa75ecaf17585ee5bfd9de261c31337611c7c2",
     "agents/al-agent-builder.md": "aef6e85032e5b1c837b36dc5c1d9d58831581ffc51f91b772975bf6cb36d73f6",
     "agents/al-presales.md": "0363a1e034dd23d3cd3073e44b668d99bd86ff9646913828afe4b8c1c11c5b98",
-    "docs/claude-runtime.md": "19c66d80c552a63f965bf70cd08fd2e4f821b6d3efe7b2b56de803f0a8f125b4",
+    "docs/claude-runtime.md": "fc91395a49b00afc47555e92f3b4417ac00c26a4035cf9ae60f67c9b1d4e7683",
     "hooks/core-root.js": "f2c0854d26beef470001be788483b0018722e0dd97f7b95ccb5e29d12b1983fa",
     "hooks/hooks.json": "b9fd24e9226f9fdab9557deeb467d3955770210b64382d4d7db4ca8bbcb152f5",
     "skills/agent-builder/SKILL.md": "4ee3336ad1ab86ecca8c37d5a3c09a0728e6022b8f27efb1f93f454196ca4c59",

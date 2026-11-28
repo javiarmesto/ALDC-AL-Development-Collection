@@ -517,7 +517,7 @@ const MOVED = {
 const textFiles = (root) => require(path.join(PLUGIN, 'scripts', 'package-provenance')).walk(root)
   .filter((p) => /\.(md|js|json|ya?ml|txt|sh|py)$/.test(p) && p !== 'provenance.json');
 
-test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^6.0.0 and both plugins are in the marketplace', () => {
+test('5.4.0: aldc-extras holds the moved roles, depends on aldc and both plugins are in the marketplace', () => {
   for (const a of MOVED.agents) {
     assert.ok(fs.existsSync(path.join(EXTRAS, 'agents', a + '.md')), 'extras agent ' + a);
     assert.ok(!fs.existsSync(path.join(AGENTS_DIR, a + '.md')), 'core no longer ships agent ' + a);
@@ -532,10 +532,12 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^6.0.0 and both 
   assert.ok(!fs.existsSync(path.join(EXTRAS, 'rules')), 'extras ships no copy of the core rules');
   const manifest = JSON.parse(fs.readFileSync(path.join(EXTRAS, '.claude-plugin', 'plugin.json'), 'utf8'));
   assert.strictEqual(manifest.name, 'aldc-extras');
-  assert.strictEqual(manifest.version, '6.0.0');
-  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc', version: '^6.0.0' }]);
+  assert.strictEqual(manifest.version, '6.0.1');
+  // 6.0.1: no version ranges. A range resolves only against <plugin>--v<version> git tags, which none of these repositories has.
+  assert.deepStrictEqual(manifest.dependencies, [{ name: 'aldc' }]);
   const coreManifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'plugin.json'), 'utf8'));
-  assert.strictEqual(coreManifest.version, '6.0.0');
+  assert.strictEqual(coreManifest.version, '6.0.1');
+  assert.ok(coreManifest.dependencies.every((d) => d.version === undefined), 'no version ranges in the core dependencies');
   // The root marketplace is repository-only; the npm package does not ship it.
   const rootMarket = path.resolve(PLUGIN, '..', '.claude-plugin', 'marketplace.json');
   if (fs.existsSync(rootMarket)) {
@@ -544,9 +546,9 @@ test('5.4.0: aldc-extras holds the moved roles, depends on aldc ^6.0.0 and both 
     assert.deepStrictEqual(market.plugins.map((p) => p.name).sort(), ['aldc', 'aldc-extras', 'aldc-verify']);
     assert.strictEqual(entry('aldc').source, './claude-plugin');
     assert.strictEqual(entry('aldc-extras').source, './claude-plugin-extras');
-    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '6.0.0', n + ' version');
+    for (const n of ['aldc', 'aldc-extras']) assert.strictEqual(entry(n).version, '6.0.1', n + ' version');
   }
-  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '6.0.0');
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(PLUGIN, '.claude-plugin', 'marketplace.json'), 'utf8')).plugins[0].version, '6.0.1');
 });
 
 test('5.4.0: core and extras name only files they ship; extras reach the core through <aldc-root>', () => {

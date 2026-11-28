@@ -1,5 +1,12 @@
 # ALDC Changelog
 
+## [Claude Code plugin 6.0.1] - 2026-11-28
+
+### Fixed
+- **6.0.0 does not load after an update.** Its dependency on `aldc-verify` declared the range `^0.4.1`. Claude Code resolves a range only against git tags named `<plugin>--v<version>` in the plugin's repository, so `claude plugin install aldc-verify@aldc-marketplace` failed with "no git tag satisfying >=0.4.1 <0.5.0-0". The `aldc` plugin then failed to load. The same applied to `bcquality ^1.9.0` (its repository tags `v1.9`) and to `aldc-extras` on `aldc ^6.0.0` (no `aldc--v*` tags) on a fresh install.
+  - The dependencies no longer declare ranges. Each resolves to the marketplace's current copy, and the `aldc-verify` entry stays pinned to `v0.4.1` by its source `ref`.
+  - `aldc` and `aldc-extras` move to 6.0.1.
+
 ## [Claude Code plugin 6.0.0] - 2026-11-27
 
 Phase 5 of the factory plan: the unattended factory, and the removals announced in 5.4.0.
