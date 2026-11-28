@@ -96,7 +96,7 @@ A fundamental defect may be FAILED with explanation.
 
 `actionable: true` marks a finding the implementer can act on. Only gating findings and
 non-gating findings carrying `suggested-code` are routed as revision work; every other
-finding is recorded as a recommendation in the phase-complete document and is not a task.
+finding is recorded as a recommendation in the final report and is not a task.
 
 A partial or failed review is about **coverage**, not code: never fabricate code findings
 for it. Retry only the missing checks once; if the gap persists, return the review with

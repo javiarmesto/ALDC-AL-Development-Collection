@@ -146,8 +146,19 @@ if (exists('packages/foundation')) {
 
 // ── 7: cobertura del plugin Claude Code ─────────────────────────────────────
 if (exists('claude-plugin/agents')) {
+  // 6.0.0: on the Claude surface these canonical roles are modes of merged agents (the 5.4.0
+  // aliases were removed); the canonical contracts stay for the other surfaces.
+  const MERGED = {
+    'al-developer': 'al-implementer', 'al-implement-subagent': 'al-implementer',
+    'al-developer-reviewer': 'al-reviewer', 'al-review-subagent': 'al-reviewer', dredd: 'al-reviewer',
+    'al-planning-subagent': 'al-researcher',
+  };
   for (const f of listFiles('agents', '.agent.md')) {
     const name = path.basename(f, '.agent.md');
+    if (MERGED[name]) {
+      if (!exists(`claude-plugin/agents/${MERGED[name]}.md`)) errors.push(`Plugin sin el agente fusionado ${MERGED[name]} que cubre ${name}`);
+      continue;
+    }
     // 5.4.0: presales and agent building moved to the optional aldc-extras plugin.
     if (!exists(`claude-plugin/agents/${name}.md`) && !exists(`claude-plugin-extras/agents/${name}.md`))
       errors.push(`Plugin sin contraparte para el agente: ${name}`);

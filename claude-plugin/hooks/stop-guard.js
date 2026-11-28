@@ -107,8 +107,8 @@ function guard(payload) {
   return { decision: 'block', reason:
     `ALDC (pre-approved): the plan is not finished: ${list}. ` +
     (onTickets
-      ? 'Run tickets.js status <req> and continue with the next ticket (implement → review → T-NN.result.md → set done) until the final <task-name>-complete.md report is written. '
-      : 'Continue with the next pending phase now (implement → review → phase-complete file) until the final <task-name>-complete.md report is written. ') +
+      ? 'Run tickets.js status <req> and continue with the next wave (implement → integrate → T-NN.result.md → set done), then the final review, until the final <task-name>-complete.md report is written. '
+      : 'This is a 5.4.x phase plan, and since 6.0.0 the Conductor does not finish plans by phases: cut the work its phase files do not record as done into tickets (/aldc:tickets <req>) and build them until the final <task-name>-complete.md report is written. ') +
     'If a ⛔ hard stop applies, write blocked.md in that plan folder with the reason and what is left, then stop.' };
 }
 

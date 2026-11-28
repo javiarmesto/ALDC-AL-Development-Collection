@@ -23,7 +23,7 @@ function support(surface, rootDir = ROOT) {
   }
   // Host-neutral ticket tools and the factory runner: tools/tickets/lib.js resolves plans.root
   // from this surface's aldc.yaml. The runner's claude adapter is the only real host so far.
-  for (const rel of ['tickets/lib.js', 'tickets/tickets.js', 'tickets/integrate.js', 'factory/factory.js', 'factory/crew.json', 'factory/hosts/claude.js', 'factory/hosts/fake.js']) {
+  for (const rel of ['tickets/lib.js', 'tickets/tickets.js', 'tickets/integrate.js', 'tickets/trace.js', 'factory/factory.js', 'factory/crew.json', 'factory/hosts/claude.js', 'factory/hosts/fake.js']) {
     files.set((surface === 'codex' ? 'skills/aldc/scripts/' : 'tools/') + rel, fs.readFileSync(path.join(rootDir, 'tools', rel), 'utf8'));
   }
   for (const name of ['install-transaction.js', 'package-provenance.js']) files.set(`scripts/${name}`, fs.readFileSync(path.join(rootDir, 'scripts', name), 'utf8'));

@@ -14,7 +14,7 @@
 const runtime = require('./aldc-runtime');
 
 const MARKER = '<!-- aldc-rules -->';
-// Current agent names only; a deprecated alias is resolved to its agent first (canonicalAgent).
+// Current agent names only (the 5.4.0 aliases were removed in 6.0.0).
 const CODE_ROLES = /^(aldc:(al-implementer|al-reviewer|al-researcher|al-triage)|aldc-extras:al-agent-builder)$/;
 const REVIEWERS = /^aldc:al-reviewer$/;
 // The planner is left out: its contract forbids probing BCQuality during planning.
@@ -29,7 +29,7 @@ const pendingFile = (sessionId) => runtime.sessionFile(sessionId, 'briefed');
 /** The context an ALDC subagent must start with. `prompt` is empty at SubagentStart (the host does not pass it). */
 function sections(subagentType, cwd, prompt) {
   const extra = [];
-  const role = runtime.canonicalAgent(subagentType);
+  const role = subagentType;
   const payload = { cwd };
   // Checked by the rules' own headings, not by the marker: in the evals the conductor
   // wrote the marker followed by its own one-line paraphrase of the rules.

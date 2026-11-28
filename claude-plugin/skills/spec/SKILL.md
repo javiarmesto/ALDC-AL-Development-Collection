@@ -6,7 +6,7 @@ argument-hint: Requirement name, LOW/MEDIUM/HIGH, and approved architecture or a
 
 # /aldc:spec
 
-Read `${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md` in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc:al-spec-agent` and verify its effective tools. This is the one specification entry; `/aldc:al-spec-create` is a deprecated alias of it (removed in 6.0.0).
+Read [the Spec contract](${CLAUDE_PLUGIN_ROOT}/agents/al-spec-agent.md) in full and act as that agent for the rest of this session. The runtime line at the top of that file and `${CLAUDE_PLUGIN_ROOT}/docs/claude-runtime.md` are binding. This skill changes session instructions, not host permissions; for an enforced agent tool list launch `claude --agent aldc:al-spec-agent` and verify its effective tools. This is the one specification entry.
 
 Input: **$ARGUMENTS** — the approved requirement/architecture, the current spec path if revising, and any Architect-assigned scope.
 

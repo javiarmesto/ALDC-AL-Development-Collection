@@ -9,7 +9,7 @@
 // <plans.root>/<req>/: a dead run is resumed by running the factory again.
 //
 //   node factory.js <req> [--project .] [--host claude] [--crew crew.json] [--budget 15] [--hours 2]
-//                        [--parallel N] [--verify "<cmd>"] [--test "<cmd>"] [--certified "<cmd>"]
+//                        [--parallel N] [--verify "<cmd>"] [--test "<cmd>"] [--certified "<cmd>"] [--request <file>]
 // Exit 0 finished, 1 blocked (blocked.md says why), 3 tool failure.
 const fs = require('fs');
 const path = require('path');
@@ -17,6 +17,7 @@ const { spawnSync } = require('child_process');
 const T = require('../tickets/tickets');
 const I = require('../tickets/integrate');
 const { plansRoot } = require('../tickets/lib');
+const TR = require('../tickets/trace');
 
 class Blocked extends Error {}
 
@@ -37,6 +38,13 @@ function reviewReport(text) {
   const m = String(text || '').match(/###\s*Review-Report \(JSON\)[\s\S]*?```(?:json)?\s*\n([\s\S]*?)```/i);
   if (!m) return null;
   try { return JSON.parse(m[1]); } catch { return null; }
+}
+
+/** The Validation-Report JSON block of a validator's answer, parsed; null when absent or invalid. */
+function validationReport(text) {
+  const m = String(text || '').match(/###\s*Validation-Report \(JSON\)[\s\S]*?```(?:json)?\s*\n([\s\S]*?)```/i);
+  if (!m) return null;
+  try { const v = JSON.parse(m[1]); return Array.isArray(v.requirements) ? v : null; } catch { return null; }
 }
 
 /** Gating findings by the review contract's predicate: blocker or major, actionable. */
@@ -66,7 +74,23 @@ const P = {
     `Changed files:`, ...files.map((f) => `- ${f}`), '', `Criteria to check (tickets/criteria.md):`, criteria || '(missing)',
     '', `Plan files: ${dir}. Return the Review-Report JSON block.`,
   ].join('\n'),
-  reporter: (req, dir) => `Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json and the review files in ${dir}. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
+  validator: (req, dir, request) => [
+    'scope: validate',
+    `Validate requirement ${req} against the original request. The build and the final review are done.`,
+    `- Original request: ${request || 'none saved; use the documents the Source column of the spec\'s Requirement points cites'}`,
+    `- Spec with the Requirement points table: ${path.join(dir, `${req}.spec.md`)}`,
+    `- Criteria: ${path.join(dir, 'tickets', 'criteria.md')}`,
+    `- Final review: ${path.join(dir, `${req}-review-final.json`)}`,
+    `- Traceability: ${path.join(dir, 'traceability.md')}`,
+    '- Code: the app and test folders of this project.',
+    'Return the Validation-Report JSON block.',
+  ].join('\n'),
+  reporter: (req, dir) => `This requirement was built by the ALDC factory runner (tools/factory/factory.js), not by the Conductor: attribute each step to the runner and the crew role that ran it, as factory-run.json records. Write the final report ${path.join(dir, `${req}-complete.md`)} for requirement ${req} from the plan-complete template, consolidating every tickets/T-NN.result.md, factory-run.json, the review files, traceability.md and ${req}-validation.json in ${dir}. Under Requirement coverage, give one row per REQ with the traceability verdict and the validation verdict; list every partial, not covered and manual only point under Not verified with its missing part. Fill Verification, Not verified, Decisions taken without a human and Open risks from evidence only; write not-run with its reason for anything that was not executed.`,
+  retro: (req, dir, outcome) => [
+    `Retrospective of the factory run of requirement ${req} (outcome: ${outcome}). Read ${path.join(dir, 'factory-run.json')} (the last run), blocked.md if present, the tickets/T-NN.result.md files and the review files in ${dir}.`,
+    `Write ${path.join(dir, 'retro.md')} (replace it if it exists) with: what cost the most and why; retries, refusals and corrections with their cause; and concrete proposals to change rules, skills, crew.json or memory.md, each with the evidence that supports it.`,
+    'Propose only: do not edit any other file, and do not run git.',
+  ].join('\n'),
 };
 
 // ── The run ───────────────────────────────────────────────────────────────────────
@@ -124,6 +148,12 @@ async function runFactory(opts) {
     return false;
   }
   const result = (t, body) => fs.writeFileSync(t.file.replace(/\.md$/i, '.result.md'), body);
+  /** Objects inside the ticket's ID ranges that tracked AL files of the checkout already declare. */
+  function onBranch(t) {
+    const ranges = T.parseRanges(t.data.object_ids).filter(Boolean);
+    const files = (spawnSync('git', ['ls-files', '*.al'], { cwd: project, encoding: 'utf8' }).stdout || '').split(/\r?\n/).filter(Boolean);
+    return files.flatMap((file) => I.objectsIn(read(path.join(project, file))).filter((o) => ranges.some((r) => o.id >= r.from && o.id <= r.to)).map((o) => ({ ...o, file })));
+  }
   const setStatus = (id, s) => T.setStatus(project, req, id, s);
   /** Integration step for merged tickets: shared-file entries, build, tests, one commit, then close them. */
   async function finish(merged, wave) {
@@ -141,10 +171,26 @@ async function runFactory(opts) {
         `| Build after integration | ${commands.verify ? (green ? 'green' : 'red') : 'not-run (no verify command)'} | factory-run.json |`,
         `| Tests | ${commands.test ? (green ? 'pass' : 'fail') : 'not-run (no test command)'} | factory-run.json |`,
         `| Shared file entries | ${e.length ? 'applied in the integration step' : 'none'} | ${e.map((x) => x.file).join(', ') || '-'} |`, '',
-        '**Review:** final review', ''].join('\n'));
+        '**Review:** pending final review', ''].join('\n'));
       setStatus(t.data.id, green ? 'done' : 'blocked');
     }
     if (!green) throw new Blocked(`wave ${wave} does not build or pass its tests after ${caps.retries} corrections`);
+  }
+
+  /** Retro on close: proposals in retro.md, never applied. It never changes the outcome. */
+  async function retro() {
+    if (!run.steps.some((x) => x.kind === 'role')) return note('retro', { result: 'not-run', reason: 'no role ran in this run' });
+    const porcelain = () => (spawnSync('git', ['status', '--porcelain'], { cwd: project, encoding: 'utf8' }).stdout || '').split(/\r?\n/).filter(Boolean);
+    const before = new Set(porcelain());
+    const file = path.join(dir, 'retro.md');
+    try {
+      const res = await step('retro', { prompt: P.retro(req, dir, run.outcome) });
+      if (!fs.existsSync(file) && res.text) fs.writeFileSync(file, `# Retro: ${req}\n\n${run.id}\n\n${res.text}\n`);
+      // A retro proposes; anything it changed in tracked files is put back.
+      const touched = porcelain().filter((l) => !before.has(l) && /^ ?M /.test(l)).map((l) => l.slice(3));
+      for (const t of touched) spawnSync('git', ['checkout', '--', t], { cwd: project });
+      note('retro', { result: fs.existsSync(file) ? 'written' : 'missing', ...(touched.length ? { reverted: touched } : {}) });
+    } catch (e) { note('retro', { result: 'not-run', reason: e.message }); }
   }
 
   try {
@@ -219,6 +265,13 @@ async function runFactory(opts) {
           merged.push({ t, r, entries }); continue;
         }
         if (fs.existsSync(wt)) I.discard(project, wt);
+        // Nothing to integrate, but the ticket's objects are already on the branch (an earlier
+        // integration step wrote them): close it with that evidence instead of rebuilding it.
+        const present = r.status === 'empty' ? onBranch(t) : [];
+        if (present.length) {
+          result(t, `# ${t.data.id} result: ${t.data.title}\n\n**Status:** done · **Date:** ${new Date().toISOString()} · **Wave:** ${wave} · **Integration:** nothing to merge\n\nThe implementer changed nothing: the ticket's objects are already on aldc/${req} (${present.map((o) => `${o.type} ${o.id} in ${o.file}`).join(', ')}). The final review checks its criteria.\n\n**Review:** pending final review\n`);
+          setStatus(t.data.id, 'done'); note('satisfied', { ticket: t.data.id, objects: present }); continue;
+        }
         if (tries[t.data.id] > caps.retries) {
           result(t, `# ${t.data.id} result: ${t.data.title}\n\n**Status:** blocked · **Date:** ${new Date().toISOString()}\n\nIntegration failed ${tries[t.data.id]} times: ${(r.problems || r.conflicts || [r.status]).join('; ')}\n`);
           setStatus(t.data.id, 'blocked');
@@ -246,6 +299,31 @@ async function runFactory(opts) {
       if (!(await greenOrFix('review correction'))) throw new Blocked('the review correction does not build');
       note('commit', I.commitIntegration(project, req, `fix(${req}): final review findings`));
     }
+    // 5b. Requirement traceability: one verdict per requirement point (trace.js, no model).
+    const tm = TR.matrix(project, req);
+    if (tm.traceable) {
+      note('trace', { counts: tm.counts, execution: tm.execution });
+      const unmet = tm.rows.filter((r) => ['unmet', 'not covered'].includes(r.verdict)).map((r) => r.req);
+      if (unmet.length) throw new Blocked(`requirement points not delivered: ${unmet.join(', ')} (traceability.md)`);
+    } else note('trace', { result: 'not-traceable', reason: tm.note });
+    // 5c. Validation against the original request (a model judges what trace.js cannot): a
+    // contradiction gets one correction, then the validation runs once more.
+    const request = opts.request ? path.resolve(project, opts.request) : [path.join(dir, 'request.md')].find((p) => fs.existsSync(p)) || null;
+    const validationFile = path.join(dir, `${req}-validation.json`);
+    for (let i = 0; i < 2; i++) {
+      const res = await step('validator', { prompt: P.validator(req, dir, request), attempt: i + 1 });
+      const v = validationReport(res.text);
+      if (!v) throw new Blocked('the validation returned no Validation-Report JSON');
+      fs.writeFileSync(validationFile, JSON.stringify(v, null, 2) + '\n');
+      const bad = (v.requirements || []).filter((r) => r.verdict === 'contradicted');
+      note('validation', { summary: v.summary || null, contradicted: bad.map((r) => r.req) });
+      if (!bad.length) break;
+      if (i === 1) throw new Blocked(`the delivered work still contradicts the request after one correction: ${bad.map((r) => r.req).join(', ')} (${path.basename(validationFile)})`);
+      await step('integrator', { prompt: P.fix(req, bad.map((r) => `- ${r.req}: ${r.fix?.change || r.missing || 'contradicts the request'}${r.fix?.file ? ` (${r.fix.file})` : ''}`).join('\n')) });
+      if (!(await greenOrFix('validation correction'))) throw new Blocked('the validation correction does not build');
+      note('commit', I.commitIntegration(project, req, `fix(${req}): match the request (validation)`));
+    }
+    // 5d. Standards axis last, so the certified verdict covers the final code.
     if (commands.certified) {
       const c = shell('certified', commands.certified.replaceAll('{base}', base || 'main'));
       note('certified', { result: c.ok ? 'certified' : 'not-certified' });
@@ -253,13 +331,16 @@ async function runFactory(opts) {
     // 6. Final report, written by a role from the files.
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) await step('reporter', { prompt: P.reporter(req, dir) });
     if (!fs.existsSync(path.join(dir, `${req}-complete.md`))) throw new Blocked('the reporter wrote no final report');
-    run.outcome = 'finished';
+    run.outcome = 'finished'; save();
+    await retro();
   } catch (e) {
     if (!(e instanceof Blocked)) { run.outcome = 'failure'; run.error = e.message; save(); throw e; }
     run.outcome = 'blocked'; run.reason = e.message;
     const s = T.summary(project, req);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, 'blocked.md'), `# blocked: ${req}\n\n${new Date().toISOString()} · factory run ${run.id} · host ${host.name}\n\n**Reason:** ${e.message}\n\n**Left:** ${s.total ? `${s.done.length}/${s.total} tickets done; ready ${s.ready.join(', ') || 'none'}; blocked ${s.blocked.join(', ') || 'none'}` : 'nothing cut yet'}.\n\nRun the factory again once the cause is fixed: it resumes from these files.\n`);
+    save();
+    await retro();
   } finally {
     run.seconds = Math.round((Date.now() - started) / 1000); run.cost = +spent().toFixed(4); save();
   }
@@ -271,7 +352,7 @@ async function main(argv) {
   const opt = (name, d) => { const i = args.indexOf(name); if (i === -1) return d; const v = args[i + 1]; args.splice(i, 2); return v; };
   const project = opt('--project', '.'), hostName = opt('--host', 'claude'), crewFile = opt('--crew');
   const budget = opt('--budget'), hours = opt('--hours'), parallel = opt('--parallel');
-  const verify = opt('--verify'), test = opt('--test'), certified = opt('--certified');
+  const verify = opt('--verify'), test = opt('--test'), certified = opt('--certified'), request = opt('--request');
   const [req] = args;
   if (!req) { console.error('usage: factory.js <req> [--project .] [--host claude|fake] [--crew crew.json] [--budget USD] [--hours H] [--parallel N] [--verify cmd] [--test cmd] [--certified cmd]'); return 3; }
   let host;
@@ -281,11 +362,11 @@ async function main(argv) {
   if (budget) caps.budgetUsd = +budget;
   if (hours) caps.hours = +hours;
   try {
-    const run = await runFactory({ project, req, host, crew: crewFile ? JSON.parse(fs.readFileSync(crewFile, 'utf8')) : undefined, caps, parallel, verify, test, certified });
+    const run = await runFactory({ project, req, host, crew: crewFile ? JSON.parse(fs.readFileSync(crewFile, 'utf8')) : undefined, caps, parallel, verify, test, certified, request });
     console.log(JSON.stringify({ outcome: run.outcome, reason: run.reason, cost: run.cost, seconds: run.seconds, steps: run.steps.length }));
     return run.outcome === 'finished' ? 0 : 1;
   } catch (e) { console.error(`factory: ${e.message}`); return 3; }
 }
 
 if (require.main === module) main(process.argv).then((code) => { process.exitCode = code; });
-module.exports = { runFactory, sharedEntries, reviewReport, gating, Blocked, main };
+module.exports = { runFactory, sharedEntries, reviewReport, validationReport, gating, Blocked, main };

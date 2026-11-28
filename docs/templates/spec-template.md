@@ -27,6 +27,16 @@ Record only this unit's relevant contracts and coordination needs, not a second
 copy of the architecture's complete decomposition.
 LOW without architecture: approved requirement and why no architecture decision is needed.
 
+### Requirement points
+
+One row per thing the requester asked for, in the requester's terms, from the issue,
+the DRF or the requirement document. Every point names the acceptance criteria
+(section 11) that prove it. A point with no criterion stops the cut (`trace.js check`).
+
+| REQ | What was asked | Source | Acceptance |
+| --- | --- | --- | --- |
+| REQ-01 | {one line, as the requester said it} | {issue #n / DRF section / requirement item} | {AC-01, AC-02} |
+
 ### Governing sources
 
 Sorted paths of applicable instruction bodies, domain guides and relevant source
@@ -94,7 +104,9 @@ configuration or claim these checks have run during specification.
 ## 11. Acceptance Criteria
 
 Functional business outcomes, technical contracts and downstream quality/review
-criteria, with references to tests and pending proof. Include negative cases and
+criteria, numbered AC-NN, with references to tests and pending proof. Every
+requirement point maps to at least one criterion; a criterion no point names is a
+derived technical criterion. Include negative cases and
 unchanged behavior where they matter.
 
 ### Review criteria (BCQuality)

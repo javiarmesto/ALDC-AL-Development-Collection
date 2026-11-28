@@ -1,5 +1,48 @@
 # ALDC Changelog
 
+## [Claude Code plugin 6.0.0] - 2026-11-27
+
+Phase 5 of the factory plan: the unattended factory, and the removals announced in 5.4.0.
+The `aldc` and `aldc-extras` plugins move to 6.0.0; the Copilot, CLI and Codex surfaces
+keep their own versions.
+
+### Added
+- **Unattended factory (#157).** `tools/factory/factory.js <req>` takes an approved spec to an integrated, reviewed branch with no human in between.
+  - It is a dependency-free Node runner. It decides the order and enforces the caps (budget, time, retries) outside the model.
+  - Every piece of judgement is one subsession of a `crew.json` role, run through a host adapter: `claude` (one `claude -p` per role, with the plugin's hooks inside) and `fake` (tests, no model).
+  - `factory-run.json` logs every step and its cost. Hitting a cap writes `blocked.md`, and a new run resumes from the files.
+  - `tools/tickets/` and `tools/factory/` are canonical at the repository root and ship on every surface.
+  - Measured on `follow-up-basics`: three consecutive runs from the approved spec to the reviewed branch, 8/8 checks each, $4.63–4.91 and 11.6–12.9 min per run.
+- **Retro on close.** Every run that launched a role ends with a retro role, finished or blocked. It writes `retro.md` with proposals for rules, skills, `crew.json` and `memory.md`, and never applies them: the runner puts back any tracked file it changed.
+- **Requirement traceability.** The spec template has a *Requirement points* table: each thing the requester asked for (`REQ-NN`, with its source in the issue, DRF or requirement document) names the acceptance criteria that prove it.
+  - `tools/tickets/trace.js check` runs inside `tickets.js validate`: a requirement point with no criterion stops the cut.
+  - `trace.js matrix` writes `traceability.md` at the end, with one verdict per point from the final review and the test evidence: met and executed, met but not executed, met by review only, not evaluated, unmet or not covered.
+  - The factory blocks on an unmet or uncovered point; the Conductor sends it to one correction or to `blocked.md`. The final report carries the table under *Requirement coverage*.
+  - Specs without the table are reported as not traceable and are not blocked.
+- **Validation against the request.** A new reviewer scope, `validate` (`docs/templates/validation-contract.md`), checks the spec, the criteria and the code against the original request, not only against the spec. It returns a verdict per `REQ-NN`: covered, partial, contradicted, not covered or manual only.
+  - The factory runs it as the `validator` crew role, after the trace matrix and before the certified review. A contradiction gets one correction and one more validation, then blocks. The other verdicts go to the final report.
+  - The Conductor runs the same step. The issue-label workflow saves the issue body as `<req>/request.md`, the validation's source of truth.
+  - In a real eval it found a requirement point with no criterion and a permission set name that contradicted the request. That name came out wrong in 2 of 4 runs that had scored 10/10.
+- **Trigger by issue label.** `templates/github/aldc-factory.yml`: labelling an issue `aldc-factory` runs the factory for the issue's `req:` line on a GitHub-hosted runner and opens a draft PR from `aldc/<req>`. It installs the Claude Code CLI and the plugins itself rather than wrapping the runner in `claude-code-action`. Not yet run on GitHub.
+
+### Removed
+- The six 5.4.0 agent aliases: `al-developer`, `al-implement-subagent`, `al-developer-reviewer`, `al-review-subagent`, `dredd` and `al-planning-subagent`. Launch `al-implementer`, `al-reviewer` or `al-researcher` with the mode or scope the README table gives.
+- The `/aldc:al-spec-create` alias (use `/aldc:spec`) and the `/aldc:presales` and `/aldc:agent-builder` pointers (install `aldc-extras`).
+- **The Conductor's phase path.** Every requirement is researched, cut into tickets, built in waves and reviewed once. The approved cut replaces the plan-approval, implementation-start and per-phase commit gates. A 5.4.x plan left with phase files is not finished by phases any more: its phase files are treated as research, and only the work they do not record as done is cut into tickets. `phase-complete-template.md` is removed.
+
+### Changed
+- The final report template consolidates ticket results and the final review instead of phase files.
+- The ALDC Doctor recognises a Claude installation by `skills/spec/SKILL.md`, and still recognises `al-spec-create` in older ones.
+- The factory's reporter attributes the run to the runner, not to the Conductor.
+
+### Fixed
+- The npm package ships `tools/tickets/` and `tools/factory/` (#158).
+
+### Not covered yet
+- The Copilot CLI and Codex host adapters of the factory.
+- The issue-label workflow has not run on GitHub.
+- Tests in the measured runs were compiled, not executed: the eval project has no test runner.
+
 ## [Claude Code plugin 5.5.0] - 2026-11-26
 
 From workshop to factory on Claude Code: tickets, resumable state, parallel builds in

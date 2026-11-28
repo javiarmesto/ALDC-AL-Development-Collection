@@ -114,8 +114,8 @@ function finalReportProblems(cwd, reportText, { requireReview = false } = {}) {
     const v = certifiedVerdict(cwd);
     const said = /bcquality[^\n]{0,80}(not[- ]?(run|certified|installed)|no certificad|sin certificar)/i.test(reportText);
     if ((!v || v.mtime + 1000 < newestAl(cwd)) && !said)
-      problems.push(v ? `BCQuality: the certified review (${v.file}) is older than the last AL change. Run it again (al-conductor Phase 3 step 0) or say in the report why it was not run.`
-        : 'BCQuality: no certified review ran for this code. Run tools/bcquality/certified-review.js (al-conductor Phase 3 step 0), or say in the report why the BCQuality review did not run.');
+      problems.push(v ? `BCQuality: the certified review (${v.file}) is older than the last AL change. Run it again (al-conductor Completion step 0) or say in the report why it was not run.`
+        : 'BCQuality: no certified review ran for this code. Run tools/bcquality/certified-review.js (al-conductor Completion step 0), or say in the report why the BCQuality review did not run.');
     else if (v && v.verdict !== 'certified' && !said && !reportText.includes(path.basename(v.file)))
       problems.push(`BCQuality: the review verdict is ${v.verdict} (${v.file}); the report must say "BCQuality review: not certified" and cite that file.`);
   }

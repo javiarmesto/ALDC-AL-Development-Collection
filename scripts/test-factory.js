@@ -32,6 +32,8 @@ function project() {
 const ticket = (id, extra = '') => `---\nid: ${id}\ntitle: Feature ${id}\ndepends_on: []\nmode: ${extra || 'afk'}\nobject_ids: [${RANGES[id]}-${RANGES[id] + 9}]\nacceptance: [AC-0${id.slice(-1)}]\nbcq: []\nshared_files: [${PERMS}]\nstatus: ready\n---\n\n## Scope\n\nFeature ${id}.\n`;
 const REVIEW = (findings = []) => `Done.\n\n### Review-Report (JSON)\n\n\`\`\`json\n${JSON.stringify({ review: { verdict: findings.length ? 'NEEDS_REVISION' : 'APPROVED', security: {} }, findings })}\n\`\`\`\n`;
 
+const VALIDATION = (rows = [{ req: 'REQ-01', verdict: 'covered' }]) => `Checked.\n\n### Validation-Report (JSON)\n\n\`\`\`json\n${JSON.stringify({ requirements: rows, uncaptured: [], summary: {} })}\n\`\`\`\n`;
+
 /** The default crew script: every role does its job. `tweak(call)` may override one call. */
 function script(tweak = () => null) {
   return async (call) => {
@@ -52,7 +54,9 @@ function script(tweak = () => null) {
       }
       case 'integrator': return { cost: 0.2, files: { [PERMS]: `permissionset 50149 "Demo"\n{\n    // ${call.prompt.split('\n').filter((l) => l.startsWith('- ')).length} entries\n}\n` } };
       case 'spec-reviewer': return { cost: 0.4, text: REVIEW() };
+      case 'validator': return { text: VALIDATION() };
       case 'reporter': return { cost: 0.1, files: { [`${plans}/demo-complete.md`]: '# Done\n' } };
+      case 'retro': return { files: { [`${plans}/retro.md`]: '# Retro\n\n- Proposal: none.\n' } };
       default: return {};
     }
   };
@@ -64,7 +68,7 @@ test('from an approved spec to a reviewed branch: research, cut, one parallel wa
   const { root, dir } = project();
   const { run, calls } = await factory(root, script());
   assert.strictEqual(run.outcome, 'finished', run.reason);
-  assert.deepStrictEqual(calls.map((c) => c.role).filter((r, i, a) => a.indexOf(r) === i), ['researcher', 'cutter', 'implementer', 'integrator', 'spec-reviewer', 'reporter']);
+  assert.deepStrictEqual(calls.map((c) => c.role).filter((r, i, a) => a.indexOf(r) === i), ['researcher', 'cutter', 'implementer', 'integrator', 'spec-reviewer', 'validator', 'reporter', 'retro']);
   // The three implementers ran at the same time, each in its own worktree.
   const impl = calls.filter((c) => c.role === 'implementer');
   assert.strictEqual(impl.length, 3);
@@ -86,6 +90,104 @@ test('from an approved spec to a reviewed branch: research, cut, one parallel wa
   assert.strictEqual(log.runs.at(-1).outcome, 'finished');
   assert.strictEqual(log.runs.at(-1).cost, 2.7);
   assert.ok(log.runs.at(-1).steps.some((s) => s.kind === 'certified' && s.result === 'not-run'));
+  // The retro ran last, after the outcome was saved, and wrote its proposals.
+  const last = log.runs.at(-1).steps.at(-1);
+  assert.strictEqual(last.kind, 'retro');
+  assert.strictEqual(last.result, 'written');
+  assert.ok(fs.existsSync(path.join(dir, 'retro.md')));
+  assert.match(calls.find((c) => c.role === 'reporter').prompt, /not by the Conductor/);
+});
+
+test('the retro proposes only: a tracked file it edits is put back, and a blocked run gets one too', async () => {
+  const { root, dir } = project();
+  const s = script((c) => {
+    if (c.role === 'cutter') return { files: {
+      '.github/plans/demo/tickets/criteria.md': '- AC-01: one\n- AC-02: two\n- AC-03: three\n',
+      '.github/plans/demo/tickets/T-01.md': ticket('T-01'), '.github/plans/demo/tickets/T-02.md': ticket('T-02', 'hitl'), '.github/plans/demo/tickets/T-03.md': ticket('T-03'),
+    } };
+    if (c.role === 'retro') { assert.match(c.prompt, /outcome: blocked/); return { files: { 'App/app.json': '{"tampered":true}' }, text: 'Proposal: record the T-02 decision earlier.' }; }
+    return null;
+  });
+  const { run } = await factory(root, s);
+  assert.strictEqual(run.outcome, 'blocked');
+  const r = run.steps.find((x) => x.kind === 'retro');
+  assert.strictEqual(r.result, 'written');
+  assert.deepStrictEqual(r.reverted, ['App/app.json']);
+  assert.match(fs.readFileSync(path.join(root, 'App', 'app.json'), 'utf8'), /idRanges/);
+  assert.match(fs.readFileSync(path.join(dir, 'retro.md'), 'utf8'), /record the T-02 decision/);
+});
+
+test('an empty ticket whose objects are already on the branch is closed, not rebuilt; the cut refuses a permission-set-only ticket', async () => {
+  const { root, dir } = project();
+  const plans = '.github/plans/demo';
+  const s = script((c) => {
+    if (c.role === 'cutter') return { files: {
+      [`${plans}/tickets/criteria.md`]: '- AC-01: one\n- AC-02: two\n- AC-03: three\n',
+      [`${plans}/tickets/T-01.md`]: ticket('T-01'), [`${plans}/tickets/T-02.md`]: ticket('T-02'),
+      [`${plans}/tickets/T-03.md`]: ticket('T-03').replace('depends_on: []', 'depends_on: [T-01, T-02]'),
+    } };
+    // The integration step of wave 1 already writes T-03's object; its implementer then has nothing to do.
+    if (c.role === 'integrator') return { files: { [PERMS]: 'permissionset 50149 "Demo"\n{\n}\n', 'App/src/Late.Codeunit.al': 'codeunit 50120 "Late"\n{\n}\n' } };
+    if (c.role === 'implementer' && c.ticket === 'T-03') return { text: 'Nothing to change.' };
+    return null;
+  });
+  const { run, calls } = await factory(root, s);
+  assert.strictEqual(run.outcome, 'finished', run.reason);
+  assert.strictEqual(calls.filter((c) => c.ticket === 'T-03').length, 1, 'not rebuilt');
+  assert.deepStrictEqual(run.steps.find((x) => x.kind === 'satisfied').objects.map((o) => o.id), [50120]);
+  assert.match(fs.readFileSync(path.join(dir, 'tickets', 'T-03.result.md'), 'utf8'), /already on aldc\/demo \(codeunit 50120/);
+  assert.match(fs.readFileSync(path.join(dir, 'tickets', 'T-01.result.md'), 'utf8'), /\*\*Review:\*\* pending final review/);
+  // The validator refuses the cut that caused it: a ticket whose only objects are shared permission sets.
+  fs.appendFileSync(path.join(dir, 'tickets', 'T-03.md'), '\n## Objects\n\n| Type | ID | Name | New / extends |\n|---|---|---|---|\n| PermissionSet | 50121 | Demo | new |\n');
+  assert.match(T.validate(root, 'demo').problems.join('\n'), /T-03\.md: its only objects are permission sets in shared_files/);
+});
+
+test('requirement traceability: the run writes traceability.md and blocks on a requirement point the review finds unmet', async () => {
+  const { root, dir } = project();
+  fs.appendFileSync(path.join(dir, 'demo.spec.md'), '\n### Requirement points\n\n| REQ | What was asked | Source | Acceptance |\n| --- | --- | --- | --- |\n| REQ-01 | one | issue #1 | AC-01 |\n| REQ-02 | two | issue #1 | AC-02 |\n| REQ-03 | three | issue #1 | AC-03 |\n');
+  const review = (unmet) => `### Review-Report (JSON)\n\n\`\`\`json\n${JSON.stringify({ review: { verdict: 'APPROVED', security: {}, criteria: { declared: ['AC-01', 'AC-02', 'AC-03'], met: ['AC-01', 'AC-03', ...(unmet ? [] : ['AC-02'])], unmet: unmet ? ['AC-02'] : [], 'not-evaluated': [] } }, findings: [] })}\n\`\`\`\n`;
+  const blocked = await factory(root, script((c) => (c.role === 'spec-reviewer' ? { text: review(true) } : null)));
+  assert.strictEqual(blocked.run.outcome, 'blocked');
+  assert.match(blocked.run.reason, /requirement points not delivered: REQ-02/);
+  assert.match(fs.readFileSync(path.join(dir, 'traceability.md'), 'utf8'), /\| REQ-02 \| two \|.*\*\*unmet\*\*/);
+  const { root: r2, dir: d2 } = project();
+  fs.appendFileSync(path.join(d2, 'demo.spec.md'), '\n### Requirement points\n\n| REQ | What was asked | Source | Acceptance |\n| --- | --- | --- | --- |\n| REQ-01 | one | issue #1 | AC-01, AC-02, AC-03 |\n');
+  const ok = await factory(r2, script((c) => (c.role === 'spec-reviewer' ? { text: review(false) } : null)));
+  assert.strictEqual(ok.run.outcome, 'finished', ok.run.reason);
+  assert.deepStrictEqual(ok.run.steps.find((x) => x.kind === 'trace').counts, { 'met by review only': 1 });
+  assert.match(ok.calls.find((c) => c.role === 'reporter').prompt, /traceability\.md/);
+});
+
+test('validation against the request: a contradiction gets one correction and a second validation; no report blocks', async () => {
+  const { root, dir } = project();
+  fs.writeFileSync(path.join(dir, 'request.md'), 'One permission set named Demo-Set.\n');
+  let validations = 0;
+  const s = script((c) => {
+    if (c.role === 'validator') {
+      validations++;
+      assert.match(c.prompt, /^scope: validate/);
+      assert.ok(c.prompt.includes(path.join(dir, 'request.md')), 'the saved request is the source');
+      return { text: VALIDATION(validations === 1
+        ? [{ req: 'REQ-01', verdict: 'contradicted', fix: { file: 'App/src/Demo.PermissionSet.al', change: 'rename the permission set to "Demo-Set"' } }, { req: 'REQ-02', verdict: 'partial', missing: 'no criterion for the note' }]
+        : [{ req: 'REQ-01', verdict: 'covered' }, { req: 'REQ-02', verdict: 'partial', missing: 'no criterion for the note' }]) };
+    }
+    return null;
+  });
+  const { run, calls } = await factory(root, s);
+  assert.strictEqual(run.outcome, 'finished', run.reason);
+  assert.strictEqual(validations, 2);
+  assert.ok(calls.some((c) => c.role === 'integrator' && /REQ-01: rename the permission set to "Demo-Set" \(App\/src\/Demo\.PermissionSet\.al\)/.test(c.prompt)));
+  assert.match(git(root, 'log', '-1', '--format=%s'), /^fix\(demo\): match the request \(validation\)$/);
+  const v = JSON.parse(fs.readFileSync(path.join(dir, 'demo-validation.json'), 'utf8'));
+  assert.deepStrictEqual(v.requirements.map((r) => r.verdict), ['covered', 'partial'], 'partial does not block');
+  // Validation runs before the certified review, so the certified verdict covers the corrected code.
+  const kinds = run.steps.map((x) => x.kind);
+  assert.ok(kinds.lastIndexOf('validation') < kinds.indexOf('certified'));
+
+  const { root: r2 } = project();
+  const none = await factory(r2, script((c) => (c.role === 'validator' ? { text: 'I looked, all fine.' } : null)));
+  assert.strictEqual(none.run.outcome, 'blocked');
+  assert.match(none.run.reason, /no Validation-Report JSON/);
 });
 
 test('a ticket refused at integration is discarded and rebuilt; it blocks after the retries', async () => {

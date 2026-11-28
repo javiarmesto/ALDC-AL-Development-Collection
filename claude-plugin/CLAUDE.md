@@ -23,35 +23,18 @@ CLAUDE.md is not auto-loaded into a subagent.
 | `/aldc:triage` | `aldc:al-triage` | `${CLAUDE_PLUGIN_ROOT}/agents/al-triage.md` |
 | `/aldc:audit` | `aldc:al-reviewer` (scope `audit`) | `${CLAUDE_PLUGIN_ROOT}/agents/al-reviewer.md` |
 
-`/aldc:presales` and `/aldc:agent-builder` are pointers (5.4.0, removed in 6.0.0): pre-sales
-and agent building moved to the optional `aldc-extras` plugin (`/aldc-extras:presales`,
+Pre-sales and agent building live in the optional `aldc-extras` plugin (`/aldc-extras:presales`,
 `/aldc-extras:agent-builder`, the `al-agent-*` workflows and the estimation and agent SDK
 skills). The `al-agent-toolkit` rule stays here, because the implementer and reviewer apply it.
 
 Two agents have no entry skill and run only as subagents, launched with the Agent tool;
-`al-implementer` and `al-reviewer` also run as the Conductor's phase subagents:
+`al-implementer` and `al-reviewer` also run as the Conductor's ticket and review subagents:
 
 | Agent | Launched by |
 |---|---|
 | `aldc:al-researcher` | `aldc:al-conductor` (research) |
-| `aldc:al-implementer` (mode `phase`), `aldc:al-reviewer` (scope `phase`) | `aldc:al-conductor` (TDD cycle) |
+| `aldc:al-implementer` (mode `phase`), `aldc:al-reviewer` (scope `phase`) | `aldc:al-conductor` (one per ticket, integration corrections, final review) |
 | `aldc:al-knowledge-consultant` | Architect, Spec and Conductor: one BCQuality `al-knowledge` consultation per knowledge domain |
-
-## Deprecated agent aliases (5.4.0, removed in 6.0.0)
-
-Eight core agents plus six aliases kept only for external callers. Each alias has the
-old name and the new agent's tools, and tells the model to read the new contract
-and act in a fixed mode. The plugin itself (entry skills, Conductor, hooks) launches
-only the new names.
-
-| Alias | Now |
-|---|---|
-| `aldc:al-developer` | `aldc:al-implementer`, mode `direct` |
-| `aldc:al-implement-subagent` | `aldc:al-implementer`, mode `phase` |
-| `aldc:al-developer-reviewer` | `aldc:al-reviewer`, scope `increment` |
-| `aldc:al-review-subagent` | `aldc:al-reviewer`, scope `phase` |
-| `aldc:dredd` | `aldc:al-reviewer`, scope `audit` |
-| `aldc:al-planning-subagent` | `aldc:al-researcher` |
 
 ## Gates
 
@@ -72,9 +55,6 @@ Explicitly invoked; `disable-model-invocation: true` keeps the model from firing
 | `/aldc:al-memory-create` | `skills/al-memory-create/SKILL.md` |
 | `/aldc:al-context-create` | `skills/al-context-create/SKILL.md` |
 | `/aldc:al-initialize` | `skills/al-initialize/SKILL.md` |
-
-`/aldc:al-spec-create` is a deprecated alias of the `/aldc:spec` entry skill (5.4.0,
-removed in 6.0.0): it reads `skills/spec/SKILL.md` and adds a deprecation line.
 
 ## Rules
 

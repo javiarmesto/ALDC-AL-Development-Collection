@@ -1,0 +1,129 @@
+# ALDC factory trigger (phase 5, preview). Copy to .github/workflows/aldc-factory.yml in your AL project.
+#
+# Labelling an issue `aldc-factory` runs the unattended factory (tools/factory/factory.js) for the
+# requirement the issue names, on a GitHub-hosted runner, and opens a draft PR from aldc/<req>.
+# The human gates stay where they are: the approved spec must already be committed, and a person
+# reviews and merges the draft PR.
+#
+# The issue body names the requirement on its own line:   req: <requirement-folder>
+# The approved spec must be committed at <plans.root>/<req>/<req>.spec.md (.claude/plans by default).
+#
+# Repository settings:
+#   secret   ANTHROPIC_API_KEY        (or CLAUDE_CODE_OAUTH_TOKEN)
+#   variable ALDC_FACTORY_VERIFY      compile command run from the repo root, e.g. the aldc-verify CLI
+#                                     with symbols the runner can reach; empty = build not-run
+#   variable ALDC_FACTORY_TEST        test command; empty = tests not-run (reported as such)
+#   variable ALDC_FACTORY_BUDGET      USD cap for the whole run (default 15)
+#   variable ALDC_FACTORY_MODEL       model for every role (default sonnet)
+#
+# Why not anthropics/claude-code-action: the factory is a deterministic Node runner that starts one
+# `claude -p` per crew role itself. Wrapping it in the action's own model session would add a model
+# turn with no judgement to make. The workflow installs the Claude Code CLI and the plugins instead.
+name: ALDC factory
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: aldc-factory-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  factory:
+    if: github.event.label.name == 'aldc-factory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
+      ALDC_FACTORY_MODEL: ${{ vars.ALDC_FACTORY_MODEL || 'sonnet' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Requirement from the issue
+        id: req
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          req=$(printf '%s\n' "$BODY" | sed -n 's/^[[:space:]]*req:[[:space:]]*\([A-Za-z0-9._-]\+\)[[:space:]]*$/\1/p' | head -n1)
+          if [ -z "$req" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "ALDC factory: the issue body has no \`req: <requirement>\` line."
+            exit 1
+          fi
+          echo "name=$req" >> "$GITHUB_OUTPUT"
+          # The issue body is the original request the validation checks the delivery against.
+          mkdir -p ".claude/plans/$req"
+          [ -f ".claude/plans/$req/request.md" ] || printf '# Request: issue #%s\n\n%s\n' "${{ github.event.issue.number }}" "$BODY" > ".claude/plans/$req/request.md"
+
+      - name: Claude Code and the ALDC plugins
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude plugin marketplace add microsoft/BCQuality
+          claude plugin marketplace add javiarmesto/ALDC-AL-Development-Collection
+          claude plugin install aldc@aldc-marketplace
+          root=$(ls -d "$HOME"/.claude/plugins/cache/aldc-marketplace/aldc/*/ | sort -V | tail -n1)
+          test -f "$root/tools/factory/factory.js"
+          echo "ALDC_PLUGIN_ROOT=$root" >> "$GITHUB_ENV"
+
+      - name: Run the factory
+        id: run
+        env:
+          VERIFY: ${{ vars.ALDC_FACTORY_VERIFY }}
+          TEST: ${{ vars.ALDC_FACTORY_TEST }}
+          BUDGET: ${{ vars.ALDC_FACTORY_BUDGET || '15' }}
+        run: |
+          args=("${{ steps.req.outputs.name }}" --project . --host claude --budget "$BUDGET")
+          [ -n "$VERIFY" ] && args+=(--verify "$VERIFY")
+          [ -n "$TEST" ] && args+=(--test "$TEST")
+          set +e
+          node "$ALDC_PLUGIN_ROOT/tools/factory/factory.js" "${args[@]}" | tee factory-out.json
+          code=${PIPESTATUS[0]}
+          echo "exit=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Plan files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aldc-factory-${{ steps.req.outputs.name }}
+          path: |
+            .claude/plans/${{ steps.req.outputs.name }}/
+            .github/plans/${{ steps.req.outputs.name }}/
+            .agents/plans/${{ steps.req.outputs.name }}/
+          if-no-files-found: ignore
+
+      - name: Draft PR
+        if: steps.run.outputs.exit == '0'
+        run: |
+          req=${{ steps.req.outputs.name }}
+          git push -u origin "aldc/$req"
+          gh pr create --draft --head "aldc/$req" --base "${{ github.event.repository.default_branch }}" \
+            --title "$req (ALDC factory)" \
+            --body "Built unattended by the ALDC factory from issue #${{ github.event.issue.number }}. The final report, factory-run.json and retro.md are in the run's artifact. A person reviews and merges this PR."
+          gh issue comment ${{ github.event.issue.number }} --body "ALDC factory finished: draft PR opened from \`aldc/$req\`. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Report a blocked or failed run
+        if: steps.run.outputs.exit != '0'
+        run: |
+          req=${{ steps.req.outputs.name }}
+          blocked=$(cat .claude/plans/$req/blocked.md .github/plans/$req/blocked.md .agents/plans/$req/blocked.md 2>/dev/null | head -c 6000)
+          gh issue comment ${{ github.event.issue.number }} --body "ALDC factory stopped (exit ${{ steps.run.outputs.exit }}). Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ${blocked:-No blocked.md: see the run log.}"
+          exit 1

@@ -134,18 +134,6 @@ required:
   subagents:
     - "agents/al-researcher.md"
 
-  # Deprecated aliases (5.4.0), removed in 6.0.0. Each delegates to the agent above.
-  deprecatedAgents:
-    - "agents/al-developer.md"
-    - "agents/al-implement-subagent.md"
-    - "agents/al-review-subagent.md"
-    - "agents/al-developer-reviewer.md"
-    - "agents/dredd.md"
-    - "agents/al-planning-subagent.md"
-
-  # Deprecated workflow alias (5.4.0), removed in 6.0.0: /aldc:al-spec-create -> /aldc:spec.
-  deprecatedWorkflows:
-    - "skills/al-spec-create/SKILL.md"
 
   workflows:
     - "skills/al-build/SKILL.md"
